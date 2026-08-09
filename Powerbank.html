@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Powerbank & Energy Planner</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --accent-yellow: #f1c40f;
+            --accent-green: #2ecc71;
+            --accent-blue: #3498db;
+            --accent-red: #e74c3c;
+            --text-color: #f5f5f7;
+            --border-color: #2d2d2d;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 550px;
+            width: 100%;
+        }
+        h1 {
+            color: var(--accent-yellow);
+            text-align: center;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-yellow);
+        }
+        label {
+            display: block;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            color: #aaa;
+        }
+        input, select {
+            width: 100%;
+            padding: 11px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid #3d3d3d;
+            background-color: #2a2a2a;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+        .input-row > div { flex: 1; }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .result-box {
+            background: #262626;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 3px solid var(--accent-yellow);
+        }
+        .result-box.green { border-left-color: var(--accent-green); }
+        .result-box.blue { border-left-color: var(--accent-blue); }
+        .result-box .val {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            margin-top: 4px;
+        }
+        .result-box .desc {
+            font-size: 0.75rem;
+            color: #999;
+            text-transform: uppercase;
+        }
+        
+        .device-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #262626;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+            border: 1px solid #333;
+        }
+        .device-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .device-title { font-weight: bold; font-size: 0.9rem; }
+        .device-sub { font-size: 0.75rem; color: #888; }
+        .counter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .counter button {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 6px;
+            border: none;
+            background: #3a3a3a;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        .counter span {
+            width: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .progress-bar-bg {
+            background: #333;
+            border-radius: 10px;
+            height: 16px;
+            width: 100%;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            background: var(--accent-green);
+            height: 100%;
+            width: 100%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        .note {
+            font-size: 0.78rem;
+            color: #888;
+            margin-top: 10px;
+            line-height: 1.3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔋 Powerbank Manager</h1>
+
+    <!-- POWERBANK SPECS -->
+    <div class="card">
+        <h2>⚡ Batería Externa</h2>
+        
+        <div class="input-row">
+            <div>
+                <label for="presetPb">Capacidad Nominal:</label>
+                <select id="presetPb" onchange="applyPresetPb()">
+                    <option value="10000">10.000 mAh (Básica)</option>
+                    <option value="20000" selected>20.000 mAh (Estándar)</option>
+                    <option value="26800">26.800 mAh (Máx. Avión)</option>
+                    <option value="custom">Personalizada...</option>
+                </select>
+            </div>
+            <div>
+                <label for="customPb">Capacidad (mAh):</label>
+                <input type="number" id="customPb" value="20000" step="500" oninput="calc()">
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div>
+                <label for="efficiency">Eficiencia Real:</label>
+                <select id="efficiency" onchange="calc()">
+                    <option value="0.75" selected>75% (Estándar Carga Rápida/PD)</option>
+                    <option value="0.80">80% (Eficiencia Alta / Carga Lenta)</option>
+                    <option value="0.70">70% (Carga Inalámbrica / Pérdida Térmica)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="result-grid">
+            <div class="result-box">
+                <div class="desc">Energía Usable Real</div>
+                <div class="val" id="usableMah">15.000 mAh</div>
+            </div>
+            <div class="result-box blue">
+                <div class="desc">Capacidad Wh Usables</div>
+                <div class="val" id="usableWh">55.5 Wh</div>
+            </div>
+        </div>
+        <p class="note">* Descuenta automáticamente el ~25% perdido en la conversión interna de 3.7V a 5V/9V y disipación de calor.</p>
+    </div>
+
+    <!-- DEVICE SELECTION & PLANNER -->
+    <div class="card">
+        <h2 style="color: var(--accent-green);">📱 Plan de Cargas en Ruta</h2>
+        <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">Añade los dispositivos que vas a recargar para ver el consumo total:</p>
+
+        <div class="device-item">
+            <div class="device-info">
+                <span class="device-title">iPhone / Smartphone</span>
+                <span class="device-sub">~4.000 mAh</span>
+            </div>
+            <div class="counter">
+                <button onclick="changeQty('phone', -1)">-</button>
+                <span id="qty-phone">0</span>
+                <button onclick="changeQty('phone', 1)">+</button>
+            </div>
+        </div>
+
+        <div class="device-item">
+            <div class="device-info">
+                <span class="device-title">Batería Dron (Mini / Neo)</span>
+                <span class="device-sub">~1.800 mAh</span>
+            </div>
+            <div class="counter">
+                <button onclick="changeQty('drone', -1)">-</button>
+                <span id="qty-drone">0</span>
+                <button onclick="changeQty('drone', 1)">+</button>
+            </div>
+        </div>
+
+        <div class="device-item">
+            <div class="device-info">
+                <span class="device-title">Reloj GPS / Deporte</span>
+                <span class="device-sub">~450 mAh</span>
+            </div>
+            <div class="counter">
+                <button onclick="changeQty('watch', -1)">-</button>
+                <span id="qty-watch">0</span>
+                <button onclick="changeQty('watch', 1)">+</button>
+            </div>
+        </div>
+
+        <div class="device-item">
+            <div class="device-info">
+                <span class="device-title">Linterna Frontal / Gadget</span>
+                <span class="device-sub">~1.500 mAh</span>
+            </div>
+            <div class="counter">
+                <button onclick="changeQty('lamp', -1)">-</button>
+                <span id="qty-lamp">0</span>
+                <button onclick="changeQty('lamp', 1)">+</button>
+            </div>
+        </div>
+
+        <div class="device-item">
+            <div class="device-info">
+                <span class="device-title">Mando Consola / Auriculares</span>
+                <span class="device-sub">~1.560 mAh</span>
+            </div>
+            <div class="counter">
+                <button onclick="changeQty('controller', -1)">-</button>
+                <span id="qty-controller">0</span>
+                <button onclick="changeQty('controller', 1)">+</button>
+            </div>
+        </div>
+
+        <!-- BALANCE AND BAR -->
+        <div style="margin-top: 18px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <span>Estado de la Powerbank:</span>
+                <strong id="remPercent">100% restante</strong>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="result-grid" style="margin-top: 15px;">
+            <div class="result-box green" id="remBox">
+                <div class="desc">Capacidad Restante</div>
+                <div class="val" id="remMah">15.000 mAh</div>
+            </div>
+            <div class="result-box">
+                <div class="desc">Consumo Total Planificado</div>
+                <div class="val" id="usedMah">0 mAh</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const devices = {
+        phone: { mah: 4000, qty: 0 },
+        drone: { mah: 1800, qty: 0 },
+        watch: { mah: 450, qty: 0 },
+        lamp: { mah: 1500, qty: 0 },
+        controller: { mah: 1560, qty: 0 }
+    };
+
+    function applyPresetPb() {
+        const val = document.getElementById('presetPb').value;
+        if (val !== 'custom') {
+            document.getElementById('customPb').value = val;
+        }
+        calc();
+    }
+
+    function changeQty(key, delta) {
+        devices[key].qty = Math.max(0, devices[key].qty + delta);
+        document.getElementById(`qty-${key}`).innerText = devices[key].qty;
+        calc();
+    }
+
+    function calc() {
+        const nominalMah = parseFloat(document.getElementById('customPb').value) || 0;
+        const eff = parseFloat(document.getElementById('efficiency').value);
+
+        // Usable real
+        const usableMah = nominalMah * eff;
+        // 3.7V nominal voltage standard for Lithium Cells
+        const usableWh = (nominalMah * 3.7 / 1000) * eff;
+
+        document.getElementById('usableMah').innerText = `${Math.round(usableMah).toLocaleString()} mAh`;
+        document.getElementById('usableWh').innerText = `${usableWh.toFixed(1)} Wh`;
+
+        // Calculate used mAh by devices
+        let totalUsedMah = 0;
+        for (let k in devices) {
+            totalUsedMah += devices[k].mah * devices[k].qty;
+        }
+
+        const remainingMah = usableMah - totalUsedMah;
+        let remPct = (remainingMah / usableMah) * 100;
+        if (usableMah === 0) remPct = 0;
+
+        document.getElementById('usedMah').innerText = `${Math.round(totalUsedMah).toLocaleString()} mAh`;
+        document.getElementById('remMah').innerText = `${Math.round(remainingMah).toLocaleString()} mAh`;
+
+        const bar = document.getElementById('progressBar');
+        const remPercentText = document.getElementById('remPercent');
+        const remBox = document.getElementById('remBox');
+
+        if (remainingMah < 0) {
+            bar.style.width = '100%';
+            bar.style.backgroundColor = 'var(--accent-red)';
+            remPercentText.innerText = '⚠️ SOBREPASADO';
+            remPercentText.style.color = 'var(--accent-red)';
+            remBox.style.borderLeftColor = 'var(--accent-red)';
+        } else {
+            const clampPct = Math.min(100, Math.max(0, remPct));
+            bar.style.width = `${clampPct}%`;
+            bar.style.backgroundColor = clampPct < 25 ? 'var(--accent-red)' : 'var(--accent-green)';
+            remPercentText.innerText = `${Math.round(clampPct)}% restante`;
+            remPercentText.style.color = clampPct < 25 ? 'var(--accent-red)' : '#fff';
+            remBox.style.borderLeftColor = clampPct < 25 ? 'var(--accent-red)' : 'var(--accent-green)';
+        }
+    }
+
+    calc();
+</script>
+
+</body>
+</html>
