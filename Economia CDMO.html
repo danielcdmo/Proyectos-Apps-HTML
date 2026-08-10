@@ -7,6 +7,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Economía CDMO</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         :root {
             /* Tema Oscuro iOS OLED Neutro */
             --bg-grad: linear-gradient(180deg, #000000 0%, #121212 100%);
@@ -46,7 +50,6 @@
             margin: 0;
             padding: 16px;
             min-height: 100vh;
-            box-sizing: border-box;
             display: flex;
             justify-content: center;
             transition: background 0.4s ease, color 0.4s ease;
@@ -66,32 +69,35 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 8px;
         }
 
         .header-title {
-            font-size: 1.5rem;
+            font-size: 1.35rem;
             font-weight: 800;
             margin: 0;
             background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            white-space: nowrap;
         }
 
         .theme-toggle {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 50px;
-            padding: 6px 14px;
+            padding: 6px 12px;
             cursor: pointer;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             box-shadow: var(--card-shadow);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
             display: flex;
             align-items: center;
             gap: 6px;
             color: var(--text-main);
+            flex-shrink: 0;
         }
 
         /* Tarjetas Glassmorphism */
@@ -104,6 +110,7 @@
             -webkit-backdrop-filter: blur(25px);
             box-shadow: var(--card-shadow);
             transition: all 0.3s ease;
+            width: 100%;
         }
 
         /* Navegador de Mes */
@@ -130,7 +137,7 @@
 
         .month-title {
             font-weight: 800;
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             text-transform: capitalize;
         }
 
@@ -156,7 +163,7 @@
         }
 
         .stat-label {
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             color: var(--text-sub);
             text-transform: uppercase;
             font-weight: 700;
@@ -165,18 +172,18 @@
         }
 
         .stat-value {
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             font-weight: 800;
         }
 
         .stat-value.total-green {
             color: var(--accent-green);
-            font-size: 1.8rem;
+            font-size: 1.75rem;
         }
 
         /* Categorías y Lista de Gastos */
         .category-title {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 800;
             color: var(--accent-blue);
             text-transform: uppercase;
@@ -193,7 +200,7 @@
             justify-content: space-between;
             padding: 10px 0;
             border-bottom: 1px solid var(--card-border);
-            gap: 10px;
+            gap: 8px;
         }
 
         .item-row:last-child {
@@ -205,6 +212,7 @@
             align-items: center;
             gap: 10px;
             flex: 1;
+            min-width: 0;
         }
 
         .checkbox-custom {
@@ -229,26 +237,31 @@
 
         .item-label {
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .item-amount-input {
-            width: 80px;
+            width: 75px;
             background: var(--input-bg);
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 10px;
-            padding: 6px 8px;
+            padding: 6px 6px;
             text-align: right;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            flex-shrink: 0;
         }
 
-        /* Formulario Añadir Extra */
+        /* Formulario Añadir Extra Ajustado */
         .add-extra-form {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             margin-top: 10px;
+            width: 100%;
         }
 
         .input-extra {
@@ -256,12 +269,13 @@
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 12px;
-            padding: 10px;
-            font-size: 0.85rem;
+            padding: 8px;
+            font-size: 0.82rem;
             font-weight: 600;
+            min-width: 0;
         }
 
-        .input-extra.name { flex: 2; }
+        .input-extra.name { flex: 1.8; }
         .input-extra.amount { flex: 1; text-align: right; }
 
         .btn-add {
@@ -269,9 +283,10 @@
             color: #fff;
             border: none;
             border-radius: 12px;
-            padding: 0 14px;
+            padding: 0 12px;
             font-weight: 800;
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         /* Botones de Acción */
@@ -286,7 +301,7 @@
             border-radius: 20px;
             border: 1px solid var(--card-border);
             font-weight: 800;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             cursor: pointer;
             display: flex;
             align-items: center;
