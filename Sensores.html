@@ -349,6 +349,12 @@
         document.getElementById('valAccZ').innerText = `${z.toFixed(1)} m/s²`;
     }
 </script>
+    
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
 
 </body>
 </html>
