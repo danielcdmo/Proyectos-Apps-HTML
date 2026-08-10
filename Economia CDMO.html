@@ -5,22 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Comedor Olivia</title>
+    <title>Economía CDMO</title>
     <style>
         :root {
-            /* Tema Oscuro por defecto */
-            --bg-grad: linear-gradient(145deg, #0b1120 0%, #172554 100%);
+            /* Tema Oscuro Liquid Glass */
+            --bg-grad: linear-gradient(145deg, #0b1120 0%, #0f172a 100%);
             --card-bg: rgba(30, 41, 59, 0.55);
-            --card-border: rgba(255, 255, 255, 0.15);
+            --card-border: rgba(255, 255, 255, 0.12);
             --card-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.37);
             --text-main: #f8fafc;
             --text-sub: #94a3b8;
-            --green-yes: #10b981;
-            --green-glow: rgba(16, 185, 129, 0.3);
-            --red-no: #ef4444;
-            --red-glow: rgba(239, 68, 68, 0.3);
-            --neutral-bg: rgba(255, 255, 255, 0.06);
+            --accent-green: #10b981;
+            --accent-green-glow: rgba(16, 185, 129, 0.25);
             --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --neutral-bg: rgba(255, 255, 255, 0.06);
+            --input-bg: rgba(15, 23, 42, 0.6);
         }
 
         [data-theme="light"] {
@@ -31,12 +31,12 @@
             --card-shadow: 0 10px 30px 0 rgba(148, 163, 184, 0.25);
             --text-main: #0f172a;
             --text-sub: #64748b;
-            --green-yes: #059669;
-            --green-glow: rgba(5, 150, 105, 0.2);
-            --red-no: #dc2626;
-            --red-glow: rgba(220, 38, 38, 0.2);
-            --neutral-bg: rgba(0, 0, 0, 0.04);
+            --accent-green: #059669;
+            --accent-green-glow: rgba(5, 150, 105, 0.2);
             --accent-blue: #2563eb;
+            --accent-purple: #7c3aed;
+            --neutral-bg: rgba(0, 0, 0, 0.04);
+            --input-bg: rgba(255, 255, 255, 0.8);
         }
 
         body {
@@ -53,12 +53,12 @@
         }
 
         .container {
-            max-width: 420px;
+            max-width: 440px;
             width: 100%;
             display: flex;
             flex-direction: column;
             gap: 16px;
-            padding-bottom: 20px;
+            padding-bottom: 30px;
         }
 
         /* Header con Toggle Claro/Oscuro */
@@ -72,7 +72,7 @@
             font-size: 1.5rem;
             font-weight: 800;
             margin: 0;
-            background: linear-gradient(135deg, var(--green-yes) 0%, var(--accent-blue) 100%);
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -86,14 +86,15 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             box-shadow: var(--card-shadow);
-            font-size: 1.1rem;
+            font-size: 0.95rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 6px;
             color: var(--text-main);
         }
 
-        /* Globitos / Tarjetas Glassmorphism */
+        /* Tarjetas Glassmorphism */
         .glass-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -105,7 +106,7 @@
             transition: all 0.3s ease;
         }
 
-        /* Selector de Mes estilo Cápsula */
+        /* Navegador de Mes */
         .month-selector {
             display: flex;
             align-items: center;
@@ -121,20 +122,19 @@
             height: 40px;
             border-radius: 50%;
             cursor: pointer;
-            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: bold;
         }
 
         .month-title {
             font-weight: 800;
             font-size: 1.15rem;
             text-transform: capitalize;
-            letter-spacing: 0.5px;
         }
 
-        /* Resumen de Globitos */
+        /* Resumen de Totales */
         .summary-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -149,374 +149,11 @@
             border: 1px solid var(--card-border);
         }
 
-        .stat-bubble.total {
+        .stat-bubble.highlight {
             grid-column: span 2;
-            background: var(--green-glow);
-            border-color: var(--green-yes);
+            background: var(--accent-green-glow);
+            border-color: var(--accent-green);
         }
 
         .stat-label {
-            font-size: 0.72rem;
-            color: var(--text-sub);
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 800;
-        }
-
-        .stat-value.total-val {
-            color: var(--green-yes);
-            font-size: 1.9rem;
-        }
-
-        .price-config {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            margin-top: 6px;
-        }
-
-        .price-input {
-            width: 60px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            border-radius: 8px;
-            padding: 2px 6px;
-            text-align: center;
-            font-weight: 700;
-        }
-
-        /* Calendario */
-        .weekdays-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-weight: 800;
-            font-size: 0.8rem;
-            color: var(--text-sub);
-            margin-bottom: 12px;
-        }
-
-        .days-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-        }
-
-        .day-btn {
-            aspect-ratio: 1;
-            border-radius: 16px;
-            border: 1px solid var(--card-border);
-            background: var(--neutral-bg);
-            color: var(--text-main);
-            font-weight: 700;
-            font-size: 0.95rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .day-btn:active {
-            transform: scale(0.92);
-        }
-
-        .day-btn.empty {
-            background: transparent;
-            border: none;
-            cursor: default;
-        }
-
-        .day-btn.weekend {
-            opacity: 0.3;
-        }
-
-        .day-btn.yes {
-            background: var(--green-yes);
-            color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 4px 15px var(--green-glow);
-        }
-
-        .day-btn.no {
-            background: var(--red-no);
-            color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 15px var(--red-glow);
-        }
-
-        .day-status {
-            font-size: 0.6rem;
-            margin-top: 2px;
-            font-weight: 900;
-        }
-
-        /* Acciones */
-        .actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn-action {
-            flex: 1;
-            padding: 14px;
-            border-radius: 20px;
-            border: 1px solid var(--card-border);
-            font-weight: 800;
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            backdrop-filter: blur(20px);
-            box-shadow: var(--card-shadow);
-        }
-
-        .btn-whatsapp {
-            background: #25D366;
-            color: #000;
-        }
-
-        .btn-reset {
-            background: var(--neutral-bg);
-            color: var(--text-sub);
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <!-- Header con Cambiador de Tema -->
-    <div class="top-bar">
-        <h1 class="header-title">🍱 Comedor Olivia</h1>
-        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Oscuro</button>
-    </div>
-
-    <!-- Navegación de Mes -->
-    <div class="glass-card month-selector">
-        <button class="month-btn" onclick="changeMonth(-1)">‹</button>
-        <div class="month-title" id="monthTitle">-- ----</div>
-        <button class="month-btn" onclick="changeMonth(1)">›</button>
-    </div>
-
-    <!-- Resumen Económico -->
-    <div class="glass-card summary-grid">
-        <div class="stat-bubble">
-            <div class="stat-label">Días Asiste</div>
-            <div class="stat-value" id="countYes" style="color: var(--green-yes);">0</div>
-        </div>
-        <div class="stat-bubble">
-            <div class="stat-label">Días No Asiste</div>
-            <div class="stat-value" id="countNo" style="color: var(--red-no);">0</div>
-        </div>
-        <div class="stat-bubble total">
-            <div class="stat-label">Total Mes a Pagar</div>
-            <div class="stat-value total-val" id="totalAmount">0,00 €</div>
-            <div class="price-config">
-                <span>Precio/menú:</span>
-                <input type="number" id="priceInput" class="price-input" value="8.90" step="0.10" onchange="updatePrice(this.value)"> €
-            </div>
-        </div>
-    </div>
-
-    <!-- Calendario -->
-    <div class="glass-card">
-        <div class="weekdays-grid">
-            <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
-        </div>
-        <div class="days-grid" id="daysGrid"></div>
-    </div>
-
-    <!-- Acciones -->
-    <div class="actions">
-        <button class="btn-action btn-whatsapp" onclick="sendWhatsApp()">
-            💬 Enviar Resumen
-        </button>
-        <button class="btn-action btn-reset" onclick="resetMonth()">
-            🔄 Limpiar
-        </button>
-    </div>
-</div>
-
-<script>
-    let currentDate = new Date();
-    let pricePerMenu = 8.90;
-    let db = JSON.parse(localStorage.getItem('comedor_olivia_db')) || {};
-
-    // Control de Tema Claro / Oscuro
-    function initTheme() {
-        const savedTheme = localStorage.getItem('theme_preference') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        updateThemeBtn(savedTheme);
-    }
-
-    function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme_preference', newTheme);
-        updateThemeBtn(newTheme);
-    }
-
-    function updateThemeBtn(theme) {
-        document.getElementById('themeBtn').textContent = theme === 'dark' ? '🌙 Oscuro' : '☀️ Claro';
-    }
-
-    function getMonthKey() {
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        return `${year}-${month}`;
-    }
-
-    function initMonthData() {
-        const key = getMonthKey();
-        if (!db[key]) {
-            db[key] = { price: pricePerMenu, days: {} };
-        } else if (db[key].price) {
-            pricePerMenu = db[key].price;
-        }
-        document.getElementById('priceInput').value = pricePerMenu;
-        saveDB();
-    }
-
-    function saveDB() {
-        localStorage.setItem('comedor_olivia_db', JSON.stringify(db));
-    }
-
-    function render() {
-        initMonthData();
-        const key = getMonthKey();
-        const monthData = db[key].days;
-
-        const options = { month: 'long', year: 'numeric' };
-        document.getElementById('monthTitle').textContent = currentDate.toLocaleDateString('es-ES', options);
-
-        const grid = document.getElementById('daysGrid');
-        grid.innerHTML = '';
-
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-
-        const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
-        const totalDays = new Date(year, month + 1, 0).getDate();
-
-        for (let i = 0; i < firstDayIndex; i++) {
-            const emptyCell = document.createElement('div');
-            emptyCell.className = 'day-btn empty';
-            grid.appendChild(emptyCell);
-        }
-
-        let yesCount = 0;
-        let noCount = 0;
-
-        for (let day = 1; day <= totalDays; day++) {
-            const btn = document.createElement('button');
-            btn.className = 'day-btn';
-            
-            const dateObj = new Date(year, month, day);
-            const dayOfWeek = dateObj.getDay();
-            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
-
-            if (isWeekend) btn.classList.add('weekend');
-
-            const state = monthData[day];
-            let labelHtml = `<span>${day}</span>`;
-
-            if (state === 'yes') {
-                btn.classList.add('yes');
-                labelHtml += `<span class="day-status">SÍ</span>`;
-                yesCount++;
-            } else if (state === 'no') {
-                btn.classList.add('no');
-                labelHtml += `<span class="day-status">NO</span>`;
-                noCount++;
-            }
-
-            btn.innerHTML = labelHtml;
-            btn.onclick = () => toggleDay(day);
-            grid.appendChild(btn);
-        }
-
-        document.getElementById('countYes').textContent = yesCount;
-        document.getElementById('countNo').textContent = noCount;
-        
-        const totalAmount = (yesCount * pricePerMenu).toFixed(2);
-        document.getElementById('totalAmount').textContent = `${totalAmount.replace('.', ',')} €`;
-    }
-
-    function toggleDay(day) {
-        const key = getMonthKey();
-        const currentStates = db[key].days;
-
-        if (!currentStates[day]) {
-            currentStates[day] = 'yes';
-        } else if (currentStates[day] === 'yes') {
-            currentStates[day] = 'no';
-        } else {
-            delete currentStates[day];
-        }
-
-        saveDB();
-        render();
-    }
-
-    function changeMonth(offset) {
-        currentDate.setMonth(currentDate.getMonth() + offset);
-        render();
-    }
-
-    function updatePrice(val) {
-        pricePerMenu = parseFloat(val) || 0;
-        const key = getMonthKey();
-        db[key].price = pricePerMenu;
-        saveDB();
-        render();
-    }
-
-    function resetMonth() {
-        if (confirm('¿Quieres borrar las marcas de este mes?')) {
-            const key = getMonthKey();
-            db[key].days = {};
-            saveDB();
-            render();
-        }
-    }
-
-    function sendWhatsApp() {
-        const options = { month: 'long', year: 'numeric' };
-        const monthName = currentDate.toLocaleDateString('es-ES', options);
-        const yesCount = document.getElementById('countYes').textContent;
-        const totalAmount = document.getElementById('totalAmount').textContent;
-
-        const text = `🍱 *Comedor Olivia - ${monthName}*\n\n` +
-                     `✅ Días asistidos: *${yesCount}*\n` +
-                     `💰 Total a pagar: *${totalAmount}*`;
-
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-    }
-
-    initTheme();
-    render();
-</script>
-
-<!-- Registro automático del Service Worker Offline -->
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
-  }
-</script>
-
-</body>
-</html>
+            font-size: 0.
