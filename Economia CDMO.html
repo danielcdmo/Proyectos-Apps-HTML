@@ -1,22 +1,42 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Economía CDMO</title>
+    <title>Comedor Olivia</title>
     <style>
         :root {
-            --bg-grad: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --card-border: rgba(255, 255, 255, 0.1);
+            /* Tema Oscuro por defecto */
+            --bg-grad: linear-gradient(145deg, #0b1120 0%, #172554 100%);
+            --card-bg: rgba(30, 41, 59, 0.55);
+            --card-border: rgba(255, 255, 255, 0.15);
+            --card-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.37);
             --text-main: #f8fafc;
             --text-sub: #94a3b8;
-            --accent-green: #10b981;
-            --accent-orange: #f97316;
+            --green-yes: #10b981;
+            --green-glow: rgba(16, 185, 129, 0.3);
+            --red-no: #ef4444;
+            --red-glow: rgba(239, 68, 68, 0.3);
+            --neutral-bg: rgba(255, 255, 255, 0.06);
             --accent-blue: #3b82f6;
-            --neutral-bg: rgba(51, 65, 85, 0.5);
+        }
+
+        [data-theme="light"] {
+            /* Tema Claro Liquid Glass */
+            --bg-grad: linear-gradient(145deg, #e0f2fe 0%, #f0f9ff 100%);
+            --card-bg: rgba(255, 255, 255, 0.65);
+            --card-border: rgba(255, 255, 255, 0.8);
+            --card-shadow: 0 10px 30px 0 rgba(148, 163, 184, 0.25);
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --green-yes: #059669;
+            --green-glow: rgba(5, 150, 105, 0.2);
+            --red-no: #dc2626;
+            --red-glow: rgba(220, 38, 38, 0.2);
+            --neutral-bg: rgba(0, 0, 0, 0.04);
+            --accent-blue: #2563eb;
         }
 
         body {
@@ -29,270 +49,295 @@
             box-sizing: border-box;
             display: flex;
             justify-content: center;
+            transition: background 0.4s ease, color 0.4s ease;
         }
 
         .container {
-            max-width: 440px;
+            max-width: 420px;
             width: 100%;
             display: flex;
             flex-direction: column;
             gap: 16px;
-            padding-bottom: 30px;
+            padding-bottom: 20px;
         }
 
-        .header {
-            text-align: center;
+        /* Header con Toggle Claro/Oscuro */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        .header h1 {
+
+        .header-title {
             font-size: 1.5rem;
             font-weight: 800;
-            margin: 0 0 4px 0;
-            background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+            margin: 0;
+            background: linear-gradient(135deg, var(--green-yes) 0%, var(--accent-blue) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .header p {
-            font-size: 0.8rem;
-            color: var(--text-sub);
-            margin: 0;
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            padding: 6px 12px;
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--card-shadow);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-main);
         }
 
-        /* Navegador de Mes */
+        /* Globitos / Tarjetas Glassmorphism */
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 16px;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+
+        /* Selector de Mes estilo Cápsula */
         .month-selector {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 8px 16px;
-            backdrop-filter: blur(12px);
         }
+
         .month-btn {
             background: var(--neutral-bg);
-            border: none;
+            border: 1px solid var(--card-border);
             color: var(--text-main);
             font-size: 1.2rem;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             cursor: pointer;
-        }
-        .month-title {
-            font-weight: 700;
-            font-size: 1.05rem;
-            text-transform: capitalize;
-        }
-
-        /* Summary Dashboard */
-        .summary-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 16px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            backdrop-filter: blur(12px);
-        }
-        .stat-box {
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 12px;
-            padding: 10px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .stat-box.full {
-            grid-column: span 2;
-            background: rgba(249, 115, 22, 0.12);
-            border: 1px solid rgba(249, 115, 22, 0.3);
-        }
-        .stat-label {
-            font-size: 0.7rem;
-            color: var(--text-sub);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
-        }
-        .stat-val {
-            font-size: 1.3rem;
-            font-weight: 800;
-        }
-        .stat-val.pending { color: var(--accent-orange); font-size: 1.7rem; }
-        .stat-val.paid { color: var(--accent-green); }
-
-        /* Categorías y Listas */
-        .category-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 18px;
-            padding: 14px;
-            backdrop-filter: blur(12px);
-        }
-        .category-title {
-            font-size: 0.95rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #60a5fa;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .item-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            gap: 8px;
-        }
-        .item-row:last-child {
-            border-bottom: none;
-        }
-
-        .item-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-
-        .checkbox {
-            width: 24px;
-            height: 24px;
-            border-radius: 7px;
-            border: 2px solid var(--text-sub);
+            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            font-size: 0.85rem;
+        }
+
+        .month-title {
             font-weight: 800;
-            transition: all 0.15s ease;
-            flex-shrink: 0;
-        }
-        .checkbox.checked {
-            background: var(--accent-green);
-            border-color: var(--accent-green);
-            color: #000;
+            font-size: 1.15rem;
+            text-transform: capitalize;
+            letter-spacing: 0.5px;
         }
 
-        .item-label {
-            font-size: 0.88rem;
-            font-weight: 600;
-            line-height: 1.2;
+        /* Resumen de Globitos */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
-        .item-label.done {
-            text-decoration: line-through;
+
+        .stat-bubble {
+            background: var(--neutral-bg);
+            border-radius: 18px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--card-border);
+        }
+
+        .stat-bubble.total {
+            grid-column: span 2;
+            background: var(--green-glow);
+            border-color: var(--green-yes);
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
             color: var(--text-sub);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
         }
 
-        .amount-container {
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .stat-value.total-val {
+            color: var(--green-yes);
+            font-size: 1.9rem;
+        }
+
+        .price-config {
             display: flex;
             align-items: center;
-            gap: 4px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            padding: 3px 6px;
-        }
-        .amount-input {
-            width: 62px;
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-align: right;
-            outline: none;
-        }
-        .currency {
-            font-size: 0.8rem;
-            color: var(--text-sub);
-            font-weight: 700;
-        }
-
-        /* Botones de acción */
-        .btn-add {
-            background: rgba(59, 130, 246, 0.15);
-            border: 1px dashed rgba(59, 130, 246, 0.4);
-            color: var(--accent-blue);
-            width: 100%;
-            padding: 10px;
-            border-radius: 12px;
-            font-weight: 700;
+            justify-content: center;
+            gap: 8px;
             font-size: 0.85rem;
-            cursor: pointer;
+            color: var(--text-sub);
             margin-top: 6px;
         }
 
+        .price-input {
+            width: 60px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 8px;
+            padding: 2px 6px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        /* Calendario */
+        .weekdays-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-bottom: 12px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day-btn {
+            aspect-ratio: 1;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            background: var(--neutral-bg);
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .day-btn:active {
+            transform: scale(0.92);
+        }
+
+        .day-btn.empty {
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+
+        .day-btn.weekend {
+            opacity: 0.3;
+        }
+
+        .day-btn.yes {
+            background: var(--green-yes);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 15px var(--green-glow);
+        }
+
+        .day-btn.no {
+            background: var(--red-no);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px var(--red-glow);
+        }
+
+        .day-status {
+            font-size: 0.6rem;
+            margin-top: 2px;
+            font-weight: 900;
+        }
+
+        /* Acciones */
         .actions {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 12px;
         }
+
         .btn-action {
             flex: 1;
             padding: 14px;
-            border-radius: 16px;
-            border: none;
-            font-weight: 700;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            font-weight: 800;
             font-size: 0.9rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--card-shadow);
         }
+
         .btn-whatsapp {
             background: #25D366;
             color: #000;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);
         }
+
         .btn-reset {
             background: var(--neutral-bg);
             color: var(--text-sub);
-            border: 1px solid var(--card-border);
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1>📊 Economía CDMO</h1>
-        <p>Checklist & Control de Gastos Mensuales</p>
+    <!-- Header con Cambiador de Tema -->
+    <div class="top-bar">
+        <h1 class="header-title">🍱 Comedor Olivia</h1>
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Oscuro</button>
     </div>
 
-    <!-- Navegador de Mes -->
-    <div class="month-selector">
+    <!-- Navegación de Mes -->
+    <div class="glass-card month-selector">
         <button class="month-btn" onclick="changeMonth(-1)">‹</button>
         <div class="month-title" id="monthTitle">-- ----</div>
         <button class="month-btn" onclick="changeMonth(1)">›</button>
     </div>
 
-    <!-- Resumen del Mes -->
-    <div class="summary-card">
-        <div class="stat-box">
-            <div class="stat-label">Total Mes (Claudia)</div>
-            <div class="stat-val" id="totalMonth">0,00 €</div>
+    <!-- Resumen Económico -->
+    <div class="glass-card summary-grid">
+        <div class="stat-bubble">
+            <div class="stat-label">Días Asiste</div>
+            <div class="stat-value" id="countYes" style="color: var(--green-yes);">0</div>
         </div>
-        <div class="stat-box">
-            <div class="stat-label">Pagado / OK</div>
-            <div class="stat-val paid" id="totalPaid">0,00 €</div>
+        <div class="stat-bubble">
+            <div class="stat-label">Días No Asiste</div>
+            <div class="stat-value" id="countNo" style="color: var(--red-no);">0</div>
         </div>
-        <div class="stat-box full">
-            <div class="stat-label">Pendiente por Pagar (Claudia ➔ Daniel)</div>
-            <div class="stat-val pending" id="totalPending">0,00 €</div>
+        <div class="stat-bubble total">
+            <div class="stat-label">Total Mes a Pagar</div>
+            <div class="stat-value total-val" id="totalAmount">0,00 €</div>
+            <div class="price-config">
+                <span>Precio/menú:</span>
+                <input type="number" id="priceInput" class="price-input" value="8.90" step="0.10" onchange="updatePrice(this.value)"> €
+            </div>
         </div>
     </div>
 
-    <!-- Contenedor dinámico de categorías -->
-    <div id="categoriesContainer"></div>
-
-    <!-- Botón Gasto Extra -->
-    <button class="btn-add" onclick="addExtraItem()">+ Añadir Concepto Extra</button>
+    <!-- Calendario -->
+    <div class="glass-card">
+        <div class="weekdays-grid">
+            <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
+        </div>
+        <div class="days-grid" id="daysGrid"></div>
+    </div>
 
     <!-- Acciones -->
     <div class="actions">
@@ -300,43 +345,34 @@
             💬 Enviar Resumen
         </button>
         <button class="btn-action btn-reset" onclick="resetMonth()">
-            🔄 Reiniciar
+            🔄 Limpiar
         </button>
     </div>
 </div>
 
 <script>
     let currentDate = new Date();
-    let db = JSON.parse(localStorage.getItem('economia_cdmo_db')) || {};
+    let pricePerMenu = 8.90;
+    let db = JSON.parse(localStorage.getItem('comedor_olivia_db')) || {};
 
-    // Plantilla de conceptos por defecto
-    const DEFAULT_ITEMS = [
-        // Vivienda y suministros
-        { id: 'v_alquiler', cat: '🏠 Vivienda y Suministros', label: 'Alquiler Casa CDMO', amount: 390.00, isMoney: true },
-        { id: 'v_fibra', cat: '🏠 Vivienda y Suministros', label: 'Telefonía + Fibra', amount: 35.00, isMoney: true },
-        { id: 'v_alarma', cat: '🏠 Vivienda y Suministros', label: 'Alarma Securitas', amount: 30.00, isMoney: true },
-        { id: 'v_aquablue', cat: '🏠 Vivienda y Suministros', label: 'Aquablue', amount: 15.00, isMoney: true },
-        { id: 'v_luz', cat: '🏠 Vivienda y Suministros', label: 'Factura de Luz (Parte Claudia)', amount: 0.00, isMoney: true },
-        { id: 'v_agua', cat: '🏠 Vivienda y Suministros', label: 'Factura de Agua (Parte Claudia)', amount: 0.00, isMoney: true },
-        { id: 'v_impuestos', cat: '🏠 Vivienda y Suministros', label: 'Tasa Residuos / Impuestos', amount: 0.00, isMoney: true },
+    // Control de Tema Claro / Oscuro
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme_preference') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeBtn(savedTheme);
+    }
 
-        // Gastos Olivia
-        { id: 'o_judo', cat: '👧 Gastos Olivia', label: 'Judo Olivia (Parte Claudia)', amount: 10.00, isMoney: true },
-        { id: 'o_colegio', cat: '👧 Gastos Olivia', label: 'Colegio NSDP / Comedor / Piscina', amount: 0.00, isMoney: true },
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme_preference', newTheme);
+        updateThemeBtn(newTheme);
+    }
 
-        // Suscripciones
-        { id: 's_psplus', cat: '📺 Suscripciones y Servicios', label: 'PS Plus (Parte Claudia)', amount: 20.00, isMoney: true },
-
-        // Seguros
-        { id: 's_sanitas', cat: '🛡️ Seguros', label: 'Seguro Sanitas Daniel (Claudia)', amount: 50.00, isMoney: true },
-        { id: 's_hogar', cat: '🛡️ Seguros', label: 'Seguro Hogar (110€ si procede)', amount: 0.00, isMoney: true },
-
-        // Administración & Tareas
-        { id: 'a_pdf', cat: '📁 Administración & Cierre', label: 'PDFs y extractos guardados', amount: 0.00, isMoney: false },
-        { id: 'a_compras', cat: '📁 Administración & Cierre', label: 'Gastos y compras archivadas', amount: 0.00, isMoney: false },
-        { id: 'a_comedor', cat: '📁 Administración & Cierre', label: 'Reset comedor realizado & Numbers', amount: 0.00, isMoney: false },
-        { id: 'a_cierre', cat: '📁 Administración & Cierre', label: 'Mes cerrado y cuadrado 💰📊', amount: 0.00, isMoney: false }
-    ];
+    function updateThemeBtn(theme) {
+        document.getElementById('themeBtn').textContent = theme === 'dark' ? '🌙 Oscuro' : '☀️ Claro';
+    }
 
     function getMonthKey() {
         const year = currentDate.getFullYear();
@@ -347,96 +383,91 @@
     function initMonthData() {
         const key = getMonthKey();
         if (!db[key]) {
-            db[key] = DEFAULT_ITEMS.map(item => ({ ...item, checked: false }));
-            saveDB();
+            db[key] = { price: pricePerMenu, days: {} };
+        } else if (db[key].price) {
+            pricePerMenu = db[key].price;
         }
+        document.getElementById('priceInput').value = pricePerMenu;
+        saveDB();
     }
 
     function saveDB() {
-        localStorage.setItem('economia_cdmo_db', JSON.stringify(db));
+        localStorage.setItem('comedor_olivia_db', JSON.stringify(db));
     }
 
     function render() {
         initMonthData();
         const key = getMonthKey();
-        const items = db[key];
+        const monthData = db[key].days;
 
         const options = { month: 'long', year: 'numeric' };
         document.getElementById('monthTitle').textContent = currentDate.toLocaleDateString('es-ES', options);
 
-        const categories = {};
-        items.forEach((item, index) => {
-            if (!categories[item.cat]) categories[item.cat] = [];
-            categories[item.cat].push({ ...item, originalIndex: index });
-        });
+        const grid = document.getElementById('daysGrid');
+        grid.innerHTML = '';
 
-        const container = document.getElementById('categoriesContainer');
-        container.innerHTML = '';
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
 
-        let totalMonth = 0;
-        let totalPaid = 0;
-        let totalPending = 0;
+        const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
+        const totalDays = new Date(year, month + 1, 0).getDate();
 
-        for (const [catName, catItems] of Object.entries(categories)) {
-            const card = document.createElement('div');
-            card.className = 'category-card';
-            card.innerHTML = `<div class="category-title">${catName}</div>`;
-
-            catItems.forEach(item => {
-                const amt = parseFloat(item.amount) || 0;
-                
-                if (item.isMoney) {
-                    totalMonth += amt;
-                    if (item.checked) {
-                        totalPaid += amt;
-                    } else {
-                        totalPending += amt;
-                    }
-                }
-
-                const row = document.createElement('div');
-                row.className = 'item-row';
-
-                row.innerHTML = `
-                    <div class="item-left" onclick="toggleCheck(${item.originalIndex})">
-                        <div class="checkbox ${item.checked ? 'checked' : ''}">
-                            ${item.checked ? '✓' : ''}
-                        </div>
-                        <div class="item-label ${item.checked ? 'done' : ''}">${item.label}</div>
-                    </div>
-                    ${item.isMoney ? `
-                        <div class="amount-container">
-                            <input type="number" step="0.5" class="amount-input" value="${item.amount}" 
-                                   onchange="updateAmount(${item.originalIndex}, this.value)">
-                            <span class="currency">€</span>
-                        </div>
-                    ` : ''}
-                `;
-                card.appendChild(row);
-            });
-
-            container.appendChild(card);
+        for (let i = 0; i < firstDayIndex; i++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.className = 'day-btn empty';
+            grid.appendChild(emptyCell);
         }
 
-        document.getElementById('totalMonth').textContent = formatMoney(totalMonth);
-        document.getElementById('totalPaid').textContent = formatMoney(totalPaid);
-        document.getElementById('totalPending').textContent = formatMoney(totalPending);
+        let yesCount = 0;
+        let noCount = 0;
+
+        for (let day = 1; day <= totalDays; day++) {
+            const btn = document.createElement('button');
+            btn.className = 'day-btn';
+            
+            const dateObj = new Date(year, month, day);
+            const dayOfWeek = dateObj.getDay();
+            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+
+            if (isWeekend) btn.classList.add('weekend');
+
+            const state = monthData[day];
+            let labelHtml = `<span>${day}</span>`;
+
+            if (state === 'yes') {
+                btn.classList.add('yes');
+                labelHtml += `<span class="day-status">SÍ</span>`;
+                yesCount++;
+            } else if (state === 'no') {
+                btn.classList.add('no');
+                labelHtml += `<span class="day-status">NO</span>`;
+                noCount++;
+            }
+
+            btn.innerHTML = labelHtml;
+            btn.onclick = () => toggleDay(day);
+            grid.appendChild(btn);
+        }
+
+        document.getElementById('countYes').textContent = yesCount;
+        document.getElementById('countNo').textContent = noCount;
+        
+        const totalAmount = (yesCount * pricePerMenu).toFixed(2);
+        document.getElementById('totalAmount').textContent = `${totalAmount.replace('.', ',')} €`;
     }
 
-    function formatMoney(val) {
-        return val.toFixed(2).replace('.', ',') + ' €';
-    }
-
-    function toggleCheck(index) {
+    function toggleDay(day) {
         const key = getMonthKey();
-        db[key][index].checked = !db[key][index].checked;
-        saveDB();
-        render();
-    }
+        const currentStates = db[key].days;
 
-    function updateAmount(index, val) {
-        const key = getMonthKey();
-        db[key][index].amount = parseFloat(val) || 0;
+        if (!currentStates[day]) {
+            currentStates[day] = 'yes';
+        } else if (currentStates[day] === 'yes') {
+            currentStates[day] = 'no';
+        } else {
+            delete currentStates[day];
+        }
+
         saveDB();
         render();
     }
@@ -446,84 +477,41 @@
         render();
     }
 
-    function addExtraItem() {
-        const label = prompt('Nombre del gasto o tarea extra:');
-        if (!label) return;
-        const amountStr = prompt('Importe a cargo de Claudia (€) [Deja 0 si es solo tarea]:', '0');
-        const amount = parseFloat(amountStr) || 0;
-
+    function updatePrice(val) {
+        pricePerMenu = parseFloat(val) || 0;
         const key = getMonthKey();
-        db[key].push({
-            id: 'extra_' + Date.now(),
-            cat: '➕ Gastos Extra / Varios',
-            label: label,
-            amount: amount,
-            isMoney: amount > 0,
-            checked: false
-        });
-
+        db[key].price = pricePerMenu;
         saveDB();
         render();
     }
 
     function resetMonth() {
-        if (confirm('¿Restablecer esta checklist al estado inicial del mes?')) {
+        if (confirm('¿Quieres borrar las marcas de este mes?')) {
             const key = getMonthKey();
-            delete db[key];
+            db[key].days = {};
+            saveDB();
             render();
         }
     }
 
     function sendWhatsApp() {
-        const key = getMonthKey();
-        const items = db[key];
         const options = { month: 'long', year: 'numeric' };
         const monthName = currentDate.toLocaleDateString('es-ES', options);
+        const yesCount = document.getElementById('countYes').textContent;
+        const totalAmount = document.getElementById('totalAmount').textContent;
 
-        let okList = [];
-        let pendingList = [];
-        let pendingTotal = 0;
-        let monthTotal = 0;
+        const text = `🍱 *Comedor Olivia - ${monthName}*\n\n` +
+                     `✅ Días asistidos: *${yesCount}*\n` +
+                     `💰 Total a pagar: *${totalAmount}*`;
 
-        items.forEach(item => {
-            const amt = parseFloat(item.amount) || 0;
-            if (item.isMoney && amt > 0) {
-                monthTotal += amt;
-                if (item.checked) {
-                    okList.push(`  • ${item.label}: *${formatMoney(amt)}*`);
-                } else {
-                    pendingList.push(`  • ${item.label}: *${formatMoney(amt)}*`);
-                    pendingTotal += amt;
-                }
-            } else if (!item.isMoney) {
-                if (item.checked) {
-                    okList.push(`  • ${item.label}`);
-                } else {
-                    pendingList.push(`  • ${item.label}`);
-                }
-            }
-        });
-
-        let msg = `📊 *Economía CDMO - ${monthName}*\n\n`;
-
-        if (okList.length > 0) {
-            msg += `✅ *PAGADO / COMPROBADO:*\n${okList.join('\n')}\n\n`;
-        }
-
-        if (pendingList.length > 0) {
-            msg += `⏳ *PENDIENTE:*\n${pendingList.join('\n')}\n\n`;
-        }
-
-        msg += `───────────────\n`;
-        msg += `💰 *Total Mes Claudia:* ${formatMoney(monthTotal)}\n`;
-        msg += `⚠️ *PENDIENTE DE PAGO:* *${formatMoney(pendingTotal)}*`;
-
-        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
 
+    initTheme();
     render();
 </script>
-    
+
+<!-- Registro automático del Service Worker Offline -->
 <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js');
