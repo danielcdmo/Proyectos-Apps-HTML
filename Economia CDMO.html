@@ -90,7 +90,7 @@
         .item-amount-input { width: 75px; background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 10px; padding: 6px 6px; text-align: right; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
 
         .add-extra-form { display: flex; gap: 6px; margin-top: 10px; width: 100%; }
-        .input-extra { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 12px; padding: 8px; font-size: 0.82rem; font-weight: 600; min-width: 0; }
+        .input-extra { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 12px; padding: 8px; font-size: 0.82rem; font-weight: 600; min-width: 0; width: 100%; }
         .input-extra.name { flex: 1.8; }
         .input-extra.amount { flex: 1; text-align: right; }
         .btn-add { background: var(--accent-blue); color: #fff; border: none; border-radius: 12px; padding: 0 12px; font-weight: 800; cursor: pointer; flex-shrink: 0; }
@@ -105,11 +105,28 @@
         .btn-pdf { background: var(--accent-purple); color: #fff; min-width: 45%; }
         .btn-reset { background: var(--neutral-bg); color: var(--text-sub); width: 100%; }
 
+        /* Modal Settings */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 100;
+            padding: 16px; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content {
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 24px; padding: 24px; width: 100%; max-width: 340px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6); transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .form-label { font-size: 0.8rem; font-weight: 700; color: var(--text-sub); }
+
         /* MODO IMPRESIÓN / PDF */
         @media print {
             body { background: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .top-bar, .month-selector, .actions { display: none !important; }
-            #addExtraCard { display: none !important; } /* Ocultar bloque añadir extra */
+            .top-bar, .month-selector, .actions, .modal-overlay { display: none !important; }
+            #addExtraCard { display: none !important; }
             .glass-card { background: none !important; border: 1px solid #ccc !important; box-shadow: none !important; margin-bottom: 20px; break-inside: avoid; color: #000 !important; }
             .stat-bubble { background: #f4f4f5 !important; border: 1px solid #ccc !important; }
             .stat-bubble.highlight { background: rgba(48, 209, 88, 0.1) !important; border-color: #30d158 !important; }
@@ -130,7 +147,8 @@
     <div class="top-bar">
         <h1 class="header-title">📊 Economía CDMO</h1>
         <div class="bar-actions">
-            <button class="notif-btn" onclick="enableNotifications()" id="notifBtn">🔔 Avisos</button>
+            <!-- Botón que abre el menú de avisos -->
+            <button class="notif-btn" onclick="openConfig()" id="notifBtn">⚙️ Avisos</button>
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         </div>
     </div>
@@ -176,6 +194,30 @@
     </div>
 </div>
 
+<!-- Modal Configuración de Avisos (Nativo iOS) -->
+<div class="modal-overlay" id="configModal">
+    <div class="modal-content">
+        <h3 style="margin-top:0; color:var(--accent-blue); font-weight:800;">⚙️ Configurar Aviso</h3>
+        <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom: 16px;">
+            Añade un aviso inteligente a tu iPhone. Se repetirá cada mes de forma 100% nativa.
+        </p>
+        
+        <div class="form-group">
+            <label class="form-label">¿Qué día del mes?</label>
+            <input type="number" id="cfgDay" class="input-extra" min="1" max="31" value="28">
+        </div>
+        <div class="form-group">
+            <label class="form-label">¿A qué hora?</label>
+            <input type="time" id="cfgTime" class="input-extra" value="22:00">
+        </div>
+
+        <div class="actions" style="margin-top:20px;">
+            <button class="btn-action" style="background:var(--accent-blue); color:#fff;" onclick="generateICS()">🗓️ Crear en iOS</button>
+            <button class="btn-action" style="background:var(--neutral-bg); color:var(--text-main);" onclick="closeConfig()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let currentDate = new Date();
     const DEFAULT_ITEMS = [
@@ -206,37 +248,87 @@
         document.getElementById('themeBtn').textContent = newTheme === 'dark' ? '🌙' : '☀️';
     }
 
-    function checkNotificationStatus() {
-        if ('Notification' in window && Notification.permission === 'granted') {
-            const btn = document.getElementById('notifBtn');
-            if(btn) {
-                btn.textContent = '🔔 Activo';
-                btn.style.color = 'var(--accent-green)';
-            }
+    /* Modal Controls */
+    function openConfig() {
+        document.getElementById('configModal').classList.add('active');
+        
+        // Recuperar preferencias previas si existen
+        const savedDay = localStorage.getItem('eco_alert_day');
+        const savedTime = localStorage.getItem('eco_alert_time');
+        if(savedDay) document.getElementById('cfgDay').value = savedDay;
+        if(savedTime) document.getElementById('cfgTime').value = savedTime;
+    }
+    
+    function closeConfig() {
+        document.getElementById('configModal').classList.remove('active');
+    }
+
+    /* Sistema Nativo iOS (.ics) */
+    function generateICS() {
+        const day = document.getElementById('cfgDay').value;
+        const time = document.getElementById('cfgTime').value; // Ej: "22:00"
+        
+        // Guardar para próxima vez
+        localStorage.setItem('eco_alert_day', day);
+        localStorage.setItem('eco_alert_time', time);
+        
+        // Cambiar botón a verde visualmente
+        const btn = document.getElementById('notifBtn');
+        btn.textContent = '⚙️ Día ' + day;
+        btn.style.color = 'var(--accent-green)';
+        
+        const [hour, minute] = time.split(':');
+        
+        let now = new Date();
+        let year = now.getFullYear();
+        let month = now.getMonth() + 1;
+        
+        // Si el día ya ha pasado este mes, iniciar el aviso el mes que viene
+        if (now.getDate() > day) {
+            month++;
+            if (month > 12) { month = 1; year++; }
         }
+
+        const mStr = String(month).padStart(2, '0');
+        const dStr = String(day).padStart(2, '0');
+        const dtstart = `${year}${mStr}${dStr}T${hour}${minute}00`;
+
+        // Crear evento de calendario repetitivo mensual
+        const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//CDMO//Economia//ES
+BEGIN:VEVENT
+SUMMARY:📊 Revisión de Economía CDMO
+DESCRIPTION:CHECKLIST MENSUAL ECONOMÍA FAMILIAR CASA DE CDMO.
+RRULE:FREQ=MONTHLY;BYMONTHDAY=${day}
+DTSTART;TZID=Europe/Madrid:${dtstart}
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Checklist Mensual
+TRIGGER:-PT0M
+END:VALARM
+END:VEVENT
+END:VCALENDAR`;
+
+        const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'economia_aviso.ics');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        closeConfig();
     }
 
-    function enableNotifications() {
-        if (!('Notification' in window)) return alert('Notificaciones no soportadas.');
-        Notification.requestPermission().then(perm => {
-            if (perm === 'granted') {
-                document.getElementById('notifBtn').textContent = '🔔 Activo';
-                document.getElementById('notifBtn').style.color = 'var(--accent-green)';
-                scheduleMonthlyNotification();
-                alert('¡Avisos activados! Te avisaré cada día 28 a las 22:00h:\n\n"CHECKLIST MENSUAL ECONOMÍA FAMILIAR CASA DE CDMO"');
-            }
-        });
-    }
-
-    function scheduleMonthlyNotification() {
-        if (Notification.permission === 'granted' && navigator.serviceWorker) {
-            const now = new Date();
-            if (now.getDate() === 28 && now.getHours() === 22) {
-                new Notification('📊 Economía CDMO', {
-                    body: 'CHECKLIST MENSUAL ECONOMÍA FAMILIAR CASA DE CDMO',
-                    icon: 'https://danielcdmo.github.io/Proyectos-Apps-HTML/favicon.png'
-                });
-            }
+    /* Al abrir la app, comprobar si ya configuraste un aviso */
+    function checkConfigStatus() {
+        const savedDay = localStorage.getItem('eco_alert_day');
+        if(savedDay) {
+            const btn = document.getElementById('notifBtn');
+            btn.textContent = '⚙️ Día ' + savedDay;
+            btn.style.color = 'var(--accent-green)';
         }
     }
 
@@ -355,7 +447,7 @@
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
 
-    initTheme(); checkNotificationStatus(); render(); scheduleMonthlyNotification();
+    initTheme(); checkConfigStatus(); render();
 </script>
 <script> if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); } </script>
 </body>
