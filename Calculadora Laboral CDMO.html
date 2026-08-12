@@ -10,7 +10,6 @@
         * { box-sizing: border-box; }
 
         :root {
-            /* Modo Oscuro OLED Liquid Glass */
             --bg-grad: linear-gradient(180deg, #000000 0%, #0f172a 100%);
             --card-bg: rgba(30, 41, 59, 0.65);
             --card-border: rgba(255, 255, 255, 0.12);
@@ -27,7 +26,6 @@
         }
 
         [data-theme="light"] {
-            /* Modo Claro Liquid Glass */
             --bg-grad: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
             --card-bg: rgba(255, 255, 255, 0.8);
             --card-border: rgba(255, 255, 255, 0.9);
@@ -45,8 +43,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, sans-serif;
-            background: var(--bg-grad);
-            color: var(--text-main);
+            background: var(--bg-grad); color: var(--text-main);
             margin: 0; padding: 16px; min-height: 100vh;
             display: flex; justify-content: center;
             transition: background 0.4s ease, color 0.4s ease;
@@ -66,32 +63,28 @@
         .theme-toggle, .notif-btn {
             background: var(--card-bg); border: 1px solid var(--card-border);
             border-radius: 50px; padding: 6px 12px; cursor: pointer;
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            box-shadow: var(--card-shadow); font-size: 0.82rem; font-weight: 700;
-            display: flex; align-items: center; gap: 4px; color: var(--text-main); flex-shrink: 0;
+            backdrop-filter: blur(20px); box-shadow: var(--card-shadow);
+            font-size: 0.82rem; font-weight: 700; color: var(--text-main);
+            display: flex; align-items: center; gap: 4px; flex-shrink: 0;
         }
 
         /* Nav Pestañas */
         .tab-nav {
             display: flex; background: var(--card-bg); border: 1px solid var(--card-border);
             border-radius: 18px; padding: 4px; gap: 4px; backdrop-filter: blur(20px);
-            box-shadow: var(--card-shadow);
         }
         .tab-btn {
             flex: 1; padding: 10px 4px; border: none; background: transparent;
             color: var(--text-sub); font-weight: 700; font-size: 0.78rem; border-radius: 14px;
             cursor: pointer; transition: all 0.25s ease; text-align: center;
         }
-        .tab-btn.active {
-            background: var(--accent-blue); color: #ffffff; box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
-        }
+        .tab-btn.active { background: var(--accent-blue); color: #ffffff; box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3); }
 
-        /* Tarjetas Glassmorphism */
+        /* Tarjetas */
         .glass-card {
             background: var(--card-bg); border: 1px solid var(--card-border);
             border-radius: 24px; padding: 16px; backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px); box-shadow: var(--card-shadow);
-            transition: all 0.3s ease; width: 100%;
+            box-shadow: var(--card-shadow); width: 100%; margin-bottom: 14px;
         }
 
         .card-title {
@@ -113,7 +106,7 @@
         .form-row { display: flex; gap: 10px; }
         .form-row .form-group { flex: 1; }
 
-        /* Resumen de Resultados */
+        /* Resultados */
         .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .res-bubble {
             background: var(--neutral-bg); border-radius: 16px; padding: 10px;
@@ -128,33 +121,47 @@
         .breakdown-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--card-border); }
         .breakdown-item:last-child { border-bottom: none; }
 
-        /* Botones de Acción */
-        .actions { display: flex; gap: 12px; margin-top: 8px; }
+        /* Botones Acción */
+        .actions { display: flex; gap: 8px; margin-top: 8px; }
         .btn-action {
-            flex: 1; padding: 14px; border-radius: 20px; border: 1px solid var(--card-border);
-            font-weight: 800; font-size: 0.88rem; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; gap: 6px; box-shadow: var(--card-shadow);
+            flex: 1; padding: 12px 8px; border-radius: 16px; border: 1px solid var(--card-border);
+            font-weight: 800; font-size: 0.82rem; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; gap: 6px;
         }
         .btn-whatsapp { background: #25D366; color: #000; }
         .btn-save { background: var(--accent-blue); color: #fff; }
+        .btn-pdf { background: var(--accent-purple); color: #fff; }
 
-        .tab-content { display: none; flex-direction: column; gap: 14px; }
+        .tab-content { display: none; flex-direction: column; }
         .tab-content.active { display: flex; }
+
+        /* MODO IMPRESIÓN / PDF (Oculta botones y fondos) */
+        @media print {
+            body { background: #ffffff !important; color: #000000 !important; }
+            .top-bar, .tab-nav, .actions, .theme-toggle, .notif-btn { display: none !important; }
+            .tab-content { display: none; }
+            .tab-content.active { display: block; }
+            .glass-card {
+                background: none !important; border: 1px solid #ccc !important;
+                box-shadow: none !important; color: #000000 !important; break-inside: avoid;
+            }
+            .input-text, .select-custom { background: none !important; color: #000 !important; border: 1px solid #aaa !important; }
+            .res-bubble { background: #f9f9f9 !important; border: 1px solid #ddd !important; }
+            .res-val.green, #finIndemnizacionVal, .card-title { color: #000 !important; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Top Bar -->
     <div class="top-bar">
         <h1 class="header-title">💼 Laboral CDMO 2026</h1>
         <div class="bar-actions">
-            <button class="notif-btn" onclick="enableNotifications()" id="notifBtn">🔔 Avisos 25h</button>
+            <button class="notif-btn" onclick="enableNotifications()" id="notifBtn">🔔 Avisos</button>
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         </div>
     </div>
 
-    <!-- Navegación por pestañas -->
     <div class="tab-nav">
         <button class="tab-btn active" id="btn_tabNomina" onclick="setTab('tabNomina')">📄 Nómina</button>
         <button class="tab-btn" id="btn_tabEmbargo" onclick="setTab('tabEmbargo')">⚖️ Embargo</button>
@@ -166,12 +173,10 @@
     <div class="tab-content active" id="tabNomina">
         <div class="glass-card">
             <div class="card-title">🔍 Verificador de Nómina (2026)</div>
-            
             <div class="form-group">
                 <label class="form-label">Salario Bruto Mensual (€)</label>
                 <input type="number" id="nomBruto" class="input-text" value="2000" step="50" oninput="calcNomina()">
             </div>
-
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Nº Pagas</label>
@@ -185,7 +190,6 @@
                     <input type="number" id="nomIrpf" class="input-text" value="12.0" step="0.5" oninput="calcNomina()">
                 </div>
             </div>
-
             <div class="form-group">
                 <label class="form-label">Tipo de Contrato</label>
                 <select id="nomContrato" class="select-custom" onchange="calcNomina()">
@@ -196,43 +200,23 @@
         </div>
 
         <div class="glass-card">
-            <div class="card-title">📊 Resultado & Deducciones SS 2026</div>
-            
+            <div class="card-title">📊 Resultado & Deducciones SS</div>
             <div class="breakdown-list">
-                <div class="breakdown-item">
-                    <span>Contingencias Comunes (4.70%):</span>
-                    <strong id="nomCcVal">0,00 €</strong>
-                </div>
-                <div class="breakdown-item">
-                    <span>Desempleo (1.55% / 1.60%):</span>
-                    <strong id="nomDesempleoVal">0,00 €</strong>
-                </div>
-                <div class="breakdown-item">
-                    <span>Formación Profesional (0.10%):</span>
-                    <strong id="nomFpVal">0,00 €</strong>
-                </div>
-                <div class="breakdown-item">
-                    <span>MEI 2026 (0.15%):</span>
-                    <strong id="nomMeiVal">0,00 €</strong>
-                </div>
-                <div class="breakdown-item" style="color: var(--accent-orange); font-weight: 800;">
-                    <span>Total Deducciones SS (6.50%):</span>
-                    <strong id="nomTotalSsVal">0,00 €</strong>
-                </div>
-                <div class="breakdown-item" style="color: var(--accent-purple); font-weight: 800;">
-                    <span>Retención IRPF Aplicada:</span>
-                    <strong id="nomTotalIrpfVal">0,00 €</strong>
-                </div>
+                <div class="breakdown-item"><span>Contingencias Comunes (4.70%):</span><strong id="nomCcVal">0,00 €</strong></div>
+                <div class="breakdown-item"><span>Desempleo (1.55% / 1.60%):</span><strong id="nomDesempleoVal">0,00 €</strong></div>
+                <div class="breakdown-item"><span>Formación (0.10%):</span><strong id="nomFpVal">0,00 €</strong></div>
+                <div class="breakdown-item"><span>MEI 2026 (0.15%):</span><strong id="nomMeiVal">0,00 €</strong></div>
+                <div class="breakdown-item" style="color: var(--accent-orange); font-weight: 800;"><span>Total SS (6.50%):</span><strong id="nomTotalSsVal">0,00 €</strong></div>
+                <div class="breakdown-item" style="color: var(--accent-purple); font-weight: 800;"><span>Retención IRPF:</span><strong id="nomTotalIrpfVal">0,00 €</strong></div>
             </div>
-
             <div class="res-grid">
                 <div class="res-bubble full">
-                    <div class="res-label">Salario Neto / Líquido a Cobrar</div>
+                    <div class="res-label">Salario Neto / Líquido</div>
                     <div class="res-val green" id="nomNetoVal">0,00 €</div>
                 </div>
             </div>
-
             <div class="actions">
+                <button class="btn-action btn-pdf" onclick="window.print()">📄 PDF</button>
                 <button class="btn-action btn-save" onclick="saveNomina()">💾 Guardar</button>
                 <button class="btn-action btn-whatsapp" onclick="sendNominaWA()">💬 WhatsApp</button>
             </div>
@@ -242,13 +226,11 @@
     <!-- 2️⃣ PESTAÑA EMBARGO -->
     <div class="tab-content" id="tabEmbargo">
         <div class="glass-card">
-            <div class="card-title">⚖️ Calculadora Embargo (Art. 607 LEC 2026)</div>
-            
+            <div class="card-title">⚖️ Calculadora Embargo (Art. 607)</div>
             <div class="form-group">
-                <label class="form-label">Sueldo Neto / Líquido Percibido (€)</label>
+                <label class="form-label">Sueldo Neto Mensual (€)</label>
                 <input type="number" id="embNeto" class="input-text" value="1800" step="50" oninput="calcEmbargo()">
             </div>
-
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Estructura Pagas</label>
@@ -260,32 +242,30 @@
                 <div class="form-group">
                     <label class="form-label">Cargas Familiares</label>
                     <select id="embCargas" class="select-custom" onchange="calcEmbargo()">
-                        <option value="0">Sin cargas (0%)</option>
-                        <option value="0.10">1 a 2 cargas (-10%)</option>
-                        <option value="0.15">3+ cargas (-15%)</option>
+                        <option value="0">0 cargas (0%)</option>
+                        <option value="0.10">1 a 2 (-10%)</option>
+                        <option value="0.15">3+ (-15%)</option>
                     </select>
                 </div>
             </div>
         </div>
 
         <div class="glass-card">
-            <div class="card-title">📐 Desglose Oficial por Tramos</div>
-            
+            <div class="card-title">📐 Desglose por Tramos</div>
             <div class="breakdown-list" id="embTramosList"></div>
-
             <div class="res-grid">
                 <div class="res-bubble">
                     <div class="res-label">Total Embargable</div>
                     <div class="res-val" style="color: #ef4444;" id="embRetencionVal">0,00 €</div>
                 </div>
                 <div class="res-bubble">
-                    <div class="res-label">Sueldo Limpio Restante</div>
+                    <div class="res-label">Sueldo Libre</div>
                     <div class="res-val green" id="embLimpioVal">0,00 €</div>
                 </div>
             </div>
-
             <div class="actions">
-                <button class="btn-action btn-whatsapp" onclick="sendEmbargoWA()">💬 Enviar Desglose</button>
+                <button class="btn-action btn-pdf" onclick="window.print()">📄 PDF</button>
+                <button class="btn-action btn-whatsapp" onclick="sendEmbargoWA()">💬 WhatsApp</button>
             </div>
         </div>
     </div>
@@ -294,12 +274,19 @@
     <div class="tab-content" id="tabFiniquito">
         <div class="glass-card">
             <div class="card-title">💼 Simulador de Finiquito & Despido</div>
-            
-            <div class="form-group">
-                <label class="form-label">Salario Bruto Mensual (€)</label>
-                <input type="number" id="finBruto" class="input-text" value="2000" oninput="calcFiniquito()">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Bruto Mensual (€)</label>
+                    <input type="number" id="finBruto" class="input-text" value="2000" oninput="calcFiniquito()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nº Pagas</label>
+                    <select id="finPagas" class="select-custom" onchange="calcFiniquito()">
+                        <option value="12">12 Pagas</option>
+                        <option value="14" selected>14 Pagas</option>
+                    </select>
+                </div>
             </div>
-
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Fecha Inicio</label>
@@ -310,7 +297,6 @@
                     <input type="date" id="finFin" class="input-text" value="2026-08-31" onchange="calcFiniquito()">
                 </div>
             </div>
-
             <div class="form-group">
                 <label class="form-label">Causa del Fin de Contrato</label>
                 <select id="finCausa" class="select-custom" onchange="calcFiniquito()">
@@ -320,7 +306,6 @@
                     <option value="0">Baja Voluntaria / Dimisión (0 días)</option>
                 </select>
             </div>
-
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Días mes trabajados</label>
@@ -334,36 +319,22 @@
         </div>
 
         <div class="glass-card">
-            <div class="card-title">💵 Estimación de Indemnización & Pagos</div>
-            
+            <div class="card-title">💵 Estimación de Indemnización</div>
             <div class="breakdown-list">
-                <div class="breakdown-item">
-                    <span>Antigüedad Reconocida:</span>
-                    <strong id="finTiempoVal">0 años</strong>
-                </div>
-                <div class="breakdown-item">
-                    <span>Salario Diario Base:</span>
-                    <strong id="finDiarioVal">0,00 €/día</strong>
-                </div>
-                <div class="breakdown-item">
-                    <span>Indemnización por Despido:</span>
-                    <strong id="finIndemnizacionVal" style="color: var(--accent-blue);">0,00 €</strong>
-                </div>
-                <div class="breakdown-item">
-                    <span>Días Mes + Vacaciones:</span>
-                    <strong id="finLiquidacionVal">0,00 €</strong>
-                </div>
+                <div class="breakdown-item"><span>Antigüedad Reconocida:</span><strong id="finTiempoVal">0 años</strong></div>
+                <div class="breakdown-item"><span>Salario Diario Base:</span><strong id="finDiarioVal">0,00 €/día</strong></div>
+                <div class="breakdown-item"><span>Indemnización por Despido:</span><strong id="finIndemnizacionVal" style="color: var(--accent-blue);">0,00 €</strong></div>
+                <div class="breakdown-item"><span>Días Mes + Vacaciones:</span><strong id="finLiquidacionVal">0,00 €</strong></div>
             </div>
-
             <div class="res-grid">
                 <div class="res-bubble full">
                     <div class="res-label">Total Estimado a Recibir</div>
                     <div class="res-val green" id="finTotalVal">0,00 €</div>
                 </div>
             </div>
-
             <div class="actions">
-                <button class="btn-action btn-whatsapp" onclick="sendFiniquitoWA()">💬 Enviar Desglose</button>
+                <button class="btn-action btn-pdf" onclick="window.print()">📄 PDF</button>
+                <button class="btn-action btn-whatsapp" onclick="sendFiniquitoWA()">💬 WhatsApp</button>
             </div>
         </div>
     </div>
@@ -381,7 +352,6 @@
 </div>
 
 <script>
-    /* Control de Pestañas */
     function setTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -390,7 +360,6 @@
         if(tabId === 'tabHistorial') renderHistorial();
     }
 
-    /* Tema Claro / Oscuro */
     function initTheme() {
         const savedTheme = localStorage.getItem('theme_preference') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
@@ -405,20 +374,14 @@
         document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
     }
 
-    /* Notificaciones Nativas del día 25 a las 20:00h */
     function enableNotifications() {
-        if (!('Notification' in window)) {
-            alert('Notificaciones no soportadas en este navegador.');
-            return;
-        }
+        if (!('Notification' in window)) return alert('Notificaciones no soportadas.');
         Notification.requestPermission().then(perm => {
             if (perm === 'granted') {
                 document.getElementById('notifBtn').textContent = '🔔 Activo';
                 document.getElementById('notifBtn').style.color = 'var(--accent-green)';
                 scheduleMonthlyNotif();
-                alert('¡Avisos activados! Te recordaré el día 25 de cada mes a las 20:00h revisar tu nómina.');
-            } else {
-                alert('Debes permitir las notificaciones en el cuadro emergente.');
+                alert('Avisos activados: Día 25 a las 20:00h.');
             }
         });
     }
@@ -427,29 +390,21 @@
         if (Notification.permission === 'granted' && navigator.serviceWorker) {
             const now = new Date();
             if (now.getDate() === 25 && now.getHours() === 20) {
-                new Notification('💼 Laboral CDMO', {
-                    body: 'Revisar y verificar nómina del mes en CDMO',
-                    icon: 'https://danielcdmo.github.io/Proyectos-Apps-HTML/favicon.png'
-                });
+                new Notification('💼 Laboral CDMO', { body: 'Revisar nómina', icon: 'https://danielcdmo.github.io/Proyectos-Apps-HTML/favicon.png' });
             }
         }
     }
 
-    /* 1️⃣ CÁLCULO DE NÓMINA (DATOS 2026) */
     function calcNomina() {
         const bruto = parseFloat(document.getElementById('nomBruto').value) || 0;
         const pagas = parseInt(document.getElementById('nomPagas').value);
         const irpfPct = parseFloat(document.getElementById('nomIrpf').value) || 0;
         const desempleoRate = parseFloat(document.getElementById('nomContrato').value);
-
-        // Base de cotización mensual
         const baseCot = pagas === 14 ? bruto * (14/12) : bruto;
-
         const cc = baseCot * 0.0470;
         const desempleo = baseCot * desempleoRate;
-        const fp = baseCot * 0.010; // 0.10%
-        const mei = baseCot * 0.0015; // 0.15% trabajador en 2026
-
+        const fp = baseCot * 0.010;
+        const mei = baseCot * 0.0015;
         const totalSs = cc + desempleo + fp + mei;
         const totalIrpf = bruto * (irpfPct / 100);
         const neto = bruto - totalSs - totalIrpf;
@@ -463,12 +418,10 @@
         document.getElementById('nomNetoVal').textContent = neto.toFixed(2).replace('.', ',') + ' €';
     }
 
-    /* Guardado en LocalStorage */
     function saveNomina() {
         const bruto = document.getElementById('nomBruto').value;
         const neto = document.getElementById('nomNetoVal').textContent;
         const dateStr = new Date().toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
-
         let history = JSON.parse(localStorage.getItem('laboral_cdmo_history')) || [];
         history.unshift({ date: dateStr, bruto: bruto + ' €', neto: neto });
         localStorage.setItem('laboral_cdmo_history', JSON.stringify(history));
@@ -478,87 +431,62 @@
     function renderHistorial() {
         const history = JSON.parse(localStorage.getItem('laboral_cdmo_history')) || [];
         const container = document.getElementById('historialList');
-        if (history.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:10px;">No hay nóminas guardadas.</div>';
-            return;
-        }
+        if (history.length === 0) return container.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:10px;">No hay datos.</div>';
         let html = '';
         history.forEach(item => {
-            html += `<div class="breakdown-item">
-                <span><strong>${item.date}</strong> - Bruto: ${item.bruto}</span>
-                <strong style="color:var(--accent-green);">${item.neto}</strong>
-            </div>`;
+            html += `<div class="breakdown-item"><span><strong>${item.date}</strong> - Bruto: ${item.bruto}</span><strong style="color:var(--accent-green);">${item.neto}</strong></div>`;
         });
         container.innerHTML = html;
     }
 
     function clearHistorial() {
-        if(confirm('¿Borrar todo el historial de nóminas?')) {
-            localStorage.removeItem('laboral_cdmo_history');
-            renderHistorial();
-        }
+        if(confirm('¿Borrar historial?')) { localStorage.removeItem('laboral_cdmo_history'); renderHistorial(); }
     }
 
-    /* 2️⃣ CÁLCULO DE EMBARGO (ART. 607 LEC) */
     function calcEmbargo() {
         const neto = parseFloat(document.getElementById('embNeto').value) || 0;
         const smiBase = parseFloat(document.getElementById('embSmiTipo').value);
         const cargasDeduc = parseFloat(document.getElementById('embCargas').value);
-
         const container = document.getElementById('embTramosList');
         container.innerHTML = '';
-
         if (neto <= smiBase) {
-            container.innerHTML = '<div class="breakdown-item"><span>Sueldo inferior al SMI (Inembargable):</span> <strong>0,00 €</strong></div>';
+            container.innerHTML = '<div class="breakdown-item"><span>Inferior al SMI:</span> <strong>0,00 €</strong></div>';
             document.getElementById('embRetencionVal').textContent = '0,00 €';
             document.getElementById('embLimpioVal').textContent = neto.toFixed(2).replace('.', ',') + ' €';
             return;
         }
-
         let exceso = neto - smiBase;
         let totalEmbargo = 0;
-
         const tramos = [
-            { pct: 0.30, max: smiBase, label: '1 a 2 SMI (30%)' },
-            { pct: 0.50, max: smiBase, label: '2 a 3 SMI (50%)' },
-            { pct: 0.60, max: smiBase, label: '3 a 4 SMI (60%)' },
-            { pct: 0.75, max: smiBase, label: '4 a 5 SMI (75%)' },
-            { pct: 0.90, max: Infinity, label: '> 5 SMI (90%)' }
+            { pct: 0.30, max: smiBase, label: '1 a 2 SMI' },
+            { pct: 0.50, max: smiBase, label: '2 a 3 SMI' },
+            { pct: 0.60, max: smiBase, label: '3 a 4 SMI' },
+            { pct: 0.75, max: smiBase, label: '4 a 5 SMI' },
+            { pct: 0.90, max: Infinity, label: '> 5 SMI' }
         ];
-
-        let html = `<div class="breakdown-item"><span>1er SMI (${smiBase} €):</span> <strong>0,00 € (0%)</strong></div>`;
-
+        let html = `<div class="breakdown-item"><span>1er SMI:</span> <strong>0,00 €</strong></div>`;
         for (let t of tramos) {
             if (exceso <= 0) break;
             let parte = Math.min(exceso, t.max);
             let cuota = parte * t.pct;
             totalEmbargo += cuota;
             exceso -= parte;
-
-            html += `<div class="breakdown-item">
-                <span>Tramo ${t.label}:</span>
-                <strong>${cuota.toFixed(2).replace('.', ',')} €</strong>
-            </div>`;
+            html += `<div class="breakdown-item"><span>Tramo ${t.label}:</span><strong>${cuota.toFixed(2).replace('.', ',')} €</strong></div>`;
         }
-
         if (cargasDeduc > 0) {
             let rebaja = totalEmbargo * cargasDeduc;
             totalEmbargo -= rebaja;
-            html += `<div class="breakdown-item" style="color:var(--accent-green);">
-                <span>Rebaja Cargas Familiares (-${cargasDeduc*100}%):</span>
-                <strong>-${rebaja.toFixed(2).replace('.', ',')} €</strong>
-            </div>`;
+            html += `<div class="breakdown-item" style="color:var(--accent-green);"><span>Rebaja Cargas:</span><strong>-${rebaja.toFixed(2).replace('.', ',')} €</strong></div>`;
         }
-
         container.innerHTML = html;
         const limpio = neto - totalEmbargo;
         document.getElementById('embRetencionVal').textContent = totalEmbargo.toFixed(2).replace('.', ',') + ' €';
         document.getElementById('embLimpioVal').textContent = limpio.toFixed(2).replace('.', ',') + ' €';
     }
 
-    /* 3️⃣ CÁLCULO DE FINIQUITO E INDEMNIZACIÓN */
     function calcFiniquito() {
         const brutoMensual = parseFloat(document.getElementById('finBruto').value) || 0;
+        const pagas = parseInt(document.getElementById('finPagas').value) || 12;
         const fInicio = new Date(document.getElementById('finInicio').value);
         const fFin = new Date(document.getElementById('finFin').value);
         const diasCausa = parseInt(document.getElementById('finCausa').value);
@@ -570,24 +498,20 @@
             return;
         }
 
-        // Antigüedad en meses/días
         const diffDays = Math.ceil((fFin - fInicio) / (1000 * 60 * 60 * 24));
         const años = diffDays / 365;
-
-        // Salario anual (asumiendo 12 pagas prorrateadas) y salario diario
-        const salarioAnual = brutoMensual * 12;
+        
+        // El salario base anual depende de si las pagas están o no prorrateadas
+        const salarioAnual = brutoMensual * pagas;
         const salarioDiario = salarioAnual / 365;
 
-        // Indemnización con topes
         let indemnizacion = años * diasCausa * salarioDiario;
-        if (diasCausa === 33) indemnizacion = Math.min(indemnizacion, brutoMensual * 24); // Tope 24 meses
-        if (diasCausa === 20) indemnizacion = Math.min(indemnizacion, brutoMensual * 12); // Tope 12 meses
+        if (diasCausa === 33) indemnizacion = Math.min(indemnizacion, brutoMensual * 24);
+        if (diasCausa === 20) indemnizacion = Math.min(indemnizacion, brutoMensual * 12);
 
-        // Días mes + Vacaciones
         const pagoDiasMes = (brutoMensual / 30) * diasMes;
         const pagoVacaciones = salarioDiario * diasVac;
         const liquidacion = pagoDiasMes + pagoVacaciones;
-
         const totalRecibir = indemnizacion + liquidacion;
 
         document.getElementById('finTiempoVal').textContent = `${años.toFixed(2)} años (${diffDays} días)`;
@@ -597,52 +521,21 @@
         document.getElementById('finTotalVal').textContent = `${totalRecibir.toFixed(2).replace('.', ',')} €`;
     }
 
-    /* Exportaciones WhatsApp */
     function sendNominaWA() {
-        const bruto = document.getElementById('nomBruto').value;
-        const neto = document.getElementById('nomNetoVal').textContent;
-        const text = `📄 *Auditoría de Nómina CDMO 2026*\n\n` +
-                     `💵 Salario Bruto: *${bruto} €*\n` +
-                     `🛡️ Deducción SS (6.5%): *${document.getElementById('nomTotalSsVal').textContent}*\n` +
-                     `📉 Retención IRPF: *${document.getElementById('nomTotalIrpfVal').textContent}*\n\n` +
-                     `💰 *Salario Neto a Cobrar: ${neto}*`;
+        const text = `📄 *Nómina CDMO*\nBruto: *${document.getElementById('nomBruto').value} €*\nNeto: *${document.getElementById('nomNetoVal').textContent}*`;
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
-
     function sendEmbargoWA() {
-        const neto = document.getElementById('embNeto').value;
-        const embargo = document.getElementById('embRetencionVal').textContent;
-        const limpio = document.getElementById('embLimpioVal').textContent;
-        const text = `⚖️ *Cálculo de Embargo Salarial CDMO (Art. 607 LEC)*\n\n` +
-                     `💵 Sueldo Neto Base: *${neto} €*\n` +
-                     `🚫 Retención Embargo: *${embargo}*\n` +
-                     `✅ *Sueldo Libre Resultante: ${limpio}*`;
+        const text = `⚖️ *Embargo Salarial CDMO*\nNeto: *${document.getElementById('embNeto').value} €*\nLibre: *${document.getElementById('embLimpioVal').textContent}*`;
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
-
     function sendFiniquitoWA() {
-        const total = document.getElementById('finTotalVal').textContent;
-        const indemn = document.getElementById('finIndemnizacionVal').textContent;
-        const text = `💼 *Simulación de Finiquito & Despido CDMO*\n\n` +
-                     `📅 Antigüedad: *${document.getElementById('finTiempoVal').textContent}*\n` +
-                     `🛡️ Indemnización Despido: *${indemn}*\n` +
-                     `💵 Días Trabajados + Vacaciones: *${document.getElementById('finLiquidacionVal').textContent}*\n\n` +
-                     `💰 *Total Estimado a Recibir: ${total}*`;
+        const text = `💼 *Finiquito CDMO*\nIndemnización: *${document.getElementById('finIndemnizacionVal').textContent}*\nTotal a recibir: *${document.getElementById('finTotalVal').textContent}*`;
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
 
-    initTheme();
-    calcNomina();
-    calcEmbargo();
-    calcFiniquito();
-    scheduleMonthlyNotif();
+    initTheme(); calcNomina(); calcEmbargo(); calcFiniquito(); scheduleMonthlyNotif();
 </script>
-
-<!-- Service Worker Offline -->
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
-  }
-</script>
+<script> if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); } </script>
 </body>
 </html>
