@@ -13,9 +13,15 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; background: var(--bg-grad); color: var(--text-main); margin: 0; padding: 16px; min-height: 100vh; display: flex; justify-content: center; transition: background 0.4s ease, color 0.4s ease; }
         .container { max-width: 440px; width: 100%; display: flex; flex-direction: column; gap: 16px; padding-bottom: 30px; }
         .top-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .header-title { font-size: 1.3rem; font-weight: 800; margin: 0; background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
+        .header-title { font-size: 1.25rem; font-weight: 800; margin: 0; background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
         .bar-actions { display: flex; gap: 6px; }
         .theme-toggle, .notif-btn { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 50px; padding: 6px 12px; cursor: pointer; backdrop-filter: blur(20px); box-shadow: var(--card-shadow); font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; gap: 4px; color: var(--text-main); flex-shrink: 0; }
+        
+        /* Pestañas de Vista (Mes / Anual) */
+        .view-nav { display: flex; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 4px; gap: 4px; backdrop-filter: blur(20px); }
+        .view-btn { flex: 1; padding: 8px; border: none; background: transparent; color: var(--text-sub); font-weight: 700; font-size: 0.8rem; border-radius: 14px; cursor: pointer; transition: all 0.25s ease; text-align: center; }
+        .view-btn.active { background: var(--accent-blue); color: #ffffff; box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3); }
+
         .glass-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 16px; backdrop-filter: blur(25px); box-shadow: var(--card-shadow); transition: all 0.3s ease; width: 100%; }
         .month-selector { display: flex; align-items: center; justify-content: space-between; }
         .month-btn { background: var(--neutral-bg); border: 1px solid var(--card-border); color: var(--text-main); font-size: 1.2rem; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }
@@ -43,18 +49,20 @@
         .btn-pdf { background: var(--accent-purple); color: #fff; min-width: 45%; }
         .btn-reset { background: var(--neutral-bg); color: var(--text-sub); width: 100%; }
 
+        /* Vistas Panel */
+        .panel-view { display: none; flex-direction: column; gap: 16px; }
+        .panel-view.active { display: flex; }
+
         /* Modal Settings */
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; opacity: 0; transition: opacity 0.3s ease; }
-        .modal-overlay.active { display: flex; opacity: 1; }
-        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 24px; width: 100%; max-width: 340px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); transform: scale(0.95); transition: transform 0.3s ease; }
-        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 24px; width: 100%; max-width: 340px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
         .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
         .form-label { font-size: 0.8rem; font-weight: 700; color: var(--text-sub); }
 
-        /* MODO IMPRESIÓN / PDF */
         @media print {
             body { background: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .top-bar, .month-selector, .actions, .modal-overlay { display: none !important; }
+            .top-bar, .month-selector, .actions, .modal-overlay, .view-nav { display: none !important; }
             #addExtraCard { display: none !important; }
             .glass-card { background: none !important; border: 1px solid #ccc !important; box-shadow: none !important; margin-bottom: 20px; break-inside: avoid; color: #000 !important; }
             .stat-bubble { background: #f4f4f5 !important; border: 1px solid #ccc !important; }
@@ -83,42 +91,78 @@
     
     <h2 class="print-title" id="printTitle">Economía Familiar CDMO</h2>
 
-    <div class="glass-card month-selector">
-        <button class="month-btn" onclick="changeMonth(-1)">‹</button>
-        <div class="month-title" id="monthTitle">-- ----</div>
-        <button class="month-btn" onclick="changeMonth(1)">›</button>
+    <div class="view-nav">
+        <button class="view-btn active" id="btn_viewMonth" onclick="switchView('month')">📅 Vista Mensual</button>
+        <button class="view-btn" id="btn_viewYear" onclick="switchView('year')">📈 Balance Anual</button>
     </div>
 
-    <div class="glass-card summary-grid">
-        <div class="stat-bubble"><div class="stat-label">Total Gastos</div><div class="stat-value" id="totalGastos">0,00 €</div></div>
-        <div class="stat-bubble"><div class="stat-label">Pagados / Listos</div><div class="stat-value" id="totalPagados" style="color: var(--accent-blue);">0,00 €</div></div>
-        <div class="stat-bubble highlight"><div class="stat-label">Parte Claudia (Reparto)</div><div class="stat-value total-green" id="parteClaudia">0,00 €</div></div>
-    </div>
+    <div class="panel-view active" id="viewMonth">
+        <div class="glass-card month-selector">
+            <button class="month-btn" onclick="changeMonth(-1)">‹</button>
+            <div class="month-title" id="monthTitle">-- ----</div>
+            <button class="month-btn" onclick="changeMonth(1)">›</button>
+        </div>
 
-    <div class="glass-card" id="addExtraCard">
-        <div class="category-title">➕ Añadir Concepto Extra</div>
-        <div class="add-extra-form">
-            <input type="text" id="extraName" class="input-extra name" placeholder="Ej: Farmacia, Regalo...">
-            <input type="number" id="extraAmount" class="input-extra amount" placeholder="0.00" step="0.01">
-            <button class="btn-add" onclick="addExtraItem()">OK</button>
+        <div class="glass-card summary-grid">
+            <div class="stat-bubble"><div class="stat-label">Total Gastos</div><div class="stat-value" id="totalGastos">0,00 €</div></div>
+            <div class="stat-bubble"><div class="stat-label">Pagados / Listos</div><div class="stat-value" id="totalPagados" style="color: var(--accent-blue);">0,00 €</div></div>
+            <div class="stat-bubble highlight"><div class="stat-label">Parte Claudia (Reparto)</div><div class="stat-value total-green" id="parteClaudia">0,00 €</div></div>
+        </div>
+
+        <div class="glass-card" id="addExtraCard">
+            <div class="category-title">➕ Añadir Concepto Extra</div>
+            <div class="add-extra-form">
+                <input type="text" id="extraName" class="input-extra name" placeholder="Ej: Farmacia, Regalo...">
+                <input type="number" id="extraAmount" class="input-extra amount" placeholder="0.00" step="0.01">
+                <button class="btn-add" onclick="addExtraItem()">OK</button>
+            </div>
+        </div>
+
+        <div id="categoriesContainer"></div>
+
+        <div class="actions">
+            <button class="btn-action btn-pdf" onclick="window.print()">📄 PDF</button>
+            <button class="btn-action btn-whatsapp" onclick="sendWhatsApp()">💬 Desglose</button>
+            <button class="btn-action btn-reset" onclick="resetMonth()">🔄 Limpiar</button>
         </div>
     </div>
 
-    <div id="categoriesContainer"></div>
+    <div class="panel-view" id="viewYear">
+        <div class="glass-card month-selector">
+            <button class="month-btn" onclick="changeYear(-1)">‹</button>
+            <div class="month-title" id="yearTitle">----</div>
+            <button class="month-btn" onclick="changeYear(1)">›</button>
+        </div>
 
-    <div class="actions">
-        <button class="btn-action btn-pdf" onclick="window.print()">📄 PDF</button>
-        <button class="btn-action btn-whatsapp" onclick="sendWhatsApp()">💬 Desglose</button>
-        <button class="btn-action btn-reset" onclick="resetMonth()">🔄 Limpiar</button>
+        <div class="glass-card summary-grid">
+            <div class="stat-bubble highlight">
+                <div class="stat-label">Total Gastos del Año</div>
+                <div class="stat-value total-green" id="yearTotalGastos">0,00 €</div>
+            </div>
+            <div class="stat-bubble" style="grid-column: span 2;">
+                <div class="stat-label">Acumulado Parte Claudia (50%)</div>
+                <div class="stat-value" id="yearTotalClaudia" style="color: var(--accent-purple);">0,00 €</div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="card-title" style="margin-bottom:8px;">📊 Desglose por Categorías</div>
+            <div class="breakdown-list" id="yearCategoriesList"></div>
+        </div>
+
+        <div class="actions">
+            <button class="btn-action btn-pdf" onclick="window.print()">📄 PDF Anual</button>
+            <button class="btn-action btn-whatsapp" onclick="sendYearWhatsApp()">💬 Resumen Anual</button>
+        </div>
     </div>
 </div>
 
 <div class="modal-overlay" id="configModal">
     <div class="modal-content">
         <h3 style="margin-top:0; color:var(--accent-blue); font-weight:800;">⚙️ Configurar Aviso</h3>
-        <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom: 16px;">Añade un aviso inteligente al Calendario de tu iPhone.</p>
-        <div class="form-group"><label class="form-label">¿Qué día del mes?</label><input type="number" id="cfgDay" class="input-extra" min="1" max="31" value="28"></div>
-        <div class="form-group"><label class="form-label">¿A qué hora?</label><input type="time" id="cfgTime" class="input-extra" value="22:00"></div>
+        <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom: 16px;">Aviso calendario nativo (Mensual).</p>
+        <div class="form-group"><label class="form-label">Día del mes:</label><input type="number" id="cfgDay" class="input-extra" min="1" max="31" value="28"></div>
+        <div class="form-group"><label class="form-label">Hora:</label><input type="time" id="cfgTime" class="input-extra" value="22:00"></div>
         <div class="actions" style="margin-top:20px;">
             <button class="btn-action" style="background:var(--accent-blue); color:#fff;" onclick="generateICS()">🗓️ Crear en iOS</button>
             <button class="btn-action" style="background:var(--neutral-bg); color:var(--text-main);" onclick="closeConfig()">Cancelar</button>
@@ -128,6 +172,9 @@
 
 <script>
     let currentDate = new Date();
+    let currentYear = new Date().getFullYear();
+    let currentView = 'month';
+
     const DEFAULT_ITEMS = [
         { id: 'v_hipoteca', cat: '🏠 Vivienda y Suministros', label: 'Hipoteca / Alquiler', amount: 0.00, isClaudia: true },
         { id: 'v_luz', cat: '🏠 Vivienda y Suministros', label: 'Luz (Factura)', amount: 0.00, isClaudia: true },
@@ -152,7 +199,17 @@
         document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
     }
 
-    /* Modal Controls */
+    function switchView(view) {
+        currentView = view;
+        document.getElementById('viewMonth').classList.toggle('active', view === 'month');
+        document.getElementById('viewYear').classList.toggle('active', view === 'year');
+        document.getElementById('btn_viewMonth').classList.toggle('active', view === 'month');
+        document.getElementById('btn_viewYear').classList.toggle('active', view === 'year');
+        if (view === 'year') renderYear();
+        else renderMonth();
+    }
+
+    /* Modal Configuración Avisos */
     function openConfig() {
         document.getElementById('configModal').classList.add('active');
         const sd = localStorage.getItem('eco_alert_day'), st = localStorage.getItem('eco_alert_time');
@@ -161,7 +218,6 @@
     }
     function closeConfig() { document.getElementById('configModal').classList.remove('active'); }
 
-    /* Fix Generación ICS para iOS Apple */
     function generateICS() {
         const day = document.getElementById('cfgDay').value, time = document.getElementById('cfgTime').value;
         localStorage.setItem('eco_alert_day', day); localStorage.setItem('eco_alert_time', time);
@@ -181,29 +237,38 @@
         const icsData = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//CDMO//Economia//ES\nBEGIN:VEVENT\nUID:${uid}\nDTSTAMP:${dtstamp}\nSUMMARY:📊 Revisión de Economía CDMO\nDESCRIPTION:CHECKLIST MENSUAL ECONOMÍA FAMILIAR CASA DE CDMO.\nRRULE:FREQ=MONTHLY;BYMONTHDAY=${day}\nDTSTART;TZID=Europe/Madrid:${dtstart}\nDURATION:PT1H\nBEGIN:VALARM\nACTION:DISPLAY\nDESCRIPTION:Checklist Mensual\nTRIGGER:-PT0M\nEND:VALARM\nEND:VEVENT\nEND:VCALENDAR`;
 
         const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
+        const link = document.createElement('a'); link.href = URL.createObjectURL(blob);
         link.setAttribute('download', 'economia_aviso.ics');
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
         closeConfig();
     }
-
     function checkConfigStatus() {
         const sd = localStorage.getItem('eco_alert_day');
         if(sd) { const btn = document.getElementById('notifBtn'); btn.textContent = '⚙️ Día ' + sd; btn.style.color = 'var(--accent-green)'; }
     }
 
+    /* VISTA MENSUAL */
     function getMonthKey() { return `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`; }
-    function initMonthData() { const k = getMonthKey(); if (!db[k] || !Array.isArray(db[k].items)) { db[k] = { items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)), checked: {} }; } if (!db[k].checked) db[k].checked = {}; saveDB(); }
+    function initMonthData() {
+        const key = getMonthKey();
+        if (!db[key] || !Array.isArray(db[key].items)) { db[key] = { items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)), checked: {} }; }
+        if (!db[key].checked) db[key].checked = {};
+        saveDB();
+    }
     function saveDB() { localStorage.setItem('economia_cdmo_db', JSON.stringify(db)); }
 
-    function render() {
-        initMonthData(); const monthData = db[getMonthKey()];
+    function renderMonth() {
+        initMonthData(); const key = getMonthKey(); const monthData = db[key];
         const monthStr = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-        document.getElementById('monthTitle').textContent = monthStr; document.getElementById('printTitle').textContent = 'Economía Familiar CDMO - ' + monthStr;
+        document.getElementById('monthTitle').textContent = monthStr;
+        document.getElementById('printTitle').textContent = 'Economía Familiar CDMO - ' + monthStr;
+
         const container = document.getElementById('categoriesContainer'); container.innerHTML = '';
         const categories = {};
-        if (Array.isArray(monthData.items)) { monthData.items.forEach(item => { if (!categories[item.cat]) categories[item.cat] = []; categories[item.cat].push(item); }); }
+        if (Array.isArray(monthData.items)) {
+            monthData.items.forEach(item => { if (!categories[item.cat]) categories[item.cat] = []; categories[item.cat].push(item); });
+        }
+
         let grandTotal = 0, totalPagado = 0, parteClaudiaTotal = 0;
         for (const [catName, items] of Object.entries(categories)) {
             const card = document.createElement('div'); card.className = 'glass-card'; card.style.marginBottom = '16px';
@@ -220,19 +285,75 @@
         document.getElementById('parteClaudia').textContent = `${parteClaudiaTotal.toFixed(2).replace('.', ',')} €`;
     }
 
-    function toggleCheck(id) { const k = getMonthKey(); if (!db[k].checked) db[k].checked = {}; db[k].checked[id] = !db[k].checked[id]; saveDB(); render(); }
-    function updateAmount(id, val) { const item = db[getMonthKey()].items.find(i => i.id === id); if (item) { item.amount = parseFloat(val) || 0; saveDB(); render(); } }
-    function addExtraItem() { const n = document.getElementById('extraName').value.trim(), a = parseFloat(document.getElementById('extraAmount').value) || 0; if (!n) return; db[getMonthKey()].items.push({ id: 'extra_' + Date.now(), cat: '⚡ Extras y Varios', label: n, amount: a, isClaudia: true }); document.getElementById('extraName').value = ''; document.getElementById('extraAmount').value = ''; saveDB(); render(); }
-    function changeMonth(offset) { currentDate.setMonth(currentDate.getMonth() + offset); render(); }
-    function resetMonth() { if (confirm('¿Borrar y reiniciar los datos de este mes?')) { db[getMonthKey()] = { items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)), checked: {} }; saveDB(); render(); } }
+    function toggleCheck(id) { const key = getMonthKey(); if (!db[key].checked) db[key].checked = {}; db[key].checked[id] = !db[key].checked[id]; saveDB(); renderMonth(); }
+    function updateAmount(id, val) { const item = db[getMonthKey()].items.find(i => i.id === id); if (item) { item.amount = parseFloat(val) || 0; saveDB(); renderMonth(); } }
+    function addExtraItem() {
+        const n = document.getElementById('extraName').value.trim(), a = parseFloat(document.getElementById('extraAmount').value) || 0; if (!n) return;
+        db[getMonthKey()].items.push({ id: 'extra_' + Date.now(), cat: '⚡ Extras y Varios', label: n, amount: a, isClaudia: true });
+        document.getElementById('extraName').value = ''; document.getElementById('extraAmount').value = ''; saveDB(); renderMonth();
+    }
+    function changeMonth(offset) { currentDate.setMonth(currentDate.getMonth() + offset); renderMonth(); }
+    function resetMonth() {
+        if (confirm('¿Borrar y reiniciar los datos de este mes?')) {
+            db[getMonthKey()] = { items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)), checked: {} }; saveDB(); renderMonth();
+        }
+    }
+
+    /* VISTA ANUAL */
+    function changeYear(offset) { currentYear += offset; renderYear(); }
+    function renderYear() {
+        document.getElementById('yearTitle').textContent = 'Año ' + currentYear;
+        document.getElementById('printTitle').textContent = 'Balance Anual Economía CDMO - ' + currentYear;
+
+        let yearTotal = 0, yearClaudia = 0;
+        const catTotals = {};
+
+        // Recorrer todos los meses guardados en el LocalStorage que coincidan con el año
+        for (const [key, data] of Object.entries(db)) {
+            if (key.startsWith(String(currentYear)) && data && Array.isArray(data.items)) {
+                data.items.forEach(item => {
+                    const amt = parseFloat(item.amount) || 0;
+                    yearTotal += amt;
+                    if (item.isClaudia) yearClaudia += (amt / 2);
+
+                    if (!catTotals[item.cat]) catTotals[item.cat] = 0;
+                    catTotals[item.cat] += amt;
+                });
+            }
+        }
+
+        document.getElementById('yearTotalGastos').textContent = `${yearTotal.toFixed(2).replace('.', ',')} €`;
+        document.getElementById('yearTotalClaudia').textContent = `${yearClaudia.toFixed(2).replace('.', ',')} €`;
+
+        const listEl = document.getElementById('yearCategoriesList');
+        if (Object.keys(catTotals).length === 0) {
+            listEl.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:10px;">No hay registros para este año.</div>';
+            return;
+        }
+
+        let html = '';
+        for (const [cat, sum] of Object.entries(catTotals)) {
+            html += `<div class="breakdown-item"><span>${cat}:</span><strong style="color:var(--accent-blue);">${sum.toFixed(2).replace('.', ',')} €</strong></div>`;
+        }
+        listEl.innerHTML = html;
+    }
+
     function sendWhatsApp() {
-        const k = getMonthKey(); let text = `📊 *Resumen Gastos CDMO - ${currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}*\n\n`;
-        (db[k].items || []).forEach(i => { if (i.amount > 0) { text += `${db[k].checked && db[k].checked[i.id] ? '✅' : '⏳'} ${i.label}: *${i.amount.toFixed(2)} €*\n`; } });
-        text += `\n💰 *Total Gastos:* ${document.getElementById('totalGastos').textContent}\n👧 *Parte Claudia (50%):* ${document.getElementById('parteClaudia').textContent}`;
+        const monthName = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+        const key = getMonthKey(); let text = `📊 *Resumen Gastos CDMO - ${monthName}*\n\n`;
+        (db[key].items || []).forEach(i => { if (i.amount > 0) { text += `${db[key].checked && db[key].checked[i.id] ? '✅' : '⏳'} ${i.label}: *${i.amount.toFixed(2)} €*\n`; } });
+        text += `\n💰 *Total:* ${document.getElementById('totalGastos').textContent}\n👧 *Claudia (50%):* ${document.getElementById('parteClaudia').textContent}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
 
-    initTheme(); checkConfigStatus(); render();
+    function sendYearWhatsApp() {
+        let text = `📈 *Balance Anual Economía CDMO - ${currentYear}*\n\n` +
+                   `💰 *Total Gastos del Año:* ${document.getElementById('yearTotalGastos').textContent}\n` +
+                   `👧 *Acumulado Claudia (50%):* ${document.getElementById('yearTotalClaudia').textContent}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    initTheme(); checkConfigStatus(); renderMonth();
 </script>
 <script> if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); } </script>
 </body>
