@@ -8,116 +8,45 @@
     <title>Economía CDMO</title>
     <style>
         * { box-sizing: border-box; }
-
-        :root {
-            --bg-grad: linear-gradient(180deg, #000000 0%, #121212 100%);
-            --card-bg: rgba(28, 28, 30, 0.7);
-            --card-border: rgba(255, 255, 255, 0.12);
-            --card-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.5);
-            --text-main: #ffffff;
-            --text-sub: #8e8e93;
-            --accent-green: #30d158;
-            --accent-green-glow: rgba(48, 209, 88, 0.2);
-            --accent-blue: #0a84ff;
-            --accent-purple: #bf5af2;
-            --neutral-bg: rgba(255, 255, 255, 0.08);
-            --input-bg: rgba(44, 44, 46, 0.8);
-        }
-
-        [data-theme="light"] {
-            --bg-grad: linear-gradient(180deg, #f2f2f7 0%, #e5e5ea 100%);
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --card-border: rgba(255, 255, 255, 0.9);
-            --card-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.06);
-            --text-main: #000000;
-            --text-sub: #8e8e93;
-            --accent-green: #34c759;
-            --accent-green-glow: rgba(52, 199, 89, 0.18);
-            --accent-blue: #007aff;
-            --accent-purple: #af52de;
-            --neutral-bg: rgba(0, 0, 0, 0.04);
-            --input-bg: rgba(255, 255, 255, 0.9);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, sans-serif;
-            background: var(--bg-grad); color: var(--text-main);
-            margin: 0; padding: 16px; min-height: 100vh;
-            display: flex; justify-content: center;
-            transition: background 0.4s ease, color 0.4s ease;
-        }
-
+        :root { --bg-grad: linear-gradient(180deg, #000000 0%, #121212 100%); --card-bg: rgba(28, 28, 30, 0.7); --card-border: rgba(255, 255, 255, 0.12); --card-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.5); --text-main: #ffffff; --text-sub: #8e8e93; --accent-green: #30d158; --accent-green-glow: rgba(48, 209, 88, 0.2); --accent-blue: #0a84ff; --accent-purple: #bf5af2; --neutral-bg: rgba(255, 255, 255, 0.08); --input-bg: rgba(44, 44, 46, 0.8); }
+        [data-theme="light"] { --bg-grad: linear-gradient(180deg, #f2f2f7 0%, #e5e5ea 100%); --card-bg: rgba(255, 255, 255, 0.8); --card-border: rgba(255, 255, 255, 0.9); --card-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.06); --text-main: #000000; --text-sub: #8e8e93; --accent-green: #34c759; --accent-green-glow: rgba(52, 199, 89, 0.18); --accent-blue: #007aff; --accent-purple: #af52de; --neutral-bg: rgba(0, 0, 0, 0.04); --input-bg: rgba(255, 255, 255, 0.9); }
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; background: var(--bg-grad); color: var(--text-main); margin: 0; padding: 16px; min-height: 100vh; display: flex; justify-content: center; transition: background 0.4s ease, color 0.4s ease; }
         .container { max-width: 440px; width: 100%; display: flex; flex-direction: column; gap: 16px; padding-bottom: 30px; }
-
         .top-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
         .header-title { font-size: 1.3rem; font-weight: 800; margin: 0; background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
-
         .bar-actions { display: flex; gap: 6px; }
-        .theme-toggle, .notif-btn {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 50px; padding: 6px 12px; cursor: pointer;
-            backdrop-filter: blur(20px); box-shadow: var(--card-shadow);
-            font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; gap: 4px; color: var(--text-main); flex-shrink: 0;
-        }
-
-        .glass-card {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 24px; padding: 16px; backdrop-filter: blur(25px);
-            box-shadow: var(--card-shadow); transition: all 0.3s ease; width: 100%;
-        }
-
+        .theme-toggle, .notif-btn { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 50px; padding: 6px 12px; cursor: pointer; backdrop-filter: blur(20px); box-shadow: var(--card-shadow); font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; gap: 4px; color: var(--text-main); flex-shrink: 0; }
+        .glass-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 16px; backdrop-filter: blur(25px); box-shadow: var(--card-shadow); transition: all 0.3s ease; width: 100%; }
         .month-selector { display: flex; align-items: center; justify-content: space-between; }
         .month-btn { background: var(--neutral-bg); border: 1px solid var(--card-border); color: var(--text-main); font-size: 1.2rem; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         .month-title { font-weight: 800; font-size: 1.1rem; text-transform: capitalize; }
-
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .stat-bubble { background: var(--neutral-bg); border-radius: 18px; padding: 12px; text-align: center; border: 1px solid var(--card-border); }
         .stat-bubble.highlight { grid-column: span 2; background: var(--accent-green-glow); border-color: var(--accent-green); }
         .stat-label { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 4px; }
         .stat-value { font-size: 1.35rem; font-weight: 800; }
         .stat-value.total-green { color: var(--accent-green); font-size: 1.75rem; }
-
         .category-title { font-size: 0.85rem; font-weight: 800; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-
         .item-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--card-border); gap: 8px; }
         .item-row:last-child { border-bottom: none; }
         .item-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-
         .checkbox-custom { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--card-border); background: var(--neutral-bg); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; flex-shrink: 0; }
         .checkbox-custom.checked { background: var(--accent-green); border-color: var(--accent-green); color: #fff; }
         .item-label { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
         .item-amount-input { width: 75px; background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 10px; padding: 6px 6px; text-align: right; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
-
         .add-extra-form { display: flex; gap: 6px; margin-top: 10px; width: 100%; }
         .input-extra { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 12px; padding: 8px; font-size: 0.82rem; font-weight: 600; min-width: 0; width: 100%; }
-        .input-extra.name { flex: 1.8; }
-        .input-extra.amount { flex: 1; text-align: right; }
         .btn-add { background: var(--accent-blue); color: #fff; border: none; border-radius: 12px; padding: 0 12px; font-weight: 800; cursor: pointer; flex-shrink: 0; }
-
         .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-action {
-            flex: 1; padding: 14px; border-radius: 20px; border: 1px solid var(--card-border);
-            font-weight: 800; font-size: 0.88rem; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; gap: 6px; box-shadow: var(--card-shadow);
-        }
+        .btn-action { flex: 1; padding: 14px; border-radius: 20px; border: 1px solid var(--card-border); font-weight: 800; font-size: 0.88rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: var(--card-shadow); }
         .btn-whatsapp { background: #25D366; color: #000; min-width: 45%; }
         .btn-pdf { background: var(--accent-purple); color: #fff; min-width: 45%; }
         .btn-reset { background: var(--neutral-bg); color: var(--text-sub); width: 100%; }
 
         /* Modal Settings */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-            display: none; align-items: center; justify-content: center; z-index: 100;
-            padding: 16px; opacity: 0; transition: opacity 0.3s ease;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; opacity: 0; transition: opacity 0.3s ease; }
         .modal-overlay.active { display: flex; opacity: 1; }
-        .modal-content {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 24px; padding: 24px; width: 100%; max-width: 340px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6); transform: scale(0.95); transition: transform 0.3s ease;
-        }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 24px; width: 100%; max-width: 340px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); transform: scale(0.95); transition: transform 0.3s ease; }
         .modal-overlay.active .modal-content { transform: scale(1); }
         .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
         .form-label { font-size: 0.8rem; font-weight: 700; color: var(--text-sub); }
@@ -147,7 +76,6 @@
     <div class="top-bar">
         <h1 class="header-title">📊 Economía CDMO</h1>
         <div class="bar-actions">
-            <!-- Botón que abre el menú de avisos -->
             <button class="notif-btn" onclick="openConfig()" id="notifBtn">⚙️ Avisos</button>
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         </div>
@@ -162,18 +90,9 @@
     </div>
 
     <div class="glass-card summary-grid">
-        <div class="stat-bubble">
-            <div class="stat-label">Total Gastos</div>
-            <div class="stat-value" id="totalGastos">0,00 €</div>
-        </div>
-        <div class="stat-bubble">
-            <div class="stat-label">Pagados / Listos</div>
-            <div class="stat-value" id="totalPagados" style="color: var(--accent-blue);">0,00 €</div>
-        </div>
-        <div class="stat-bubble highlight">
-            <div class="stat-label">Parte Claudia (Reparto)</div>
-            <div class="stat-value total-green" id="parteClaudia">0,00 €</div>
-        </div>
+        <div class="stat-bubble"><div class="stat-label">Total Gastos</div><div class="stat-value" id="totalGastos">0,00 €</div></div>
+        <div class="stat-bubble"><div class="stat-label">Pagados / Listos</div><div class="stat-value" id="totalPagados" style="color: var(--accent-blue);">0,00 €</div></div>
+        <div class="stat-bubble highlight"><div class="stat-label">Parte Claudia (Reparto)</div><div class="stat-value total-green" id="parteClaudia">0,00 €</div></div>
     </div>
 
     <div class="glass-card" id="addExtraCard">
@@ -194,23 +113,12 @@
     </div>
 </div>
 
-<!-- Modal Configuración de Avisos (Nativo iOS) -->
 <div class="modal-overlay" id="configModal">
     <div class="modal-content">
         <h3 style="margin-top:0; color:var(--accent-blue); font-weight:800;">⚙️ Configurar Aviso</h3>
-        <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom: 16px;">
-            Añade un aviso inteligente a tu iPhone. Se repetirá cada mes de forma 100% nativa.
-        </p>
-        
-        <div class="form-group">
-            <label class="form-label">¿Qué día del mes?</label>
-            <input type="number" id="cfgDay" class="input-extra" min="1" max="31" value="28">
-        </div>
-        <div class="form-group">
-            <label class="form-label">¿A qué hora?</label>
-            <input type="time" id="cfgTime" class="input-extra" value="22:00">
-        </div>
-
+        <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom: 16px;">Añade un aviso inteligente al Calendario de tu iPhone.</p>
+        <div class="form-group"><label class="form-label">¿Qué día del mes?</label><input type="number" id="cfgDay" class="input-extra" min="1" max="31" value="28"></div>
+        <div class="form-group"><label class="form-label">¿A qué hora?</label><input type="time" id="cfgTime" class="input-extra" value="22:00"></div>
         <div class="actions" style="margin-top:20px;">
             <button class="btn-action" style="background:var(--accent-blue); color:#fff;" onclick="generateICS()">🗓️ Crear en iOS</button>
             <button class="btn-action" style="background:var(--neutral-bg); color:var(--text-main);" onclick="closeConfig()">Cancelar</button>
@@ -231,219 +139,96 @@
         { id: 's_seguros', cat: '🛡️ Seguros y Gastos Fijos', label: 'Seguros', amount: 0.00, isClaudia: true }
     ];
 
-    let db = {};
-    try { db = JSON.parse(localStorage.getItem('economia_cdmo_db')) || {}; } catch(e) { db = {}; }
+    let db = {}; try { db = JSON.parse(localStorage.getItem('economia_cdmo_db')) || {}; } catch(e) { db = {}; }
 
     function initTheme() {
         const savedTheme = localStorage.getItem('theme_preference') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
         document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
     }
-
     function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme_preference', newTheme);
-        document.getElementById('themeBtn').textContent = newTheme === 'dark' ? '🌙' : '☀️';
+        const curr = document.documentElement.getAttribute('data-theme'); const next = curr === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next); localStorage.setItem('theme_preference', next);
+        document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
     }
 
     /* Modal Controls */
     function openConfig() {
         document.getElementById('configModal').classList.add('active');
-        
-        // Recuperar preferencias previas si existen
-        const savedDay = localStorage.getItem('eco_alert_day');
-        const savedTime = localStorage.getItem('eco_alert_time');
-        if(savedDay) document.getElementById('cfgDay').value = savedDay;
-        if(savedTime) document.getElementById('cfgTime').value = savedTime;
+        const sd = localStorage.getItem('eco_alert_day'), st = localStorage.getItem('eco_alert_time');
+        if(sd) document.getElementById('cfgDay').value = sd;
+        if(st) document.getElementById('cfgTime').value = st;
     }
-    
-    function closeConfig() {
-        document.getElementById('configModal').classList.remove('active');
-    }
+    function closeConfig() { document.getElementById('configModal').classList.remove('active'); }
 
-    /* Sistema Nativo iOS (.ics) */
+    /* Fix Generación ICS para iOS Apple */
     function generateICS() {
-        const day = document.getElementById('cfgDay').value;
-        const time = document.getElementById('cfgTime').value; // Ej: "22:00"
+        const day = document.getElementById('cfgDay').value, time = document.getElementById('cfgTime').value;
+        localStorage.setItem('eco_alert_day', day); localStorage.setItem('eco_alert_time', time);
         
-        // Guardar para próxima vez
-        localStorage.setItem('eco_alert_day', day);
-        localStorage.setItem('eco_alert_time', time);
-        
-        // Cambiar botón a verde visualmente
         const btn = document.getElementById('notifBtn');
-        btn.textContent = '⚙️ Día ' + day;
-        btn.style.color = 'var(--accent-green)';
+        btn.textContent = '⚙️ Día ' + day; btn.style.color = 'var(--accent-green)';
         
         const [hour, minute] = time.split(':');
+        let now = new Date(), year = now.getFullYear(), month = now.getMonth() + 1;
+        if (now.getDate() > day) { month++; if (month > 12) { month = 1; year++; } }
         
-        let now = new Date();
-        let year = now.getFullYear();
-        let month = now.getMonth() + 1;
-        
-        // Si el día ya ha pasado este mes, iniciar el aviso el mes que viene
-        if (now.getDate() > day) {
-            month++;
-            if (month > 12) { month = 1; year++; }
-        }
-
-        const mStr = String(month).padStart(2, '0');
-        const dStr = String(day).padStart(2, '0');
+        const mStr = String(month).padStart(2, '0'), dStr = String(day).padStart(2, '0');
         const dtstart = `${year}${mStr}${dStr}T${hour}${minute}00`;
+        const dtstamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + "Z";
+        const uid = Date.now() + "@cdmo.app";
 
-        // Crear evento de calendario repetitivo mensual
-        const icsData = `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//CDMO//Economia//ES
-BEGIN:VEVENT
-SUMMARY:📊 Revisión de Economía CDMO
-DESCRIPTION:CHECKLIST MENSUAL ECONOMÍA FAMILIAR CASA DE CDMO.
-RRULE:FREQ=MONTHLY;BYMONTHDAY=${day}
-DTSTART;TZID=Europe/Madrid:${dtstart}
-BEGIN:VALARM
-ACTION:DISPLAY
-DESCRIPTION:Checklist Mensual
-TRIGGER:-PT0M
-END:VALARM
-END:VEVENT
-END:VCALENDAR`;
+        const icsData = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//CDMO//Economia//ES\nBEGIN:VEVENT\nUID:${uid}\nDTSTAMP:${dtstamp}\nSUMMARY:📊 Revisión de Economía CDMO\nDESCRIPTION:CHECKLIST MENSUAL ECONOMÍA FAMILIAR CASA DE CDMO.\nRRULE:FREQ=MONTHLY;BYMONTHDAY=${day}\nDTSTART;TZID=Europe/Madrid:${dtstart}\nDURATION:PT1H\nBEGIN:VALARM\nACTION:DISPLAY\nDESCRIPTION:Checklist Mensual\nTRIGGER:-PT0M\nEND:VALARM\nEND:VEVENT\nEND:VCALENDAR`;
 
         const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.href = url;
+        link.href = URL.createObjectURL(blob);
         link.setAttribute('download', 'economia_aviso.ics');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
         closeConfig();
     }
 
-    /* Al abrir la app, comprobar si ya configuraste un aviso */
     function checkConfigStatus() {
-        const savedDay = localStorage.getItem('eco_alert_day');
-        if(savedDay) {
-            const btn = document.getElementById('notifBtn');
-            btn.textContent = '⚙️ Día ' + savedDay;
-            btn.style.color = 'var(--accent-green)';
-        }
+        const sd = localStorage.getItem('eco_alert_day');
+        if(sd) { const btn = document.getElementById('notifBtn'); btn.textContent = '⚙️ Día ' + sd; btn.style.color = 'var(--accent-green)'; }
     }
 
     function getMonthKey() { return `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`; }
-
-    function initMonthData() {
-        const key = getMonthKey();
-        if (!db[key] || !Array.isArray(db[key].items)) { db[key] = { items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)), checked: {} }; }
-        if (!db[key].checked) db[key].checked = {};
-        saveDB();
-    }
-
+    function initMonthData() { const k = getMonthKey(); if (!db[k] || !Array.isArray(db[k].items)) { db[k] = { items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)), checked: {} }; } if (!db[k].checked) db[k].checked = {}; saveDB(); }
     function saveDB() { localStorage.setItem('economia_cdmo_db', JSON.stringify(db)); }
 
     function render() {
-        initMonthData();
-        const key = getMonthKey();
-        const monthData = db[key];
-        
+        initMonthData(); const monthData = db[getMonthKey()];
         const monthStr = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-        document.getElementById('monthTitle').textContent = monthStr;
-        document.getElementById('printTitle').textContent = 'Economía Familiar CDMO - ' + monthStr;
-
-        const container = document.getElementById('categoriesContainer');
-        container.innerHTML = '';
+        document.getElementById('monthTitle').textContent = monthStr; document.getElementById('printTitle').textContent = 'Economía Familiar CDMO - ' + monthStr;
+        const container = document.getElementById('categoriesContainer'); container.innerHTML = '';
         const categories = {};
-
-        if (Array.isArray(monthData.items)) {
-            monthData.items.forEach(item => {
-                if (!categories[item.cat]) categories[item.cat] = [];
-                categories[item.cat].push(item);
-            });
-        }
-
+        if (Array.isArray(monthData.items)) { monthData.items.forEach(item => { if (!categories[item.cat]) categories[item.cat] = []; categories[item.cat].push(item); }); }
         let grandTotal = 0, totalPagado = 0, parteClaudiaTotal = 0;
-
         for (const [catName, items] of Object.entries(categories)) {
-            const card = document.createElement('div');
-            card.className = 'glass-card';
-            card.style.marginBottom = '16px';
+            const card = document.createElement('div'); card.className = 'glass-card'; card.style.marginBottom = '16px';
             let html = `<div class="category-title">${catName}</div>`;
-
             items.forEach(item => {
-                const isChecked = !!(monthData.checked && monthData.checked[item.id]);
-                const amount = parseFloat(item.amount) || 0;
-                grandTotal += amount;
-                if (isChecked) totalPagado += amount;
-                if (item.isClaudia) parteClaudiaTotal += (amount / 2);
-
-                html += `
-                    <div class="item-row">
-                        <div class="item-left">
-                            <div class="checkbox-custom ${isChecked ? 'checked' : ''}" onclick="toggleCheck('${item.id}')">
-                                ${isChecked ? '✓' : ''}
-                            </div>
-                            <span class="item-label">${item.label}</span>
-                        </div>
-                        <input type="number" class="item-amount-input" value="${item.amount || ''}" placeholder="0.00" step="0.01" onchange="updateAmount('${item.id}', this.value)">
-                    </div>`;
+                const isChecked = !!(monthData.checked && monthData.checked[item.id]); const amount = parseFloat(item.amount) || 0;
+                grandTotal += amount; if (isChecked) totalPagado += amount; if (item.isClaudia) parteClaudiaTotal += (amount / 2);
+                html += `<div class="item-row"><div class="item-left"><div class="checkbox-custom ${isChecked ? 'checked' : ''}" onclick="toggleCheck('${item.id}')">${isChecked ? '✓' : ''}</div><span class="item-label">${item.label}</span></div><input type="number" class="item-amount-input" value="${item.amount || ''}" placeholder="0.00" step="0.01" onchange="updateAmount('${item.id}', this.value)"></div>`;
             });
-            card.innerHTML = html;
-            container.appendChild(card);
+            card.innerHTML = html; container.appendChild(card);
         }
-
         document.getElementById('totalGastos').textContent = `${grandTotal.toFixed(2).replace('.', ',')} €`;
         document.getElementById('totalPagados').textContent = `${totalPagado.toFixed(2).replace('.', ',')} €`;
         document.getElementById('parteClaudia').textContent = `${parteClaudiaTotal.toFixed(2).replace('.', ',')} €`;
     }
 
-    function toggleCheck(id) {
-        const key = getMonthKey();
-        if (!db[key].checked) db[key].checked = {};
-        db[key].checked[id] = !db[key].checked[id];
-        saveDB(); render();
-    }
-
-    function updateAmount(id, val) {
-        const key = getMonthKey();
-        const item = db[key].items.find(i => i.id === id);
-        if (item) { item.amount = parseFloat(val) || 0; saveDB(); render(); }
-    }
-
-    function addExtraItem() {
-        const nameInput = document.getElementById('extraName');
-        const amountInput = document.getElementById('extraAmount');
-        const name = nameInput.value.trim();
-        const amount = parseFloat(amountInput.value) || 0;
-        if (!name) return;
-        const key = getMonthKey();
-        db[key].items.push({ id: 'extra_' + Date.now(), cat: '⚡ Extras y Varios', label: name, amount: amount, isClaudia: true });
-        nameInput.value = ''; amountInput.value = ''; saveDB(); render();
-    }
-
+    function toggleCheck(id) { const k = getMonthKey(); if (!db[k].checked) db[k].checked = {}; db[k].checked[id] = !db[k].checked[id]; saveDB(); render(); }
+    function updateAmount(id, val) { const item = db[getMonthKey()].items.find(i => i.id === id); if (item) { item.amount = parseFloat(val) || 0; saveDB(); render(); } }
+    function addExtraItem() { const n = document.getElementById('extraName').value.trim(), a = parseFloat(document.getElementById('extraAmount').value) || 0; if (!n) return; db[getMonthKey()].items.push({ id: 'extra_' + Date.now(), cat: '⚡ Extras y Varios', label: n, amount: a, isClaudia: true }); document.getElementById('extraName').value = ''; document.getElementById('extraAmount').value = ''; saveDB(); render(); }
     function changeMonth(offset) { currentDate.setMonth(currentDate.getMonth() + offset); render(); }
-
-    function resetMonth() {
-        if (confirm('¿Borrar y reiniciar los datos de este mes?')) {
-            const key = getMonthKey();
-            db[key] = { items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)), checked: {} };
-            saveDB(); render();
-        }
-    }
-
+    function resetMonth() { if (confirm('¿Borrar y reiniciar los datos de este mes?')) { db[getMonthKey()] = { items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)), checked: {} }; saveDB(); render(); } }
     function sendWhatsApp() {
-        const monthName = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-        const key = getMonthKey();
-        let text = `📊 *Resumen Gastos CDMO - ${monthName}*\n\n`;
-        (db[key].items || []).forEach(i => {
-            if (i.amount > 0) {
-                const isChecked = db[key].checked && db[key].checked[i.id] ? '✅' : '⏳';
-                text += `${isChecked} ${i.label}: *${i.amount.toFixed(2)} €*\n`;
-            }
-        });
-        text += `\n💰 *Total Gastos:* ${document.getElementById('totalGastos').textContent}`;
-        text += `\n👧 *Parte Claudia (50%):* ${document.getElementById('parteClaudia').textContent}`;
+        const k = getMonthKey(); let text = `📊 *Resumen Gastos CDMO - ${currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}*\n\n`;
+        (db[k].items || []).forEach(i => { if (i.amount > 0) { text += `${db[k].checked && db[k].checked[i.id] ? '✅' : '⏳'} ${i.label}: *${i.amount.toFixed(2)} €*\n`; } });
+        text += `\n💰 *Total Gastos:* ${document.getElementById('totalGastos').textContent}\n👧 *Parte Claudia (50%):* ${document.getElementById('parteClaudia').textContent}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
 
