@@ -93,18 +93,22 @@
             display: flex; align-items: center; justify-content: space-between;
         }
 
-        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; min-width: 0; }
         .form-group:last-child { margin-bottom: 0; }
         .form-label { font-size: 0.78rem; font-weight: 700; color: var(--text-sub); }
 
         .input-text, .select-custom {
             width: 100%; background: var(--input-bg); border: 1px solid var(--card-border);
-            color: var(--text-main); border-radius: 12px; padding: 10px 12px;
-            font-size: 0.9rem; font-weight: 700; outline: none;
+            color: var(--text-main); border-radius: 12px; padding: 10px 8px;
+            font-size: 0.88rem; font-weight: 700; outline: none; text-overflow: ellipsis;
+        }
+        input[type="date"] {
+            font-size: 0.82rem;
+            padding: 10px 4px;
         }
 
-        .form-row { display: flex; gap: 10px; }
-        .form-row .form-group { flex: 1; }
+        .form-row { display: flex; gap: 10px; width: 100%; }
+        .form-row .form-group { flex: 1; min-width: 0; }
 
         /* Resultados */
         .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
@@ -121,12 +125,22 @@
         .breakdown-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--card-border); }
         .breakdown-item:last-child { border-bottom: none; }
 
+        /* Acordeón de Historial Guardado */
+        .history-card { border-bottom: 1px solid var(--card-border); padding: 10px 0; }
+        .history-card:last-child { border-bottom: none; }
+        .history-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 6px 0; }
+        .history-header .arrow { font-size: 0.7rem; color: var(--text-sub); transition: transform 0.2s ease; margin-left: 6px; }
+        .history-details { display: none; background: var(--neutral-bg); border-radius: 12px; padding: 12px; margin-top: 8px; border: 1px solid var(--card-border); }
+        .history-card.expanded .history-details { display: block; }
+        .history-card.expanded .arrow { transform: rotate(180deg); }
+        .history-card.expanded .history-header { color: var(--accent-blue); }
+
         /* Botones Acción */
         .actions { display: flex; gap: 8px; margin-top: 8px; }
         .btn-action {
             flex: 1; padding: 12px 8px; border-radius: 16px; border: 1px solid var(--card-border);
             font-weight: 800; font-size: 0.82rem; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; gap: 6px;
+            align-items: center; justify-content: center; gap: 6px; box-shadow: var(--card-shadow);
         }
         .btn-whatsapp { background: #25D366; color: #000; }
         .btn-save { background: var(--accent-blue); color: #fff; }
@@ -135,7 +149,7 @@
         .tab-content { display: none; flex-direction: column; }
         .tab-content.active { display: flex; }
 
-        /* MODO IMPRESIÓN / PDF (Oculta botones y fondos) */
+        /* MODO IMPRESIÓN / PDF (Corrige solapamientos y fondos) */
         @media print {
             body { background: #ffffff !important; color: #000000 !important; }
             .top-bar, .tab-nav, .actions, .theme-toggle, .notif-btn { display: none !important; }
@@ -144,9 +158,27 @@
             .glass-card {
                 background: none !important; border: 1px solid #ccc !important;
                 box-shadow: none !important; color: #000000 !important; break-inside: avoid;
+                margin-bottom: 10px !important; padding: 15px !important;
             }
-            .input-text, .select-custom { background: none !important; color: #000 !important; border: 1px solid #aaa !important; }
-            .res-bubble { background: #f9f9f9 !important; border: 1px solid #ddd !important; }
+            .form-row {
+                display: flex !important;
+                flex-direction: row !important;
+                gap: 15px !important;
+                flex-wrap: nowrap !important;
+            }
+            .input-text, .select-custom, input[type="date"] {
+                background: transparent !important; 
+                color: #000 !important; 
+                border: none !important;
+                border-bottom: 1px dashed #999 !important; 
+                border-radius: 0 !important;
+                padding: 4px 0 !important; 
+                height: auto !important; 
+                font-size: 0.85rem !important;
+                -webkit-appearance: none !important; 
+                box-shadow: none !important;
+            }
+            .res-bubble { background: #f4f4f5 !important; border: 1px solid #ddd !important; }
             .res-val.green, #finIndemnizacionVal, .card-title { color: #000 !important; }
         }
     </style>
@@ -169,7 +201,6 @@
         <button class="tab-btn" id="btn_tabHistorial" onclick="setTab('tabHistorial')">📁 Historial</button>
     </div>
 
-    <!-- 1️⃣ PESTAÑA NÓMINA -->
     <div class="tab-content active" id="tabNomina">
         <div class="glass-card">
             <div class="card-title">🔍 Verificador de Nómina (2026)</div>
@@ -223,7 +254,6 @@
         </div>
     </div>
 
-    <!-- 2️⃣ PESTAÑA EMBARGO -->
     <div class="tab-content" id="tabEmbargo">
         <div class="glass-card">
             <div class="card-title">⚖️ Calculadora Embargo (Art. 607)</div>
@@ -270,7 +300,6 @@
         </div>
     </div>
 
-    <!-- 3️⃣ PESTAÑA FINIQUITO -->
     <div class="tab-content" id="tabFiniquito">
         <div class="glass-card">
             <div class="card-title">💼 Simulador de Finiquito & Despido</div>
@@ -339,12 +368,11 @@
         </div>
     </div>
 
-    <!-- 4️⃣ PESTAÑA HISTORIAL -->
     <div class="tab-content" id="tabHistorial">
         <div class="glass-card">
             <div class="card-title">
                 <span>📁 Nóminas Guardadas</span>
-                <button style="background:none; border:none; color:#ef4444; font-weight:800; cursor:pointer;" onclick="clearHistorial()">Borrar Todo</button>
+                <button style="background:none; border:none; color:#ef4444; font-weight:800; cursor:pointer; font-size:0.75rem;" onclick="clearHistorial()">Borrar Todo</button>
             </div>
             <div class="breakdown-list" id="historialList"></div>
         </div>
@@ -372,6 +400,17 @@
         document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem('theme_preference', next);
         document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
+    }
+
+    /* Comprobar si las notificaciones ya estaban activas para pintar el botón de inicio */
+    function checkNotificationStatus() {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            const btn = document.getElementById('notifBtn');
+            if(btn) {
+                btn.textContent = '🔔 Activo';
+                btn.style.color = 'var(--accent-green)';
+            }
+        }
     }
 
     function enableNotifications() {
@@ -422,19 +461,58 @@
         const bruto = document.getElementById('nomBruto').value;
         const neto = document.getElementById('nomNetoVal').textContent;
         const dateStr = new Date().toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
+        
+        // Guardar todos los detalles extra
+        const details = {
+            pagas: document.getElementById('nomPagas').value,
+            irpfPct: document.getElementById('nomIrpf').value,
+            cc: document.getElementById('nomCcVal').textContent,
+            des: document.getElementById('nomDesempleoVal').textContent,
+            fp: document.getElementById('nomFpVal').textContent,
+            mei: document.getElementById('nomMeiVal').textContent,
+            totalSs: document.getElementById('nomTotalSsVal').textContent,
+            totalIrpf: document.getElementById('nomTotalIrpfVal').textContent
+        };
+
         let history = JSON.parse(localStorage.getItem('laboral_cdmo_history')) || [];
-        history.unshift({ date: dateStr, bruto: bruto + ' €', neto: neto });
+        history.unshift({ id: Date.now(), date: dateStr, bruto: bruto + ' €', neto: neto, details: details });
         localStorage.setItem('laboral_cdmo_history', JSON.stringify(history));
-        alert('¡Nómina guardada en tu Historial privado!');
+        
+        alert('¡Nómina detallada guardada en tu Historial privado!');
+    }
+
+    function toggleHistory(id) {
+        const el = document.getElementById('hist_' + id);
+        if(el) el.classList.toggle('expanded');
     }
 
     function renderHistorial() {
         const history = JSON.parse(localStorage.getItem('laboral_cdmo_history')) || [];
         const container = document.getElementById('historialList');
-        if (history.length === 0) return container.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:10px;">No hay datos.</div>';
+        if (history.length === 0) return container.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:10px;">No hay nóminas guardadas.</div>';
+        
         let html = '';
-        history.forEach(item => {
-            html += `<div class="breakdown-item"><span><strong>${item.date}</strong> - Bruto: ${item.bruto}</span><strong style="color:var(--accent-green);">${item.neto}</strong></div>`;
+        history.forEach((item, index) => {
+            const uid = item.id || index;
+            const det = item.details || {}; 
+            
+            html += `
+            <div class="history-card" id="hist_${uid}">
+                <div class="history-header" onclick="toggleHistory('${uid}')">
+                    <span><strong>${item.date}</strong> - Bruto: ${item.bruto}</span>
+                    <span><strong style="color:var(--accent-green);">${item.neto}</strong> <span class="arrow">▼</span></span>
+                </div>
+                <div class="history-details">
+                    <div class="breakdown-item"><span>Pagas Anuales:</span><strong>${det.pagas || '-'}</strong></div>
+                    <div class="breakdown-item"><span>Retención IRPF:</span><strong>${det.irpfPct ? det.irpfPct + '%' : '-'}</strong></div>
+                    <div class="breakdown-item"><span>C. Comunes (4.70%):</span><strong>${det.cc || '-'}</strong></div>
+                    <div class="breakdown-item"><span>Desempleo:</span><strong>${det.des || '-'}</strong></div>
+                    <div class="breakdown-item"><span>Formación (0.10%):</span><strong>${det.fp || '-'}</strong></div>
+                    <div class="breakdown-item"><span>MEI 2026 (0.15%):</span><strong>${det.mei || '-'}</strong></div>
+                    <div class="breakdown-item" style="color: var(--accent-orange);"><span>Total SS Deducido:</span><strong>${det.totalSs || '-'}</strong></div>
+                    <div class="breakdown-item" style="color: var(--accent-purple);"><span>Total IRPF Aplicado:</span><strong>${det.totalIrpf || '-'}</strong></div>
+                </div>
+            </div>`;
         });
         container.innerHTML = html;
     }
@@ -501,7 +579,6 @@
         const diffDays = Math.ceil((fFin - fInicio) / (1000 * 60 * 60 * 24));
         const años = diffDays / 365;
         
-        // El salario base anual depende de si las pagas están o no prorrateadas
         const salarioAnual = brutoMensual * pagas;
         const salarioDiario = salarioAnual / 365;
 
@@ -534,7 +611,7 @@
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     }
 
-    initTheme(); calcNomina(); calcEmbargo(); calcFiniquito(); scheduleMonthlyNotif();
+    initTheme(); checkNotificationStatus(); calcNomina(); calcEmbargo(); calcFiniquito(); scheduleMonthlyNotif();
 </script>
 <script> if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); } </script>
 </body>
