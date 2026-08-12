@@ -8,110 +8,51 @@
     <title>Comedor Olivia - NSDP</title>
     <style>
         * { box-sizing: border-box; }
-
-        :root {
-            --bg-grad: linear-gradient(180deg, #0b1120 0%, #172554 100%);
-            --card-bg: rgba(30, 41, 59, 0.65);
-            --card-border: rgba(255, 255, 255, 0.15);
-            --card-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.37);
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
-            --green-yes: #10b981;
-            --green-glow: rgba(16, 185, 129, 0.3);
-            --red-no: #ef4444;
-            --red-glow: rgba(239, 68, 68, 0.3);
-            --neutral-bg: rgba(255, 255, 255, 0.06);
-            --accent-blue: #3b82f6;
-            --accent-purple: #8b5cf6;
-        }
-
-        [data-theme="light"] {
-            --bg-grad: linear-gradient(180deg, #e0f2fe 0%, #f0f9ff 100%);
-            --card-bg: rgba(255, 255, 255, 0.75);
-            --card-border: rgba(255, 255, 255, 0.85);
-            --card-shadow: 0 10px 30px 0 rgba(148, 163, 184, 0.25);
-            --text-main: #0f172a;
-            --text-sub: #64748b;
-            --green-yes: #059669;
-            --green-glow: rgba(5, 150, 105, 0.2);
-            --red-no: #dc2626;
-            --red-glow: rgba(220, 38, 38, 0.2);
-            --neutral-bg: rgba(0, 0, 0, 0.04);
-            --accent-blue: #2563eb;
-            --accent-purple: #7c3aed;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, sans-serif;
-            background: var(--bg-grad); color: var(--text-main);
-            margin: 0; padding: 16px; min-height: 100vh;
-            display: flex; justify-content: center;
-            transition: background 0.4s ease, color 0.4s ease;
-        }
-
+        :root { --bg-grad: linear-gradient(180deg, #0b1120 0%, #172554 100%); --card-bg: rgba(30, 41, 59, 0.65); --card-border: rgba(255, 255, 255, 0.15); --card-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.37); --text-main: #f8fafc; --text-sub: #94a3b8; --green-yes: #10b981; --green-glow: rgba(16, 185, 129, 0.3); --red-no: #ef4444; --red-glow: rgba(239, 68, 68, 0.3); --neutral-bg: rgba(255, 255, 255, 0.06); --accent-blue: #3b82f6; --accent-purple: #8b5cf6; }
+        [data-theme="light"] { --bg-grad: linear-gradient(180deg, #e0f2fe 0%, #f0f9ff 100%); --card-bg: rgba(255, 255, 255, 0.75); --card-border: rgba(255, 255, 255, 0.85); --card-shadow: 0 10px 30px 0 rgba(148, 163, 184, 0.25); --text-main: #0f172a; --text-sub: #64748b; --green-yes: #059669; --green-glow: rgba(5, 150, 105, 0.2); --red-no: #dc2626; --red-glow: rgba(220, 38, 38, 0.2); --neutral-bg: rgba(0, 0, 0, 0.04); --accent-blue: #2563eb; --accent-purple: #7c3aed; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; background: var(--bg-grad); color: var(--text-main); margin: 0; padding: 16px; min-height: 100vh; display: flex; justify-content: center; transition: background 0.4s ease, color 0.4s ease; }
         .container { max-width: 420px; width: 100%; display: flex; flex-direction: column; gap: 16px; padding-bottom: 20px; }
-
         .top-bar { display: flex; align-items: center; justify-content: space-between; }
         .header-title { font-size: 1.35rem; font-weight: 800; margin: 0; background: linear-gradient(135deg, var(--green-yes) 0%, var(--accent-blue) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
         .bar-actions { display: flex; gap: 6px; }
-        .theme-toggle, .notif-btn {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 50px; padding: 6px 12px; cursor: pointer;
-            backdrop-filter: blur(20px); box-shadow: var(--card-shadow);
-            font-size: 0.82rem; font-weight: 700; color: var(--text-main);
-            display: flex; align-items: center; gap: 4px;
-        }
-
-        .glass-card {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 24px; padding: 16px; backdrop-filter: blur(25px);
-            box-shadow: var(--card-shadow); transition: all 0.3s ease;
-        }
-
+        .theme-toggle, .notif-btn { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 50px; padding: 6px 12px; cursor: pointer; backdrop-filter: blur(20px); box-shadow: var(--card-shadow); font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 4px; }
+        .glass-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 16px; backdrop-filter: blur(25px); box-shadow: var(--card-shadow); }
         .month-selector { display: flex; align-items: center; justify-content: space-between; }
         .month-btn { background: var(--neutral-bg); border: 1px solid var(--card-border); color: var(--text-main); font-size: 1.2rem; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .month-title { font-weight: 800; font-size: 1.1rem; text-transform: capitalize; }
-
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .stat-bubble { background: var(--neutral-bg); border-radius: 18px; padding: 12px; text-align: center; border: 1px solid var(--card-border); }
         .stat-bubble.total { grid-column: span 2; background: var(--green-glow); border-color: var(--green-yes); }
         .stat-label { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
         .stat-value { font-size: 1.4rem; font-weight: 800; }
         .stat-value.total-val { color: var(--green-yes); font-size: 1.8rem; }
-
         .price-config { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.82rem; color: var(--text-sub); margin-top: 6px; }
         .price-input { width: 60px; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 8px; padding: 2px 6px; text-align: center; font-weight: 700; }
-
         .weekdays-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 800; font-size: 0.8rem; color: var(--text-sub); margin-bottom: 12px; }
         .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-
-        .day-btn {
-            aspect-ratio: 1; border-radius: 16px; border: 1px solid var(--card-border);
-            background: var(--neutral-bg); color: var(--text-main); font-weight: 700;
-            font-size: 0.9rem; display: flex; flex-direction: column; align-items: center;
-            justify-content: center; cursor: pointer; transition: transform 0.15s ease;
-        }
+        .day-btn { aspect-ratio: 1; border-radius: 16px; border: 1px solid var(--card-border); background: var(--neutral-bg); color: var(--text-main); font-weight: 700; font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s ease; }
         .day-btn:active { transform: scale(0.92); }
         .day-btn.empty { background: transparent; border: none; cursor: default; }
         .day-btn.weekend { opacity: 0.3; }
         .day-btn.yes { background: var(--green-yes); color: #fff; border-color: rgba(255,255,255,0.4); box-shadow: 0 4px 15px var(--green-glow); }
         .day-btn.no { background: var(--red-no); color: #fff; border-color: rgba(255,255,255,0.3); box-shadow: 0 4px 15px var(--red-glow); }
         .day-status { font-size: 0.58rem; margin-top: 2px; font-weight: 900; }
-
         .actions { display: flex; gap: 8px; }
-        .btn-action {
-            flex: 1; padding: 12px 8px; border-radius: 20px; border: 1px solid var(--card-border);
-            font-weight: 800; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: var(--card-shadow);
-        }
+        .btn-action { flex: 1; padding: 12px 8px; border-radius: 20px; border: 1px solid var(--card-border); font-weight: 800; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: var(--card-shadow); }
         .btn-whatsapp { background: #25D366; color: #000; }
         .btn-reset { background: var(--neutral-bg); color: var(--text-sub); }
         .btn-pdf { background: var(--accent-purple); color: #fff; }
 
-        /* MODO IMPRESIÓN / PDF */
+        /* Modal iOS */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 24px; width: 100%; max-width: 340px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .form-label { font-size: 0.8rem; font-weight: 700; color: var(--text-sub); }
+
         @media print {
             body { background: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .top-bar, .month-selector, .actions, .price-config { display: none !important; }
+            .top-bar, .month-selector, .actions, .price-config, .modal-overlay { display: none !important; }
             .glass-card { background: none !important; border: 1px solid #ccc !important; box-shadow: none !important; break-inside: avoid; color: #000 !important; margin-bottom: 20px; }
             .stat-bubble { background: #f4f4f5 !important; border: 1px solid #ccc !important; }
             .stat-bubble.total { background: rgba(16, 185, 129, 0.1) !important; }
@@ -131,7 +72,7 @@
     <div class="top-bar">
         <h1 class="header-title">🍱 Comedor Olivia</h1>
         <div class="bar-actions">
-            <button class="notif-btn" onclick="enableNotifications()" id="notifBtn">🔔 Avisos 22h</button>
+            <button class="notif-btn" onclick="openConfig()" id="notifBtn">⚙️ Avisos</button>
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         </div>
     </div>
@@ -145,181 +86,92 @@
     </div>
 
     <div class="glass-card summary-grid">
-        <div class="stat-bubble">
-            <div class="stat-label">Días Asiste</div>
-            <div class="stat-value" id="countYes" style="color: var(--green-yes);">0</div>
-        </div>
-        <div class="stat-bubble">
-            <div class="stat-label">Días No Asiste</div>
-            <div class="stat-value" id="countNo" style="color: var(--red-no);">0</div>
-        </div>
-        <div class="stat-bubble total">
-            <div class="stat-label">Total Mes (Colegio NSDP)</div>
-            <div class="stat-value total-val" id="totalAmount">0,00 €</div>
-            <div class="price-config">
-                <span>Precio/menú:</span>
-                <input type="number" id="priceInput" class="price-input" value="8.90" step="0.10" onchange="updatePrice(this.value)"> €
-            </div>
-        </div>
+        <div class="stat-bubble"><div class="stat-label">Días Asiste</div><div class="stat-value" id="countYes" style="color: var(--green-yes);">0</div></div>
+        <div class="stat-bubble"><div class="stat-label">Días No Asiste</div><div class="stat-value" id="countNo" style="color: var(--red-no);">0</div></div>
+        <div class="stat-bubble total"><div class="stat-label">Total Mes (Colegio NSDP)</div><div class="stat-value total-val" id="totalAmount">0,00 €</div><div class="price-config"><span>Precio/menú:</span><input type="number" id="priceInput" class="price-input" value="8.90" step="0.10" onchange="updatePrice(this.value)"> €</div></div>
     </div>
 
     <div class="glass-card">
-        <div class="weekdays-grid">
-            <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
-        </div>
+        <div class="weekdays-grid"><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></div>
         <div class="days-grid" id="daysGrid"></div>
     </div>
 
     <div class="actions">
         <button class="btn-action btn-pdf" onclick="window.print()">📄 PDF</button>
-        <button class="btn-action btn-whatsapp" onclick="sendWhatsApp()">💬 WhatsApp</button>
         <button class="btn-action btn-reset" onclick="resetMonth()">🔄 Limpiar</button>
     </div>
 </div>
 
+<div class="modal-overlay" id="configModal">
+    <div class="modal-content">
+        <h3 style="margin-top:0; color:var(--accent-blue); font-weight:800;">⚙️ Configurar Aviso</h3>
+        <p style="font-size:0.8rem; color:var(--text-sub);">Aviso Diario en Calendario iOS.</p>
+        <div class="form-group"><label class="form-label">¿A qué hora te aviso?</label><input type="time" id="cfgTime" class="price-input" style="width:100%; text-align:left; font-size:1rem; padding:8px;" value="22:00"></div>
+        <div class="actions" style="margin-top:20px;">
+            <button class="btn-action" style="background:var(--accent-blue); color:#fff;" onclick="generateICS()">🗓️ Crear en iOS</button>
+            <button class="btn-action" style="background:var(--neutral-bg); color:var(--text-main);" onclick="closeConfig()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    let currentDate = new Date();
-    let pricePerMenu = 8.90;
-    let db = JSON.parse(localStorage.getItem('comedor_olivia_db')) || {};
+    let currentDate = new Date(), pricePerMenu = 8.90, db = JSON.parse(localStorage.getItem('comedor_olivia_db')) || {};
 
-    function initTheme() {
-        const savedTheme = localStorage.getItem('theme_preference') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
-    }
+    function initTheme() { const t = localStorage.getItem('theme_preference') || 'dark'; document.documentElement.setAttribute('data-theme', t); document.getElementById('themeBtn').textContent = t === 'dark' ? '🌙' : '☀️'; }
+    function toggleTheme() { const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme_preference', t); document.getElementById('themeBtn').textContent = t === 'dark' ? '🌙' : '☀️'; }
 
-    function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme_preference', newTheme);
-        document.getElementById('themeBtn').textContent = newTheme === 'dark' ? '🌙' : '☀️';
-    }
+    /* Fix ICS iOS Diario */
+    function openConfig() { document.getElementById('configModal').classList.add('active'); const t = localStorage.getItem('com_alert_time'); if(t) document.getElementById('cfgTime').value = t; }
+    function closeConfig() { document.getElementById('configModal').classList.remove('active'); }
+    
+    function generateICS() {
+        const time = document.getElementById('cfgTime').value;
+        localStorage.setItem('com_alert_time', time);
+        document.getElementById('notifBtn').textContent = '⚙️ ' + time; document.getElementById('notifBtn').style.color = 'var(--green-yes)';
+        
+        const [h, m] = time.split(':');
+        let now = new Date(), y = now.getFullYear(), mo = now.getMonth() + 1, d = now.getDate();
+        if (now.getHours() > h || (now.getHours() == h && now.getMinutes() >= m)) { now.setDate(now.getDate() + 1); y = now.getFullYear(); mo = now.getMonth() + 1; d = now.getDate(); }
 
-    function checkNotificationStatus() {
-        if ('Notification' in window && Notification.permission === 'granted') {
-            const btn = document.getElementById('notifBtn');
-            if(btn) {
-                btn.textContent = '🔔 Activo';
-                btn.style.color = 'var(--green-yes)';
-            }
-        }
-    }
+        const dtstart = `${y}${String(mo).padStart(2,'0')}${String(d).padStart(2,'0')}T${h}${m}00`;
+        const dtstamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + "Z";
+        const uid = Date.now() + "@cdmo.app";
 
-    function enableNotifications() {
-        if (!('Notification' in window)) return alert('Notificaciones no soportadas.');
-        Notification.requestPermission().then(perm => {
-            if (perm === 'granted') {
-                document.getElementById('notifBtn').textContent = '🔔 Activo';
-                document.getElementById('notifBtn').style.color = 'var(--green-yes)';
-                scheduleDailyNotification();
-                alert('¡Avisos activados a las 22:00h!');
-            }
-        });
+        const icsData = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//CDMO//Comedor//ES\nBEGIN:VEVENT\nUID:${uid}\nDTSTAMP:${dtstamp}\nSUMMARY:🍱 Comedor Olivia NSDP\nDESCRIPTION:Apuntar comedor de mañana.\nRRULE:FREQ=DAILY\nDTSTART;TZID=Europe/Madrid:${dtstart}\nDURATION:PT1H\nBEGIN:VALARM\nACTION:DISPLAY\nDESCRIPTION:Aviso Comedor\nTRIGGER:-PT0M\nEND:VALARM\nEND:VEVENT\nEND:VCALENDAR`;
+        const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.setAttribute('download', 'comedor.ics');
+        document.body.appendChild(link); link.click(); document.body.removeChild(link); closeConfig();
     }
-
-    function scheduleDailyNotification() {
-        if (Notification.permission === 'granted' && navigator.serviceWorker) {
-            const now = new Date();
-            if (now.getHours() === 22) {
-                new Notification('🍱 Comedor Olivia (Colegio NSDP)', {
-                    body: 'Recordatorio diario 22:00h: Revisa y apunta si Olivia asistirá al comedor mañana.',
-                    icon: 'https://danielcdmo.github.io/Proyectos-Apps-HTML/favicon.png'
-                });
-            }
-        }
-    }
+    function checkConfigStatus() { const t = localStorage.getItem('com_alert_time'); if(t) { const b = document.getElementById('notifBtn'); b.textContent = '⚙️ ' + t; b.style.color = 'var(--green-yes)'; } }
 
     function getMonthKey() { return `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`; }
-
-    function initMonthData() {
-        const key = getMonthKey();
-        if (!db[key]) { db[key] = { price: pricePerMenu, days: {} }; }
-        else if (db[key].price) { pricePerMenu = db[key].price; }
-        document.getElementById('priceInput').value = pricePerMenu;
-        saveDB();
-    }
-
+    function initMonthData() { const k = getMonthKey(); if (!db[k]) { db[k] = { price: pricePerMenu, days: {} }; } else if (db[k].price) { pricePerMenu = db[k].price; } document.getElementById('priceInput').value = pricePerMenu; saveDB(); }
     function saveDB() { localStorage.setItem('comedor_olivia_db', JSON.stringify(db)); }
 
     function render() {
-        initMonthData();
-        const key = getMonthKey();
-        const monthData = db[key].days;
-        
-        const monthStr = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-        document.getElementById('monthTitle').textContent = monthStr;
-        document.getElementById('printTitle').textContent = 'Comedor Olivia - ' + monthStr;
-
-        const grid = document.getElementById('daysGrid');
-        grid.innerHTML = '';
-
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-        const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
-        const totalDays = new Date(year, month + 1, 0).getDate();
-
-        for (let i = 0; i < firstDayIndex; i++) {
-            const emptyCell = document.createElement('div');
-            emptyCell.className = 'day-btn empty';
-            grid.appendChild(emptyCell);
+        initMonthData(); const monthData = db[getMonthKey()].days;
+        const mStr = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+        document.getElementById('monthTitle').textContent = mStr; document.getElementById('printTitle').textContent = 'Comedor Olivia - ' + mStr;
+        const grid = document.getElementById('daysGrid'); grid.innerHTML = '';
+        const y = currentDate.getFullYear(), m = currentDate.getMonth(), fDay = (new Date(y, m, 1).getDay() + 6) % 7, totDays = new Date(y, m + 1, 0).getDate();
+        for (let i = 0; i < fDay; i++) { const e = document.createElement('div'); e.className = 'day-btn empty'; grid.appendChild(e); }
+        let yes = 0, no = 0;
+        for (let d = 1; d <= totDays; d++) {
+            const btn = document.createElement('button'); btn.className = 'day-btn';
+            const dw = new Date(y, m, d).getDay(); if (dw === 0 || dw === 6) btn.classList.add('weekend');
+            const st = monthData[d]; let lh = `<span>${d}</span>`;
+            if (st === 'yes') { btn.classList.add('yes'); lh += `<span class="day-status">SÍ</span>`; yes++; } else if (st === 'no') { btn.classList.add('no'); lh += `<span class="day-status">NO</span>`; no++; }
+            btn.innerHTML = lh; btn.onclick = () => toggleDay(d); grid.appendChild(btn);
         }
-
-        let yesCount = 0, noCount = 0;
-
-        for (let day = 1; day <= totalDays; day++) {
-            const btn = document.createElement('button');
-            btn.className = 'day-btn';
-            const dayOfWeek = new Date(year, month, day).getDay();
-            if (dayOfWeek === 0 || dayOfWeek === 6) btn.classList.add('weekend');
-
-            const state = monthData[day];
-            let labelHtml = `<span>${day}</span>`;
-
-            if (state === 'yes') {
-                btn.classList.add('yes');
-                labelHtml += `<span class="day-status">SÍ</span>`;
-                yesCount++;
-            } else if (state === 'no') {
-                btn.classList.add('no');
-                labelHtml += `<span class="day-status">NO</span>`;
-                noCount++;
-            }
-
-            btn.innerHTML = labelHtml;
-            btn.onclick = () => toggleDay(day);
-            grid.appendChild(btn);
-        }
-
-        document.getElementById('countYes').textContent = yesCount;
-        document.getElementById('countNo').textContent = noCount;
-        const totalAmount = (yesCount * pricePerMenu).toFixed(2);
-        document.getElementById('totalAmount').textContent = `${totalAmount.replace('.', ',')} €`;
+        document.getElementById('countYes').textContent = yes; document.getElementById('countNo').textContent = no; document.getElementById('totalAmount').textContent = `${(yes * pricePerMenu).toFixed(2).replace('.', ',')} €`;
     }
+    function toggleDay(d) { const st = db[getMonthKey()].days; if (!st[d]) st[d] = 'yes'; else if (st[d] === 'yes') st[d] = 'no'; else delete st[d]; saveDB(); render(); }
+    function changeMonth(o) { currentDate.setMonth(currentDate.getMonth() + o); render(); }
+    function updatePrice(v) { pricePerMenu = parseFloat(v) || 0; db[getMonthKey()].price = pricePerMenu; saveDB(); render(); }
+    function resetMonth() { if (confirm('¿Borrar marcas?')) { db[getMonthKey()].days = {}; saveDB(); render(); } }
 
-    function toggleDay(day) {
-        const key = getMonthKey();
-        const currentStates = db[key].days;
-        if (!currentStates[day]) currentStates[day] = 'yes';
-        else if (currentStates[day] === 'yes') currentStates[day] = 'no';
-        else delete currentStates[day];
-        saveDB(); render();
-    }
-
-    function changeMonth(offset) { currentDate.setMonth(currentDate.getMonth() + offset); render(); }
-    function updatePrice(val) { pricePerMenu = parseFloat(val) || 0; db[getMonthKey()].price = pricePerMenu; saveDB(); render(); }
-    function resetMonth() { if (confirm('¿Borrar marcas de este mes?')) { db[getMonthKey()].days = {}; saveDB(); render(); } }
-
-    function sendWhatsApp() {
-        const monthName = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-        const text = `🍱 *Comedor Olivia (Colegio NSDP) - ${monthName}*\n\n` +
-                     `✅ Días asistidos: *${document.getElementById('countYes').textContent}*\n` +
-                     `💰 Total a pagar: *${document.getElementById('totalAmount').textContent}*`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-    }
-
-    initTheme(); checkNotificationStatus(); render(); scheduleDailyNotification();
+    initTheme(); checkConfigStatus(); render();
 </script>
-<script> if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); } </script>
+<script> if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js'); </script>
 </body>
 </html>
