@@ -5,179 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Calculadora Laboral & Embargos CDMO</title>
+    <title>Calculadora Laboral CDMO</title>
     <style>
         * { box-sizing: border-box; }
-
-        :root {
-            --bg-grad: linear-gradient(180deg, #000000 0%, #0f172a 100%);
-            --card-bg: rgba(30, 41, 59, 0.65);
-            --card-border: rgba(255, 255, 255, 0.12);
-            --card-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.5);
-            --text-main: #ffffff;
-            --text-sub: #94a3b8;
-            --accent-green: #30d158;
-            --accent-green-glow: rgba(48, 209, 88, 0.2);
-            --accent-blue: #0a84ff;
-            --accent-purple: #bf5af2;
-            --accent-orange: #ff9f0a;
-            --neutral-bg: rgba(255, 255, 255, 0.08);
-            --input-bg: rgba(15, 23, 42, 0.8);
-        }
-
-        [data-theme="light"] {
-            --bg-grad: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --card-border: rgba(255, 255, 255, 0.9);
-            --card-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.06);
-            --text-main: #0f172a;
-            --text-sub: #64748b;
-            --accent-green: #059669;
-            --accent-green-glow: rgba(5, 150, 105, 0.18);
-            --accent-blue: #0284c7;
-            --accent-purple: #7c3aed;
-            --accent-orange: #d97706;
-            --neutral-bg: rgba(0, 0, 0, 0.04);
-            --input-bg: rgba(255, 255, 255, 0.95);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, sans-serif;
-            background: var(--bg-grad); color: var(--text-main);
-            margin: 0; padding: 16px; min-height: 100vh;
-            display: flex; justify-content: center;
-            transition: background 0.4s ease, color 0.4s ease;
-        }
-
+        :root { --bg-grad: linear-gradient(180deg, #000000 0%, #0f172a 100%); --card-bg: rgba(30, 41, 59, 0.65); --card-border: rgba(255, 255, 255, 0.12); --card-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.5); --text-main: #ffffff; --text-sub: #94a3b8; --accent-green: #30d158; --accent-green-glow: rgba(48, 209, 88, 0.2); --accent-blue: #0a84ff; --accent-purple: #bf5af2; --accent-orange: #ff9f0a; --neutral-bg: rgba(255, 255, 255, 0.08); --input-bg: rgba(15, 23, 42, 0.8); }
+        [data-theme="light"] { --bg-grad: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%); --card-bg: rgba(255, 255, 255, 0.8); --card-border: rgba(255, 255, 255, 0.9); --card-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.06); --text-main: #0f172a; --text-sub: #64748b; --accent-green: #059669; --accent-green-glow: rgba(5, 150, 105, 0.18); --accent-blue: #0284c7; --accent-purple: #7c3aed; --accent-orange: #d97706; --neutral-bg: rgba(0, 0, 0, 0.04); --input-bg: rgba(255, 255, 255, 0.95); }
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; background: var(--bg-grad); color: var(--text-main); margin: 0; padding: 16px; min-height: 100vh; display: flex; justify-content: center; transition: background 0.4s ease, color 0.4s ease; }
         .container { max-width: 440px; width: 100%; display: flex; flex-direction: column; gap: 16px; padding-bottom: 30px; }
-
-        /* Header */
         .top-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .header-title {
-            font-size: 1.25rem; font-weight: 800; margin: 0;
-            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap;
-        }
-
+        .header-title { font-size: 1.25rem; font-weight: 800; margin: 0; background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
         .bar-actions { display: flex; gap: 6px; }
-        .theme-toggle, .notif-btn {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 50px; padding: 6px 12px; cursor: pointer;
-            backdrop-filter: blur(20px); box-shadow: var(--card-shadow);
-            font-size: 0.82rem; font-weight: 700; color: var(--text-main);
-            display: flex; align-items: center; gap: 4px; flex-shrink: 0;
-        }
-
-        /* Nav Pestañas */
-        .tab-nav {
-            display: flex; background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 18px; padding: 4px; gap: 4px; backdrop-filter: blur(20px);
-        }
-        .tab-btn {
-            flex: 1; padding: 10px 4px; border: none; background: transparent;
-            color: var(--text-sub); font-weight: 700; font-size: 0.78rem; border-radius: 14px;
-            cursor: pointer; transition: all 0.25s ease; text-align: center;
-        }
+        .theme-toggle, .notif-btn { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 50px; padding: 6px 12px; cursor: pointer; backdrop-filter: blur(20px); box-shadow: var(--card-shadow); font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+        .tab-nav { display: flex; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 4px; gap: 4px; backdrop-filter: blur(20px); }
+        .tab-btn { flex: 1; padding: 10px 4px; border: none; background: transparent; color: var(--text-sub); font-weight: 700; font-size: 0.78rem; border-radius: 14px; cursor: pointer; transition: all 0.25s ease; text-align: center; }
         .tab-btn.active { background: var(--accent-blue); color: #ffffff; box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3); }
-
-        /* Tarjetas */
-        .glass-card {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            border-radius: 24px; padding: 16px; backdrop-filter: blur(25px);
-            box-shadow: var(--card-shadow); width: 100%; margin-bottom: 14px;
-        }
-
-        .card-title {
-            font-size: 0.88rem; font-weight: 800; color: var(--accent-blue);
-            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;
-            display: flex; align-items: center; justify-content: space-between;
-        }
-
+        .glass-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 16px; backdrop-filter: blur(25px); box-shadow: var(--card-shadow); width: 100%; margin-bottom: 14px; }
+        .card-title { font-size: 0.88rem; font-weight: 800; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
         .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; min-width: 0; }
-        .form-group:last-child { margin-bottom: 0; }
         .form-label { font-size: 0.78rem; font-weight: 700; color: var(--text-sub); }
-
-        .input-text, .select-custom {
-            width: 100%; background: var(--input-bg); border: 1px solid var(--card-border);
-            color: var(--text-main); border-radius: 12px; padding: 10px 8px;
-            font-size: 0.88rem; font-weight: 700; outline: none; text-overflow: ellipsis;
-        }
-        input[type="date"] {
-            font-size: 0.82rem;
-            padding: 10px 4px;
-        }
-
+        .input-text, .select-custom { width: 100%; background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 12px; padding: 10px 8px; font-size: 0.88rem; font-weight: 700; outline: none; }
+        input[type="date"] { font-size: 0.82rem; padding: 10px 4px; }
         .form-row { display: flex; gap: 10px; width: 100%; }
         .form-row .form-group { flex: 1; min-width: 0; }
-
-        /* Resultados */
         .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .res-bubble {
-            background: var(--neutral-bg); border-radius: 16px; padding: 10px;
-            text-align: center; border: 1px solid var(--card-border);
-        }
+        .res-bubble { background: var(--neutral-bg); border-radius: 16px; padding: 10px; text-align: center; border: 1px solid var(--card-border); }
         .res-bubble.full { grid-column: span 2; background: var(--accent-green-glow); border-color: var(--accent-green); }
         .res-label { font-size: 0.68rem; color: var(--text-sub); text-transform: uppercase; font-weight: 700; }
         .res-val { font-size: 1.3rem; font-weight: 800; margin-top: 2px; }
         .res-val.green { color: var(--accent-green); font-size: 1.7rem; }
-
         .breakdown-list { margin-top: 10px; font-size: 0.82rem; }
         .breakdown-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--card-border); }
-        .breakdown-item:last-child { border-bottom: none; }
-
-        /* Acordeón de Historial Guardado */
         .history-card { border-bottom: 1px solid var(--card-border); padding: 10px 0; }
-        .history-card:last-child { border-bottom: none; }
         .history-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 6px 0; }
         .history-header .arrow { font-size: 0.7rem; color: var(--text-sub); transition: transform 0.2s ease; margin-left: 6px; }
         .history-details { display: none; background: var(--neutral-bg); border-radius: 12px; padding: 12px; margin-top: 8px; border: 1px solid var(--card-border); }
         .history-card.expanded .history-details { display: block; }
         .history-card.expanded .arrow { transform: rotate(180deg); }
-        .history-card.expanded .history-header { color: var(--accent-blue); }
-
-        /* Botones Acción */
         .actions { display: flex; gap: 8px; margin-top: 8px; }
-        .btn-action {
-            flex: 1; padding: 12px 8px; border-radius: 16px; border: 1px solid var(--card-border);
-            font-weight: 800; font-size: 0.82rem; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; gap: 6px; box-shadow: var(--card-shadow);
-        }
+        .btn-action { flex: 1; padding: 12px 8px; border-radius: 16px; border: 1px solid var(--card-border); font-weight: 800; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: var(--card-shadow); }
         .btn-whatsapp { background: #25D366; color: #000; }
         .btn-save { background: var(--accent-blue); color: #fff; }
         .btn-pdf { background: var(--accent-purple); color: #fff; }
-
         .tab-content { display: none; flex-direction: column; }
         .tab-content.active { display: flex; }
+        
+        /* Modal iOS */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 24px; width: 100%; max-width: 340px; }
 
-        /* MODO IMPRESIÓN / PDF (Corrige solapamientos y fondos) */
         @media print {
             body { background: #ffffff !important; color: #000000 !important; }
-            .top-bar, .tab-nav, .actions, .theme-toggle, .notif-btn { display: none !important; }
+            .top-bar, .tab-nav, .actions, .modal-overlay { display: none !important; }
             .tab-content { display: none; }
             .tab-content.active { display: block; }
-            .glass-card {
-                background: none !important; border: 1px solid #ccc !important;
-                box-shadow: none !important; color: #000000 !important; break-inside: avoid;
-                margin-bottom: 10px !important; padding: 15px !important;
-            }
-            .form-row {
-                display: flex !important;
-                flex-direction: row !important;
-                gap: 15px !important;
-                flex-wrap: nowrap !important;
-            }
-            .input-text, .select-custom, input[type="date"] {
-                background: transparent !important; 
-                color: #000 !important; 
-                border: none !important;
-                border-bottom: 1px dashed #999 !important; 
-                border-radius: 0 !important;
-                padding: 4px 0 !important; 
-                height: auto !important; 
-                font-size: 0.85rem !important;
-                -webkit-appearance: none !important; 
-                box-shadow: none !important;
-            }
+            .glass-card { background: none !important; border: 1px solid #ccc !important; box-shadow: none !important; color: #000000 !important; break-inside: avoid; margin-bottom: 10px !important; padding: 15px !important; }
+            .form-row { display: flex !important; flex-direction: row !important; gap: 15px !important; flex-wrap: nowrap !important; }
+            .input-text, .select-custom, input[type="date"] { background: transparent !important; color: #000 !important; border: none !important; border-bottom: 1px dashed #999 !important; padding: 4px 0 !important; height: auto !important; -webkit-appearance: none !important; }
             .res-bubble { background: #f4f4f5 !important; border: 1px solid #ddd !important; }
             .res-val.green, #finIndemnizacionVal, .card-title { color: #000 !important; }
         }
@@ -189,7 +73,7 @@
     <div class="top-bar">
         <h1 class="header-title">💼 Laboral CDMO 2026</h1>
         <div class="bar-actions">
-            <button class="notif-btn" onclick="enableNotifications()" id="notifBtn">🔔 Avisos</button>
+            <button class="notif-btn" onclick="openConfig()" id="notifBtn">⚙️ Avisos</button>
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         </div>
     </div>
@@ -201,418 +85,167 @@
         <button class="tab-btn" id="btn_tabHistorial" onclick="setTab('tabHistorial')">📁 Historial</button>
     </div>
 
+    <!-- Pestañas ... (Nómina, Embargo, Finiquito, Historial) -->
     <div class="tab-content active" id="tabNomina">
         <div class="glass-card">
-            <div class="card-title">🔍 Verificador de Nómina (2026)</div>
-            <div class="form-group">
-                <label class="form-label">Salario Bruto Mensual (€)</label>
-                <input type="number" id="nomBruto" class="input-text" value="2000" step="50" oninput="calcNomina()">
-            </div>
+            <div class="card-title">🔍 Verificador de Nómina</div>
+            <div class="form-group"><label class="form-label">Bruto Mensual (€)</label><input type="number" id="nomBruto" class="input-text" value="2000" step="50" oninput="calcNomina()"></div>
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Nº Pagas</label>
-                    <select id="nomPagas" class="select-custom" onchange="calcNomina()">
-                        <option value="12">12 Pagas</option>
-                        <option value="14" selected>14 Pagas</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">% Retención IRPF</label>
-                    <input type="number" id="nomIrpf" class="input-text" value="12.0" step="0.5" oninput="calcNomina()">
-                </div>
+                <div class="form-group"><label class="form-label">Nº Pagas</label><select id="nomPagas" class="select-custom" onchange="calcNomina()"><option value="12">12</option><option value="14" selected>14</option></select></div>
+                <div class="form-group"><label class="form-label">% IRPF</label><input type="number" id="nomIrpf" class="input-text" value="12.0" step="0.5" oninput="calcNomina()"></div>
             </div>
-            <div class="form-group">
-                <label class="form-label">Tipo de Contrato</label>
-                <select id="nomContrato" class="select-custom" onchange="calcNomina()">
-                    <option value="0.0155">Indefinido (1.55% Desempleo)</option>
-                    <option value="0.0160">Temporal (1.60% Desempleo)</option>
-                </select>
-            </div>
+            <div class="form-group"><label class="form-label">Contrato</label><select id="nomContrato" class="select-custom" onchange="calcNomina()"><option value="0.0155">Indefinido (1.55%)</option><option value="0.0160">Temporal (1.60%)</option></select></div>
         </div>
-
         <div class="glass-card">
-            <div class="card-title">📊 Resultado & Deducciones SS</div>
+            <div class="card-title">📊 Deducciones SS</div>
             <div class="breakdown-list">
-                <div class="breakdown-item"><span>Contingencias Comunes (4.70%):</span><strong id="nomCcVal">0,00 €</strong></div>
-                <div class="breakdown-item"><span>Desempleo (1.55% / 1.60%):</span><strong id="nomDesempleoVal">0,00 €</strong></div>
+                <div class="breakdown-item"><span>C. Comunes (4.70%):</span><strong id="nomCcVal">0,00 €</strong></div>
+                <div class="breakdown-item"><span>Desempleo:</span><strong id="nomDesempleoVal">0,00 €</strong></div>
                 <div class="breakdown-item"><span>Formación (0.10%):</span><strong id="nomFpVal">0,00 €</strong></div>
                 <div class="breakdown-item"><span>MEI 2026 (0.15%):</span><strong id="nomMeiVal">0,00 €</strong></div>
-                <div class="breakdown-item" style="color: var(--accent-orange); font-weight: 800;"><span>Total SS (6.50%):</span><strong id="nomTotalSsVal">0,00 €</strong></div>
-                <div class="breakdown-item" style="color: var(--accent-purple); font-weight: 800;"><span>Retención IRPF:</span><strong id="nomTotalIrpfVal">0,00 €</strong></div>
+                <div class="breakdown-item" style="color:var(--accent-orange); font-weight:800;"><span>Total SS:</span><strong id="nomTotalSsVal">0,00 €</strong></div>
+                <div class="breakdown-item" style="color:var(--accent-purple); font-weight:800;"><span>Retención IRPF:</span><strong id="nomTotalIrpfVal">0,00 €</strong></div>
             </div>
-            <div class="res-grid">
-                <div class="res-bubble full">
-                    <div class="res-label">Salario Neto / Líquido</div>
-                    <div class="res-val green" id="nomNetoVal">0,00 €</div>
-                </div>
-            </div>
-            <div class="actions">
-                <button class="btn-action btn-pdf" onclick="window.print()">📄 PDF</button>
-                <button class="btn-action btn-save" onclick="saveNomina()">💾 Guardar</button>
-                <button class="btn-action btn-whatsapp" onclick="sendNominaWA()">💬 WhatsApp</button>
-            </div>
+            <div class="res-grid"><div class="res-bubble full"><div class="res-label">Neto / Líquido</div><div class="res-val green" id="nomNetoVal">0,00 €</div></div></div>
+            <div class="actions"><button class="btn-action btn-pdf" onclick="window.print()">📄 PDF</button><button class="btn-action btn-save" onclick="saveNomina()">💾 Guardar</button></div>
         </div>
     </div>
 
+    <!-- Pestaña Embargo -->
     <div class="tab-content" id="tabEmbargo">
         <div class="glass-card">
-            <div class="card-title">⚖️ Calculadora Embargo (Art. 607)</div>
-            <div class="form-group">
-                <label class="form-label">Sueldo Neto Mensual (€)</label>
-                <input type="number" id="embNeto" class="input-text" value="1800" step="50" oninput="calcEmbargo()">
-            </div>
+            <div class="card-title">⚖️ Embargo (Art. 607)</div>
+            <div class="form-group"><label class="form-label">Neto Mensual (€)</label><input type="number" id="embNeto" class="input-text" value="1800" oninput="calcEmbargo()"></div>
             <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Estructura Pagas</label>
-                    <select id="embSmiTipo" class="select-custom" onchange="calcEmbargo()">
-                        <option value="1221">14 Pagas (SMI: 1.221 €)</option>
-                        <option value="1424.5">12 Pagas (SMI: 1.424,50 €)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Cargas Familiares</label>
-                    <select id="embCargas" class="select-custom" onchange="calcEmbargo()">
-                        <option value="0">0 cargas (0%)</option>
-                        <option value="0.10">1 a 2 (-10%)</option>
-                        <option value="0.15">3+ (-15%)</option>
-                    </select>
-                </div>
+                <div class="form-group"><label class="form-label">SMI</label><select id="embSmiTipo" class="select-custom" onchange="calcEmbargo()"><option value="1221">14 Pagas</option><option value="1424.5">12 Pagas</option></select></div>
+                <div class="form-group"><label class="form-label">Cargas</label><select id="embCargas" class="select-custom" onchange="calcEmbargo()"><option value="0">0</option><option value="0.10">1-2 (-10%)</option><option value="0.15">3+ (-15%)</option></select></div>
             </div>
         </div>
-
         <div class="glass-card">
-            <div class="card-title">📐 Desglose por Tramos</div>
+            <div class="card-title">📐 Tramos</div>
             <div class="breakdown-list" id="embTramosList"></div>
             <div class="res-grid">
-                <div class="res-bubble">
-                    <div class="res-label">Total Embargable</div>
-                    <div class="res-val" style="color: #ef4444;" id="embRetencionVal">0,00 €</div>
-                </div>
-                <div class="res-bubble">
-                    <div class="res-label">Sueldo Libre</div>
-                    <div class="res-val green" id="embLimpioVal">0,00 €</div>
-                </div>
+                <div class="res-bubble"><div class="res-label">Embargable</div><div class="res-val" style="color:#ef4444;" id="embRetencionVal">0,00 €</div></div>
+                <div class="res-bubble"><div class="res-label">Libre</div><div class="res-val green" id="embLimpioVal">0,00 €</div></div>
             </div>
-            <div class="actions">
-                <button class="btn-action btn-pdf" onclick="window.print()">📄 PDF</button>
-                <button class="btn-action btn-whatsapp" onclick="sendEmbargoWA()">💬 WhatsApp</button>
-            </div>
+            <div class="actions"><button class="btn-action btn-pdf" onclick="window.print()">📄 PDF</button></div>
         </div>
     </div>
 
+    <!-- Pestaña Finiquito -->
     <div class="tab-content" id="tabFiniquito">
         <div class="glass-card">
-            <div class="card-title">💼 Simulador de Finiquito & Despido</div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Bruto Mensual (€)</label>
-                    <input type="number" id="finBruto" class="input-text" value="2000" oninput="calcFiniquito()">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Nº Pagas</label>
-                    <select id="finPagas" class="select-custom" onchange="calcFiniquito()">
-                        <option value="12">12 Pagas</option>
-                        <option value="14" selected>14 Pagas</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Fecha Inicio</label>
-                    <input type="date" id="finInicio" class="input-text" value="2023-01-01" onchange="calcFiniquito()">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Fecha Fin / Despido</label>
-                    <input type="date" id="finFin" class="input-text" value="2026-08-31" onchange="calcFiniquito()">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Causa del Fin de Contrato</label>
-                <select id="finCausa" class="select-custom" onchange="calcFiniquito()">
-                    <option value="33">Despido Improcedente (33 días/año)</option>
-                    <option value="20">Despido Objetivo / ETE (20 días/año)</option>
-                    <option value="12">Fin Contrato Temporal (12 días/año)</option>
-                    <option value="0">Baja Voluntaria / Dimisión (0 días)</option>
-                </select>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Días mes trabajados</label>
-                    <input type="number" id="finDiasMes" class="input-text" value="30" max="31" oninput="calcFiniquito()">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Vacaciones no disfrutadas</label>
-                    <input type="number" id="finVacaciones" class="input-text" value="5" oninput="calcFiniquito()">
-                </div>
-            </div>
+            <div class="card-title">💼 Finiquito</div>
+            <div class="form-row"><div class="form-group"><label class="form-label">Bruto Mes</label><input type="number" id="finBruto" class="input-text" value="2000" oninput="calcFiniquito()"></div><div class="form-group"><label class="form-label">Pagas</label><select id="finPagas" class="select-custom" onchange="calcFiniquito()"><option value="12">12</option><option value="14" selected>14</option></select></div></div>
+            <div class="form-row"><div class="form-group"><label class="form-label">Inicio</label><input type="date" id="finInicio" class="input-text" value="2023-01-01" onchange="calcFiniquito()"></div><div class="form-group"><label class="form-label">Fin</label><input type="date" id="finFin" class="input-text" value="2026-08-31" onchange="calcFiniquito()"></div></div>
+            <div class="form-group"><label class="form-label">Causa</label><select id="finCausa" class="select-custom" onchange="calcFiniquito()"><option value="33">Improcedente (33d)</option><option value="20">Objetivo (20d)</option><option value="12">Temporal (12d)</option><option value="0">Baja Voluntaria</option></select></div>
+            <div class="form-row"><div class="form-group"><label class="form-label">Días mes</label><input type="number" id="finDiasMes" class="input-text" value="30" max="31" oninput="calcFiniquito()"></div><div class="form-group"><label class="form-label">Vacaciones</label><input type="number" id="finVacaciones" class="input-text" value="5" oninput="calcFiniquito()"></div></div>
         </div>
-
         <div class="glass-card">
-            <div class="card-title">💵 Estimación de Indemnización</div>
+            <div class="card-title">💵 A Recibir</div>
             <div class="breakdown-list">
-                <div class="breakdown-item"><span>Antigüedad Reconocida:</span><strong id="finTiempoVal">0 años</strong></div>
-                <div class="breakdown-item"><span>Salario Diario Base:</span><strong id="finDiarioVal">0,00 €/día</strong></div>
-                <div class="breakdown-item"><span>Indemnización por Despido:</span><strong id="finIndemnizacionVal" style="color: var(--accent-blue);">0,00 €</strong></div>
-                <div class="breakdown-item"><span>Días Mes + Vacaciones:</span><strong id="finLiquidacionVal">0,00 €</strong></div>
+                <div class="breakdown-item"><span>Antigüedad:</span><strong id="finTiempoVal">0 años</strong></div>
+                <div class="breakdown-item"><span>Salario Diario:</span><strong id="finDiarioVal">0,00 €</strong></div>
+                <div class="breakdown-item"><span>Indemnización:</span><strong id="finIndemnizacionVal" style="color:var(--accent-blue);">0,00 €</strong></div>
+                <div class="breakdown-item"><span>Días + Vacaciones:</span><strong id="finLiquidacionVal">0,00 €</strong></div>
             </div>
-            <div class="res-grid">
-                <div class="res-bubble full">
-                    <div class="res-label">Total Estimado a Recibir</div>
-                    <div class="res-val green" id="finTotalVal">0,00 €</div>
-                </div>
-            </div>
-            <div class="actions">
-                <button class="btn-action btn-pdf" onclick="window.print()">📄 PDF</button>
-                <button class="btn-action btn-whatsapp" onclick="sendFiniquitoWA()">💬 WhatsApp</button>
-            </div>
+            <div class="res-grid"><div class="res-bubble full"><div class="res-label">Total Recibir</div><div class="res-val green" id="finTotalVal">0,00 €</div></div></div>
+            <div class="actions"><button class="btn-action btn-pdf" onclick="window.print()">📄 PDF</button></div>
         </div>
     </div>
 
+    <!-- Pestaña Historial -->
     <div class="tab-content" id="tabHistorial">
         <div class="glass-card">
-            <div class="card-title">
-                <span>📁 Nóminas Guardadas</span>
-                <button style="background:none; border:none; color:#ef4444; font-weight:800; cursor:pointer; font-size:0.75rem;" onclick="clearHistorial()">Borrar Todo</button>
-            </div>
+            <div class="card-title"><span>📁 Nóminas</span><button style="background:none; border:none; color:#ef4444; font-weight:800; cursor:pointer;" onclick="clearHistorial()">Borrar</button></div>
             <div class="breakdown-list" id="historialList"></div>
         </div>
     </div>
 </div>
 
+<div class="modal-overlay" id="configModal">
+    <div class="modal-content">
+        <h3 style="margin-top:0; color:var(--accent-blue); font-weight:800;">⚙️ Configurar Aviso</h3>
+        <p style="font-size:0.8rem; color:var(--text-sub);">Aviso nativo mensual en Calendario iOS.</p>
+        <div class="form-group"><label class="form-label">Día del mes:</label><input type="number" id="cfgDay" class="input-text" min="1" max="31" value="25"></div>
+        <div class="form-group"><label class="form-label">Hora:</label><input type="time" id="cfgTime" class="input-text" value="20:00"></div>
+        <div class="actions" style="margin-top:20px;">
+            <button class="btn-action btn-save" onclick="generateICS()">🗓️ Crear en iOS</button>
+            <button class="btn-action" style="background:var(--neutral-bg); color:var(--text-main);" onclick="closeConfig()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    function setTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        document.getElementById('btn_' + tabId).classList.add('active');
-        if(tabId === 'tabHistorial') renderHistorial();
-    }
+    function setTab(tabId) { document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active')); document.getElementById(tabId).classList.add('active'); document.getElementById('btn_'+tabId).classList.add('active'); if(tabId==='tabHistorial') renderHistorial(); }
+    function initTheme() { const t=localStorage.getItem('theme_preference')||'dark'; document.documentElement.setAttribute('data-theme',t); document.getElementById('themeBtn').textContent = t==='dark'?'🌙':'☀️'; }
+    function toggleTheme() { const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'; document.documentElement.setAttribute('data-theme',t); localStorage.setItem('theme_preference',t); document.getElementById('themeBtn').textContent = t==='dark'?'🌙':'☀️'; }
 
-    function initTheme() {
-        const savedTheme = localStorage.getItem('theme_preference') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
-    }
+    function openConfig() { document.getElementById('configModal').classList.add('active'); const d=localStorage.getItem('lab_alert_day'),t=localStorage.getItem('lab_alert_time'); if(d) document.getElementById('cfgDay').value=d; if(t) document.getElementById('cfgTime').value=t; }
+    function closeConfig() { document.getElementById('configModal').classList.remove('active'); }
 
-    function toggleTheme() {
-        const curr = document.documentElement.getAttribute('data-theme');
-        const next = curr === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('theme_preference', next);
-        document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
-    }
+    /* Fix ICS iOS */
+    function generateICS() {
+        const day = document.getElementById('cfgDay').value, time = document.getElementById('cfgTime').value;
+        localStorage.setItem('lab_alert_day', day); localStorage.setItem('lab_alert_time', time);
+        
+        document.getElementById('notifBtn').textContent = '⚙️ Día ' + day; document.getElementById('notifBtn').style.color = 'var(--accent-green)';
+        
+        const [h, m] = time.split(':');
+        let now = new Date(), y = now.getFullYear(), mo = now.getMonth() + 1;
+        if (now.getDate() > day) { mo++; if (mo > 12) { mo = 1; y++; } }
+        
+        const dtstart = `${y}${String(mo).padStart(2,'0')}${String(day).padStart(2,'0')}T${h}${m}00`;
+        const dtstamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + "Z";
+        const uid = Date.now() + "@cdmo.app";
 
-    /* Comprobar si las notificaciones ya estaban activas para pintar el botón de inicio */
-    function checkNotificationStatus() {
-        if ('Notification' in window && Notification.permission === 'granted') {
-            const btn = document.getElementById('notifBtn');
-            if(btn) {
-                btn.textContent = '🔔 Activo';
-                btn.style.color = 'var(--accent-green)';
-            }
-        }
+        const icsData = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//CDMO//Laboral//ES\nBEGIN:VEVENT\nUID:${uid}\nDTSTAMP:${dtstamp}\nSUMMARY:💼 Revisar Nómina CDMO\nDESCRIPTION:Revisar nómina mensual.\nRRULE:FREQ=MONTHLY;BYMONTHDAY=${day}\nDTSTART;TZID=Europe/Madrid:${dtstart}\nDURATION:PT1H\nBEGIN:VALARM\nACTION:DISPLAY\nDESCRIPTION:Aviso Nómina\nTRIGGER:-PT0M\nEND:VALARM\nEND:VEVENT\nEND:VCALENDAR`;
+        const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.setAttribute('download', 'nomina.ics');
+        document.body.appendChild(link); link.click(); document.body.removeChild(link); closeConfig();
     }
-
-    function enableNotifications() {
-        if (!('Notification' in window)) return alert('Notificaciones no soportadas.');
-        Notification.requestPermission().then(perm => {
-            if (perm === 'granted') {
-                document.getElementById('notifBtn').textContent = '🔔 Activo';
-                document.getElementById('notifBtn').style.color = 'var(--accent-green)';
-                scheduleMonthlyNotif();
-                alert('Avisos activados: Día 25 a las 20:00h.');
-            }
-        });
-    }
-
-    function scheduleMonthlyNotif() {
-        if (Notification.permission === 'granted' && navigator.serviceWorker) {
-            const now = new Date();
-            if (now.getDate() === 25 && now.getHours() === 20) {
-                new Notification('💼 Laboral CDMO', { body: 'Revisar nómina', icon: 'https://danielcdmo.github.io/Proyectos-Apps-HTML/favicon.png' });
-            }
-        }
-    }
+    function checkConfigStatus() { const d = localStorage.getItem('lab_alert_day'); if(d) { const b = document.getElementById('notifBtn'); b.textContent = '⚙️ Día '+d; b.style.color = 'var(--accent-green)'; } }
 
     function calcNomina() {
-        const bruto = parseFloat(document.getElementById('nomBruto').value) || 0;
-        const pagas = parseInt(document.getElementById('nomPagas').value);
-        const irpfPct = parseFloat(document.getElementById('nomIrpf').value) || 0;
-        const desempleoRate = parseFloat(document.getElementById('nomContrato').value);
-        const baseCot = pagas === 14 ? bruto * (14/12) : bruto;
-        const cc = baseCot * 0.0470;
-        const desempleo = baseCot * desempleoRate;
-        const fp = baseCot * 0.010;
-        const mei = baseCot * 0.0015;
-        const totalSs = cc + desempleo + fp + mei;
-        const totalIrpf = bruto * (irpfPct / 100);
-        const neto = bruto - totalSs - totalIrpf;
-
-        document.getElementById('nomCcVal').textContent = cc.toFixed(2).replace('.', ',') + ' €';
-        document.getElementById('nomDesempleoVal').textContent = desempleo.toFixed(2).replace('.', ',') + ' €';
-        document.getElementById('nomFpVal').textContent = fp.toFixed(2).replace('.', ',') + ' €';
-        document.getElementById('nomMeiVal').textContent = mei.toFixed(2).replace('.', ',') + ' €';
-        document.getElementById('nomTotalSsVal').textContent = totalSs.toFixed(2).replace('.', ',') + ' €';
-        document.getElementById('nomTotalIrpfVal').textContent = totalIrpf.toFixed(2).replace('.', ',') + ' €';
-        document.getElementById('nomNetoVal').textContent = neto.toFixed(2).replace('.', ',') + ' €';
+        const b = parseFloat(document.getElementById('nomBruto').value)||0, p = parseInt(document.getElementById('nomPagas').value), i = parseFloat(document.getElementById('nomIrpf').value)||0, d = parseFloat(document.getElementById('nomContrato').value);
+        const bc = p === 14 ? b*(14/12) : b;
+        const cc = bc*0.0470, des = bc*d, fp = bc*0.010, mei = bc*0.0015, tSs = cc+des+fp+mei, tIr = b*(i/100), net = b-tSs-tIr;
+        document.getElementById('nomCcVal').textContent=cc.toFixed(2).replace('.',',')+' €'; document.getElementById('nomDesempleoVal').textContent=des.toFixed(2).replace('.',',')+' €'; document.getElementById('nomFpVal').textContent=fp.toFixed(2).replace('.',',')+' €'; document.getElementById('nomMeiVal').textContent=mei.toFixed(2).replace('.',',')+' €'; document.getElementById('nomTotalSsVal').textContent=tSs.toFixed(2).replace('.',',')+' €'; document.getElementById('nomTotalIrpfVal').textContent=tIr.toFixed(2).replace('.',',')+' €'; document.getElementById('nomNetoVal').textContent=net.toFixed(2).replace('.',',')+' €';
     }
-
     function saveNomina() {
-        const bruto = document.getElementById('nomBruto').value;
-        const neto = document.getElementById('nomNetoVal').textContent;
-        const dateStr = new Date().toLocaleDateString('es-ES', { month: 'short', year: 'numeric' });
-        
-        // Guardar todos los detalles extra
-        const details = {
-            pagas: document.getElementById('nomPagas').value,
-            irpfPct: document.getElementById('nomIrpf').value,
-            cc: document.getElementById('nomCcVal').textContent,
-            des: document.getElementById('nomDesempleoVal').textContent,
-            fp: document.getElementById('nomFpVal').textContent,
-            mei: document.getElementById('nomMeiVal').textContent,
-            totalSs: document.getElementById('nomTotalSsVal').textContent,
-            totalIrpf: document.getElementById('nomTotalIrpfVal').textContent
-        };
-
-        let history = JSON.parse(localStorage.getItem('laboral_cdmo_history')) || [];
-        history.unshift({ id: Date.now(), date: dateStr, bruto: bruto + ' €', neto: neto, details: details });
-        localStorage.setItem('laboral_cdmo_history', JSON.stringify(history));
-        
-        alert('¡Nómina detallada guardada en tu Historial privado!');
+        let h = JSON.parse(localStorage.getItem('laboral_cdmo_history'))||[];
+        h.unshift({ id: Date.now(), date: new Date().toLocaleDateString('es-ES', {month:'short',year:'numeric'}), bruto: document.getElementById('nomBruto').value+' €', neto: document.getElementById('nomNetoVal').textContent, details: { pagas: document.getElementById('nomPagas').value, irpfPct: document.getElementById('nomIrpf').value, cc: document.getElementById('nomCcVal').textContent, des: document.getElementById('nomDesempleoVal').textContent, fp: document.getElementById('nomFpVal').textContent, mei: document.getElementById('nomMeiVal').textContent, totalSs: document.getElementById('nomTotalSsVal').textContent, totalIrpf: document.getElementById('nomTotalIrpfVal').textContent } });
+        localStorage.setItem('laboral_cdmo_history', JSON.stringify(h)); alert('Guardado en Historial');
     }
-
-    function toggleHistory(id) {
-        const el = document.getElementById('hist_' + id);
-        if(el) el.classList.toggle('expanded');
-    }
-
+    function toggleHistory(id) { const el=document.getElementById('hist_'+id); if(el) el.classList.toggle('expanded'); }
     function renderHistorial() {
-        const history = JSON.parse(localStorage.getItem('laboral_cdmo_history')) || [];
-        const container = document.getElementById('historialList');
-        if (history.length === 0) return container.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:10px;">No hay nóminas guardadas.</div>';
-        
-        let html = '';
-        history.forEach((item, index) => {
-            const uid = item.id || index;
-            const det = item.details || {}; 
-            
-            html += `
-            <div class="history-card" id="hist_${uid}">
-                <div class="history-header" onclick="toggleHistory('${uid}')">
-                    <span><strong>${item.date}</strong> - Bruto: ${item.bruto}</span>
-                    <span><strong style="color:var(--accent-green);">${item.neto}</strong> <span class="arrow">▼</span></span>
-                </div>
-                <div class="history-details">
-                    <div class="breakdown-item"><span>Pagas Anuales:</span><strong>${det.pagas || '-'}</strong></div>
-                    <div class="breakdown-item"><span>Retención IRPF:</span><strong>${det.irpfPct ? det.irpfPct + '%' : '-'}</strong></div>
-                    <div class="breakdown-item"><span>C. Comunes (4.70%):</span><strong>${det.cc || '-'}</strong></div>
-                    <div class="breakdown-item"><span>Desempleo:</span><strong>${det.des || '-'}</strong></div>
-                    <div class="breakdown-item"><span>Formación (0.10%):</span><strong>${det.fp || '-'}</strong></div>
-                    <div class="breakdown-item"><span>MEI 2026 (0.15%):</span><strong>${det.mei || '-'}</strong></div>
-                    <div class="breakdown-item" style="color: var(--accent-orange);"><span>Total SS Deducido:</span><strong>${det.totalSs || '-'}</strong></div>
-                    <div class="breakdown-item" style="color: var(--accent-purple);"><span>Total IRPF Aplicado:</span><strong>${det.totalIrpf || '-'}</strong></div>
-                </div>
-            </div>`;
-        });
-        container.innerHTML = html;
+        const h = JSON.parse(localStorage.getItem('laboral_cdmo_history'))||[]; const c = document.getElementById('historialList');
+        if(!h.length) return c.innerHTML='<div style="text-align:center; padding:10px;">Vacío.</div>';
+        let html=''; h.forEach((i)=>{ const d=i.details||{}; html+=`<div class="history-card" id="hist_${i.id}"><div class="history-header" onclick="toggleHistory('${i.id}')"><span><strong>${i.date}</strong> - ${i.bruto}</span><span><strong style="color:var(--accent-green);">${i.neto}</strong>▼</span></div><div class="history-details"><div class="breakdown-item"><span>IRPF:</span><strong>${d.irpfPct||'-'}%</strong></div><div class="breakdown-item"><span>Total SS:</span><strong>${d.totalSs||'-'}</strong></div></div></div>`; }); c.innerHTML=html;
     }
-
-    function clearHistorial() {
-        if(confirm('¿Borrar historial?')) { localStorage.removeItem('laboral_cdmo_history'); renderHistorial(); }
-    }
+    function clearHistorial() { if(confirm('¿Borrar?')) { localStorage.removeItem('laboral_cdmo_history'); renderHistorial(); } }
 
     function calcEmbargo() {
-        const neto = parseFloat(document.getElementById('embNeto').value) || 0;
-        const smiBase = parseFloat(document.getElementById('embSmiTipo').value);
-        const cargasDeduc = parseFloat(document.getElementById('embCargas').value);
-        const container = document.getElementById('embTramosList');
-        container.innerHTML = '';
-        if (neto <= smiBase) {
-            container.innerHTML = '<div class="breakdown-item"><span>Inferior al SMI:</span> <strong>0,00 €</strong></div>';
-            document.getElementById('embRetencionVal').textContent = '0,00 €';
-            document.getElementById('embLimpioVal').textContent = neto.toFixed(2).replace('.', ',') + ' €';
-            return;
-        }
-        let exceso = neto - smiBase;
-        let totalEmbargo = 0;
-        const tramos = [
-            { pct: 0.30, max: smiBase, label: '1 a 2 SMI' },
-            { pct: 0.50, max: smiBase, label: '2 a 3 SMI' },
-            { pct: 0.60, max: smiBase, label: '3 a 4 SMI' },
-            { pct: 0.75, max: smiBase, label: '4 a 5 SMI' },
-            { pct: 0.90, max: Infinity, label: '> 5 SMI' }
-        ];
-        let html = `<div class="breakdown-item"><span>1er SMI:</span> <strong>0,00 €</strong></div>`;
-        for (let t of tramos) {
-            if (exceso <= 0) break;
-            let parte = Math.min(exceso, t.max);
-            let cuota = parte * t.pct;
-            totalEmbargo += cuota;
-            exceso -= parte;
-            html += `<div class="breakdown-item"><span>Tramo ${t.label}:</span><strong>${cuota.toFixed(2).replace('.', ',')} €</strong></div>`;
-        }
-        if (cargasDeduc > 0) {
-            let rebaja = totalEmbargo * cargasDeduc;
-            totalEmbargo -= rebaja;
-            html += `<div class="breakdown-item" style="color:var(--accent-green);"><span>Rebaja Cargas:</span><strong>-${rebaja.toFixed(2).replace('.', ',')} €</strong></div>`;
-        }
-        container.innerHTML = html;
-        const limpio = neto - totalEmbargo;
-        document.getElementById('embRetencionVal').textContent = totalEmbargo.toFixed(2).replace('.', ',') + ' €';
-        document.getElementById('embLimpioVal').textContent = limpio.toFixed(2).replace('.', ',') + ' €';
+        const n=parseFloat(document.getElementById('embNeto').value)||0, s=parseFloat(document.getElementById('embSmiTipo').value), c=parseFloat(document.getElementById('embCargas').value), ct=document.getElementById('embTramosList'); ct.innerHTML='';
+        if(n<=s) { ct.innerHTML='<div class="breakdown-item"><span>Inferior SMI:</span><strong>0,00 €</strong></div>'; document.getElementById('embRetencionVal').textContent='0,00 €'; document.getElementById('embLimpioVal').textContent=n.toFixed(2)+' €'; return; }
+        let ex=n-s, tEmb=0, ht=`<div class="breakdown-item"><span>1er SMI:</span><strong>0,00 €</strong></div>`;
+        const tr=[{p:0.3,m:s,l:'1a2'},{p:0.5,m:s,l:'2a3'},{p:0.6,m:s,l:'3a4'},{p:0.75,m:s,l:'4a5'},{p:0.9,m:Infinity,l:'>5'}];
+        for(let t of tr){ if(ex<=0)break; let pt=Math.min(ex,t.m); let cu=pt*t.p; tEmb+=cu; ex-=pt; ht+=`<div class="breakdown-item"><span>Tramo ${t.l}:</span><strong>${cu.toFixed(2)} €</strong></div>`; }
+        if(c>0){ let rb=tEmb*c; tEmb-=rb; ht+=`<div class="breakdown-item" style="color:var(--accent-green);"><span>Rebaja:</span><strong>-${rb.toFixed(2)} €</strong></div>`; }
+        ct.innerHTML=ht; document.getElementById('embRetencionVal').textContent=tEmb.toFixed(2)+' €'; document.getElementById('embLimpioVal').textContent=(n-tEmb).toFixed(2)+' €';
     }
 
     function calcFiniquito() {
-        const brutoMensual = parseFloat(document.getElementById('finBruto').value) || 0;
-        const pagas = parseInt(document.getElementById('finPagas').value) || 12;
-        const fInicio = new Date(document.getElementById('finInicio').value);
-        const fFin = new Date(document.getElementById('finFin').value);
-        const diasCausa = parseInt(document.getElementById('finCausa').value);
-        const diasMes = parseInt(document.getElementById('finDiasMes').value) || 0;
-        const diasVac = parseInt(document.getElementById('finVacaciones').value) || 0;
-
-        if (isNaN(fInicio) || isNaN(fFin) || fFin <= fInicio) {
-            document.getElementById('finTotalVal').textContent = '0,00 €';
-            return;
-        }
-
-        const diffDays = Math.ceil((fFin - fInicio) / (1000 * 60 * 60 * 24));
-        const años = diffDays / 365;
-        
-        const salarioAnual = brutoMensual * pagas;
-        const salarioDiario = salarioAnual / 365;
-
-        let indemnizacion = años * diasCausa * salarioDiario;
-        if (diasCausa === 33) indemnizacion = Math.min(indemnizacion, brutoMensual * 24);
-        if (diasCausa === 20) indemnizacion = Math.min(indemnizacion, brutoMensual * 12);
-
-        const pagoDiasMes = (brutoMensual / 30) * diasMes;
-        const pagoVacaciones = salarioDiario * diasVac;
-        const liquidacion = pagoDiasMes + pagoVacaciones;
-        const totalRecibir = indemnizacion + liquidacion;
-
-        document.getElementById('finTiempoVal').textContent = `${años.toFixed(2)} años (${diffDays} días)`;
-        document.getElementById('finDiarioVal').textContent = `${salarioDiario.toFixed(2).replace('.', ',')} €/día`;
-        document.getElementById('finIndemnizacionVal').textContent = `${indemnizacion.toFixed(2).replace('.', ',')} €`;
-        document.getElementById('finLiquidacionVal').textContent = `${liquidacion.toFixed(2).replace('.', ',')} €`;
-        document.getElementById('finTotalVal').textContent = `${totalRecibir.toFixed(2).replace('.', ',')} €`;
+        const b=parseFloat(document.getElementById('finBruto').value)||0, p=parseInt(document.getElementById('finPagas').value)||12, fI=new Date(document.getElementById('finInicio').value), fF=new Date(document.getElementById('finFin').value), dC=parseInt(document.getElementById('finCausa').value), dM=parseInt(document.getElementById('finDiasMes').value)||0, dV=parseInt(document.getElementById('finVacaciones').value)||0;
+        if(isNaN(fI)||isNaN(fF)||fF<=fI){ document.getElementById('finTotalVal').textContent='0,00 €'; return; }
+        const dfD=Math.ceil((fF-fI)/86400000), a=dfD/365, sD=(b*p)/365; let ind=a*dC*sD;
+        if(dC===33) ind=Math.min(ind, b*24); if(dC===20) ind=Math.min(ind, b*12);
+        const liq=((b/30)*dM)+(sD*dV), tot=ind+liq;
+        document.getElementById('finTiempoVal').textContent=`${a.toFixed(2)} años`; document.getElementById('finDiarioVal').textContent=`${sD.toFixed(2)} €/día`; document.getElementById('finIndemnizacionVal').textContent=`${ind.toFixed(2)} €`; document.getElementById('finLiquidacionVal').textContent=`${liq.toFixed(2)} €`; document.getElementById('finTotalVal').textContent=`${tot.toFixed(2)} €`;
     }
 
-    function sendNominaWA() {
-        const text = `📄 *Nómina CDMO*\nBruto: *${document.getElementById('nomBruto').value} €*\nNeto: *${document.getElementById('nomNetoVal').textContent}*`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-    }
-    function sendEmbargoWA() {
-        const text = `⚖️ *Embargo Salarial CDMO*\nNeto: *${document.getElementById('embNeto').value} €*\nLibre: *${document.getElementById('embLimpioVal').textContent}*`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-    }
-    function sendFiniquitoWA() {
-        const text = `💼 *Finiquito CDMO*\nIndemnización: *${document.getElementById('finIndemnizacionVal').textContent}*\nTotal a recibir: *${document.getElementById('finTotalVal').textContent}*`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-    }
-
-    initTheme(); checkNotificationStatus(); calcNomina(); calcEmbargo(); calcFiniquito(); scheduleMonthlyNotif();
+    initTheme(); checkConfigStatus(); calcNomina(); calcEmbargo(); calcFiniquito();
 </script>
-<script> if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); } </script>
+<script> if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js'); </script>
 </body>
 </html>
