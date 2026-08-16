@@ -54,6 +54,7 @@
 
     .help-tag { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: var(--accent); }
     
+    /* Brújula Táctica */
     .compass-wrapper {
       display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 0;
     }
@@ -73,11 +74,12 @@
       border: 2px solid #050811; z-index: 5; box-shadow: 0 0 6px #38bdf8;
     }
 
-    .baro-chart-container {
+    /* Gráficos Canvas */
+    .chart-box {
       background: #020409; border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 12px; padding: 8px; margin-top: 8px; text-align: center;
     }
-    canvas { width: 100%; height: 65px; display: block; }
+    canvas { width: 100%; display: block; }
   </style>
 </head>
 <body>
@@ -119,12 +121,12 @@
         </div>
       </div>
 
-      <div class="baro-chart-container">
+      <div class="chart-box">
         <div class="data-label" style="display:flex; justify-content:space-between; margin-bottom:4px;">
           <span>TENDENCIA 24H (LCD DOT-MATRIX)</span>
           <span id="baroTrendText" style="color:var(--accent);">Estable</span>
         </div>
-        <canvas id="baroCanvas"></canvas>
+        <canvas id="baroCanvas" style="height: 65px;"></canvas>
       </div>
     </div>
 
@@ -144,7 +146,6 @@
             <line x1="100" y1="20" x2="100" y2="180" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
             <line x1="20" y1="100" x2="180" y2="100" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
 
-            <!-- Marcas de 30 grados -->
             <line x1="100" y1="6" x2="100" y2="16" stroke="#ef4444" stroke-width="2.5"/>
             <line x1="147" y1="18.6" x2="142" y2="27.3" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
             <text x="138" y="38" font-size="8" fill="#64748b" text-anchor="middle" font-family="monospace">30</text>
@@ -229,7 +230,7 @@
       </div>
     </div>
 
-    <!-- 4. MAREAS DINÁMICAS -->
+    <!-- 4. MAREAS DINÁMICAS CON GRÁFICA EN VIVO -->
     <div class="card">
       <div class="card-title">
         <span>🌊 Pleamares & Bajamares</span>
@@ -258,6 +259,15 @@
           <div class="data-label">Estado de Marea</div>
           <div class="data-val" id="tideStatusText" style="font-size:0.85rem; color:var(--accent);">Calculando...</div>
         </div>
+      </div>
+
+      <!-- Gráfica de Mareas 24H -->
+      <div class="chart-box">
+        <div class="data-label" style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span>GRÁFICO DE MAREA (24H)</span>
+          <span style="color:var(--green);" id="tideCurrentTimeMark">En vivo ⚡</span>
+        </div>
+        <canvas id="tideCanvas" style="height: 100px;"></canvas>
       </div>
     </div>
 
@@ -300,6 +310,8 @@
 
     let currentSurfacePressure = 991;
     let currentSeaPressure = 1015;
+    let currentSunData = { sunriseH: 7.02, sunsetH: 20.82 };
+    let currentTideData = null;
 
     function triggerHaptic(ms=15) {
       if (window.navigator.vibrate) window.navigator.vibrate(ms);
@@ -351,7 +363,6 @@
       let age = Math.round(jd * 29.5305882 * 10) / 10;
       
       let illum = Math.round((1 - Math.cos((age / 29.53) * 2 * Math.PI)) / 2 * 100);
-      
       let nextFull = Math.round(14.8 - age);
       if (nextFull < 0) nextFull += 30;
 
@@ -390,26 +401,28 @@
       const sunriseMin = solarNoon - (hourAngle * 4);
       const sunsetMin = solarNoon + (hourAngle * 4);
       
+      const offset = -d.getTimezoneOffset();
+      const localSunrise = (sunriseMin + offset + 1440) % 1440;
+      const localSunset = (sunsetMin + offset + 1440) % 1440;
+
       const formatTime = (min) => {
-        const offset = -d.getTimezoneOffset();
-        const localMin = (min + offset + 1440) % 1440;
-        const h = String(Math.floor(localMin / 60)).padStart(2, '0');
-        const m = String(Math.floor(localMin % 60)).padStart(2, '0');
+        const h = String(Math.floor(min / 60)).padStart(2, '0');
+        const m = String(Math.floor(min % 60)).padStart(2, '0');
         return `${h}:${m}`;
       };
 
-      return { sunrise: formatTime(sunriseMin), sunset: formatTime(sunsetMin) };
+      currentSunData = { sunriseH: localSunrise / 60, sunsetH: localSunset / 60 };
+      return { sunrise: formatTime(localSunrise), sunset: formatTime(localSunset) };
     }
 
-    // Cálculo dinámico corregido con Huso Horario / DST Real
     function calculateDailyTides(lat, lon, moonAge) {
       const now = new Date();
-      const tzOffsetHours = -now.getTimezoneOffset() / 60; // +2 en verano, +1 en invierno
+      const tzOffsetHours = -now.getTimezoneOffset() / 60;
 
       let isCantabrian = lat >= 43;
       let isAtlantic = lon < -3.5;
       
-      let lunitidalHours = 7.16; // 7h 10m en Mediterráneo
+      let lunitidalHours = 7.16;
       let stationName = "Mediterráneo";
 
       if (isCantabrian) {
@@ -420,11 +433,9 @@
         stationName = "Atlántico";
       }
 
-      // Tránsito lunar sobre meridiano corregido con longitud y huso horario
       const moonTransitUTC = (moonAge * 0.84) - (lon / 15);
       let highTide = (moonTransitUTC + lunitidalHours + tzOffsetHours + 24) % 12.42;
       
-      // Ajuste para mostrar la pleamar principal diurna
       while (highTide < 9.5) highTide += 12.42;
       if (highTide >= 24) highTide -= 24;
 
@@ -440,8 +451,9 @@
 
       const currentHour = now.getHours() + (now.getMinutes() / 60);
       const isRising = (currentHour > low1 && currentHour < highTide) || (currentHour > low2);
-
       const lunitidalStr = `${Math.floor(lunitidalHours)}:${String(Math.round((lunitidalHours % 1) * 60)).padStart(2, '0')}`;
+
+      currentTideData = { highH: highTide, low1H: low1, low2H: low2 };
 
       return {
         high: toHoursMin(highTide),
@@ -451,6 +463,115 @@
         station: stationName,
         lunitidal: lunitidalStr
       };
+    }
+
+    // Gráfica de Mareas en Tiempo Real (24H Wave)
+    function drawTideChart() {
+      if (!currentTideData) return;
+      const canvas = document.getElementById('tideCanvas');
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      
+      canvas.width = canvas.parentElement.clientWidth * dpr;
+      canvas.height = 100 * dpr;
+      ctx.scale(dpr, dpr);
+      
+      const w = canvas.parentElement.clientWidth;
+      const h = 100;
+      ctx.clearRect(0, 0, w, h);
+
+      // 1. Franja de Luz Solar (Día)
+      const sunX1 = (currentSunData.sunriseH / 24) * w;
+      const sunX2 = (currentSunData.sunsetH / 24) * w;
+      ctx.fillStyle = "rgba(56, 189, 248, 0.08)";
+      ctx.fillRect(sunX1, 0, sunX2 - sunX1, h);
+      ctx.strokeStyle = "rgba(245, 158, 11, 0.4)";
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(sunX1, 0); ctx.lineTo(sunX1, h);
+      ctx.moveTo(sunX2, 0); ctx.lineTo(sunX2, h);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 2. Líneas de referencia de horas
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
+      ctx.fillStyle = "#64748b";
+      ctx.font = "8px monospace";
+      [0, 6, 12, 18, 24].forEach(hr => {
+        const x = (hr / 24) * w;
+        ctx.beginPath();
+        ctx.moveTo(x, 0); ctx.lineTo(x, h);
+        ctx.stroke();
+        if (hr < 24) ctx.fillText(`${hr}h`, x + 3, h - 4);
+      });
+
+      // 3. Dibujar Onda Sinusoidal de Marea
+      const centerY = h / 2;
+      const amplitude = h * 0.28;
+      const highH = currentTideData.highH;
+
+      ctx.strokeStyle = "#38bdf8";
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let x = 0; x <= w; x++) {
+        const hour = (x / w) * 24;
+        const phase = ((hour - highH) / 12.42) * (Math.PI * 2);
+        const y = centerY - Math.cos(phase) * amplitude;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // 4. Puntos de Pleamar y Bajamares
+      const drawPoint = (hour, isHigh, label) => {
+        const x = (hour / 24) * w;
+        const phase = ((hour - highH) / 12.42) * (Math.PI * 2);
+        const y = centerY - Math.cos(phase) * amplitude;
+
+        ctx.fillStyle = isHigh ? "#38bdf8" : "#ef4444";
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = isHigh ? "#38bdf8" : "#ef4444";
+        ctx.font = "bold 8px sans-serif";
+        ctx.fillText(label, Math.max(6, Math.min(w - 28, x - 12)), isHigh ? y - 8 : y + 14);
+      };
+
+      if (currentTideData.low1H >= 0 && currentTideData.low1H <= 24) {
+        drawPoint(currentTideData.low1H, false, document.getElementById('tideLow1').textContent);
+      }
+      if (currentTideData.highH >= 0 && currentTideData.highH <= 24) {
+        drawPoint(currentTideData.highH, true, document.getElementById('tideHigh').textContent);
+      }
+      if (currentTideData.low2H >= 0 && currentTideData.low2H <= 24) {
+        drawPoint(currentTideData.low2H, false, document.getElementById('tideLow2').textContent);
+      }
+
+      // 5. Cursor Verde en Tiempo Real (Hora actual)
+      const now = new Date();
+      const currentH = now.getHours() + (now.getMinutes() / 60);
+      const curX = (currentH / 24) * w;
+      const curPhase = ((currentH - highH) / 12.42) * (Math.PI * 2);
+      const curY = centerY - Math.cos(curPhase) * amplitude;
+
+      ctx.strokeStyle = "#22c55e";
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(curX, 0); ctx.lineTo(curX, h);
+      ctx.stroke();
+
+      ctx.fillStyle = "#22c55e";
+      ctx.beginPath();
+      ctx.arc(curX, curY, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(curX, curY, 2, 0, Math.PI * 2);
+      ctx.fill();
     }
 
     function drawBaroChart(history) {
@@ -464,7 +585,6 @@
       
       const w = canvas.parentElement.clientWidth;
       const h = 65;
-      
       ctx.clearRect(0, 0, w, h);
       
       const minP = Math.min(...history) - 2;
@@ -521,17 +641,17 @@
         localStorage.setItem('casio_lon', lon);
         if (alt !== null) localStorage.setItem('casio_alt', alt);
 
-        // 1. Coordenadas y Altitud GPS
+        // Coordenadas y Altitud GPS
         document.getElementById('casioLat').textContent = `${Math.abs(lat).toFixed(1)}° ${lat >= 0 ? 'N' : 'S'}`;
         document.getElementById('casioLon').textContent = `${Math.abs(lon).toFixed(1)}° ${lon >= 0 ? 'E' : 'W'}`;
 
         const altVal = alt !== null ? Math.round(alt) : (localStorage.getItem('casio_alt') || 212);
         document.getElementById('gpsAlt').innerHTML = `${altVal}<span class="data-unit">m</span>`;
 
-        // 2. Declinación magnética
+        // Declinación
         document.getElementById('magDec').textContent = calculateMagneticDeclination(lat, lon);
 
-        // 3. Luna
+        // Luna
         const moon = calculateMoonData();
         document.getElementById('moonAge').innerHTML = `${moon.age.toFixed(1)} <span class="data-unit">días</span>`;
         document.getElementById('moonIcon').textContent = moon.icon;
@@ -539,7 +659,12 @@
         document.getElementById('moonIllum').innerHTML = `${moon.illum}<span class="data-unit">%</span>`;
         document.getElementById('nextFullMoon').innerHTML = `${moon.nextFull}<span class="data-unit">días</span>`;
 
-        // 4. Mareas con corrección horaria
+        // Sol
+        const sunOffline = calculateOfflineSun(lat, lon);
+        document.getElementById('sunrise').textContent = sunOffline.sunrise;
+        document.getElementById('sunset').textContent = sunOffline.sunset;
+
+        // Mareas Dinámicas & Gráfica
         const tides = calculateDailyTides(lat, lon, moon.age);
         document.getElementById('tideLow1').textContent = tides.low1;
         document.getElementById('tideHigh').textContent = tides.high;
@@ -548,12 +673,9 @@
         document.getElementById('lunitidalVal').textContent = tides.lunitidal;
         document.getElementById('tideStationTag').textContent = tides.station;
 
-        // 5. Sol
-        const sunOffline = calculateOfflineSun(lat, lon);
-        document.getElementById('sunrise').textContent = sunOffline.sunrise;
-        document.getElementById('sunset').textContent = sunOffline.sunset;
+        drawTideChart();
 
-        // 6. Presión Barométrica
+        // Presión Barométrica
         const pSeaStandard = 1013.25;
         const pSurfaceOffline = Math.round(pSeaStandard * Math.pow(1 - (0.0065 * altVal) / 288.15, 5.255));
         currentSurfacePressure = pSurfaceOffline;
@@ -564,7 +686,7 @@
         let dummyHistory = [1015, 1014, 1014, 1013, 1013, 1012, 1013, 1014, 1015, 1015, 1014, 1015];
         drawBaroChart(dummyHistory);
 
-        // 7. Datos meteorológicos Open-Meteo
+        // API Meteorológica Global
         try {
           const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,surface_pressure,pressure_msl&hourly=surface_pressure&daily=sunrise,sunset&timezone=auto`;
           const res = await fetch(url);
@@ -587,6 +709,10 @@
           if (data.daily && data.daily.sunrise) {
             document.getElementById('sunrise').textContent = data.daily.sunrise[0].split('T')[1];
             document.getElementById('sunset').textContent = data.daily.sunset[0].split('T')[1];
+            const [sH, sM] = data.daily.sunrise[0].split('T')[1].split(':').map(Number);
+            const [eH, eM] = data.daily.sunset[0].split('T')[1].split(':').map(Number);
+            currentSunData = { sunriseH: sH + sM/60, sunsetH: eH + eM/60 };
+            drawTideChart();
           }
           document.getElementById('networkStatus').textContent = "Online API 🟢";
         } catch (e) {
