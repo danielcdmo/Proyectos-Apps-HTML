@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Conversor Rápido</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --input-bg: #0b1120;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: var(--card);
+      padding: 28px 22px;
+      border-radius: 24px;
+      text-align: center;
+      width: 100%;
+      max-width: 340px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    h1 {
+      font-size: 1.2rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .field {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+    label {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      display: block;
+      margin-bottom: 6px;
+    }
+    select, input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 12px 14px;
+      font-size: 1rem;
+      color: white;
+      border-radius: 12px;
+      outline: none;
+    }
+    select:focus, input:focus {
+      border-color: var(--accent);
+    }
+    .result-box {
+      background: #0b1120;
+      padding: 16px;
+      border-radius: 14px;
+      margin-top: 20px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+    .result-val {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    p {
+      margin-top: 16px;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>⚡ Conversor Flash</h1>
+
+    <div class="field">
+      <label>Tipo de Conversión</label>
+      <select id="type" onchange="convert()">
+        <option value="c2f">°C a °F (Temperatura)</option>
+        <option value="f2c">°F a °C (Temperatura)</option>
+        <option value="km2mi">Km a Millas (Distancia)</option>
+        <option value="mi2km">Millas a Km (Distancia)</option>
+        <option value="kg2lb">Kg a Libras (Peso)</option>
+        <option value="lb2kg">Libras a Kg (Peso)</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Valor</label>
+      <input type="number" id="val" placeholder="Escribe un número..." value="100" oninput="convert()">
+    </div>
+
+    <div class="result-box">
+      <div id="res" class="result-val">212.00 °F</div>
+    </div>
+
+    <p>Test Atajo Mac Sync</p>
+  </div>
+
+  <script>
+    function convert() {
+      const type = document.getElementById('type').value;
+      const val = parseFloat(document.getElementById('val').value);
+      const res = document.getElementById('res');
+
+      if (isNaN(val)) {
+        res.textContent = '--';
+        return;
+      }
+
+      let out = 0;
+      let unit = '';
+
+      switch(type) {
+        case 'c2f': out = (val * 9/5) + 32; unit = '°F'; break;
+        case 'f2c': out = (val - 32) * 5/9; unit = '°C'; break;
+        case 'km2mi': out = val * 0.621371; unit = 'Millas'; break;
+        case 'mi2km': out = val / 0.621371; unit = 'Km'; break;
+        case 'kg2lb': out = val * 2.20462; unit = 'lbs'; break;
+        case 'lb2kg': out = val / 2.20462; unit = 'kg'; break;
+      }
+
+      res.textContent = `${out.toFixed(2)} ${unit}`;
+      if (window.navigator.vibrate) window.navigator.vibrate(10);
+    }
+  </script>
+</body>
+</html>
