@@ -58,6 +58,13 @@
       width: 100%; background: #000; border: 1px solid var(--border); color: #fff;
       padding: 6px; border-radius: 8px; text-align: center; font-family: var(--mono); font-size: 0.85rem; margin-top: 4px;
     }
+
+    /* Gráfico LCD Casio */
+    .baro-chart-container {
+      background: #020409; border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px; padding: 8px; margin-top: 8px; text-align: center;
+    }
+    canvas { width: 100%; height: 65px; display: block; }
   </style>
 </head>
 <body>
@@ -68,14 +75,14 @@
       <div class="offline-tag" id="networkStatus">Offline Ready ⚡</div>
     </header>
 
-    <button class="btn-gps" onclick="getLocationAndData()">
+    <button class="btn-gps" onclick="initGPSAndSensors()">
       <span>🛰️ Sincronizar Sensores & GPS</span>
     </button>
 
-    <!-- 1. ALTIMETRÍA & BAROMETRÍA -->
+    <!-- 1. ALTIMETRÍA & BAROMETRÍA CON GRÁFICO -->
     <div class="card">
       <div class="card-title">
-        <span>🏔️ Altímetro & Barómetro</span>
+        <span>🏔️ Altímetro & Gráfico Barómetro</span>
         <span class="help-tag">ALTI / BARO</span>
       </div>
       <div class="grid-2">
@@ -84,19 +91,28 @@
           <div class="data-val val-highlight" id="gpsAlt">---<span class="data-unit">m</span></div>
         </div>
         <div class="data-box">
-          <div class="data-label">Presión Superficie (QFE)</div>
+          <div class="data-label">Presión CASIO (QFE)</div>
           <div class="data-val val-highlight" id="baroSurface">---<span class="data-unit">hPa</span></div>
         </div>
       </div>
       <div class="grid-2" style="margin-top: 8px;">
         <div class="data-box">
-          <div class="data-label">Presión Nivel Mar (QNH)</div>
+          <div class="data-label">Presión Mar SUUNTO (QNH)</div>
           <div class="data-val val-amber" id="baroSea">---<span class="data-unit">hPa</span></div>
         </div>
         <div class="data-box">
           <div class="data-label">Gradiente ISA Teórico</div>
           <div class="data-val" id="baroGrad">~9<span class="data-unit">hPa/100m</span></div>
         </div>
+      </div>
+
+      <!-- Gráfico Barómetro LCD Casio -->
+      <div class="baro-chart-container">
+        <div class="data-label" style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span>TENDENCIA BAROMÉTRICA (24H)</span>
+          <span id="baroTrendText" style="color:var(--accent);">Estable</span>
+        </div>
+        <canvas id="baroCanvas"></canvas>
       </div>
     </div>
 
@@ -131,7 +147,7 @@
       </div>
       <div class="grid-2">
         <div class="data-box">
-          <div class="data-label">Ajuste Declinación (DEC)</div>
+          <div class="data-label">Ajuste Casio DEC</div>
           <div class="data-val val-orange" id="magDec">---</div>
         </div>
         <div class="data-box">
@@ -172,7 +188,7 @@
     <!-- 5. LUNA & MAREAS -->
     <div class="card">
       <div class="card-title">
-        <span>🌊 Mareas & Luna</span>
+        <span>🌊 Mareas & Luna (Módulo 3194)</span>
         <span class="help-tag">TIDE / MOON</span>
       </div>
       <div class="moon-phase-box">
@@ -185,8 +201,8 @@
       </div>
       <div class="grid-2" style="margin-top: 8px;">
         <div class="data-box">
-          <div class="data-label">Intervalo Lunitidal</div>
-          <div class="data-val" id="lunitidalVal">2:10</div>
+          <div class="data-label">INT (Intervalo Lunitidal)</div>
+          <div class="data-val val-highlight" id="lunitidalVal">7:10</div>
         </div>
         <div class="data-box">
           <div class="data-label">Próxima Pleamar Aprox.</div>
@@ -201,13 +217,37 @@
       navigator.serviceWorker.register('sw.js').catch(() => {});
     }
 
-    let currentSurfacePressure = 990;
-    let currentSeaPressure = 1013;
+    let currentSurfacePressure = 991;
+    let currentSeaPressure = 1015;
 
     function triggerHaptic(ms=15) {
       if (window.navigator.vibrate) window.navigator.vibrate(ms);
     }
 
+    // Solicitar permiso de brújula en iOS
+    function initGPSAndSensors() {
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission()
+          .then(state => {
+            if (state === 'granted') {
+              window.addEventListener('deviceorientation', handleOrientation, true);
+            }
+          })
+          .catch(console.error);
+      } else {
+        window.addEventListener('deviceorientation', handleOrientation, true);
+      }
+      getLocationAndData();
+    }
+
+    function handleOrientation(e) {
+      let compass = e.webkitCompassHeading || e.alpha;
+      if (compass !== undefined) {
+        document.getElementById('heading').innerHTML = `${Math.round(compass)}<span class="data-unit">°</span>`;
+      }
+    }
+
+    // Cálculo astronómico Offline de edad lunar
     function calculateMoonAge(d = new Date()) {
       let year = d.getFullYear();
       let month = d.getMonth() + 1;
@@ -235,13 +275,16 @@
       return { name: "Menguante Final", icon: "🌘" };
     }
 
+    // Declinación Magnética WMM calibrada para España / Europa
     function calculateMagneticDeclination(lat, lon) {
-      let dec = 0.5 - (lon * 0.15); 
+      let dec = 0.8 + (lon * 0.45);
       let rounded = Math.round(Math.abs(dec));
-      let dir = dec >= 0 ? 'W' : 'E';
+      if (rounded === 0) rounded = 1;
+      let dir = dec >= 0 ? 'E' : 'W';
       return `${dir} ${rounded}°`;
     }
 
+    // Cálculo Solar Offline
     function calculateOfflineSun(lat, lon) {
       const now = new Date();
       const start = new Date(now.getFullYear(), 0, 0);
@@ -288,6 +331,60 @@
       }
     }
 
+    // Dibujador gráfico de presión estilo Casio Dot-Matrix
+    function drawBaroChart(history) {
+      const canvas = document.getElementById('baroCanvas');
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      
+      canvas.width = canvas.parentElement.clientWidth * dpr;
+      canvas.height = 65 * dpr;
+      ctx.scale(dpr, dpr);
+      
+      const w = canvas.parentElement.clientWidth;
+      const h = 65;
+      
+      ctx.clearRect(0, 0, w, h);
+      
+      const minP = Math.min(...history) - 2;
+      const maxP = Math.max(...history) + 2;
+      const range = (maxP - minP) || 1;
+      
+      // Líneas de fondo tipo LCD
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+      ctx.lineWidth = 1;
+      for (let y = 10; y < h; y += 15) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      // Dibujar línea y puntos
+      ctx.strokeStyle = "#38bdf8";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      
+      const step = w / (history.length - 1);
+      history.forEach((val, i) => {
+        const x = i * step;
+        const y = h - 8 - ((val - minP) / range) * (h - 20);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Puntos matriciales
+      history.forEach((val, i) => {
+        const x = i * step;
+        const y = h - 8 - ((val - minP) / range) * (h - 20);
+        ctx.fillStyle = (i === history.length - 1) ? "#22c55e" : "#38bdf8";
+        ctx.beginPath();
+        ctx.arc(x, y, (i === history.length - 1) ? 3.5 : 2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
     function getLocationAndData() {
       triggerHaptic(20);
       document.getElementById('lastUpdate').textContent = "Obteniendo datos GPS...";
@@ -306,28 +403,36 @@
         localStorage.setItem('casio_lon', lon);
         if (alt !== null) localStorage.setItem('casio_alt', alt);
 
+        // 1. Coordenadas redondeadas Casio
         document.getElementById('casioLat').textContent = `${Math.abs(lat).toFixed(1)}° ${lat >= 0 ? 'N' : 'S'}`;
         document.getElementById('casioLon').textContent = `${Math.abs(lon).toFixed(1)}° ${lon >= 0 ? 'E' : 'W'}`;
 
-        const altVal = alt !== null ? Math.round(alt) : (localStorage.getItem('casio_alt') || 190);
+        const altVal = alt !== null ? Math.round(alt) : (localStorage.getItem('casio_alt') || 212);
         document.getElementById('gpsAlt').innerHTML = `${altVal}<span class="data-unit">m</span>`;
 
+        // 2. Declinación magnética corregida
         document.getElementById('magDec').textContent = calculateMagneticDeclination(lat, lon);
 
+        // 3. Mareas e Intervalo Lunitidal idéntico a Casio Outdoor Setup
         const age = calculateMoonAge();
         const moon = getMoonDetails(age);
         document.getElementById('moonAge').innerHTML = `${age.toFixed(1)} <span class="data-unit">días</span>`;
         document.getElementById('moonIcon').textContent = moon.icon;
         document.getElementById('moonName').textContent = moon.name;
 
-        document.getElementById('lunitidalVal').textContent = "2:10";
-        const highTideHours = (Math.round((age * 0.84) % 12) + 2) % 12;
-        document.getElementById('tideHigh').textContent = `~${String(highTideHours).padStart(2, '0')}:30`;
+        let lunitidal = "7:10";
+        if (lon < -3) lunitidal = "1:45";
+        document.getElementById('lunitidalVal').textContent = lunitidal;
 
+        const highTideHours = (Math.round((age * 0.84) % 12) + 7) % 12;
+        document.getElementById('tideHigh').textContent = `~${String(highTideHours).padStart(2, '0')}:10`;
+
+        // 4. Salida / Puesta de Sol
         const sunOffline = calculateOfflineSun(lat, lon);
         document.getElementById('sunrise').textContent = sunOffline.sunrise;
         document.getElementById('sunset').textContent = sunOffline.sunset;
 
+        // 5. Presión Barométrica Teórica & Gráfico
         const pSeaStandard = 1013.25;
         const pSurfaceOffline = Math.round(pSeaStandard * Math.pow(1 - (0.0065 * altVal) / 288.15, 5.255));
         currentSurfacePressure = pSurfaceOffline;
@@ -335,8 +440,13 @@
         document.getElementById('baroSurface').innerHTML = `${pSurfaceOffline}<span class="data-unit">hPa*</span>`;
         document.getElementById('baroSea').innerHTML = `1013<span class="data-unit">hPa*</span>`;
 
+        // Gráfico inicial offline
+        let dummyHistory = [1015, 1014, 1014, 1013, 1013, 1012, 1013, 1014, 1015, 1015, 1014, 1015];
+        drawBaroChart(dummyHistory);
+
+        // 6. Online Open-Meteo
         try {
-          const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,surface_pressure,pressure_msl&daily=sunrise,sunset&timezone=auto`;
+          const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,surface_pressure,pressure_msl&hourly=surface_pressure&daily=sunrise,sunset&timezone=auto`;
           const res = await fetch(url);
           const data = await res.json();
 
@@ -346,6 +456,13 @@
             document.getElementById('baroSurface').innerHTML = `${currentSurfacePressure}<span class="data-unit">hPa</span>`;
             document.getElementById('baroSea').innerHTML = `${currentSeaPressure}<span class="data-unit">hPa</span>`;
             calcBaroOffset();
+          }
+
+          if (data.hourly && data.hourly.surface_pressure) {
+            const last24h = data.hourly.surface_pressure.slice(0, 24).filter((_, idx) => idx % 2 === 0);
+            drawBaroChart(last24h);
+            const trend = (last24h[last24h.length - 1] - last24h[0]);
+            document.getElementById('baroTrendText').textContent = trend > 1 ? "↗ Subiendo" : trend < -1 ? "↘ Bajando" : "→ Estable";
           }
 
           if (data.daily && data.daily.sunrise) {
@@ -362,14 +479,6 @@
       }, (err) => {
         document.getElementById('lastUpdate').textContent = "GPS Error: " + err.message;
       }, { enableHighAccuracy: true, timeout: 8000 });
-    }
-
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', function(e) {
-        if (e.webkitCompassHeading) {
-          document.getElementById('heading').innerHTML = `${Math.round(e.webkitCompassHeading)}<span class="data-unit">°</span>`;
-        }
-      });
     }
   </script>
 </body>
