@@ -41,7 +41,6 @@
             overflow-x: hidden;
         }
 
-        /* Orbes de luz de fondo para el efecto Liquid Glass */
         .bg-glow {
             position: fixed;
             border-radius: 50%;
@@ -65,7 +64,6 @@
             z-index: 1;
         }
 
-        /* Tarjetas estilo Glassmorphism de iOS */
         .glass-card {
             background: var(--glass-card);
             backdrop-filter: blur(30px) saturate(190%);
@@ -134,7 +132,6 @@
         .row { display: flex; gap: 12px; }
         .row > div { flex: 1; }
 
-        /* Botones de acción */
         .btn-glass-gps {
             background: linear-gradient(135deg, rgba(48, 209, 88, 0.85), rgba(34, 160, 68, 0.95));
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -173,7 +170,6 @@
             box-shadow: 0 8px 24px rgba(191, 90, 242, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
             transition: all 0.2s ease;
         }
-        .btn-glass-pdf:active { transform: scale(0.98); }
 
         .grid-data {
             display: grid;
@@ -221,25 +217,107 @@
             border-radius: 12px;
         }
 
-        /* MODO IMPRESIÓN / PDF LIMPIO */
+        .print-header { display: none; }
+
+        /* MODO IMPRESIÓN / PDF: CORRIGE TEXTO BLANCO */
         @media print {
-            body { background: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .bg-glow, .btn-glass-gps, .btn-glass-pdf, select, input { display: none !important; }
-            .glass-card { background: none !important; border: 1px solid #ccc !important; box-shadow: none !important; color: #000 !important; margin-bottom: 15px; }
-            .glass-box { background: #f4f4f5 !important; border: 1px solid #ddd !important; }
-            .data-val.blue, .data-val.orange, .card-header.blue, .card-header.orange { color: #000 !important; text-shadow: none !important; }
-            .card-note { background: #f9f9f9 !important; border: 1px solid #ddd !important; color: #333 !important; }
+            @page {
+                size: A4 portrait;
+                margin: 15mm;
+            }
+            html, body { 
+                background: #ffffff !important; 
+                color: #000000 !important; 
+                height: auto !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
+            .bg-glow, .btn-glass-gps, .btn-glass-pdf, select, input, .form-group, .row { 
+                display: none !important; 
+            }
+            .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 15px;
+            }
+            .print-header h1 {
+                font-size: 1.5rem;
+                font-weight: 800;
+                color: #000000 !important;
+                -webkit-text-fill-color: #000000 !important;
+            }
+            .print-header p {
+                font-size: 0.9rem;
+                color: #333333 !important;
+                margin-top: 4px;
+            }
+            .container {
+                max-width: 100% !important;
+                width: 100% !important;
+                gap: 12px !important;
+            }
+            .glass-card { 
+                background: none !important; 
+                border: 1.5px solid #000000 !important; 
+                box-shadow: none !important; 
+                color: #000000 !important; 
+                margin-bottom: 12px !important;
+                padding: 14px !important;
+                break-inside: avoid !important;
+            }
+            .card-header {
+                color: #000000 !important;
+                -webkit-text-fill-color: #000000 !important;
+                text-shadow: none !important;
+                border-bottom: 1px solid #cccccc;
+                padding-bottom: 6px;
+                font-size: 1.1rem !important;
+            }
+            .grid-data {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 8px !important;
+                margin-top: 8px;
+            }
+            .glass-box { 
+                background: #f4f4f5 !important; 
+                border: 1px solid #cccccc !important; 
+                padding: 10px !important;
+            }
+            .data-label {
+                color: #555555 !important;
+                font-weight: 800 !important;
+            }
+            .data-val, .data-val.blue, .data-val.orange { 
+                color: #000000 !important; 
+                -webkit-text-fill-color: #000000 !important;
+                text-shadow: none !important; 
+                font-size: 1.4rem !important;
+                font-weight: 800 !important;
+            }
+            .card-note { 
+                background: #f9f9f9 !important; 
+                border: 1px solid #dddddd !important; 
+                color: #222222 !important; 
+                margin-top: 8px;
+            }
         }
     </style>
 </head>
 <body>
 
-<!-- Fondos dinámicos Liquid Glass -->
 <div class="bg-glow glow-1"></div>
 <div class="bg-glow glow-2"></div>
 <div class="bg-glow glow-3"></div>
 
 <div class="container">
+
+    <div class="print-header">
+        <h1>Ficha de Calibración: Casio Outdoor</h1>
+        <p id="print-coords-summary">Coordenadas y Datos de Referencia Solar / Mareas</p>
+    </div>
 
     <!-- SELECTOR DE COORDENADAS / GPS -->
     <div class="glass-card">
@@ -279,7 +357,7 @@
         </button>
     </div>
 
-    <!-- MÓDULO MAREAS Y FASE LUNAR (GENÉRICO) -->
+    <!-- MÓDULO MAREAS Y FASE LUNAR (SITE DATA) -->
     <div class="glass-card">
         <div class="card-header blue">
             🌊 Módulo Mareas y Fase Lunar (Site Data)
@@ -305,7 +383,7 @@
         </p>
     </div>
 
-    <!-- CÁLCULO DE SOL Y COORDENADAS (GENÉRICO) -->
+    <!-- CÁLCULO DE SOL Y COORDENADAS (SOLAR DATA) -->
     <div class="glass-card">
         <div class="card-header orange">
             ☀️ Cálculo de Salida y Puesta de Sol (Solar Data)
@@ -331,7 +409,6 @@
         </p>
     </div>
 
-    <!-- BOTÓN EXPORTAR PDF -->
     <button class="btn-glass-pdf" onclick="window.print()">
         📄 Exportar Configuración a PDF
     </button>
@@ -366,6 +443,9 @@
         document.getElementById('solar-city').textContent = "MAD (+1.0)";
         document.getElementById('solar-lat').textContent = latString;
         document.getElementById('solar-lon').textContent = lonString;
+
+        document.getElementById('print-coords-summary').textContent = 
+            `Ubicación: Lat ${lat.toFixed(4)}° / Lon ${lon.toFixed(4)}°`;
     }
 
     function onPresetChange() {
@@ -374,7 +454,6 @@
             const [lat, lon] = select.value.split(',');
             document.getElementById('lat').value = parseFloat(lat).toFixed(4);
             document.getElementById('lon').value = parseFloat(lon).toFixed(4);
-            document.getElementById('location-select').value = "";
             calculateAll();
         }
     }
@@ -400,7 +479,6 @@
     window.onload = calculateAll;
 </script>
 
-<!-- Registro del Service Worker para Modo Offline -->
 <script>
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').catch(() => {});
