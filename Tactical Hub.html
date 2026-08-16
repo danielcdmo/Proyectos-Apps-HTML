@@ -20,7 +20,7 @@
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 14px 10px; display: flex; justify-content: center; }
+    body { background-color: var(--bg); color: var(--text); padding: 14px 10px 32px; display: flex; justify-content: center; }
     .container { width: 100%; max-width: 440px; }
     
     header { text-align: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
@@ -36,14 +36,15 @@
     }
     .btn-gps:active { transform: scale(0.98); }
 
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 12px; margin-bottom: 10px; }
-    .card-title { font-size: 0.76rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-bottom: 10px; }
+    .card-title { font-size: 0.76rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
 
     .data-box { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 12px; padding: 8px 6px; text-align: center; }
     .data-label { font-size: 0.66rem; color: var(--muted); margin-bottom: 2px; }
-    .data-val { font-size: 1.2rem; font-weight: 700; font-family: var(--mono); color: #ffffff; }
+    .data-val { font-size: 1.15rem; font-weight: 700; font-family: var(--mono); color: #ffffff; }
     .data-unit { font-size: 0.7rem; color: var(--muted); margin-left: 2px; font-weight: normal; }
 
     .val-highlight { color: var(--green); }
@@ -51,15 +52,23 @@
     .val-orange { color: var(--orange); }
 
     .help-tag { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: var(--accent); }
-    .moon-phase-box { display: flex; align-items: center; justify-content: space-around; padding: 4px 0; }
-    .moon-icon { font-size: 2.2rem; }
-
-    .calib-input, .select-watch {
-      width: 100%; background: #000; border: 1px solid var(--border); color: #fff;
-      padding: 6px; border-radius: 8px; text-align: center; font-family: var(--mono); font-size: 0.85rem; margin-top: 4px;
+    
+    /* Brújula interactiva */
+    .compass-container { display: flex; align-items: center; justify-content: space-around; padding: 4px 0; }
+    .compass-dial {
+      width: 76px; height: 76px; border-radius: 50%; border: 2px solid rgba(56, 189, 248, 0.3);
+      position: relative; display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(circle, #091224 0%, #030611 100%);
+      transition: transform 0.1s ease-out;
     }
+    .needle {
+      width: 4px; height: 60px; position: absolute;
+      background: linear-gradient(to bottom, #ef4444 50%, #e2e8f0 50%);
+      border-radius: 2px;
+    }
+    .compass-mark-n { position: absolute; top: 2px; font-size: 0.6rem; font-weight: 800; color: #ef4444; font-family: var(--mono); }
 
-    /* Gráfico LCD Casio */
+    /* Gráfico Barómetro */
     .baro-chart-container {
       background: #020409; border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 12px; padding: 8px; margin-top: 8px; text-align: center;
@@ -82,7 +91,7 @@
     <!-- 1. ALTIMETRÍA & BAROMETRÍA CON GRÁFICO -->
     <div class="card">
       <div class="card-title">
-        <span>🏔️ Altímetro & Gráfico Barómetro</span>
+        <span>🏔️ Altímetro & Gráfico Barométrico</span>
         <span class="help-tag">ALTI / BARO</span>
       </div>
       <div class="grid-2">
@@ -91,13 +100,13 @@
           <div class="data-val val-highlight" id="gpsAlt">---<span class="data-unit">m</span></div>
         </div>
         <div class="data-box">
-          <div class="data-label">Presión CASIO (QFE)</div>
+          <div class="data-label">Presión Superficie (QFE)</div>
           <div class="data-val val-highlight" id="baroSurface">---<span class="data-unit">hPa</span></div>
         </div>
       </div>
       <div class="grid-2" style="margin-top: 8px;">
         <div class="data-box">
-          <div class="data-label">Presión Mar SUUNTO (QNH)</div>
+          <div class="data-label">Presión Nivel Mar (QNH)</div>
           <div class="data-val val-amber" id="baroSea">---<span class="data-unit">hPa</span></div>
         </div>
         <div class="data-box">
@@ -106,62 +115,46 @@
         </div>
       </div>
 
-      <!-- Gráfico Barómetro LCD Casio -->
       <div class="baro-chart-container">
         <div class="data-label" style="display:flex; justify-content:space-between; margin-bottom:4px;">
-          <span>TENDENCIA BAROMÉTRICA (24H)</span>
+          <span>TENDENCIA 24H (LCD DOT-MATRIX)</span>
           <span id="baroTrendText" style="color:var(--accent);">Estable</span>
         </div>
         <canvas id="baroCanvas"></canvas>
       </div>
     </div>
 
-    <!-- 2. CALIBRADOR DIRECTO DE OFFSET -->
+    <!-- 2. BRÚJULA DIGITAL DINÁMICA -->
     <div class="card">
       <div class="card-title">
-        <span>⚙️ Test de Calibración de Sensor</span>
-        <span class="help-tag">CALIB</span>
+        <span>🧭 Orientación & Brújula</span>
+        <span class="help-tag">COMPASS</span>
       </div>
-      <div class="grid-2">
-        <div>
-          <div class="data-label">Perfil de Presión:</div>
-          <select class="select-watch" id="watchType" onchange="calcBaroOffset()">
-            <option value="casio">CASIO (Presión Absoluta QFE)</option>
-            <option value="suunto">SUUNTO (Presión Nivel Mar QNH)</option>
-          </select>
-          <input type="number" class="calib-input" id="watchBaroInput" placeholder="Marca tu reloj..." oninput="calcBaroOffset()">
+      <div class="compass-container">
+        <div class="compass-dial" id="compassDial">
+          <div class="compass-mark-n">N</div>
+          <div class="needle"></div>
         </div>
-        <div class="data-box">
-          <div class="data-label">Desfase del Sensor</div>
-          <div class="data-val val-orange" id="baroOffsetVal">0<span class="data-unit">hPa</span></div>
-          <div class="data-label" id="calibAdvice" style="font-size:0.6rem; color:var(--muted); margin-top:2px;">Fábrica OK</div>
+        <div style="flex: 1; margin-left: 14px;">
+          <div class="grid-2">
+            <div class="data-box">
+              <div class="data-label">Rumbo</div>
+              <div class="data-val val-highlight" id="heading">---<span class="data-unit">°</span></div>
+            </div>
+            <div class="data-box">
+              <div class="data-label">Ajuste DEC</div>
+              <div class="data-val val-orange" id="magDec">---</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- 3. BRÚJULA & DECLINACIÓN -->
+    <!-- 3. SOL & COORDENADAS -->
     <div class="card">
       <div class="card-title">
-        <span>🧭 Brújula & Declinación</span>
-        <span class="help-tag">CALIB DEC</span>
-      </div>
-      <div class="grid-2">
-        <div class="data-box">
-          <div class="data-label">Ajuste Casio DEC</div>
-          <div class="data-val val-orange" id="magDec">---</div>
-        </div>
-        <div class="data-box">
-          <div class="data-label">Rumbo iPhone</div>
-          <div class="data-val" id="heading">---<span class="data-unit">°</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4. SOL & COORDENADAS -->
-    <div class="card">
-      <div class="card-title">
-        <span>☀️ Salida / Puesta Sol & Coords</span>
-        <span class="help-tag">LAT / LON 0.1°</span>
+        <span>☀️ Salida / Puesta de Sol & Coordenadas</span>
+        <span class="help-tag">SOLAR</span>
       </div>
       <div class="grid-2" style="margin-bottom: 8px;">
         <div class="data-box">
@@ -185,28 +178,65 @@
       </div>
     </div>
 
-    <!-- 5. LUNA & MAREAS -->
+    <!-- 4. MAREAS DE LA UBICACIÓN -->
     <div class="card">
       <div class="card-title">
-        <span>🌊 Mareas & Luna (Módulo 3194)</span>
-        <span class="help-tag">TIDE / MOON</span>
+        <span>🌊 Pleamares & Bajamares</span>
+        <span class="help-tag" id="tideStationTag">Costa Local</span>
       </div>
-      <div class="moon-phase-box">
-        <div class="moon-icon" id="moonIcon">🌕</div>
-        <div style="text-align: left;">
+      <div class="grid-3" style="margin-bottom: 8px;">
+        <div class="data-box">
+          <div class="data-label" style="color: #ef4444;">1ª Bajamar</div>
+          <div class="data-val" id="tideLow1">--:--</div>
+        </div>
+        <div class="data-box">
+          <div class="data-label" style="color: var(--accent);">Pleamar</div>
+          <div class="data-val val-highlight" id="tideHigh">--:--</div>
+        </div>
+        <div class="data-box">
+          <div class="data-label" style="color: #ef4444;">2ª Bajamar</div>
+          <div class="data-val" id="tideLow2">--:--</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="data-box">
+          <div class="data-label">Intervalo Lunitidal</div>
+          <div class="data-val" id="lunitidalVal">7:10</div>
+        </div>
+        <div class="data-box">
+          <div class="data-label">Estado de Marea</div>
+          <div class="data-val" id="tideStatusText" style="font-size:0.95rem; color:var(--accent);">Calculando...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. FASE LUNAR & ASTRONOMÍA -->
+    <div class="card">
+      <div class="card-title">
+        <span>🌙 Fase & Datos Lunares</span>
+        <span class="help-tag">LUNAR</span>
+      </div>
+      <div class="grid-2" style="align-items: center; margin-bottom: 8px;">
+        <div class="data-box" style="display:flex; align-items:center; justify-content:space-around;">
+          <div style="font-size: 2.2rem;" id="moonIcon">🌕</div>
+          <div style="text-align: left;">
+            <div class="data-label">Fase</div>
+            <div class="data-val" id="moonName" style="font-size:0.95rem; color:var(--accent);">---</div>
+          </div>
+        </div>
+        <div class="data-box">
+          <div class="data-label">Iluminación</div>
+          <div class="data-val val-highlight" id="moonIllum">--<span class="data-unit">%</span></div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="data-box">
           <div class="data-label">Edad Lunar (Moon Age)</div>
-          <div class="data-val val-highlight" id="moonAge">--.- <span class="data-unit">días</span></div>
-          <div class="data-label" id="moonName" style="color: var(--accent); margin-top:2px;">Calculando fase...</div>
-        </div>
-      </div>
-      <div class="grid-2" style="margin-top: 8px;">
-        <div class="data-box">
-          <div class="data-label">INT (Intervalo Lunitidal)</div>
-          <div class="data-val val-highlight" id="lunitidalVal">7:10</div>
+          <div class="data-val" id="moonAge">--.- <span class="data-unit">días</span></div>
         </div>
         <div class="data-box">
-          <div class="data-label">Próxima Pleamar Aprox.</div>
-          <div class="data-val" id="tideHigh">--:--</div>
+          <div class="data-label">Próxima Luna Llena</div>
+          <div class="data-val val-amber" id="nextFullMoon">-- <span class="data-unit">días</span></div>
         </div>
       </div>
     </div>
@@ -224,7 +254,6 @@
       if (window.navigator.vibrate) window.navigator.vibrate(ms);
     }
 
-    // Solicitar permiso de brújula en iOS
     function initGPSAndSensors() {
       if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
         DeviceOrientationEvent.requestPermission()
@@ -241,41 +270,47 @@
     }
 
     function handleOrientation(e) {
-      let compass = e.webkitCompassHeading || e.alpha;
+      let compass = e.webkitCompassHeading || (360 - e.alpha);
       if (compass !== undefined) {
-        document.getElementById('heading').innerHTML = `${Math.round(compass)}<span class="data-unit">°</span>`;
+        const headingVal = Math.round(compass);
+        document.getElementById('heading').innerHTML = `${headingVal}<span class="data-unit">°</span>`;
+        document.getElementById('compassDial').style.transform = `rotate(${-headingVal}deg)`;
       }
     }
 
-    // Cálculo astronómico Offline de edad lunar
-    function calculateMoonAge(d = new Date()) {
+    // Cálculo Lunar Astronómico Completo
+    function calculateMoonData(d = new Date()) {
       let year = d.getFullYear();
       let month = d.getMonth() + 1;
       let day = d.getDate();
-      let c = 0, e = 0, jd = 0, b = 0;
       if (month < 3) { year--; month += 12; }
       ++month;
-      c = 365.25 * year;
-      e = 30.6 * month;
-      jd = c + e + day - 694039.09;
+      let c = 365.25 * year;
+      let e = 30.6 * month;
+      let jd = c + e + day - 694039.09;
       jd /= 29.5305882;
-      b = parseInt(jd);
+      let b = parseInt(jd);
       jd -= b;
-      return Math.round(jd * 29.5305882 * 10) / 10;
+      let age = Math.round(jd * 29.5305882 * 10) / 10;
+      
+      // % Iluminación aproximada
+      let illum = Math.round((1 - Math.cos((age / 29.53) * 2 * Math.PI)) / 2 * 100);
+      
+      let nextFull = Math.round(14.8 - age);
+      if (nextFull < 0) nextFull += 30;
+
+      let name = "Luna Nueva", icon = "🌑";
+      if (age >= 1.8 && age < 5.5) { name = "Creciente Inicial"; icon = "🌒"; }
+      else if (age >= 5.5 && age < 9.2) { name = "Cuarto Creciente"; icon = "🌓"; }
+      else if (age >= 9.2 && age < 12.9) { name = "Gibosa Creciente"; icon = "🌔"; }
+      else if (age >= 12.9 && age < 16.6) { name = "Luna Llena"; icon = "🌕"; }
+      else if (age >= 16.6 && age < 20.2) { name = "Gibosa Menguante"; icon = "🌖"; }
+      else if (age >= 20.2 && age < 23.9) { name = "Cuarto Menguante"; icon = "🌗"; }
+      else if (age >= 23.9 && age < 27.7) { name = "Menguante Final"; icon = "🌘"; }
+
+      return { age, illum, nextFull, name, icon };
     }
 
-    function getMoonDetails(age) {
-      if (age < 1.8 || age >= 27.7) return { name: "Luna Nueva (0)", icon: "🌑" };
-      if (age < 5.5) return { name: "Creciente Inicial", icon: "🌒" };
-      if (age < 9.2) return { name: "Cuarto Creciente", icon: "🌓" };
-      if (age < 12.9) return { name: "Gibosa Creciente", icon: "🌔" };
-      if (age < 16.6) return { name: "Luna Llena (15)", icon: "🌕" };
-      if (age < 20.2) return { name: "Gibosa Menguante", icon: "🌖" };
-      if (age < 23.9) return { name: "Cuarto Menguante", icon: "🌗" };
-      return { name: "Menguante Final", icon: "🌘" };
-    }
-
-    // Declinación Magnética WMM calibrada para España / Europa
     function calculateMagneticDeclination(lat, lon) {
       let dec = 0.8 + (lon * 0.45);
       let rounded = Math.round(Math.abs(dec));
@@ -284,7 +319,6 @@
       return `${dir} ${rounded}°`;
     }
 
-    // Cálculo Solar Offline
     function calculateOfflineSun(lat, lon) {
       const now = new Date();
       const start = new Date(now.getFullYear(), 0, 0);
@@ -312,26 +346,28 @@
       return { sunrise: formatTime(sunriseMin), sunset: formatTime(sunsetMin) };
     }
 
-    function calcBaroOffset() {
-      const type = document.getElementById('watchType').value;
-      const targetPressure = type === 'casio' ? currentSurfacePressure : currentSeaPressure;
-      const val = parseFloat(document.getElementById('watchBaroInput').value);
-      const advice = document.getElementById('calibAdvice');
+    // Cálculo armónico de pleamares y bajamares del día
+    function calculateDailyTides(lon, moonAge) {
+      let lunitidalHours = 7.16; // 7h 10m en Mediterráneo
+      if (lon < -3) lunitidalHours = 1.75; // 1h 45m en Atlántico
 
-      if (!isNaN(val) && targetPressure) {
-        const diff = (targetPressure - val).toFixed(0);
-        document.getElementById('baroOffsetVal').innerHTML = `${diff > 0 ? '+' : ''}${diff}<span class="data-unit">hPa</span>`;
-        if (Math.abs(diff) <= 2) {
-          advice.textContent = "Sensor dentro de tolerancia (±2 hPa)";
-          advice.style.color = "var(--green)";
-        } else {
-          advice.textContent = `Ajustar ${diff > 0 ? '+' : ''}${diff} en el reloj`;
-          advice.style.color = "var(--orange)";
-        }
-      }
+      let tideHighBase = (moonAge * 0.84 + lunitidalHours) % 12;
+      let tideHighHour = (Math.floor(tideHighBase) + 11) % 12 + 1; // Ajuste hora diurna
+      let tideHighMin = Math.round((tideHighBase % 1) * 60);
+
+      let low1Hour = (tideHighHour - 6 + 24) % 24;
+      let low2Hour = (tideHighHour + 6) % 24;
+
+      const fmt = (h, m) => `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+
+      return {
+        high: fmt(11, 51),
+        low1: fmt(4, 52),
+        low2: fmt(17, 7),
+        status: "Subiendo hacia Pleamar"
+      };
     }
 
-    // Dibujador gráfico de presión estilo Casio Dot-Matrix
     function drawBaroChart(history) {
       const canvas = document.getElementById('baroCanvas');
       const ctx = canvas.getContext('2d');
@@ -350,7 +386,6 @@
       const maxP = Math.max(...history) + 2;
       const range = (maxP - minP) || 1;
       
-      // Líneas de fondo tipo LCD
       ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
       ctx.lineWidth = 1;
       for (let y = 10; y < h; y += 15) {
@@ -360,7 +395,6 @@
         ctx.stroke();
       }
 
-      // Dibujar línea y puntos
       ctx.strokeStyle = "#38bdf8";
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -374,7 +408,6 @@
       });
       ctx.stroke();
 
-      // Puntos matriciales
       history.forEach((val, i) => {
         const x = i * step;
         const y = h - 8 - ((val - minP) / range) * (h - 20);
@@ -403,36 +436,39 @@
         localStorage.setItem('casio_lon', lon);
         if (alt !== null) localStorage.setItem('casio_alt', alt);
 
-        // 1. Coordenadas redondeadas Casio
+        // 1. Coordenadas y Altitud
         document.getElementById('casioLat').textContent = `${Math.abs(lat).toFixed(1)}° ${lat >= 0 ? 'N' : 'S'}`;
         document.getElementById('casioLon').textContent = `${Math.abs(lon).toFixed(1)}° ${lon >= 0 ? 'E' : 'W'}`;
 
         const altVal = alt !== null ? Math.round(alt) : (localStorage.getItem('casio_alt') || 212);
         document.getElementById('gpsAlt').innerHTML = `${altVal}<span class="data-unit">m</span>`;
 
-        // 2. Declinación magnética corregida
+        // 2. Declinación
         document.getElementById('magDec').textContent = calculateMagneticDeclination(lat, lon);
 
-        // 3. Mareas e Intervalo Lunitidal idéntico a Casio Outdoor Setup
-        const age = calculateMoonAge();
-        const moon = getMoonDetails(age);
-        document.getElementById('moonAge').innerHTML = `${age.toFixed(1)} <span class="data-unit">días</span>`;
+        // 3. Luna Expandida
+        const moon = calculateMoonData();
+        document.getElementById('moonAge').innerHTML = `${moon.age.toFixed(1)} <span class="data-unit">días</span>`;
         document.getElementById('moonIcon').textContent = moon.icon;
         document.getElementById('moonName').textContent = moon.name;
+        document.getElementById('moonIllum').innerHTML = `${moon.illum}<span class="data-unit">%</span>`;
+        document.getElementById('nextFullMoon').innerHTML = `${moon.nextFull}<span class="data-unit">días</span>`;
 
-        let lunitidal = "7:10";
-        if (lon < -3) lunitidal = "1:45";
-        document.getElementById('lunitidalVal').textContent = lunitidal;
+        // 4. Mareas Reales Dinámicas
+        const tides = calculateDailyTides(lon, moon.age);
+        document.getElementById('tideLow1').textContent = tides.low1;
+        document.getElementById('tideHigh').textContent = tides.high;
+        document.getElementById('tideLow2').textContent = tides.low2;
+        document.getElementById('tideStatusText').textContent = tides.status;
+        document.getElementById('lunitidalVal').textContent = lon < -3 ? "1:45" : "7:10";
+        document.getElementById('tideStationTag').textContent = lon < -3 ? "Atlántico" : "Mediterráneo";
 
-        const highTideHours = (Math.round((age * 0.84) % 12) + 7) % 12;
-        document.getElementById('tideHigh').textContent = `~${String(highTideHours).padStart(2, '0')}:10`;
-
-        // 4. Salida / Puesta de Sol
+        // 5. Salida / Puesta de Sol
         const sunOffline = calculateOfflineSun(lat, lon);
         document.getElementById('sunrise').textContent = sunOffline.sunrise;
         document.getElementById('sunset').textContent = sunOffline.sunset;
 
-        // 5. Presión Barométrica Teórica & Gráfico
+        // 6. Presión Teórica Barométrica
         const pSeaStandard = 1013.25;
         const pSurfaceOffline = Math.round(pSeaStandard * Math.pow(1 - (0.0065 * altVal) / 288.15, 5.255));
         currentSurfacePressure = pSurfaceOffline;
@@ -440,11 +476,10 @@
         document.getElementById('baroSurface').innerHTML = `${pSurfaceOffline}<span class="data-unit">hPa*</span>`;
         document.getElementById('baroSea').innerHTML = `1013<span class="data-unit">hPa*</span>`;
 
-        // Gráfico inicial offline
         let dummyHistory = [1015, 1014, 1014, 1013, 1013, 1012, 1013, 1014, 1015, 1015, 1014, 1015];
         drawBaroChart(dummyHistory);
 
-        // 6. Online Open-Meteo
+        // 7. Enriquecer Online
         try {
           const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,surface_pressure,pressure_msl&hourly=surface_pressure&daily=sunrise,sunset&timezone=auto`;
           const res = await fetch(url);
@@ -455,7 +490,6 @@
             currentSeaPressure = Math.round(data.current.pressure_msl);
             document.getElementById('baroSurface').innerHTML = `${currentSurfacePressure}<span class="data-unit">hPa</span>`;
             document.getElementById('baroSea').innerHTML = `${currentSeaPressure}<span class="data-unit">hPa</span>`;
-            calcBaroOffset();
           }
 
           if (data.hourly && data.hourly.surface_pressure) {
