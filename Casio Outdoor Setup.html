@@ -2,284 +2,409 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurador Casio: G-7900 & PRG-69</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Outdoor & Tide Setup</title>
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --accent-yellow: #f39c12;
-            --accent-blue: #3498db;
-            --text-color: #e0e0e0;
-            --border-color: #333;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-card: rgba(30, 30, 35, 0.55);
+            --glass-inner: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-border-light: rgba(255, 255, 255, 0.25);
+            --text-main: #ffffff;
+            --text-sub: rgba(235, 235, 245, 0.6);
+            --accent-blue: #0a84ff;
+            --accent-blue-glow: rgba(10, 132, 255, 0.35);
+            --accent-orange: #ff9f0a;
+            --accent-orange-glow: rgba(255, 159, 10, 0.35);
+            --accent-green: #30d158;
+            --accent-green-glow: rgba(48, 209, 88, 0.4);
+            --accent-purple: #bf5af2;
         }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
+
+        body {
+            background-color: #0b0c10;
+            color: var(--text-main);
+            padding: 20px 16px 48px;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Orbes de luz de fondo para el efecto Liquid Glass */
+        .bg-glow {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .glow-1 { width: 320px; height: 320px; background: radial-gradient(circle, #0a84ff 0%, rgba(10, 132, 255, 0) 70%); top: -60px; left: -80px; }
+        .glow-2 { width: 280px; height: 280px; background: radial-gradient(circle, #ff9f0a 0%, rgba(255, 159, 10, 0) 70%); bottom: 100px; right: -60px; }
+        .glow-3 { width: 240px; height: 240px; background: radial-gradient(circle, #30d158 0%, rgba(48, 209, 88, 0) 70%); top: 40%; left: 25%; }
+
         .container {
-            max-width: 600px;
-            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: relative;
+            z-index: 1;
         }
-        h1 {
-            color: var(--accent-yellow);
-            text-align: center;
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+
+        /* Tarjetas estilo Glassmorphism de iOS */
+        .glass-card {
+            background: var(--glass-card);
+            backdrop-filter: blur(30px) saturate(190%);
+            -webkit-backdrop-filter: blur(30px) saturate(190%);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-border-light);
+            border-radius: 24px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-        .card h2 {
-            margin-top: 0;
-            font-size: 1.1rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 8px;
+
+        .card-header {
             display: flex;
             align-items: center;
+            gap: 10px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            padding-bottom: 4px;
+        }
+
+        .card-header.blue { color: var(--accent-blue); text-shadow: 0 0 20px var(--accent-blue-glow); }
+        .card-header.orange { color: var(--accent-orange); text-shadow: 0 0 20px var(--accent-orange-glow); }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
             gap: 8px;
         }
-        .card-g7900 h2 { color: var(--accent-blue); border-color: var(--accent-blue); }
-        .card-prg69 h2 { color: var(--accent-yellow); border-color: var(--accent-yellow); }
 
         label {
-            display: block;
-            font-size: 0.85rem;
-            margin-top: 10px;
-            color: #aaa;
+            font-size: 0.72rem;
+            color: var(--text-sub);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-left: 2px;
         }
-        input, select, button {
+
+        input, select {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-main);
+            padding: 13px 16px;
+            border-radius: 14px;
+            font-size: 1rem;
+            outline: none;
             width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border-radius: 6px;
-            border: 1px solid #444;
-            background-color: #2a2a2a;
-            color: #fff;
-            box-sizing: border-box;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        input:focus, select:focus {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+        }
+
+        select option { background: #1c1c1e; color: #ffffff; }
+
+        .row { display: flex; gap: 12px; }
+        .row > div { flex: 1; }
+
+        /* Botones de acción */
+        .btn-glass-gps {
+            background: linear-gradient(135deg, rgba(48, 209, 88, 0.85), rgba(34, 160, 68, 0.95));
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.5);
+            color: #ffffff;
+            padding: 15px;
+            border-radius: 16px;
             font-size: 0.95rem;
-        }
-        button.btn-gps {
-            background-color: #27ae60;
-            border: none;
-            font-weight: bold;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
             cursor: pointer;
-            margin-top: 15px;
-            transition: 0.2s;
+            box-shadow: 0 8px 24px var(--accent-green-glow), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        button.btn-gps:hover { background-color: #219150; }
-        
-        .result-grid {
+
+        .btn-glass-gps:active { transform: scale(0.98); box-shadow: 0 4px 12px var(--accent-green-glow); }
+
+        .btn-glass-pdf {
+            background: linear-gradient(135deg, rgba(191, 90, 242, 0.85), rgba(142, 45, 226, 0.95));
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.5);
+            color: #ffffff;
+            padding: 14px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(191, 90, 242, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+            transition: all 0.2s ease;
+        }
+        .btn-glass-pdf:active { transform: scale(0.98); }
+
+        .grid-data {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-top: 15px;
         }
-        .result-box {
-            background: #262626;
-            padding: 10px;
-            border-radius: 6px;
+
+        .glass-box {
+            background: var(--glass-inner);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            border-left: 3px solid #555;
+            gap: 4px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
-        .result-box .val {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #fff;
-            margin-top: 4px;
+
+        .glass-box.full-width { grid-column: span 2; }
+
+        .data-label {
+            font-size: 0.68rem;
+            color: var(--text-sub);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
-        .result-box .desc {
-            font-size: 0.75rem;
-            color: #888;
+
+        .data-val { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.3px; }
+        .data-val.blue { color: var(--accent-blue); text-shadow: 0 0 16px var(--accent-blue-glow); }
+        .data-val.orange { color: var(--accent-orange); text-shadow: 0 0 16px var(--accent-orange-glow); }
+
+        .card-note {
+            font-size: 0.74rem;
+            color: var(--text-sub);
+            line-height: 1.45;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 10px 12px;
+            border-radius: 12px;
         }
-        .full-width { grid-column: span 2; }
-        .note {
-            font-size: 0.8rem;
-            color: #888;
-            margin-top: 10px;
-            line-height: 1.3;
+
+        /* MODO IMPRESIÓN / PDF LIMPIO */
+        @media print {
+            body { background: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .bg-glow, .btn-glass-gps, .btn-glass-pdf, select, input { display: none !important; }
+            .glass-card { background: none !important; border: 1px solid #ccc !important; box-shadow: none !important; color: #000 !important; margin-bottom: 15px; }
+            .glass-box { background: #f4f4f5 !important; border: 1px solid #ddd !important; }
+            .data-val.blue, .data-val.orange, .card-header.blue, .card-header.orange { color: #000 !important; text-shadow: none !important; }
+            .card-note { background: #f9f9f9 !important; border: 1px solid #ddd !important; color: #333 !important; }
         }
     </style>
 </head>
 <body>
 
+<!-- Fondos dinámicos Liquid Glass -->
+<div class="bg-glow glow-1"></div>
+<div class="bg-glow glow-2"></div>
+<div class="bg-glow glow-3"></div>
+
 <div class="container">
-    <h1>⏱️ Casio Location Setup</h1>
 
-    <!-- INPUT CARD -->
-    <div class="card">
-        <h2>📍 Tu Ubicación</h2>
-        
-        <label for="presets">Seleccionar zona predefinida:</label>
-        <select id="presets" onchange="loadPreset()">
-            <option value="custom">-- Seleccionar o introducir coordenadas --</option>
-            <option value="barcelona">Barcelona / Costa Central (Mediterráneo)</option>
-            <option value="costabrava">Costa Brava / Girona</option>
-            <option value="tarragona">Tarragona / Costa Dorada</option>
-            <option value="balearics">Islas Baleares (Mallorca)</option>
-            <option value="cadiz">Cádiz / Costa de la Luz (Atlántico)</option>
-            <option value="bilbao">Bilbao / Costa Cantábrica</option>
-        </select>
+    <!-- SELECTOR DE COORDENADAS / GPS -->
+    <div class="glass-card">
+        <div class="form-group">
+            <label for="location-select">Ubicación Predefinida</label>
+            <select id="location-select" onchange="onPresetChange()">
+                <option value="">-- Seleccionar o introducir coordenadas --</option>
+                <option value="41.6000,2.1300">Sentmenat (Barcelona)</option>
+                <option value="41.3879,2.1699">Barcelona Costa</option>
+                <option value="36.5298,-6.2927">Cádiz (Atlántico)</option>
+                <option value="43.3623,-8.4115">A Coruña (Atlántico)</option>
+                <option value="39.5696,2.6502">Palma de Mallorca (Mediterráneo)</option>
+            </select>
+        </div>
 
-        <div style="display: flex; gap: 10px;">
-            <div style="flex: 1;">
-                <label for="lat">Latitud (°N/S):</label>
-                <input type="number" id="lat" step="0.0001" value="41.6000" oninput="calculate()">
+        <div class="row">
+            <div class="form-group">
+                <label for="lat">Latitud (°N/S)</label>
+                <input type="number" id="lat" step="0.0001" value="41.6000" oninput="calculateAll()">
             </div>
-            <div style="flex: 1;">
-                <label for="lon">Longitud (°E/W):</label>
-                <input type="number" id="lon" step="0.0001" value="2.1300" oninput="calculate()">
+            <div class="form-group">
+                <label for="lon">Longitud (°E/W)</label>
+                <input type="number" id="lon" step="0.0001" value="2.1300" oninput="calculateAll()">
             </div>
         </div>
 
-        <label for="dst">Horario de Verano (DST):</label>
-        <select id="dst" onchange="calculate()">
-            <option value="off">Inviernos / Estándar (UTC +1)</option>
-            <option value="on" selected>Verano / DST (UTC +2)</option>
-        </select>
+        <div class="form-group">
+            <label for="dst-select">Horario de Verano (DST)</label>
+            <select id="dst-select" onchange="calculateAll()">
+                <option value="2">Verano / DST (UTC +2)</option>
+                <option value="1">Invierno / Estándar (UTC +1)</option>
+            </select>
+        </div>
 
-        <button class="btn-gps" onclick="getGPS()">📡 Usar mi Ubicación GPS Actual</button>
+        <button class="btn-glass-gps" onclick="getLocation()">
+            📡 Usar mi Ubicación GPS Actual
+        </button>
     </div>
 
-    <!-- CASIO G-7900 CARD -->
-    <div class="card card-g7900">
-        <h2>🌊 Casio G-7900 / G-LIDE (Mod. 3194)</h2>
-        <div class="result-grid">
-            <div class="result-box">
-                <div class="desc">UTC OFFSET</div>
-                <div class="val" id="g7900-utc">+1.0</div>
+    <!-- MÓDULO MAREAS Y FASE LUNAR (GENÉRICO) -->
+    <div class="glass-card">
+        <div class="card-header blue">
+            🌊 Módulo Mareas y Fase Lunar (Site Data)
+        </div>
+
+        <div class="grid-data">
+            <div class="glass-box">
+                <span class="data-label">UTC OFFSET</span>
+                <span class="data-val" id="tide-utc">+1.0</span>
             </div>
-            <div class="result-box">
-                <div class="desc">LONGITUDE</div>
-                <div class="val" id="g7900-lon">2° E</div>
+            <div class="glass-box">
+                <span class="data-label">LONGITUDE</span>
+                <span class="data-val" id="tide-lon">2° E</span>
             </div>
-            <div class="result-box full-width">
-                <div class="desc">INT (INTERVALO LUNITIDAL)</div>
-                <div class="val" id="g7900-lunitidal" style="color: var(--accent-blue);">7:10</div>
+            <div class="glass-box full-width">
+                <span class="data-label">INT (INTERVALO LUNITIDAL)</span>
+                <span class="data-val blue" id="tide-int">7:10</span>
             </div>
         </div>
-        <p class="note">
-            * <strong>Nota UTC en G-7900:</strong> Pon siempre el desfase estándar (+1.0 en España) y activa/desactiva la función <code>DST</code> manualmente según la época del año para no alterar el cálculo de mareas.
+
+        <p class="card-note">
+            * <strong>Nota de configuración:</strong> Introduce siempre el desfase horario estándar (+1.0 en España) y activa/desactiva la función DST en el reloj según la época del año para asegurar la precisión del gráfico de mareas.
         </p>
     </div>
 
-    <!-- CASIO PROTREK PRG-69 CARD -->
-    <div class="card card-prg69">
-        <h2>☀️ Casio ProTrek PRG-69 (Salida/Puesta Sol)</h2>
-        <div class="result-grid">
-            <div class="result-box">
-                <div class="desc">CÓDIGO CIUDAD / UTC</div>
-                <div class="val" id="prg-city">MAD (+1.0)</div>
+    <!-- CÁLCULO DE SOL Y COORDENADAS (GENÉRICO) -->
+    <div class="glass-card">
+        <div class="card-header orange">
+            ☀️ Cálculo de Salida y Puesta de Sol (Solar Data)
+        </div>
+
+        <div class="grid-data">
+            <div class="glass-box">
+                <span class="data-label">CÓDIGO CIUDAD / UTC</span>
+                <span class="data-val" id="solar-city">MAD (+1.0)</span>
             </div>
-            <div class="result-box">
-                <div class="desc">LATITUDE</div>
-                <div class="val" id="prg-lat">42° N</div>
+            <div class="glass-box">
+                <span class="data-label">LATITUDE</span>
+                <span class="data-val" id="solar-lat">42° N</span>
             </div>
-            <div class="result-box full-width">
-                <div class="desc">LONGITUDE</div>
-                <div class="val" id="prg-lon">2° E</div>
+            <div class="glass-box full-width">
+                <span class="data-label">LONGITUDE</span>
+                <span class="data-val" id="solar-lon">2° E</span>
             </div>
         </div>
-        <p class="note">
-            * El ProTrek utiliza la combinación de Latitud, Longitud y zona horaria para calcular exactamente a qué hora el sol cruza el horizonte en tu posición exacta.
+
+        <p class="card-note">
+            * Introduce estos valores enteros redondeados en el menú de ajuste de coordenadas de tu reloj para calcular exactamente los ortos y ocasos diarios.
         </p>
     </div>
+
+    <!-- BOTÓN EXPORTAR PDF -->
+    <button class="btn-glass-pdf" onclick="window.print()">
+        📄 Exportar Configuración a PDF
+    </button>
+
 </div>
 
 <script>
-    const presets = {
-        barcelona: { lat: 41.3887, lon: 2.1590, lunitidal: "7:10" },
-        costabrava: { lat: 41.8500, lon: 3.1200, lunitidal: "7:00" },
-        tarragona: { lat: 41.1189, lon: 1.2445, lunitidal: "7:15" },
-        balearics: { lat: 39.5696, lon: 2.6502, lunitidal: "7:20" },
-        cadiz: { lat: 36.5271, lon: -6.2886, lunitidal: "1:50" },
-        bilbao: { lat: 43.3625, lon: -3.0230, lunitidal: "3:20" }
-    };
-
-    function loadPreset() {
-        const val = document.getElementById('presets').value;
-        if (presets[val]) {
-            document.getElementById('lat').value = presets[val].lat;
-            document.getElementById('lon').value = presets[val].lon;
-            calculate(presets[val].lunitidal);
-        }
-    }
-
-    function getGPS() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(position => {
-                document.getElementById('lat').value = position.coords.latitude.toFixed(4);
-                document.getElementById('lon').value = position.coords.longitude.toFixed(4);
-                document.getElementById('presets').value = "custom";
-                calculate();
-            }, () => {
-                alert("No se pudo obtener la ubicación GPS.");
-            });
-        } else {
-            alert("Navegador no compatible con GPS.");
-        }
-    }
-
-    function calculate(forcedLunitidal = null) {
+    function calculateAll() {
         const lat = parseFloat(document.getElementById('lat').value) || 0;
         const lon = parseFloat(document.getElementById('lon').value) || 0;
-        const dst = document.getElementById('dst').value;
 
-        // 1. Longitud format (G-7900 & ProTrek) - Redondeado al entero más cercano
-        const lonDeg = Math.abs(Math.round(lon));
-        const lonDir = lon >= 0 ? "E" : "W";
-        const formattedLon = `${lonDeg}° ${lonDir}`;
+        const lonRound = Math.round(Math.abs(lon));
+        const lonDir = lon >= 0 ? 'E' : 'W';
+        const lonString = lonRound + '° ' + lonDir;
 
-        // 2. Latitud format (ProTrek)
-        const latDeg = Math.abs(Math.round(lat));
-        const latDir = lat >= 0 ? "N" : "S";
-        const formattedLat = `${latDeg}° ${latDir}`;
+        const latRound = Math.round(Math.abs(lat));
+        const latDir = lat >= 0 ? 'N' : 'S';
+        const latString = latRound + '° ' + latDir;
 
-        // 3. UTC Offset (España Peninsular = +1.0 estándar)
-        const utcStr = "+1.0";
+        document.getElementById('tide-utc').textContent = "+1.0";
+        document.getElementById('tide-lon').textContent = lonString;
 
-        // 4. Lunitidal Interval Calculation / Lookup
-        let lunitidalStr = "7:10"; // Valor por defecto Mediterráneo
-        if (forcedLunitidal) {
-            lunitidalStr = forcedLunitidal;
-        } else if (lon < -2.0 && lat < 38.0) { // Atlántico sur (Cádiz)
-            lunitidalStr = "1:50";
-        } else if (lon < -1.0 && lat > 42.0) { // Cantábrico
-            lunitidalStr = "3:20";
-        } else { // Mediterráneo (Cataluña / Baleares / Valencia)
-            lunitidalStr = "7:10";
+        let lunitidalHours = 7;
+        let lunitidalMinutes = 10;
+        if (lon < -3) {
+            lunitidalHours = 1;
+            lunitidalMinutes = 45;
         }
+        document.getElementById('tide-int').textContent = 
+            `${lunitidalHours}:${lunitidalMinutes < 10 ? '0' : ''}${lunitidalMinutes}`;
 
-        // DOM Updates
-        document.getElementById('g7900-utc').innerText = utcStr;
-        document.getElementById('g7900-lon').innerText = formattedLon;
-        document.getElementById('g7900-lunitidal').innerText = lunitidalStr;
-
-        document.getElementById('prg-city').innerText = `MAD (${utcStr})`;
-        document.getElementById('prg-lat').innerText = formattedLat;
-        document.getElementById('prg-lon').innerText = formattedLon;
+        document.getElementById('solar-city').textContent = "MAD (+1.0)";
+        document.getElementById('solar-lat').textContent = latString;
+        document.getElementById('solar-lon').textContent = lonString;
     }
 
-    // Inicializar
-    calculate();
+    function onPresetChange() {
+        const select = document.getElementById('location-select');
+        if (select.value) {
+            const [lat, lon] = select.value.split(',');
+            document.getElementById('lat').value = parseFloat(lat).toFixed(4);
+            document.getElementById('lon').value = parseFloat(lon).toFixed(4);
+            document.getElementById('location-select').value = "";
+            calculateAll();
+        }
+    }
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    document.getElementById('lat').value = position.coords.latitude.toFixed(4);
+                    document.getElementById('lon').value = position.coords.longitude.toFixed(4);
+                    document.getElementById('location-select').value = "";
+                    calculateAll();
+                },
+                (error) => {
+                    alert("No se pudo obtener la ubicación GPS: " + error.message);
+                }
+            );
+        } else {
+            alert("Tu navegador no soporta geolocalización.");
+        }
+    }
+
+    window.onload = calculateAll;
 </script>
-    
+
+<!-- Registro del Service Worker para Modo Offline -->
 <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
-  }
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
 </script>
 
 </body>
