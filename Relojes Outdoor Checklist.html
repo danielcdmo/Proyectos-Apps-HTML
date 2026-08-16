@@ -9,7 +9,6 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* 1. MODO OSCURO (OLED / NOCHE) */
         :root, [data-theme="dark"] {
             --bg-grad: linear-gradient(180deg, #07090e 0%, #0f172a 100%);
             --card-bg: rgba(30, 41, 59, 0.65);
@@ -27,7 +26,6 @@
             --border-item: rgba(255, 255, 255, 0.05);
         }
 
-        /* 2. MODO DÍA ESTÁNDAR */
         [data-theme="light"] {
             --bg-grad: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
             --card-bg: rgba(255, 255, 255, 0.85);
@@ -45,7 +43,6 @@
             --border-item: rgba(0, 0, 0, 0.06);
         }
 
-        /* 3. MODO MÁXIMO DÍA (ALTO CONTRASTE / SOL DIRECTO) */
         [data-theme="sun"] {
             --bg-grad: #ffffff;
             --card-bg: #ffffff;
@@ -168,7 +165,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            margin-top: 6px;
+            margin-top: 10px;
             padding-bottom: 4px;
             border-bottom: 1.5px solid var(--card-border);
         }
@@ -261,17 +258,78 @@
 
         .print-title { display: none; }
 
-        /* MODO IMPRESIÓN / PDF */
+        /* MODO IMPRESIÓN / PDF OPTIMIZADO PARA NO CORTAR */
         @media print {
-            body { background: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .top-bar, .actions, .theme-toggle, select { display: none !important; }
-            .print-title { display: block !important; font-size: 1.3rem; font-weight: 800; margin-bottom: 12px; text-align: center; color: #000 !important; }
-            .glass-card { background: none !important; border: 1px solid #000 !important; box-shadow: none !important; color: #000 !important; margin-bottom: 15px; padding: 12px !important; break-inside: avoid; }
-            .section-title { color: #000 !important; border-color: #000 !important; }
-            .checkbox-custom { border-color: #000 !important; }
-            .checkbox-custom.checked { background: #000 !important; color: #fff !important; }
-            .item-text { color: #000 !important; }
-            .item-text.done { text-decoration: line-through !important; color: #666 !important; }
+            @page {
+                size: A4 portrait;
+                margin: 12mm;
+            }
+            html, body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                height: auto !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .container {
+                max-width: 100% !important;
+                width: 100% !important;
+                gap: 8px !important;
+                padding: 0 !important;
+            }
+            .top-bar, .actions, .theme-toggle, select, .progress-bar-bg, #progressText, .form-label { 
+                display: none !important; 
+            }
+            .print-title { 
+                display: block !important; 
+                font-size: 1.4rem; 
+                font-weight: 800; 
+                margin-bottom: 8px; 
+                text-align: center; 
+                color: #000000 !important;
+                -webkit-text-fill-color: #000000 !important;
+            }
+            .glass-card { 
+                background: none !important; 
+                border: 1px solid #000000 !important; 
+                box-shadow: none !important; 
+                color: #000000 !important; 
+                margin-bottom: 8px !important; 
+                padding: 10px 14px !important; 
+                break-inside: auto !important;
+                page-break-inside: auto !important;
+            }
+            .section-title { 
+                color: #000000 !important; 
+                border-color: #000000 !important;
+                break-after: avoid !important;
+                page-break-after: avoid !important;
+                margin-top: 8px !important;
+            }
+            .check-item {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                border-bottom: 1px solid #cccccc !important;
+                padding: 6px 0 !important;
+            }
+            .checkbox-custom { 
+                border-color: #000000 !important; 
+            }
+            .checkbox-custom.checked { 
+                background: #000000 !important; 
+                color: #ffffff !important; 
+            }
+            .item-text { 
+                color: #000000 !important; 
+                font-size: 0.82rem !important;
+            }
+            .item-text.done { 
+                text-decoration: line-through !important; 
+                color: #555555 !important; 
+            }
         }
     </style>
 </head>
@@ -513,7 +571,7 @@
                     title: "🏠 En casa (Antes de salir)",
                     items: [
                         "☀️ Nivel de carga: Comprobar carga solar en esfera o app CASIO WATCHES.",
-                        "📲 Sincronización: Abrir app para hora exacta y fijar objetivo de pasos.",
+                        "📲 Sincronización: Abrir app para hora exacta y fijar objetivo de pasos."
                     ]
                 },
                 {
@@ -663,8 +721,7 @@
     function cycleTheme() {
         const current = document.documentElement.getAttribute('data-theme') || 'dark';
         const nextIndex = (THEMES.indexOf(current) + 1) % THEMES.length;
-        const nextTheme = THEMES[nextIndex];
-        applyTheme(nextTheme);
+        applyTheme(THEMES[nextIndex]);
     }
 
     function applyTheme(theme) {
