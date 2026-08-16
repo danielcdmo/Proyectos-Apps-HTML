@@ -54,7 +54,6 @@
 
     .help-tag { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: var(--accent); }
     
-    /* Brújula Táctica */
     .compass-wrapper {
       display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 0;
     }
@@ -74,7 +73,6 @@
       border: 2px solid #050811; z-index: 5; box-shadow: 0 0 6px #38bdf8;
     }
 
-    /* Gráfico Barómetro */
     .baro-chart-container {
       background: #020409; border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 12px; padding: 8px; margin-top: 8px; text-align: center;
@@ -338,7 +336,6 @@
       }
     }
 
-    // Cálculo Lunar Dinámico según fecha actual del sistema
     function calculateMoonData(d = new Date()) {
       let year = d.getFullYear();
       let month = d.getMonth() + 1;
@@ -370,7 +367,6 @@
       return { age, illum, nextFull, name, icon };
     }
 
-    // Declinación magnética dinámica según lat/lon
     function calculateMagneticDeclination(lat, lon) {
       let dec = 0.8 + (lon * 0.45);
       let rounded = Math.round(Math.abs(dec));
@@ -379,7 +375,6 @@
       return `${dir} ${rounded}°`;
     }
 
-    // Cálculo solar dinámico para cualquier punto del mundo
     function calculateOfflineSun(lat, lon, d = new Date()) {
       const start = new Date(d.getFullYear(), 0, 0);
       const dayOfYear = Math.floor((d - start) / 1000 / 60 / 60 / 24);
@@ -406,27 +401,32 @@
       return { sunrise: formatTime(sunriseMin), sunset: formatTime(sunsetMin) };
     }
 
-    // Algoritmo Universal de Mareas (Cantábrico / Atlántico / Mediterráneo)
+    // Cálculo dinámico corregido con Huso Horario / DST Real
     function calculateDailyTides(lat, lon, moonAge) {
+      const now = new Date();
+      const tzOffsetHours = -now.getTimezoneOffset() / 60; // +2 en verano, +1 en invierno
+
       let isCantabrian = lat >= 43;
       let isAtlantic = lon < -3.5;
       
-      let lunitidalHours = 7.16; // Mediterráneo
+      let lunitidalHours = 7.16; // 7h 10m en Mediterráneo
       let stationName = "Mediterráneo";
 
       if (isCantabrian) {
-        lunitidalHours = 3.10; // Cantabria / Santander / Asturias
+        lunitidalHours = 3.10;
         stationName = "Cantábrico";
       } else if (isAtlantic) {
-        lunitidalHours = 1.75; // Atlántico Sur (Cádiz, Huelva, Galicia)
+        lunitidalHours = 1.75;
         stationName = "Atlántico";
       }
 
-      // Tránsito lunar sobre meridiano local
-      const moonTransit = (moonAge * (24 / 29.53)) % 24;
-
-      let highTide = (moonTransit + lunitidalHours + 12) % 12.42;
-      if (highTide < 6) highTide += 12.42;
+      // Tránsito lunar sobre meridiano corregido con longitud y huso horario
+      const moonTransitUTC = (moonAge * 0.84) - (lon / 15);
+      let highTide = (moonTransitUTC + lunitidalHours + tzOffsetHours + 24) % 12.42;
+      
+      // Ajuste para mostrar la pleamar principal diurna
+      while (highTide < 9.5) highTide += 12.42;
+      if (highTide >= 24) highTide -= 24;
 
       let low1 = (highTide - 6.21 + 24) % 24;
       let low2 = (highTide + 6.21) % 24;
@@ -438,7 +438,6 @@
         return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
       };
 
-      const now = new Date();
       const currentHour = now.getHours() + (now.getMinutes() / 60);
       const isRising = (currentHour > low1 && currentHour < highTide) || (currentHour > low2);
 
@@ -522,17 +521,17 @@
         localStorage.setItem('casio_lon', lon);
         if (alt !== null) localStorage.setItem('casio_alt', alt);
 
-        // 1. Coordenadas y Altitud GPS en tiempo real
+        // 1. Coordenadas y Altitud GPS
         document.getElementById('casioLat').textContent = `${Math.abs(lat).toFixed(1)}° ${lat >= 0 ? 'N' : 'S'}`;
         document.getElementById('casioLon').textContent = `${Math.abs(lon).toFixed(1)}° ${lon >= 0 ? 'E' : 'W'}`;
 
         const altVal = alt !== null ? Math.round(alt) : (localStorage.getItem('casio_alt') || 212);
         document.getElementById('gpsAlt').innerHTML = `${altVal}<span class="data-unit">m</span>`;
 
-        // 2. Declinación magnética calculada por GPS
+        // 2. Declinación magnética
         document.getElementById('magDec').textContent = calculateMagneticDeclination(lat, lon);
 
-        // 3. Luna dinámica según fecha del sistema
+        // 3. Luna
         const moon = calculateMoonData();
         document.getElementById('moonAge').innerHTML = `${moon.age.toFixed(1)} <span class="data-unit">días</span>`;
         document.getElementById('moonIcon').textContent = moon.icon;
@@ -540,7 +539,7 @@
         document.getElementById('moonIllum').innerHTML = `${moon.illum}<span class="data-unit">%</span>`;
         document.getElementById('nextFullMoon').innerHTML = `${moon.nextFull}<span class="data-unit">días</span>`;
 
-        // 4. Mareas dinámicas automáticas por coordenadas
+        // 4. Mareas con corrección horaria
         const tides = calculateDailyTides(lat, lon, moon.age);
         document.getElementById('tideLow1').textContent = tides.low1;
         document.getElementById('tideHigh').textContent = tides.high;
@@ -549,7 +548,7 @@
         document.getElementById('lunitidalVal').textContent = tides.lunitidal;
         document.getElementById('tideStationTag').textContent = tides.station;
 
-        // 5. Sol dinámico
+        // 5. Sol
         const sunOffline = calculateOfflineSun(lat, lon);
         document.getElementById('sunrise').textContent = sunOffline.sunrise;
         document.getElementById('sunset').textContent = sunOffline.sunset;
@@ -565,7 +564,7 @@
         let dummyHistory = [1015, 1014, 1014, 1013, 1013, 1012, 1013, 1014, 1015, 1015, 1014, 1015];
         drawBaroChart(dummyHistory);
 
-        // 7. Enriquecer con API Meteorológica Global
+        // 7. Datos meteorológicos Open-Meteo
         try {
           const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,surface_pressure,pressure_msl&hourly=surface_pressure&daily=sunrise,sunset&timezone=auto`;
           const res = await fetch(url);
