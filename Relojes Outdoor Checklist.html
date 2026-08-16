@@ -258,11 +258,11 @@
 
         .print-title { display: none; }
 
-        /* MODO IMPRESIÓN / PDF OPTIMIZADO PARA NO CORTAR */
+        /* MODO IMPRESIÓN AJUSTADO A 1 PÁGINA */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 12mm;
+                margin: 8mm 10mm;
             }
             html, body {
                 background: #ffffff !important;
@@ -277,46 +277,47 @@
             .container {
                 max-width: 100% !important;
                 width: 100% !important;
-                gap: 8px !important;
+                gap: 4px !important;
                 padding: 0 !important;
             }
-            .top-bar, .actions, .theme-toggle, select, .progress-bar-bg, #progressText, .form-label { 
+            .top-bar, .actions, #selectorCard { 
                 display: none !important; 
             }
             .print-title { 
                 display: block !important; 
-                font-size: 1.4rem; 
-                font-weight: 800; 
-                margin-bottom: 8px; 
+                font-size: 1.15rem !important; 
+                font-weight: 900 !important; 
+                margin-bottom: 6px !important; 
                 text-align: center; 
                 color: #000000 !important;
                 -webkit-text-fill-color: #000000 !important;
             }
             .glass-card { 
                 background: none !important; 
-                border: 1px solid #000000 !important; 
+                border: 1.5px solid #000000 !important; 
                 box-shadow: none !important; 
                 color: #000000 !important; 
-                margin-bottom: 8px !important; 
-                padding: 10px 14px !important; 
-                break-inside: auto !important;
-                page-break-inside: auto !important;
+                margin: 0 !important; 
+                padding: 8px 12px !important; 
             }
             .section-title { 
                 color: #000000 !important; 
                 border-color: #000000 !important;
-                break-after: avoid !important;
-                page-break-after: avoid !important;
-                margin-top: 8px !important;
+                font-size: 0.78rem !important;
+                margin-top: 6px !important;
+                padding-bottom: 2px !important;
             }
             .check-item {
-                break-inside: avoid !important;
-                page-break-inside: avoid !important;
-                border-bottom: 1px solid #cccccc !important;
-                padding: 6px 0 !important;
+                border-bottom: 1px solid #e0e0e0 !important;
+                padding: 3.5px 0 !important;
+                gap: 8px !important;
             }
             .checkbox-custom { 
-                border-color: #000000 !important; 
+                width: 16px !important;
+                height: 16px !important;
+                border: 1.5px solid #000000 !important;
+                font-size: 0.7rem !important;
+                margin-top: 1px !important;
             }
             .checkbox-custom.checked { 
                 background: #000000 !important; 
@@ -324,7 +325,8 @@
             }
             .item-text { 
                 color: #000000 !important; 
-                font-size: 0.82rem !important;
+                font-size: 0.73rem !important;
+                line-height: 1.25 !important;
             }
             .item-text.done { 
                 text-decoration: line-through !important; 
@@ -343,7 +345,7 @@
 
     <h2 class="print-title" id="printHeaderTitle">Checklist Outdoor</h2>
 
-    <div class="glass-card">
+    <div class="glass-card" id="selectorCard">
         <div class="form-group">
             <label class="form-label" for="watchSelect">Seleccionar Reloj / Modelo</label>
             <select id="watchSelect" class="select-custom" onchange="renderChecklist()">
@@ -721,7 +723,8 @@
     function cycleTheme() {
         const current = document.documentElement.getAttribute('data-theme') || 'dark';
         const nextIndex = (THEMES.indexOf(current) + 1) % THEMES.length;
-        applyTheme(THEMES[nextIndex]);
+        const nextTheme = THEMES[nextIndex];
+        applyTheme(nextTheme);
     }
 
     function applyTheme(theme) {
