@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Checklist Outdoor Relojes CDMO</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* 1. MODO OSCURO (OLED / NOCHE) */
+        :root, [data-theme="dark"] {
+            --bg-grad: linear-gradient(180deg, #07090e 0%, #0f172a 100%);
+            --card-bg: rgba(30, 41, 59, 0.65);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --card-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.5);
+            --text-main: #ffffff;
+            --text-sub: #94a3b8;
+            --accent-green: #30d158;
+            --accent-green-glow: rgba(48, 209, 88, 0.2);
+            --accent-blue: #0a84ff;
+            --accent-purple: #bf5af2;
+            --accent-orange: #ff9f0a;
+            --neutral-bg: rgba(255, 255, 255, 0.06);
+            --input-bg: rgba(15, 23, 42, 0.8);
+            --border-item: rgba(255, 255, 255, 0.05);
+        }
+
+        /* 2. MODO DÍA ESTÁNDAR */
+        [data-theme="light"] {
+            --bg-grad: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(255, 255, 255, 0.9);
+            --card-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.06);
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --accent-green: #059669;
+            --accent-green-glow: rgba(5, 150, 105, 0.18);
+            --accent-blue: #0284c7;
+            --accent-purple: #7c3aed;
+            --accent-orange: #d97706;
+            --neutral-bg: rgba(0, 0, 0, 0.04);
+            --input-bg: rgba(255, 255, 255, 0.95);
+            --border-item: rgba(0, 0, 0, 0.06);
+        }
+
+        /* 3. MODO MÁXIMO DÍA (ALTO CONTRASTE / SOL DIRECTO) */
+        [data-theme="sun"] {
+            --bg-grad: #ffffff;
+            --card-bg: #ffffff;
+            --card-border: #000000;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --text-main: #000000;
+            --text-sub: #222222;
+            --accent-green: #008a20;
+            --accent-green-glow: transparent;
+            --accent-blue: #0048b3;
+            --accent-purple: #6a00b8;
+            --accent-orange: #b34700;
+            --neutral-bg: #e5e7eb;
+            --input-bg: #ffffff;
+            --border-item: #cccccc;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background: var(--bg-grad);
+            color: var(--text-main);
+            padding: 16px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 480px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 30px;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+        }
+
+        [data-theme="sun"] .header-title {
+            background: none;
+            -webkit-text-fill-color: #000000;
+            color: #000000;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            padding: 6px 12px;
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--card-shadow);
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 18px;
+            backdrop-filter: blur(25px);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .select-custom {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1.5px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-size: 0.92rem;
+            font-weight: 800;
+            outline: none;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 900;
+            color: var(--accent-orange);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+            padding-bottom: 4px;
+            border-bottom: 1.5px solid var(--card-border);
+        }
+
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-item);
+        }
+
+        .check-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox-custom {
+            width: 24px;
+            height: 24px;
+            border-radius: 7px;
+            border: 2px solid var(--card-border);
+            background: var(--neutral-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: all 0.2s ease;
+            font-weight: 900;
+        }
+
+        .checkbox-custom.checked {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: #ffffff;
+        }
+
+        .item-text {
+            font-size: 0.88rem;
+            line-height: 1.4;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .item-text.done {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 13px 8px;
+            border-radius: 16px;
+            border: 1.5px solid var(--card-border);
+            font-weight: 800;
+            font-size: 0.84rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .btn-pdf { background: var(--accent-purple); color: #ffffff; }
+        .btn-reset { background: var(--neutral-bg); color: var(--text-main); }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: var(--neutral-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-green);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .print-title { display: none; }
+
+        /* MODO IMPRESIÓN / PDF */
+        @media print {
+            body { background: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .top-bar, .actions, .theme-toggle, select { display: none !important; }
+            .print-title { display: block !important; font-size: 1.3rem; font-weight: 800; margin-bottom: 12px; text-align: center; color: #000 !important; }
+            .glass-card { background: none !important; border: 1px solid #000 !important; box-shadow: none !important; color: #000 !important; margin-bottom: 15px; padding: 12px !important; break-inside: avoid; }
+            .section-title { color: #000 !important; border-color: #000 !important; }
+            .checkbox-custom { border-color: #000 !important; }
+            .checkbox-custom.checked { background: #000 !important; color: #fff !important; }
+            .item-text { color: #000 !important; }
+            .item-text.done { text-decoration: line-through !important; color: #666 !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-bar">
+        <h1 class="header-title">🏔️ Relojes Checklist CDMO</h1>
+        <button class="theme-toggle" onclick="cycleTheme()" id="themeBtn">🌙 Noche</button>
+    </div>
+
+    <h2 class="print-title" id="printHeaderTitle">Checklist Outdoor</h2>
+
+    <div class="glass-card">
+        <div class="form-group">
+            <label class="form-label" for="watchSelect">Seleccionar Reloj / Modelo</label>
+            <select id="watchSelect" class="select-custom" onchange="renderChecklist()">
+                <option value="suunto_core2">🧭 1. Suunto Core 2</option>
+                <option value="suunto_vertical2">🌲 2. Suunto Vertical 2 (Titanium Solar / Mapas)</option>
+                <option value="suunto_nautic">🤿 3. Suunto Nautic S (Buceo / Bühlmann 16 GF)</option>
+                <option value="protrek_prg340">🪵 4. Casio ProTrek PRG-340 (Triple Sensor / Solar)</option>
+                <option value="rangeman_gw9400">🧗 5. Casio G-Shock Rangeman GW-9400 (R/C Solar)</option>
+                <option value="gab010">👟 6. Casio G-Shock GA-B010 (Bluetooth / Podómetro)</option>
+                <option value="g7900">🌊 7. Casio G-Shock G-7900 (Mareas y Luna)</option>
+                <option value="dw6900rl">⏱️ 8. Casio G-Shock DW-6900RL (Clásico Digital)</option>
+                <option value="apple_watch">⌚ 9. Apple Watch (Komoot Offline & Salud)</option>
+            </select>
+        </div>
+
+        <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 800; color: var(--text-sub); margin-bottom: 6px;">
+                <span>Progreso de Verificación</span>
+                <span id="progressText">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card" id="checklistContainer"></div>
+
+    <div class="actions">
+        <button class="btn-action btn-pdf" onclick="window.print()">📄 Exportar a PDF</button>
+        <button class="btn-action btn-reset" onclick="resetCurrentChecklist()">🔄 Reiniciar</button>
+    </div>
+</div>
+
+<script>
+    const WATCH_DATA = {
+        suunto_core2: {
+            name: "Suunto Core 2",
+            phases: [
+                {
+                    title: "🏠 En casa (Antes de salir)",
+                    items: [
+                        "🔋 Estado de la pila: Comprobar aviso de batería baja (pila CR3032).",
+                        "📲 Sincronización App: Sincronizar en GENERAL > SYNC-APP.",
+                        "🗺️ Datos de ruta: Anotar cota exacta de inicio y declinación magnética."
+                    ]
+                },
+                {
+                    title: "🚗 En el punto de inicio",
+                    items: [
+                        "📐 Calibración manual de altitud: En REFERENCIA > ALTÍMETRO meter cota conocida.",
+                        "🧭 Calibración de brújula: Nivelar y girar en sentido horario (5-10 vueltas).",
+                        "🌩️ Alarma de tormenta: Activar en menú Modo (perfil Barómetro)."
+                    ]
+                },
+                {
+                    title: "🥾 Durante la ruta",
+                    items: [
+                        "⛰️ Medidor de desnivel: En ALTÍ., pulsar [-] y luego [+] para iniciar contador.",
+                        "🧭 Seguimiento de rumbo: Apuntar al objetivo y fijar con [+].",
+                        "🤿 Modo Buceo / Snorkel: Activar si hay inmersión en río/poza hasta 2 m.",
+                        "🌡️ Temperatura real: Quitar de la muñeca 15-20 min a la sombra."
+                    ]
+                },
+                {
+                    title: "🏁 Al finalizar",
+                    items: [
+                        "🪥 Mantenimiento: Enjuagar con agua dulce y secar ranuras del sensor."
+                    ]
+                }
+            ]
+        },
+        suunto_vertical2: {
+            name: "Suunto Vertical 2 (Titanium Solar)",
+            phases: [
+                {
+                    title: "🏠 En casa (Antes de salir)",
+                    items: [
+                        "⚡ Batería y Carga Solar: Verificar carga óptima.",
+                        "🗺️ Mapas Offline: Descargar zona offline vía Wi-Fi en Suunto App.",
+                        "🧭 Cargar Ruta: Sincronizar track con Turn-by-Turn y Climb Guidance.",
+                        "📲 Sincronización GPS: Confirmar satélites actualizados en la app."
+                    ]
+                },
+                {
+                    title: "🚗 En el punto de inicio",
+                    items: [
+                        "🛰️ Fijación GPS & FusedAlti: Esperar icono verde en modo deporte.",
+                        "🗺️ Cargar Navegación: Seleccionar ruta o marcar PDI de inicio (Coche).",
+                        "🌩️ Alerta de tormenta: Activar aviso de caída de presión en Ajustes."
+                    ]
+                },
+                {
+                    title: "🥾 Durante la ruta",
+                    items: [
+                        "📈 Climb Guidance: Consultar desnivel restante en perfil de elevación.",
+                        "🔦 Linterna de emergencia: Usar panel de control para luz blanca/roja/SOS.",
+                        "🤿 Modo Snorkel: Activar si hay baño en pozas/mar (hasta 10 m).",
+                        "🔒 Bloqueo de pantalla: Mantener pulsado botón inferior para bloquear."
+                    ]
+                },
+                {
+                    title: "🏁 Al finalizar",
+                    items: [
+                        "💾 Guardar actividad: Detener (superior) y Finalizar (inferior).",
+                        "📲 Sincronización: Volcar track, desniveles y VFC en Suunto App.",
+                        "🪥 Mantenimiento: Lavar con agua dulce y secar orificios a las 6 en punto."
+                    ]
+                }
+            ]
+        },
+        suunto_nautic: {
+            name: "Suunto Nautic S",
+            phases: [
+                {
+                    title: "🏠 En casa (Antes de salir)",
+                    items: [
+                        "🔋 Batería: Cargar con cable USB oficial (50-100 %).",
+                        "🧪 Configuración Gases: Configurar Aire/Nitrox (% O2 y ppO2) y botellas.",
+                        "🧮 Algoritmo Bühlmann 16 GF: Comprobar factores de gradiente (40/85 o 35/75).",
+                        "📡 Vincular Tank POD: Confirmar conexión con transmisor inalámbrico."
+                    ]
+                },
+                {
+                    title: "🚗 En punto de inicio / Barco",
+                    items: [
+                        "📶 Pre-dive Screen: Verificar GPS en verde y presión de Tank POD.",
+                        "⛰️ Ajuste de Altitud: Seleccionar rango si es buceo en lagos > 300 m.",
+                        "🔔 Alarmas: Revisar presión de retorno (100/50 bar) y profundidad máx."
+                    ]
+                },
+                {
+                    title: "🥾 Durante la inmersión",
+                    items: [
+                        "🎛️ Navegación subacuática: Alternar vistas con botón central y fijar rumbo.",
+                        "⏱️ Control de paradas: Respetar ascenso (<10 m/min) y parada de seguridad.",
+                        "🔒 Bloqueo bajo agua: Mantener pulsado botón inferior."
+                    ]
+                },
+                {
+                    title: "🏁 Al finalizar",
+                    items: [
+                        "✈️ No-Fly Time: Comprobar tiempo de espera para volar antes de subir a puertos.",
+                        "📲 Sincronización: Volcar perfil 3D y consumo en Suunto App.",
+                        "🧂 Mantenimiento crítico: Enjuagar con agua dulce accionando pulsadores."
+                    ]
+                }
+            ]
+        },
+        protrek_prg340: {
+            name: "Casio ProTrek PRG-340",
+            phases: [
+                {
+                    title: "🏠 En casa (Antes de salir)",
+                    items: [
+                        "☀️ Carga solar: Verificar indicador en H (High).",
+                        "🗺️ Datos de cota y sol: Anotar cota inicial y verificar horas sol (SUN)."
+                    ]
+                },
+                {
+                    title: "🚗 En el punto de inicio",
+                    items: [
+                        "📐 Calibración altitud: En Altímetro (A), mantener E y meter cota.",
+                        "⏱️ Intervalo lectura: Definir 0'05 (frecuente) o 2'00 (ruta larga).",
+                        "📉 Alerta barométrica: En Barómetro (B), mantener B (INFO ON / BARO).",
+                        "🏔️ Registro ascenso: Mantener A 5 seg para iniciar Trek Log (Mt.X)."
+                    ]
+                },
+                {
+                    title: "🥾 Durante la ruta",
+                    items: [
+                        "🧭 Brújula Dúplex: En modo Brújula (C), usar memoria de rumbo (E).",
+                        "⛰️ Recalibrar altitud: Ajustar en cruces o cotas topográficas conocidas.",
+                        "🚫💧 Resistencia (10 BAR): No presionar pulsadores bajo el agua."
+                    ]
+                },
+                {
+                    title: "🏁 Al finalizar",
+                    items: [
+                        "⏹️ Finalizar Trek Log: En Altímetro, mantener A 5 s (Trek END).",
+                        "🪥 Mantenimiento: Lavar con agua dulce, secar y despejar sensor."
+                    ]
+                }
+            ]
+        },
+        rangeman_gw9400: {
+            name: "Casio G-Shock Rangeman GW-9400",
+            phases: [
+                {
+                    title: "🏠 En casa (Antes de salir)",
+                    items: [
+                        "🔋 Nivel de carga: Comprobar indicador en H.",
+                        "📡 Radiocontrol (R/C): Confirmar sincronización correcta (GET).",
+                        "🗺️ Datos de ruta: Verificar cota y horas de salida/puesta de sol."
+                    ]
+                },
+                {
+                    title: "🚗 En el punto de inicio",
+                    items: [
+                        "📐 Calibración altitud: En Altímetro (B), mantener E y fijar cota.",
+                        "🎯 Punto cero desnivel: En pantalla 2 de Altímetro, pulsar A para poner a ±0 m.",
+                        "⛈️ Alerta barométrica: En Barómetro, mantener A (INFO Hold ON)."
+                    ]
+                },
+                {
+                    title: "🥾 Durante la ruta",
+                    items: [
+                        "🧭 Brújula: Apuntar las 12 al objetivo y pulsar A para guardar rumbo.",
+                        "📝 Time Stamp: Mantener C 2 s para grabar punto con fecha/hora/cota.",
+                        "🌡️ Temperatura real: Dejar a la sombra 20-30 min fuera de la muñeca."
+                    ]
+                },
+                {
+                    title: "🏁 Al finalizar",
+                    items: [
+                        "🪥 Mantenimiento: Enjuagar con agua corriente (20 BAR) y secar bisel/sensor."
+                    ]
+                }
+            ]
+        },
+        gab010: {
+            name: "Casio G-Shock GA-B010",
+            phases: [
+                {
+                    title: "🏠 En casa (Antes de salir)",
+                    items: [
+                        "☀️ Nivel de carga: Comprobar carga solar en esfera o app CASIO WATCHES.",
+                        "📲 Sincronización: Abrir app para hora exacta y fijar objetivo de pasos.",
+                    ]
+                },
+                {
+                    title: "🚗 En el punto de inicio",
+                    items: [
+                        "📍 Punto de salida: Pulsar D para grabar TIME&PLACE (GPS/hora coche).",
+                        "👟 Podómetro: Comprobar o reiniciar conteo del día si se desea."
+                    ]
+                },
+                {
+                    title: "🥾 Durante la ruta",
+                    items: [
+                        "📊 Seguimiento pasos: Pulsar B para ver contador y gráfico.",
+                        "📍 Waypoints clave: Pulsar D en hitos para registrar TIME&PLACE.",
+                        "🪡 Hand Shift: Mantener L y pulsar C para apartar manecillas de la pantalla."
+                    ]
+                },
+                {
+                    title: "🏁 Al finalizar",
+                    items: [
+                        "📲 Volcado actividad: Mantener C 3 s para volcar pasos y ubicaciones.",
+                        "🪥 Mantenimiento: Enjuagar con agua dulce y secar con paño suave."
+                    ]
+                }
+            ]
+        },
+        g7900: {
+            name: "Casio G-Shock G-7900",
+            phases: [
+                {
+                    title: "🏠 En casa (Antes de salir)",
+                    items: [
+                        "🔋 Pila: Comprobar nitidez de dígitos LCD (CR2025).",
+                        "🌊 Site Data: Verificar desfase UTC, Longitud y Lunitidal Interval (INT)."
+                    ]
+                },
+                {
+                    title: "🚗 En el punto de inicio",
+                    items: [
+                        "🌙 Datos de marea/luna: Entrar en modo C para ver pleamar/bajamar.",
+                        "⏱️ Cronómetro/Timer: Configurar temporizador con zumbador de progreso.",
+                        "🚨 Flash Alert: Mantener D para activar alerta luminosa si aplica."
+                    ]
+                },
+                {
+                    title: "🥾 Durante la ruta / agua",
+                    items: [
+                        "🌊 Lectura gráfico: Consultar segmentos de marea (subida/bajada).",
+                        "💧 Uso en agua (200 m): Manejo con guantes (evitar botones en inmersión profunda)."
+                    ]
+                },
+                {
+                    title: "🏁 Al finalizar",
+                    items: [
+                        "🧂 Enjuague a fondo: Lavar abundantemente con agua dulce para retirar salitre/arena.",
+                        "🪥 Secado: Secar completamente antes de guardar."
+                    ]
+                }
+            ]
+        },
+        dw6900rl: {
+            name: "Casio G-Shock DW-6900RL",
+            phases: [
+                {
+                    title: "🏠 En casa (Antes de salir)",
+                    items: [
+                        "🔋 Estado de la pila: Comprobar display nítido (CR2016).",
+                        "⏰ Alarmas: Programar avisos en Modo ALM.",
+                        "🚨 Flash Alert: Mantener D 2 s en hora para activar destello."
+                    ]
+                },
+                {
+                    title: "🚗 En el punto de inicio",
+                    items: [
+                        "⏱️ Cronómetro / Timer: Iniciar STW o TMR para tiempo de marcha.",
+                        "🔁 Auto-Repeat: Activar repetición en TMR para alertas periódicas."
+                    ]
+                },
+                {
+                    title: "🥾 Durante la ruta",
+                    items: [
+                        "💡 Iluminación: Usar pulsador frontal (L) para ver de noche.",
+                        "🛡️ Resistencia (20 BAR): Reloj robusto contra caídas, barro y agua."
+                    ]
+                },
+                {
+                    title: "🏁 Al finalizar",
+                    items: [
+                        "🪥 Mantenimiento: Enjuagar con agua corriente y secar con paño."
+                    ]
+                }
+            ]
+        },
+        apple_watch: {
+            name: "Apple Watch (Komoot & Salud)",
+            phases: [
+                {
+                    title: "🏠 En casa (Antes de salir)",
+                    items: [
+                        "⚡ Batería: Cargar reloj al 100 %.",
+                        "📥 Komoot Offline: Confirmar ruta descargada offline en el reloj.",
+                        "🔗 Sincronización Salud: Verificar permisos en Apple Salud (Strava, Wikiloc, Suunto, etc.)."
+                    ]
+                },
+                {
+                    title: "🚗 En el punto de inicio",
+                    items: [
+                        "🗺️ Iniciar navegación: Abrir Komoot y comenzar recorrido offline.",
+                        "🛰️ Señal GPS: Confirmar posición precisa antes de empezar a andar.",
+                        "💧 Bloqueo de agua: Activar en Centro de Control si llueve o hay sudor."
+                    ]
+                },
+                {
+                    title: "🥾 Durante la ruta",
+                    items: [
+                        "🔔 Navegación: Guiarse por vibraciones hápticas e indicaciones de giro.",
+                        "🪫 Gestión de energía: Activar bajo consumo si la ruta es muy larga."
+                    ]
+                },
+                {
+                    title: "🏁 Al finalizar",
+                    items: [
+                        "💾 Guardar actividad: Finalizar trayecto en Komoot.",
+                        "🔊 Expulsar agua: Girar Digital Crown para desbloquear altavoz.",
+                        "🔄 Sincronización en cadena: Verificar volcado a Apple Salud y apps externas.",
+                        "🪥 Mantenimiento: Enjuagar con agua dulce, secar y poner a cargar."
+                    ]
+                }
+            ]
+        }
+    };
+
+    let checkedState = JSON.parse(localStorage.getItem('cdmo_watches_checklist')) || {};
+
+    const THEMES = ['dark', 'light', 'sun'];
+    const THEME_LABELS = {
+        'dark': '🌙 Noche',
+        'light': '☀️ Día',
+        'sun': '⚡ Máximo Sol'
+    };
+
+    function initTheme() {
+        const saved = localStorage.getItem('theme_pref_outdoor') || 'dark';
+        applyTheme(saved);
+    }
+
+    function cycleTheme() {
+        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+        const nextIndex = (THEMES.indexOf(current) + 1) % THEMES.length;
+        const nextTheme = THEMES[nextIndex];
+        applyTheme(nextTheme);
+    }
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme_pref_outdoor', theme);
+        document.getElementById('themeBtn').textContent = THEME_LABELS[theme];
+    }
+
+    function renderChecklist() {
+        const watchKey = document.getElementById('watchSelect').value;
+        const watch = WATCH_DATA[watchKey];
+        const container = document.getElementById('checklistContainer');
+        document.getElementById('printHeaderTitle').textContent = `Checklist Outdoor - ${watch.name}`;
+
+        if (!checkedState[watchKey]) checkedState[watchKey] = {};
+
+        let html = '';
+        let totalItems = 0;
+        let checkedCount = 0;
+
+        watch.phases.forEach((phase, pIdx) => {
+            html += `<div class="section-title">${phase.title}</div>`;
+            phase.items.forEach((item, iIdx) => {
+                const itemId = `chk_${pIdx}_${iIdx}`;
+                const isChecked = !!checkedState[watchKey][itemId];
+                totalItems++;
+                if (isChecked) checkedCount++;
+
+                html += `
+                    <div class="check-item" onclick="toggleItem('${watchKey}', '${itemId}')">
+                        <div class="checkbox-custom ${isChecked ? 'checked' : ''}">
+                            ${isChecked ? '✓' : ''}
+                        </div>
+                        <div class="item-text ${isChecked ? 'done' : ''}">${item}</div>
+                    </div>
+                `;
+            });
+        });
+
+        container.innerHTML = html;
+
+        const pct = totalItems === 0 ? 0 : Math.round((checkedCount / totalItems) * 100);
+        document.getElementById('progressText').textContent = `${pct}% (${checkedCount}/${totalItems})`;
+        document.getElementById('progressFill').style.width = `${pct}%`;
+    }
+
+    function toggleItem(watchKey, itemId) {
+        checkedState[watchKey][itemId] = !checkedState[watchKey][itemId];
+        localStorage.setItem('cdmo_watches_checklist', JSON.stringify(checkedState));
+        renderChecklist();
+    }
+
+    function resetCurrentChecklist() {
+        const watchKey = document.getElementById('watchSelect').value;
+        if (confirm(`¿Reiniciar todas las casillas marcadas para este reloj?`)) {
+            checkedState[watchKey] = {};
+            localStorage.setItem('cdmo_watches_checklist', JSON.stringify(checkedState));
+            renderChecklist();
+        }
+    }
+
+    initTheme();
+    renderChecklist();
+</script>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+</script>
+
+</body>
+</html>
