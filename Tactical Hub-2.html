@@ -170,7 +170,9 @@
             font-size: 0.65rem;
             font-weight: 700;
             letter-spacing: 0.8px;
-            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .badge-tag.orange {
@@ -179,11 +181,17 @@
             border-color: rgba(255, 152, 0, 0.3);
         }
 
-        .badge-tag.alarm-on {
-            background: rgba(255, 61, 113, 0.18);
+        .badge-tag.baro-armed {
+            background: rgba(0, 230, 118, 0.12);
+            color: var(--accent-green);
+            border-color: rgba(0, 230, 118, 0.3);
+        }
+
+        .badge-tag.baro-alert {
+            background: rgba(255, 61, 113, 0.25);
             color: var(--accent-red);
-            border-color: rgba(255, 61, 113, 0.5);
-            animation: pulse-alarm 1.5s infinite;
+            border-color: var(--accent-red);
+            animation: pulse-alarm 1.2s infinite;
         }
 
         @keyframes pulse-alarm {
@@ -706,7 +714,7 @@
         </div>
     </div>
 
-    <!-- 1. ALTIMETRO, BAROMETRO & ALERTA DE TORMENTA CASIO -->
+    <!-- 1. ALTIMETRO, BAROMETRO & ALERTA DE TORMENTA CASIO (UMBRAL AUTOMÁTICO >= 3 hPa) -->
     <div class="tactical-card">
         <div class="card-header">
             <div class="title-group">
@@ -714,13 +722,17 @@
                 <span>ALTÍMETRO & GRÁFICO BAROMÉTRICO</span>
             </div>
             <div style="display:flex; gap:6px;">
-                <span class="badge-tag" id="stormAlarmBtn" onclick="toggleStormAlarm()">⚡ ALARM OFF</span>
+                <!-- ICONO CASIO INDICADOR DE ALARMA ARMADA -->
+                <span class="badge-tag baro-armed" id="stormAlarmIndicator">
+                    <span style="font-size:0.75rem;">⚡</span> BARO [ARMED]
+                </span>
                 <span class="badge-tag">ALTI / BARO</span>
             </div>
         </div>
 
+        <!-- Banner de Alarma de Tormenta Activa -->
         <div class="storm-alert-banner" id="stormBanner">
-            <span>⚠️ <strong>ALERTA DE TORMENTA:</strong> Caída barométrica rápida detectada</span>
+            <span>⚠️ <strong>ALERTA DE TORMENTA:</strong> Caída rápida de presión (&ge; 3 hPa)</span>
             <span style="font-size:0.65rem; background:rgba(0,0,0,0.4); padding:2px 6px; border-radius:4px;">CASIO ALARM</span>
         </div>
 
@@ -841,7 +853,7 @@
         </div>
     </div>
 
-    <!-- 4. MOTOR MUNDIAL DE MAREAS & FASES LUNARES -->
+    <!-- 4. MOTOR MUNDIAL DE MAREAS CON HORAS E ICONOS DENTRO DEL GRÁFICO LCD -->
     <div class="tactical-card">
         <div class="card-header">
             <div class="title-group">
@@ -865,10 +877,10 @@
 
         <div class="lcd-canvas-container">
             <div class="lcd-header">
-                <span>CICLO MAREAL 24H (LCD WAVE)</span>
+                <span>CICLO MAREAL 24H (LCD WAVE + EVENTOS)</span>
                 <span class="text-green" id="tideStateDesc">Subiendo hacia Pleamar</span>
             </div>
-            <canvas id="tideCanvas" class="lcd-chart" style="height: 60px;"></canvas>
+            <canvas id="tideCanvas" class="lcd-chart" style="height: 75px;"></canvas>
         </div>
 
         <div class="metric-grid-2x2">
@@ -1011,14 +1023,16 @@
         let totalDistanceKm = 0;
         let lastGpsPos = null;
         let currentAltitude = 213.0;
-        let currentPressure = 993;
+        let currentPressure = 993; // hPa
+        let referencePressure = 996; // Presión base para medir caídas
         let currentQnh = 1016;
         let sliderTideHour = 17.6;
         let tideDayOffset = 0;
-        let stormAlarmActive = false;
         let stormAlarmAudioCtx = null;
         let currentLat = 41.606989;
         let currentLon = 2.137218;
+
+        let rawTideEvents = { p1: 12.28, b1: 6.08, p2: 0.71, b2: 18.50 };
 
         window.addEventListener('DOMContentLoaded', () => {
             initConnectivity();
@@ -1026,9 +1040,13 @@
             calculateWorldwideTides(currentLat, currentLon, tideDayOffset);
             initSensors();
             updateCompassDisplay(currentHeading);
+            
+            // Monitor automático continuo de presión
+            checkStormDropAuto();
+            setInterval(checkStormDropAuto, 30000); // Comprobación periódica cada 30s
         });
 
-        // --- ESTADO ONLINE / OFFLINE ---
+        // --- CONECTIVIDAD ONLINE / OFFLINE ---
         function initConnectivity() {
             const updateStatus = () => {
                 const pill = document.getElementById('connStatus');
@@ -1063,30 +1081,25 @@
             }
         }
 
-        // --- ALERTA DE TORMENTAS CASIO (BARO STORM ALARM) ---
-        function toggleStormAlarm() {
-            stormAlarmActive = !stormAlarmActive;
-            const btn = document.getElementById('stormAlarmBtn');
+        // --- ALERTA DE TORMENTA CASIO AUTOMÁTICA (CAÍDA >= 3 hPa) ---
+        function checkStormDropAuto() {
             const banner = document.getElementById('stormBanner');
+            const indicator = document.getElementById('stormAlarmIndicator');
+            
+            // Caída brusca estándar Casio: Delta P >= 3 hPa
+            const deltaP = referencePressure - currentPressure;
 
-            if (stormAlarmActive) {
-                btn.className = 'badge-tag alarm-on';
-                btn.innerText = '⚡ ALARM ON';
-                checkStormDrop(true);
-            } else {
-                btn.className = 'badge-tag';
-                btn.innerText = '⚡ ALARM OFF';
-                banner.style.display = 'none';
-            }
-        }
-
-        function checkStormDrop(simulateDrop = false) {
-            const banner = document.getElementById('stormBanner');
-            if (stormAlarmActive && (simulateDrop || currentPressure < 995)) {
+            if (deltaP >= 3) {
+                // Alerta activa
                 banner.style.display = 'flex';
+                indicator.className = 'badge-tag baro-alert';
+                indicator.innerHTML = '<span style="font-size:0.75rem;">⚡</span> BARO [STORM]';
                 playTacticalAlarmBeep();
             } else {
+                // Modo centinela normal armado
                 banner.style.display = 'none';
+                indicator.className = 'badge-tag baro-armed';
+                indicator.innerHTML = '<span style="font-size:0.75rem;">⚡</span> BARO [ARMED]';
             }
         }
 
@@ -1258,6 +1271,8 @@
             const p2 = (p1 + 12.42) % 24;
             const b2 = (p2 + 6.21) % 24;
 
+            rawTideEvents = { p1, b1, p2, b2 };
+
             const formatHour = (h) => {
                 const hh = Math.floor(h);
                 const mm = Math.floor((h - hh) * 60);
@@ -1272,7 +1287,7 @@
             drawTideCanvas();
         }
 
-        // --- GRÁFICO LCD DE ONDA DE MAREAS ---
+        // --- GRÁFICO LCD CON HORAS E ICONOS INCRUSTADOS EN LA ONDA ---
         function drawTideCanvas() {
             const cvs = document.getElementById('tideCanvas');
             const ctx = cvs.getContext('2d');
@@ -1291,21 +1306,58 @@
             }
 
             ctx.strokeStyle = '#00d2ff';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 2.2;
             ctx.beginPath();
             for (let x = 0; x <= w; x++) {
                 const angle = (x / w) * Math.PI * 4;
-                const y = (h / 2) + Math.sin(angle) * (h * 0.35);
+                const y = (h / 2) + Math.sin(angle) * (h * 0.28);
                 if (x === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             }
             ctx.stroke();
 
+            const formatShortTime = (hVal) => {
+                const hh = Math.floor(hVal);
+                const mm = Math.floor((hVal - hh) * 60);
+                return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+            };
+
+            const events = [
+                { type: 'plea', time: rawTideEvents.p1, label: formatShortTime(rawTideEvents.p1), pos: 0.125 },
+                { type: 'baja', time: rawTideEvents.b1, label: formatShortTime(rawTideEvents.b1), pos: 0.375 },
+                { type: 'plea', time: rawTideEvents.p2, label: `${formatShortTime(rawTideEvents.p2)}+1`, pos: 0.625 },
+                { type: 'baja', time: rawTideEvents.b2, label: formatShortTime(rawTideEvents.b2), pos: 0.875 }
+            ];
+
+            ctx.font = 'bold 9px -apple-system, sans-serif';
+            ctx.textAlign = 'center';
+
+            events.forEach(ev => {
+                const evX = ev.pos * w;
+                const angle = (evX / w) * Math.PI * 4;
+                const evY = (h / 2) + Math.sin(angle) * (h * 0.28);
+
+                if (ev.type === 'plea') {
+                    ctx.fillStyle = '#00e676';
+                    ctx.beginPath();
+                    ctx.arc(evX, evY, 3.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillText(`▲ ${ev.label}`, evX, evY - 6);
+                } else {
+                    ctx.fillStyle = '#00d2ff';
+                    ctx.beginPath();
+                    ctx.arc(evX, evY, 3.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.fillText(`▼ ${ev.label}`, evX, evY + 12);
+                }
+            });
+
             const curX = (sliderTideHour / 24) * w;
             const curAngle = (curX / w) * Math.PI * 4;
-            const curY = (h / 2) + Math.sin(curAngle) * (h * 0.35);
+            const curY = (h / 2) + Math.sin(curAngle) * (h * 0.28);
 
-            ctx.strokeStyle = 'rgba(0, 230, 118, 0.4)';
+            ctx.strokeStyle = 'rgba(255, 152, 0, 0.5)';
             ctx.lineWidth = 1;
             ctx.setLineDash([2, 2]);
             ctx.beginPath();
@@ -1313,11 +1365,11 @@
             ctx.stroke();
             ctx.setLineDash([]);
 
-            ctx.fillStyle = '#00e676';
-            ctx.shadowColor = '#00e676';
+            ctx.fillStyle = '#ff9800';
+            ctx.shadowColor = '#ff9800';
             ctx.shadowBlur = 8;
             ctx.beginPath();
-            ctx.arc(curX, curY, 4, 0, Math.PI * 2);
+            ctx.arc(curX, curY, 4.5, 0, Math.PI * 2);
             ctx.fill();
             ctx.shadowBlur = 0;
         }
