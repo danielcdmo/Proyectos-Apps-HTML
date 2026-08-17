@@ -8,78 +8,77 @@
   <title>Tactical Hub</title>
   <style>
     :root {
-      --bg: #050811;
-      --card: #0d1527;
-      --border: rgba(255, 255, 255, 0.08);
-      --accent: #38bdf8;
-      --green: #22c55e;
-      --amber: #f59e0b;
-      --orange: #f97316;
-      --red: #ef4444;
-      --text: #f8fafc;
-      --muted: #64748b;
+      --bg: #050811; --card: #0d1527; --box: rgba(0,0,0,0.4); --border: rgba(255,255,255,0.08);
+      --accent: #38bdf8; --green: #22c55e; --amber: #f59e0b; --orange: #f97316; --red: #ef4444;
+      --text: #f8fafc; --muted: #64748b; --wave: #38bdf8; --sun: rgba(56,189,248,0.08);
+      --sun-b: rgba(245,158,11,0.4); --live: #22c55e;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
+    body.theme-red {
+      --bg: #000; --card: #0d0202; --box: #170303; --border: rgba(239,68,68,0.25);
+      --accent: #ef4444; --green: #f87171; --amber: #dc2626; --orange: #b91c1c; --red: #ff2a2a;
+      --text: #fecaca; --muted: #7f1d1d; --wave: #ef4444; --sun: rgba(239,68,68,0.12);
+      --sun-b: rgba(239,68,68,0.5); --live: #ff2a2a;
+    }
+    body.theme-day {
+      --bg: #e2e8f0; --card: #ffffff; --box: #f1f5f9; --border: rgba(0,0,0,0.15);
+      --accent: #0284c7; --green: #16a34a; --amber: #d97706; --orange: #ea580c; --red: #dc2626;
+      --text: #0f172a; --muted: #475569; --wave: #0284c7; --sun: rgba(2,132,199,0.1);
+      --sun-b: rgba(217,119,6,0.6); --live: #16a34a;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 14px 10px 32px; display: flex; justify-content: center; }
+    body { background-color: var(--bg); color: var(--text); padding: 14px 10px 36px; display: flex; justify-content: center; transition: all 0.2s; }
     .container { width: 100%; max-width: 440px; }
-    
-    header { text-align: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    header { text-align: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
     h1 { font-size: 1.25rem; letter-spacing: 1.5px; color: var(--accent); font-family: var(--mono); text-transform: uppercase; font-weight: 800; }
     .status-badge { font-size: 0.72rem; color: var(--muted); margin-top: 3px; font-family: var(--mono); }
-    .offline-tag { display: inline-block; padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: rgba(34, 197, 94, 0.15); color: var(--green); margin-top: 4px; }
-
-    .btn-gps {
-      width: 100%; background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff;
-      border: none; padding: 13px; border-radius: 14px; font-size: 0.95rem; font-weight: 700;
-      cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
-      margin-bottom: 12px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
-    }
+    .offline-tag { display: inline-block; padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; background: rgba(34,197,94,0.15); color: var(--green); margin-top: 4px; }
+    
+    .theme-selector { display: flex; gap: 6px; margin-bottom: 12px; background: var(--box); padding: 4px; border-radius: 12px; border: 1px solid var(--border); }
+    .theme-btn { flex: 1; border: none; padding: 7px 4px; border-radius: 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; background: transparent; color: var(--muted); }
+    .theme-btn.active { background: var(--card); color: var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.3); border: 1px solid var(--border); }
+    
+    .btn-gps { width: 100%; background: linear-gradient(135deg, var(--accent), #0369a1); color: #fff; border: none; padding: 13px; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 12px; }
     .btn-gps:active { transform: scale(0.98); }
-
+    
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-bottom: 10px; }
     .card-title { font-size: 0.76rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
-
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-
-    .data-box { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 12px; padding: 8px 6px; text-align: center; }
-    .data-label { font-size: 0.66rem; color: var(--muted); margin-bottom: 2px; }
-    .data-val { font-size: 1.15rem; font-weight: 700; font-family: var(--mono); color: #ffffff; }
-    .data-unit { font-size: 0.7rem; color: var(--muted); margin-left: 2px; font-weight: normal; }
-
-    .val-highlight { color: var(--green); }
-    .val-amber { color: var(--amber); }
-    .val-orange { color: var(--orange); }
-
-    .help-tag { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: var(--accent); }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 5px; }
     
-    /* Brújula Táctica */
-    .compass-wrapper {
-      display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 0;
+    .data-box { background: var(--box); border: 1px solid var(--border); border-radius: 12px; padding: 8px 4px; text-align: center; }
+    .data-label { font-size: 0.64rem; color: var(--muted); margin-bottom: 2px; }
+    .data-val { font-size: 1.1rem; font-weight: 700; font-family: var(--mono); color: var(--text); }
+    .data-unit { font-size: 0.7rem; color: var(--muted); margin-left: 2px; }
+    .val-highlight { color: var(--green); } .val-amber { color: var(--amber); } .val-orange { color: var(--orange); }
+    .help-tag { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; background: rgba(56,189,248,0.15); color: var(--accent); }
+
+    /* Alerta Parpadeante de Tormenta */
+    @keyframes stormBlink {
+      0% { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); }
+      50% { background: rgba(239, 68, 68, 0.45); border-color: #ef4444; box-shadow: 0 0 12px rgba(239, 68, 68, 0.5); }
+      100% { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); }
     }
-    .compass-outer {
-      width: 130px; height: 130px; position: relative; display: flex; align-items: center; justify-content: center;
-      background: radial-gradient(circle, #0a1120 0%, #030611 100%);
-      border-radius: 50%; border: 2px solid rgba(56, 189, 248, 0.25);
-      box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 0 10px rgba(56, 189, 248, 0.1);
-    }
-    .compass-svg {
-      width: 100%; height: 100%; position: absolute; top: 0; left: 0;
-      transition: transform 0.12s cubic-bezier(0.1, 0, 0.3, 1);
-    }
-    .compass-center-cap {
-      width: 14px; height: 14px; border-radius: 50%;
-      background: radial-gradient(circle, #38bdf8 0%, #0369a1 100%);
-      border: 2px solid #050811; z-index: 5; box-shadow: 0 0 6px #38bdf8;
+    .storm-alert-banner {
+      display: none; padding: 9px 10px; border-radius: 12px; border: 1.5px solid var(--red);
+      font-size: 0.75rem; font-weight: 800; font-family: var(--mono); color: #fff;
+      text-align: center; margin-top: 8px; animation: stormBlink 1.4s infinite ease-in-out;
     }
 
-    /* Gráficos Canvas */
-    .chart-box {
-      background: #020409; border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 12px; padding: 8px; margin-top: 8px; text-align: center;
-    }
+    .compass-wrapper { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 0; }
+    .compass-outer { width: 130px; height: 130px; position: relative; display: flex; align-items: center; justify-content: center; background: var(--box); border-radius: 50%; border: 2px solid var(--border); }
+    .compass-svg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; transition: transform 0.12s cubic-bezier(0.1,0,0.3,1); }
+    .compass-center-cap { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); z-index: 5; }
+    
+    .chart-box { background: var(--box); border: 1px solid var(--border); border-radius: 12px; padding: 8px; margin-top: 8px; text-align: center; }
     canvas { width: 100%; display: block; }
+    
+    .time-travel-box { display: flex; flex-direction: column; gap: 8px; background: var(--box); padding: 10px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 10px; }
+    .time-travel-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 700; font-family: var(--mono); color: var(--accent); }
+    .time-stepper { display: flex; gap: 6px; }
+    .time-step-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 5px 10px; border-radius: 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
+    .time-step-btn:active { transform: scale(0.95); }
+    input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
   </style>
 </head>
 <body>
@@ -90,102 +89,62 @@
       <div class="offline-tag" id="networkStatus">Offline Ready ⚡</div>
     </header>
 
+    <div class="theme-selector">
+      <button class="theme-btn active" id="btnThemeDark" onclick="setTheme('dark')">🌑 Táctico</button>
+      <button class="theme-btn" id="btnThemeRed" onclick="setTheme('red')">🔴 NVG Rojo</button>
+      <button class="theme-btn" id="btnThemeDay" onclick="setTheme('day')">☀️ Día Solar</button>
+    </div>
+
     <button class="btn-gps" onclick="initGPSAndSensors()">
       <span>🛰️ Sincronizar Sensores & GPS</span>
     </button>
 
-    <!-- 1. ALTIMETRÍA & BAROMETRÍA CON GRÁFICO -->
+    <!-- 1. ALTIMETRÍA & BAROMETRÍA CON ALERTA DE TORMENTA -->
     <div class="card">
-      <div class="card-title">
-        <span>🏔️ Altímetro & Gráfico Barométrico</span>
-        <span class="help-tag">ALTI / BARO</span>
-      </div>
+      <div class="card-title"><span>🏔️ Altímetro & Gráfico Barométrico</span><span class="help-tag">ALTI / BARO</span></div>
       <div class="grid-2">
-        <div class="data-box">
-          <div class="data-label">Altitud GPS (Referencia)</div>
-          <div class="data-val val-highlight" id="gpsAlt">---<span class="data-unit">m</span></div>
-        </div>
-        <div class="data-box">
-          <div class="data-label">Presión Superficie (QFE)</div>
-          <div class="data-val val-highlight" id="baroSurface">---<span class="data-unit">hPa</span></div>
-        </div>
+        <div class="data-box"><div class="data-label">Altitud GPS (Referencia)</div><div class="data-val val-highlight" id="gpsAlt">---<span class="data-unit">m</span></div></div>
+        <div class="data-box"><div class="data-label">Presión Superficie (QFE)</div><div class="data-val val-highlight" id="baroSurface">---<span class="data-unit">hPa</span></div></div>
       </div>
-      <div class="grid-2" style="margin-top: 8px;">
-        <div class="data-box">
-          <div class="data-label">Presión Nivel Mar (QNH)</div>
-          <div class="data-val val-amber" id="baroSea">---<span class="data-unit">hPa</span></div>
-        </div>
-        <div class="data-box">
-          <div class="data-label">Gradiente ISA Teórico</div>
-          <div class="data-val" id="baroGrad">~9<span class="data-unit">hPa/100m</span></div>
-        </div>
+      <div class="grid-2" style="margin-top:8px;">
+        <div class="data-box"><div class="data-label">Presión Nivel Mar (QNH)</div><div class="data-val val-amber" id="baroSea">---<span class="data-unit">hPa</span></div></div>
+        <div class="data-box"><div class="data-label">Gradiente ISA Teórico</div><div class="data-val" id="baroGrad">~9<span class="data-unit">hPa/100m</span></div></div>
+      </div>
+
+      <!-- Banner de Alerta Parpadeante -->
+      <div class="storm-alert-banner" id="stormAlertBanner">
+        ⚠️ ALERTA METEOROLÓGICA: CAÍDA BRUSCA DE PRESIÓN (RIESGO DE BORRASCA)
       </div>
 
       <div class="chart-box">
         <div class="data-label" style="display:flex; justify-content:space-between; margin-bottom:4px;">
-          <span>TENDENCIA 24H (LCD DOT-MATRIX)</span>
-          <span id="baroTrendText" style="color:var(--accent);">Estable</span>
+          <span>TENDENCIA 24H (LCD DOT-MATRIX)</span><span id="baroTrendText" style="color:var(--accent);">Estable</span>
         </div>
-        <canvas id="baroCanvas" style="height: 65px;"></canvas>
+        <canvas id="baroCanvas" style="height:65px;"></canvas>
       </div>
     </div>
 
-    <!-- 2. BRÚJULA DIGITAL TÁCTICA -->
+    <!-- 2. BRÚJULA TÁCTICA -->
     <div class="card">
-      <div class="card-title">
-        <span>🧭 Orientación & Brújula Táctica</span>
-        <span class="help-tag">COMPASS</span>
-      </div>
+      <div class="card-title"><span>🧭 Orientación & Brújula Táctica</span><span class="help-tag">COMPASS</span></div>
       <div class="compass-wrapper">
         <div class="compass-outer">
           <svg class="compass-svg" id="compassSvg" viewBox="0 0 200 200">
-            <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(56, 189, 248, 0.2)" stroke-width="1.5" />
-            <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1" />
-            <circle cx="100" cy="100" r="50" fill="none" stroke="rgba(255, 255, 255, 0.04)" stroke-dasharray="3,3" />
-
-            <line x1="100" y1="20" x2="100" y2="180" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-            <line x1="20" y1="100" x2="180" y2="100" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-
-            <line x1="100" y1="6" x2="100" y2="16" stroke="#ef4444" stroke-width="2.5"/>
-            <line x1="147" y1="18.6" x2="142" y2="27.3" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-            <text x="138" y="38" font-size="8" fill="#64748b" text-anchor="middle" font-family="monospace">30</text>
-            <line x1="181.4" y1="53" x2="172.7" y2="58" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-            <text x="164" y="68" font-size="8" fill="#64748b" text-anchor="middle" font-family="monospace">60</text>
-            <line x1="194" y1="100" x2="184" y2="100" stroke="#38bdf8" stroke-width="2"/>
-            <line x1="181.4" y1="147" x2="172.7" y2="142" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-            <text x="164" y="137" font-size="8" fill="#64748b" text-anchor="middle" font-family="monospace">120</text>
-            <line x1="147" y1="181.4" x2="142" y2="172.7" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-            <text x="138" y="168" font-size="8" fill="#64748b" text-anchor="middle" font-family="monospace">150</text>
-            <line x1="100" y1="194" x2="100" y2="184" stroke="#38bdf8" stroke-width="2"/>
-            <line x1="53" y1="181.4" x2="58" y2="172.7" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-            <text x="62" y="168" font-size="8" fill="#64748b" text-anchor="middle" font-family="monospace">210</text>
-            <line x1="18.6" y1="147" x2="27.3" y2="142" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-            <text x="36" y="137" font-size="8" fill="#64748b" text-anchor="middle" font-family="monospace">240</text>
-            <line x1="6" y1="100" x2="16" y2="100" stroke="#38bdf8" stroke-width="2"/>
-            <line x1="18.6" y1="53" x2="27.3" y2="58" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-            <text x="36" y="68" font-size="8" fill="#64748b" text-anchor="middle" font-family="monospace">300</text>
-            <line x1="53" y1="18.6" x2="58" y2="27.3" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-            <text x="62" y="38" font-size="8" fill="#64748b" text-anchor="middle" font-family="monospace">330</text>
-
-            <text x="100" y="28" font-size="14" font-weight="900" fill="#ef4444" text-anchor="middle" font-family="sans-serif">N</text>
-            <text x="175" y="104" font-size="12" font-weight="800" fill="#e2e8f0" text-anchor="middle" font-family="sans-serif">E</text>
-            <text x="100" y="179" font-size="12" font-weight="800" fill="#e2e8f0" text-anchor="middle" font-family="sans-serif">S</text>
-            <text x="25" y="104" font-size="12" font-weight="800" fill="#e2e8f0" text-anchor="middle" font-family="sans-serif">W</text>
-            
-            <text x="152" y="52" font-size="8" font-weight="700" fill="#64748b" text-anchor="middle">NE</text>
-            <text x="152" y="156" font-size="8" font-weight="700" fill="#64748b" text-anchor="middle">SE</text>
-            <text x="48" y="156" font-size="8" font-weight="700" fill="#64748b" text-anchor="middle">SW</text>
-            <text x="48" y="52" font-size="8" font-weight="700" fill="#64748b" text-anchor="middle">NW</text>
-
-            <polygon points="100,22 93,100 100,92" fill="#ef4444" />
-            <polygon points="100,22 107,100 100,92" fill="#dc2626" />
-            <circle cx="100" cy="36" r="2.5" fill="#fecaca" />
-            <polygon points="100,178 93,100 100,108" fill="#94a3b8" />
-            <polygon points="100,178 107,100 100,108" fill="#64748b" />
+            <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" opacity="0.2" stroke-width="1.5" />
+            <circle cx="100" cy="100" r="82" fill="none" stroke="currentColor" opacity="0.1" stroke-width="1" />
+            <line x1="100" y1="6" x2="100" y2="16" stroke="var(--red)" stroke-width="2.5"/>
+            <text x="100" y="28" font-size="14" font-weight="900" fill="var(--red)" text-anchor="middle">N</text>
+            <text x="175" y="104" font-size="12" font-weight="800" fill="var(--text)" text-anchor="middle">E</text>
+            <text x="100" y="179" font-size="12" font-weight="800" fill="var(--text)" text-anchor="middle">S</text>
+            <text x="25" y="104" font-size="12" font-weight="800" fill="var(--text)" text-anchor="middle">W</text>
+            <polygon points="100,22 93,100 100,92" fill="var(--red)" />
+            <polygon points="100,22 107,100 100,92" fill="#b91c1c" />
+            <polygon points="100,178 93,100 100,108" fill="var(--muted)" />
+            <polygon points="100,178 107,100 100,108" fill="#475569" />
           </svg>
           <div class="compass-center-cap"></div>
         </div>
-        <div style="flex: 1;">
+        <div style="flex:1;">
           <div class="grid-2">
             <div class="data-box">
               <div class="data-label">Rumbo Actual</div>
@@ -204,114 +163,79 @@
 
     <!-- 3. SOL & COORDENADAS -->
     <div class="card">
-      <div class="card-title">
-        <span>☀️ Salida / Puesta de Sol & Coordenadas</span>
-        <span class="help-tag">SOLAR</span>
-      </div>
-      <div class="grid-2" style="margin-bottom: 8px;">
-        <div class="data-box">
-          <div class="data-label">Amanecer</div>
-          <div class="data-val" id="sunrise">--:--</div>
-        </div>
-        <div class="data-box">
-          <div class="data-label">Atardecer</div>
-          <div class="data-val" id="sunset">--:--</div>
-        </div>
+      <div class="card-title"><span>☀️ Salida / Puesta de Sol & Coordenadas</span><span class="help-tag">SOLAR</span></div>
+      <div class="grid-2" style="margin-bottom:8px;">
+        <div class="data-box"><div class="data-label">Amanecer</div><div class="data-val" id="sunrise">--:--</div></div>
+        <div class="data-box"><div class="data-label">Atardecer</div><div class="data-val" id="sunset">--:--</div></div>
       </div>
       <div class="grid-2">
-        <div class="data-box">
-          <div class="data-label">Latitud Reloj</div>
-          <div class="data-val" id="casioLat">---</div>
-        </div>
-        <div class="data-box">
-          <div class="data-label">Longitud Reloj</div>
-          <div class="data-val" id="casioLon">---</div>
-        </div>
+        <div class="data-box"><div class="data-label">Latitud Reloj</div><div class="data-val" id="casioLat">---</div></div>
+        <div class="data-box"><div class="data-label">Longitud Reloj</div><div class="data-val" id="casioLon">---</div></div>
       </div>
     </div>
 
-    <!-- 4. MAREAS DINÁMICAS CON GRÁFICA EN VIVO -->
+    <!-- 4. MAREAS (4 EVENTOS + EXPLORADOR TEMPORAL ±30D) -->
     <div class="card">
-      <div class="card-title">
-        <span>🌊 Pleamares & Bajamares</span>
-        <span class="help-tag" id="tideStationTag">Costa Local</span>
-      </div>
-      <div class="grid-3" style="margin-bottom: 8px;">
-        <div class="data-box">
-          <div class="data-label" style="color: #ef4444;">1ª Bajamar</div>
-          <div class="data-val" id="tideLow1">--:--</div>
-        </div>
-        <div class="data-box">
-          <div class="data-label" style="color: var(--accent);">Pleamar</div>
-          <div class="data-val val-highlight" id="tideHigh">--:--</div>
-        </div>
-        <div class="data-box">
-          <div class="data-label" style="color: #ef4444;">2ª Bajamar</div>
-          <div class="data-val" id="tideLow2">--:--</div>
-        </div>
-      </div>
-      <div class="grid-2">
-        <div class="data-box">
-          <div class="data-label">INT (Intervalo Lunitidal)</div>
-          <div class="data-val" id="lunitidalVal">7:10</div>
-        </div>
-        <div class="data-box">
-          <div class="data-label">Estado de Marea</div>
-          <div class="data-val" id="tideStatusText" style="font-size:0.85rem; color:var(--accent);">Calculando...</div>
-        </div>
-      </div>
-
-      <!-- Gráfica de Mareas 24H -->
-      <div class="chart-box">
-        <div class="data-label" style="display:flex; justify-content:space-between; margin-bottom:4px;">
-          <span>GRÁFICO DE MAREA (24H)</span>
-          <span style="color:var(--green);" id="tideCurrentTimeMark">En vivo ⚡</span>
-        </div>
-        <canvas id="tideCanvas" style="height: 100px;"></canvas>
-      </div>
-    </div>
-
-    <!-- 5. FASE LUNAR & ASTRONOMÍA -->
-    <div class="card">
-      <div class="card-title">
-        <span>🌙 Fase & Datos Lunares</span>
-        <span class="help-tag">LUNAR</span>
-      </div>
-      <div class="grid-2" style="align-items: center; margin-bottom: 8px;">
-        <div class="data-box" style="display:flex; align-items:center; justify-content:space-around;">
-          <div style="font-size: 2.2rem;" id="moonIcon">🌕</div>
-          <div style="text-align: left;">
-            <div class="data-label">Fase</div>
-            <div class="data-val" id="moonName" style="font-size:0.95rem; color:var(--accent);">---</div>
+      <div class="card-title"><span>🌊 Pleamares & Bajamares (4 Eventos)</span><span class="help-tag" id="tideStationTag">Costa Local</span></div>
+      <div class="time-travel-box">
+        <div class="time-travel-header">
+          <span id="timeTravelLabel">Fecha: Hoy</span>
+          <div class="time-stepper">
+            <button class="time-step-btn" onclick="stepDate(-1)">◀ -1d</button>
+            <button class="time-step-btn" onclick="resetDate()">Hoy</button>
+            <button class="time-step-btn" onclick="stepDate(1)">+1d ▶</button>
           </div>
         </div>
-        <div class="data-box">
-          <div class="data-label">Iluminación</div>
-          <div class="data-val val-highlight" id="moonIllum">--<span class="data-unit">%</span></div>
-        </div>
+        <input type="range" id="timeSlider" min="-30" max="30" value="0" step="1" oninput="onSliderChange(this.value)">
+      </div>
+      <div class="grid-4" style="margin-bottom:8px;">
+        <div class="data-box"><div class="data-label" style="color:var(--accent);">1ª Pleamar</div><div class="data-val val-highlight" id="tideH1" style="font-size:0.95rem;">--:--</div></div>
+        <div class="data-box"><div class="data-label" style="color:var(--red);">1ª Bajamar</div><div class="data-val" id="tideL1" style="font-size:0.95rem;">--:--</div></div>
+        <div class="data-box"><div class="data-label" style="color:var(--accent);">2ª Pleamar</div><div class="data-val val-highlight" id="tideH2" style="font-size:0.95rem;">--:--</div></div>
+        <div class="data-box"><div class="data-label" style="color:var(--red);">2ª Bajamar</div><div class="data-val" id="tideL2" style="font-size:0.95rem;">--:--</div></div>
       </div>
       <div class="grid-2">
-        <div class="data-box">
-          <div class="data-label">Edad Lunar (Moon Age)</div>
-          <div class="data-val" id="moonAge">--.- <span class="data-unit">días</span></div>
+        <div class="data-box"><div class="data-label">INT (Intervalo Lunitidal)</div><div class="data-val" id="lunitidalVal">7:10</div></div>
+        <div class="data-box"><div class="data-label">Estado de Marea</div><div class="data-val" id="tideStatusText" style="font-size:0.82rem; color:var(--accent);">Calculando...</div></div>
+      </div>
+      <div class="chart-box">
+        <div class="data-label" style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span>GRÁFICO DE MAREA (24H)</span><span style="color:var(--green);" id="tideCurrentTimeMark">En vivo ⚡</span>
         </div>
-        <div class="data-box">
-          <div class="data-label">Próxima Luna Llena</div>
-          <div class="data-val val-amber" id="nextFullMoon">-- <span class="data-unit">días</span></div>
+        <canvas id="tideCanvas" style="height:105px;"></canvas>
+      </div>
+    </div>
+
+    <!-- 5. FASE LUNAR -->
+    <div class="card">
+      <div class="card-title"><span>🌙 Fase & Datos Lunares</span><span class="help-tag">LUNAR</span></div>
+      <div class="grid-2" style="align-items:center; margin-bottom:8px;">
+        <div class="data-box" style="display:flex; align-items:center; justify-content:space-around;">
+          <div style="font-size:2.2rem;" id="moonIcon">🌕</div>
+          <div style="text-align:left;"><div class="data-label">Fase</div><div class="data-val" id="moonName" style="font-size:0.95rem; color:var(--accent);">---</div></div>
         </div>
+        <div class="data-box"><div class="data-label">Iluminación</div><div class="data-val val-highlight" id="moonIllum">--<span class="data-unit">%</span></div></div>
+      </div>
+      <div class="grid-2">
+        <div class="data-box"><div class="data-label">Edad Lunar (Moon Age)</div><div class="data-val" id="moonAge">--.- <span class="data-unit">días</span></div></div>
+        <div class="data-box"><div class="data-label">Próxima Luna Llena</div><div class="data-val val-amber" id="nextFullMoon">-- <span class="data-unit">días</span></div></div>
       </div>
     </div>
   </div>
 
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+    let dateOffset = 0, currentSunData = { sunriseH: 7.02, sunsetH: 20.82 }, currentTideEvents = null;
 
-    let currentSurfacePressure = 991;
-    let currentSeaPressure = 1015;
-    let currentSunData = { sunriseH: 7.02, sunsetH: 20.82 };
-    let currentTideData = null;
+    function setTheme(t) {
+      document.body.className = '';
+      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+      if (t === 'red') { document.body.classList.add('theme-red'); document.getElementById('btnThemeRed').classList.add('active'); }
+      else if (t === 'day') { document.body.classList.add('theme-day'); document.getElementById('btnThemeDay').classList.add('active'); }
+      else { document.getElementById('btnThemeDark').classList.add('active'); }
+      localStorage.setItem('hub_theme', t);
+      drawTideChart();
+    }
 
     function triggerHaptic(ms=15) {
       if (window.navigator.vibrate) window.navigator.vibrate(ms);
@@ -319,53 +243,35 @@
 
     function initGPSAndSensors() {
       if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-        DeviceOrientationEvent.requestPermission()
-          .then(state => {
-            if (state === 'granted') {
-              window.addEventListener('deviceorientation', handleOrientation, true);
-            }
-          })
-          .catch(console.error);
-      } else {
-        window.addEventListener('deviceorientation', handleOrientation, true);
-      }
+        DeviceOrientationEvent.requestPermission().then(st => { if (st === 'granted') window.addEventListener('deviceorientation', handleOrientation, true); });
+      } else { window.addEventListener('deviceorientation', handleOrientation, true); }
       getLocationAndData();
     }
 
-    function getCardinal(deg) {
-      const cardinals = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
-      const idx = Math.round(deg / 22.5) % 16;
-      return cardinals[idx];
-    }
-
     function handleOrientation(e) {
-      let compass = e.webkitCompassHeading || (360 - e.alpha);
-      if (compass !== undefined) {
-        const headingVal = Math.round(compass);
-        document.getElementById('heading').innerHTML = `${headingVal}<span class="data-unit">°</span>`;
-        document.getElementById('cardinalHeading').textContent = getCardinal(headingVal);
-        document.getElementById('compassSvg').style.transform = `rotate(${-headingVal}deg)`;
+      let c = e.webkitCompassHeading || (360 - e.alpha);
+      if (c !== undefined) {
+        const h = Math.round(c), cards = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+        document.getElementById('heading').innerHTML = `${h}<span class="data-unit">°</span>`;
+        document.getElementById('cardinalHeading').textContent = cards[Math.round(h / 22.5) % 16];
+        document.getElementById('compassSvg').style.transform = `rotate(${-h}deg)`;
       }
     }
 
-    function calculateMoonData(d = new Date()) {
-      let year = d.getFullYear();
-      let month = d.getMonth() + 1;
-      let day = d.getDate();
-      if (month < 3) { year--; month += 12; }
-      ++month;
-      let c = 365.25 * year;
-      let e = 30.6 * month;
-      let jd = c + e + day - 694039.09;
-      jd /= 29.5305882;
-      let b = parseInt(jd);
-      jd -= b;
-      let age = Math.round(jd * 29.5305882 * 10) / 10;
-      
-      let illum = Math.round((1 - Math.cos((age / 29.53) * 2 * Math.PI)) / 2 * 100);
-      let nextFull = Math.round(14.8 - age);
-      if (nextFull < 0) nextFull += 30;
+    function stepDate(d) { dateOffset = Math.max(-30, Math.min(30, dateOffset + d)); document.getElementById('timeSlider').value = dateOffset; updateAllCalculationsForDate(); }
+    function resetDate() { dateOffset = 0; document.getElementById('timeSlider').value = 0; updateAllCalculationsForDate(); }
+    function onSliderChange(v) { dateOffset = parseInt(v); updateAllCalculationsForDate(); }
+    function getActiveDate() { const d = new Date(); d.setDate(d.getDate() + dateOffset); return d; }
 
+    function calculateMoonData(d) {
+      let y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
+      if (m < 3) { y--; m += 12; }
+      ++m;
+      let jd = (365.25 * y) + (30.6 * m) + day - 694039.09;
+      jd /= 29.5305882;
+      let age = Math.round((jd - parseInt(jd)) * 29.5305882 * 10) / 10;
+      let illum = Math.round((1 - Math.cos((age / 29.53) * 2 * Math.PI)) / 2 * 100);
+      let nextFull = Math.round(14.8 - age); if (nextFull < 0) nextFull += 30;
       let name = "Luna Nueva", icon = "🌑";
       if (age >= 1.8 && age < 5.5) { name = "Creciente Inicial"; icon = "🌒"; }
       else if (age >= 5.5 && age < 9.2) { name = "Cuarto Creciente"; icon = "🌓"; }
@@ -374,357 +280,199 @@
       else if (age >= 16.6 && age < 20.2) { name = "Gibosa Menguante"; icon = "🌖"; }
       else if (age >= 20.2 && age < 23.9) { name = "Cuarto Menguante"; icon = "🌗"; }
       else if (age >= 23.9 && age < 27.7) { name = "Menguante Final"; icon = "🌘"; }
-
       return { age, illum, nextFull, name, icon };
     }
 
-    function calculateMagneticDeclination(lat, lon) {
-      let dec = 0.8 + (lon * 0.45);
-      let rounded = Math.round(Math.abs(dec));
-      if (rounded === 0) rounded = 1;
-      let dir = dec >= 0 ? 'E' : 'W';
-      return `${dir} ${rounded}°`;
-    }
-
-    function calculateOfflineSun(lat, lon, d = new Date()) {
-      const start = new Date(d.getFullYear(), 0, 0);
-      const dayOfYear = Math.floor((d - start) / 1000 / 60 / 60 / 24);
-      const b = (360 / 365) * (dayOfYear - 81) * (Math.PI / 180);
+    function calculateOfflineSun(lat, lon, d) {
+      const start = new Date(d.getFullYear(), 0, 0), n = Math.floor((d - start) / 86400000);
+      const b = (360 / 365) * (n - 81) * (Math.PI / 180);
       const eot = 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
-      const declination = 23.45 * Math.sin((360 / 365) * (dayOfYear - 81) * (Math.PI / 180)) * (Math.PI / 180);
-      
-      const latRad = lat * (Math.PI / 180);
-      const cosH = -Math.tan(latRad) * Math.tan(declination);
-      const hourAngle = (cosH >= -1 && cosH <= 1) ? Math.acos(cosH) * (180 / Math.PI) : 90;
-      
-      const solarNoon = 720 - (4 * lon) - eot;
-      const sunriseMin = solarNoon - (hourAngle * 4);
-      const sunsetMin = solarNoon + (hourAngle * 4);
-      
-      const offset = -d.getTimezoneOffset();
-      const localSunrise = (sunriseMin + offset + 1440) % 1440;
-      const localSunset = (sunsetMin + offset + 1440) % 1440;
-
-      const formatTime = (min) => {
-        const h = String(Math.floor(min / 60)).padStart(2, '0');
-        const m = String(Math.floor(min % 60)).padStart(2, '0');
-        return `${h}:${m}`;
-      };
-
-      currentSunData = { sunriseH: localSunrise / 60, sunsetH: localSunset / 60 };
-      return { sunrise: formatTime(localSunrise), sunset: formatTime(localSunset) };
+      const dec = 23.45 * Math.sin(b) * (Math.PI / 180);
+      const cosH = -Math.tan(lat * Math.PI / 180) * Math.tan(dec);
+      const ha = (cosH >= -1 && cosH <= 1) ? Math.acos(cosH) * (180 / Math.PI) : 90;
+      const noon = 720 - (4 * lon) - eot, off = -d.getTimezoneOffset();
+      const sMin = (noon - ha * 4 + off + 1440) % 1440, eMin = (noon + ha * 4 + off + 1440) % 1440;
+      currentSunData = { sunriseH: sMin / 60, sunsetH: eMin / 60 };
+      const f = m => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(Math.floor(m % 60)).padStart(2, '0')}`;
+      return { sunrise: f(sMin), sunset: f(eMin) };
     }
 
-    function calculateDailyTides(lat, lon, moonAge) {
-      const now = new Date();
-      const tzOffsetHours = -now.getTimezoneOffset() / 60;
-
-      let isCantabrian = lat >= 43;
-      let isAtlantic = lon < -3.5;
-      
-      let lunitidalHours = 7.16;
-      let stationName = "Mediterráneo";
-
-      if (isCantabrian) {
-        lunitidalHours = 3.10;
-        stationName = "Cantábrico";
-      } else if (isAtlantic) {
-        lunitidalHours = 1.75;
-        stationName = "Atlántico";
+    function calculateDailyTides4Events(lat, lon, moonAge, d) {
+      const tzOff = -d.getTimezoneOffset() / 60;
+      let lunitidal = (lat >= 43) ? 3.10 : (lon < -3.5) ? 1.75 : 7.16;
+      let baseHigh = ((moonAge * 0.84) - (lon / 15) + lunitidal + tzOff + 24) % 12.42;
+      let highs = [], lows = [];
+      for (let h = baseHigh - 24.84; h <= 36; h += 12.42) {
+        if (h >= 0 && h < 24) highs.push(h);
+        if ((h + 6.21) >= 0 && (h + 6.21) < 24) lows.push(h + 6.21);
+        if ((h - 6.21) >= 0 && (h - 6.21) < 24) lows.push(h - 6.21);
       }
-
-      const moonTransitUTC = (moonAge * 0.84) - (lon / 15);
-      let highTide = (moonTransitUTC + lunitidalHours + tzOffsetHours + 24) % 12.42;
-      
-      while (highTide < 9.5) highTide += 12.42;
-      if (highTide >= 24) highTide -= 24;
-
-      let low1 = (highTide - 6.21 + 24) % 24;
-      let low2 = (highTide + 6.21) % 24;
-
-      const toHoursMin = (decimalHour) => {
-        let totalMin = Math.round(decimalHour * 60);
-        let h = Math.floor((totalMin / 60) % 24);
-        let m = Math.floor(totalMin % 60);
-        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-      };
-
-      const currentHour = now.getHours() + (now.getMinutes() / 60);
-      const isRising = (currentHour > low1 && currentHour < highTide) || (currentHour > low2);
-      const lunitidalStr = `${Math.floor(lunitidalHours)}:${String(Math.round((lunitidalHours % 1) * 60)).padStart(2, '0')}`;
-
-      currentTideData = { highH: highTide, low1H: low1, low2H: low2 };
-
+      highs = [...new Set(highs.map(v => Math.round(v * 100) / 100))].sort((a, b) => a - b);
+      lows = [...new Set(lows.map(v => Math.round(v * 100) / 100))].sort((a, b) => a - b);
+      const fmt = dh => dh === undefined ? "--:--" : `${String(Math.floor(dh)).padStart(2, '0')}:${String(Math.floor((dh % 1) * 60)).padStart(2, '0')}`;
+      const curH = new Date().getHours() + (new Date().getMinutes() / 60);
+      let status = "Subiendo hacia Pleamar";
+      if (highs.length && lows.length) {
+        let nH = highs.find(h => h > curH) || highs[0], nL = lows.find(l => l > curH) || lows[0];
+        status = nH < nL ? "Subiendo hacia Pleamar" : "Bajando hacia Bajamar";
+      }
+      currentTideEvents = { highs, lows, baseHigh };
       return {
-        high: toHoursMin(highTide),
-        low1: toHoursMin(low1),
-        low2: toHoursMin(low2),
-        status: isRising ? "Subiendo hacia Pleamar" : "Bajando hacia Bajamar",
-        station: stationName,
-        lunitidal: lunitidalStr
+        h1: fmt(highs[0]), l1: fmt(lows[0]), h2: fmt(highs[1]), l2: fmt(lows[1]),
+        status: dateOffset === 0 ? status : "Modo Consulta",
+        station: (lat >= 43) ? "Cantábrico" : (lon < -3.5) ? "Atlántico" : "Mediterráneo",
+        lunitidal: `${Math.floor(lunitidal)}:${String(Math.round((lunitidal % 1) * 60)).padStart(2, '0')}`
       };
     }
 
-    // Gráfica de Mareas en Tiempo Real (24H Wave)
     function drawTideChart() {
-      if (!currentTideData) return;
-      const canvas = document.getElementById('tideCanvas');
-      const ctx = canvas.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
-      
-      canvas.width = canvas.parentElement.clientWidth * dpr;
-      canvas.height = 100 * dpr;
-      ctx.scale(dpr, dpr);
-      
-      const w = canvas.parentElement.clientWidth;
-      const h = 100;
-      ctx.clearRect(0, 0, w, h);
+      if (!currentTideEvents) return;
+      const canvas = document.getElementById('tideCanvas'), ctx = canvas.getContext('2d'), dpr = window.devicePixelRatio || 1;
+      canvas.width = canvas.parentElement.clientWidth * dpr; canvas.height = 105 * dpr; ctx.scale(dpr, dpr);
+      const w = canvas.parentElement.clientWidth, h = 105; ctx.clearRect(0, 0, w, h);
+      const st = getComputedStyle(document.body);
+      const cWave = st.getPropertyValue('--wave').trim() || '#38bdf8', cLive = st.getPropertyValue('--live').trim() || '#22c55e', cRed = st.getPropertyValue('--red').trim() || '#ef4444';
 
-      // 1. Franja de Luz Solar (Día)
-      const sunX1 = (currentSunData.sunriseH / 24) * w;
-      const sunX2 = (currentSunData.sunsetH / 24) * w;
-      ctx.fillStyle = "rgba(56, 189, 248, 0.08)";
-      ctx.fillRect(sunX1, 0, sunX2 - sunX1, h);
-      ctx.strokeStyle = "rgba(245, 158, 11, 0.4)";
-      ctx.setLineDash([3, 3]);
-      ctx.beginPath();
-      ctx.moveTo(sunX1, 0); ctx.lineTo(sunX1, h);
-      ctx.moveTo(sunX2, 0); ctx.lineTo(sunX2, h);
-      ctx.stroke();
-      ctx.setLineDash([]);
+      ctx.fillStyle = st.getPropertyValue('--sun').trim() || 'rgba(56,189,248,0.08)';
+      const sx1 = (currentSunData.sunriseH / 24) * w, sx2 = (currentSunData.sunsetH / 24) * w;
+      ctx.fillRect(sx1, 0, sx2 - sx1, h);
+      ctx.strokeStyle = st.getPropertyValue('--sun-b').trim() || 'rgba(245,158,11,0.4)';
+      ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(sx1,0); ctx.lineTo(sx1,h); ctx.moveTo(sx2,0); ctx.lineTo(sx2,h); ctx.stroke(); ctx.setLineDash([]);
 
-      // 2. Líneas de referencia de horas
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
-      ctx.fillStyle = "#64748b";
-      ctx.font = "8px monospace";
-      [0, 6, 12, 18, 24].forEach(hr => {
-        const x = (hr / 24) * w;
-        ctx.beginPath();
-        ctx.moveTo(x, 0); ctx.lineTo(x, h);
-        ctx.stroke();
-        if (hr < 24) ctx.fillText(`${hr}h`, x + 3, h - 4);
-      });
+      ctx.strokeStyle = "rgba(128,128,128,0.15)"; ctx.fillStyle = st.getPropertyValue('--muted').trim() || '#64748b'; ctx.font = "8px monospace";
+      [0,6,12,18,24].forEach(hr => { const x = (hr / 24) * w; ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); if (hr < 24) ctx.fillText(`${hr}h`, x+3, h-4); });
 
-      // 3. Dibujar Onda Sinusoidal de Marea
-      const centerY = h / 2;
-      const amplitude = h * 0.28;
-      const highH = currentTideData.highH;
-
-      ctx.strokeStyle = "#38bdf8";
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
+      ctx.strokeStyle = cWave; ctx.lineWidth = 2.5; ctx.beginPath();
       for (let x = 0; x <= w; x++) {
-        const hour = (x / w) * 24;
-        const phase = ((hour - highH) / 12.42) * (Math.PI * 2);
-        const y = centerY - Math.cos(phase) * amplitude;
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        const y = (h/2) - Math.cos((((x/w)*24 - currentTideEvents.baseHigh) / 12.42) * Math.PI * 2) * (h * 0.28);
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
       ctx.stroke();
 
-      // 4. Puntos de Pleamar y Bajamares
-      const drawPoint = (hour, isHigh, label) => {
-        const x = (hour / 24) * w;
-        const phase = ((hour - highH) / 12.42) * (Math.PI * 2);
-        const y = centerY - Math.cos(phase) * amplitude;
-
-        ctx.fillStyle = isHigh ? "#38bdf8" : "#ef4444";
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = "#ffffff";
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-
-        ctx.fillStyle = isHigh ? "#38bdf8" : "#ef4444";
-        ctx.font = "bold 8px sans-serif";
-        ctx.fillText(label, Math.max(6, Math.min(w - 28, x - 12)), isHigh ? y - 8 : y + 14);
+      const mark = (hr, isH, txt) => {
+        const x = (hr / 24) * w, y = (h/2) - Math.cos(((hr - currentTideEvents.baseHigh) / 12.42) * Math.PI * 2) * (h * 0.28);
+        ctx.fillStyle = isH ? cWave : cRed; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.2; ctx.stroke(); ctx.font = "bold 8px sans-serif";
+        ctx.fillText(txt, Math.max(6, Math.min(w - 26, x - 11)), isH ? y - 7 : y + 14);
       };
+      currentTideEvents.highs.forEach(hr => mark(hr, true, `${String(Math.floor(hr)).padStart(2,'0')}:${String(Math.floor((hr%1)*60)).padStart(2,'0')}`));
+      currentTideEvents.lows.forEach(hr => mark(hr, false, `${String(Math.floor(hr)).padStart(2,'0')}:${String(Math.floor((hr%1)*60)).padStart(2,'0')}`));
 
-      if (currentTideData.low1H >= 0 && currentTideData.low1H <= 24) {
-        drawPoint(currentTideData.low1H, false, document.getElementById('tideLow1').textContent);
+      if (dateOffset === 0) {
+        const curH = new Date().getHours() + (new Date().getMinutes() / 60), cx = (curH / 24) * w;
+        const cy = (h/2) - Math.cos(((curH - currentTideEvents.baseHigh) / 12.42) * Math.PI * 2) * (h * 0.28);
+        ctx.strokeStyle = cLive; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(cx,0); ctx.lineTo(cx,h); ctx.stroke();
+        ctx.fillStyle = cLive; ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI*2); ctx.fill();
       }
-      if (currentTideData.highH >= 0 && currentTideData.highH <= 24) {
-        drawPoint(currentTideData.highH, true, document.getElementById('tideHigh').textContent);
-      }
-      if (currentTideData.low2H >= 0 && currentTideData.low2H <= 24) {
-        drawPoint(currentTideData.low2H, false, document.getElementById('tideLow2').textContent);
-      }
-
-      // 5. Cursor Verde en Tiempo Real (Hora actual)
-      const now = new Date();
-      const currentH = now.getHours() + (now.getMinutes() / 60);
-      const curX = (currentH / 24) * w;
-      const curPhase = ((currentH - highH) / 12.42) * (Math.PI * 2);
-      const curY = centerY - Math.cos(curPhase) * amplitude;
-
-      ctx.strokeStyle = "#22c55e";
-      ctx.lineWidth = 1.8;
-      ctx.beginPath();
-      ctx.moveTo(curX, 0); ctx.lineTo(curX, h);
-      ctx.stroke();
-
-      ctx.fillStyle = "#22c55e";
-      ctx.beginPath();
-      ctx.arc(curX, curY, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#ffffff";
-      ctx.beginPath();
-      ctx.arc(curX, curY, 2, 0, Math.PI * 2);
-      ctx.fill();
     }
 
     function drawBaroChart(history) {
-      const canvas = document.getElementById('baroCanvas');
-      const ctx = canvas.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
-      
-      canvas.width = canvas.parentElement.clientWidth * dpr;
-      canvas.height = 65 * dpr;
-      ctx.scale(dpr, dpr);
-      
-      const w = canvas.parentElement.clientWidth;
-      const h = 65;
-      ctx.clearRect(0, 0, w, h);
-      
-      const minP = Math.min(...history) - 2;
-      const maxP = Math.max(...history) + 2;
-      const range = (maxP - minP) || 1;
-      
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
-      ctx.lineWidth = 1;
-      for (let y = 10; y < h; y += 15) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
-      }
-
-      ctx.strokeStyle = "#38bdf8";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      
+      const canvas = document.getElementById('baroCanvas'), ctx = canvas.getContext('2d'), dpr = window.devicePixelRatio || 1;
+      canvas.width = canvas.parentElement.clientWidth * dpr; canvas.height = 65 * dpr; ctx.scale(dpr, dpr);
+      const w = canvas.parentElement.clientWidth, h = 65; ctx.clearRect(0, 0, w, h);
+      const st = getComputedStyle(document.body);
+      const minP = Math.min(...history) - 2, maxP = Math.max(...history) + 2, r = (maxP - minP) || 1;
+      ctx.strokeStyle = "rgba(128,128,128,0.1)"; ctx.lineWidth = 1;
+      for (let y = 10; y < h; y += 15) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+      ctx.strokeStyle = st.getPropertyValue('--wave').trim() || '#38bdf8'; ctx.lineWidth = 2; ctx.beginPath();
       const step = w / (history.length - 1);
-      history.forEach((val, i) => {
-        const x = i * step;
-        const y = h - 8 - ((val - minP) / range) * (h - 20);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
+      history.forEach((v, i) => { const x = i * step, y = h - 8 - ((v - minP) / r) * (h - 20); if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
       ctx.stroke();
-
-      history.forEach((val, i) => {
-        const x = i * step;
-        const y = h - 8 - ((val - minP) / range) * (h - 20);
-        ctx.fillStyle = (i === history.length - 1) ? "#22c55e" : "#38bdf8";
-        ctx.beginPath();
-        ctx.arc(x, y, (i === history.length - 1) ? 3.5 : 2, 0, Math.PI * 2);
-        ctx.fill();
+      history.forEach((v, i) => {
+        const x = i * step, y = h - 8 - ((v - minP) / r) * (h - 20);
+        ctx.fillStyle = (i === history.length - 1) ? (st.getPropertyValue('--live').trim() || '#22c55e') : (st.getPropertyValue('--wave').trim() || '#38bdf8');
+        ctx.beginPath(); ctx.arc(x, y, i === history.length - 1 ? 3.5 : 2, 0, Math.PI*2); ctx.fill();
       });
+    }
+
+    function updateAllCalculationsForDate() {
+      const lat = parseFloat(localStorage.getItem('casio_lat')) || 41.6, lon = parseFloat(localStorage.getItem('casio_lon')) || 2.1;
+      const target = getActiveDate(), dNames = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"], mNames = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+      document.getElementById('timeTravelLabel').textContent = `Fecha: ${dNames[target.getDay()]} ${target.getDate()} ${mNames[target.getMonth()]} (${dateOffset === 0 ? 'Hoy' : (dateOffset > 0 ? '+'+dateOffset : dateOffset)+'d'})`;
+      document.getElementById('tideCurrentTimeMark').textContent = (dateOffset === 0) ? "En vivo ⚡" : "Histórico 📅";
+
+      const moon = calculateMoonData(target);
+      document.getElementById('moonAge').innerHTML = `${moon.age.toFixed(1)} <span class="data-unit">días</span>`;
+      document.getElementById('moonIcon').textContent = moon.icon;
+      document.getElementById('moonName').textContent = moon.name;
+      document.getElementById('moonIllum').innerHTML = `${moon.illum}<span class="data-unit">%</span>`;
+      document.getElementById('nextFullMoon').innerHTML = `${moon.nextFull}<span class="data-unit">días</span>`;
+
+      const sun = calculateOfflineSun(lat, lon, target);
+      document.getElementById('sunrise').textContent = sun.sunrise;
+      document.getElementById('sunset').textContent = sun.sunset;
+
+      const tides = calculateDailyTides4Events(lat, lon, moon.age, target);
+      document.getElementById('tideH1').textContent = tides.h1;
+      document.getElementById('tideL1').textContent = tides.l1;
+      document.getElementById('tideH2').textContent = tides.h2;
+      document.getElementById('tideL2').textContent = tides.l2;
+      document.getElementById('tideStatusText').textContent = tides.status;
+      document.getElementById('lunitidalVal').textContent = tides.lunitidal;
+      document.getElementById('tideStationTag').textContent = tides.station;
+      drawTideChart();
     }
 
     function getLocationAndData() {
       triggerHaptic(20);
       document.getElementById('lastUpdate').textContent = "Obteniendo GPS en vivo...";
-
-      if (!navigator.geolocation) {
-        alert("Geolocalización no compatible.");
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        const alt = pos.coords.altitude;
-
-        localStorage.setItem('casio_lat', lat);
-        localStorage.setItem('casio_lon', lon);
+      if (!navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition(async pos => {
+        const lat = pos.coords.latitude, lon = pos.coords.longitude, alt = pos.coords.altitude;
+        localStorage.setItem('casio_lat', lat); localStorage.setItem('casio_lon', lon);
         if (alt !== null) localStorage.setItem('casio_alt', alt);
-
-        // Coordenadas y Altitud GPS
         document.getElementById('casioLat').textContent = `${Math.abs(lat).toFixed(1)}° ${lat >= 0 ? 'N' : 'S'}`;
         document.getElementById('casioLon').textContent = `${Math.abs(lon).toFixed(1)}° ${lon >= 0 ? 'E' : 'W'}`;
-
         const altVal = alt !== null ? Math.round(alt) : (localStorage.getItem('casio_alt') || 212);
         document.getElementById('gpsAlt').innerHTML = `${altVal}<span class="data-unit">m</span>`;
+        const dec = 0.8 + (lon * 0.45);
+        document.getElementById('magDec').textContent = `${dec >= 0 ? 'E' : 'W'} ${Math.round(Math.abs(dec)) || 1}°`;
+        updateAllCalculationsForDate();
 
-        // Declinación
-        document.getElementById('magDec').textContent = calculateMagneticDeclination(lat, lon);
-
-        // Luna
-        const moon = calculateMoonData();
-        document.getElementById('moonAge').innerHTML = `${moon.age.toFixed(1)} <span class="data-unit">días</span>`;
-        document.getElementById('moonIcon').textContent = moon.icon;
-        document.getElementById('moonName').textContent = moon.name;
-        document.getElementById('moonIllum').innerHTML = `${moon.illum}<span class="data-unit">%</span>`;
-        document.getElementById('nextFullMoon').innerHTML = `${moon.nextFull}<span class="data-unit">días</span>`;
-
-        // Sol
-        const sunOffline = calculateOfflineSun(lat, lon);
-        document.getElementById('sunrise').textContent = sunOffline.sunrise;
-        document.getElementById('sunset').textContent = sunOffline.sunset;
-
-        // Mareas Dinámicas & Gráfica
-        const tides = calculateDailyTides(lat, lon, moon.age);
-        document.getElementById('tideLow1').textContent = tides.low1;
-        document.getElementById('tideHigh').textContent = tides.high;
-        document.getElementById('tideLow2').textContent = tides.low2;
-        document.getElementById('tideStatusText').textContent = tides.status;
-        document.getElementById('lunitidalVal').textContent = tides.lunitidal;
-        document.getElementById('tideStationTag').textContent = tides.station;
-
-        drawTideChart();
-
-        // Presión Barométrica
-        const pSeaStandard = 1013.25;
-        const pSurfaceOffline = Math.round(pSeaStandard * Math.pow(1 - (0.0065 * altVal) / 288.15, 5.255));
-        currentSurfacePressure = pSurfaceOffline;
-        currentSeaPressure = 1013;
-        document.getElementById('baroSurface').innerHTML = `${pSurfaceOffline}<span class="data-unit">hPa*</span>`;
+        const pSurf = Math.round(1013.25 * Math.pow(1 - (0.0065 * altVal) / 288.15, 5.255));
+        document.getElementById('baroSurface').innerHTML = `${pSurf}<span class="data-unit">hPa*</span>`;
         document.getElementById('baroSea').innerHTML = `1013<span class="data-unit">hPa*</span>`;
+        drawBaroChart([1015, 1014, 1014, 1013, 1013, 1012, 1013, 1014, 1015, 1015, 1014, 1015]);
 
-        let dummyHistory = [1015, 1014, 1014, 1013, 1013, 1012, 1013, 1014, 1015, 1015, 1014, 1015];
-        drawBaroChart(dummyHistory);
-
-        // API Meteorológica Global
         try {
-          const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,surface_pressure,pressure_msl&hourly=surface_pressure&daily=sunrise,sunset&timezone=auto`;
-          const res = await fetch(url);
+          const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=surface_pressure,pressure_msl&hourly=surface_pressure&timezone=auto`);
           const data = await res.json();
-
           if (data.current) {
-            currentSurfacePressure = Math.round(data.current.surface_pressure);
-            currentSeaPressure = Math.round(data.current.pressure_msl);
-            document.getElementById('baroSurface').innerHTML = `${currentSurfacePressure}<span class="data-unit">hPa</span>`;
-            document.getElementById('baroSea').innerHTML = `${currentSeaPressure}<span class="data-unit">hPa</span>`;
+            document.getElementById('baroSurface').innerHTML = `${Math.round(data.current.surface_pressure)}<span class="data-unit">hPa</span>`;
+            document.getElementById('baroSea').innerHTML = `${Math.round(data.current.pressure_msl)}<span class="data-unit">hPa</span>`;
           }
-
           if (data.hourly && data.hourly.surface_pressure) {
-            const last24h = data.hourly.surface_pressure.slice(0, 24).filter((_, idx) => idx % 2 === 0);
-            drawBaroChart(last24h);
-            const trend = (last24h[last24h.length - 1] - last24h[0]);
-            document.getElementById('baroTrendText').textContent = trend > 1 ? "↗ Subiendo" : trend < -1 ? "↘ Bajando" : "→ Estable";
-          }
+            const h24 = data.hourly.surface_pressure.slice(0, 24).filter((_, i) => i % 2 === 0);
+            drawBaroChart(h24);
+            
+            // Monitorización de Caída en 3h (Storm Alarm)
+            const curHr = new Date().getHours();
+            const pNow = data.hourly.surface_pressure[curHr] || data.current.surface_pressure;
+            const pPast3h = data.hourly.surface_pressure[Math.max(0, curHr - 3)];
+            const diff3h = Math.round((pNow - pPast3h) * 10) / 10;
+            const banner = document.getElementById('stormAlertBanner');
 
-          if (data.daily && data.daily.sunrise) {
-            document.getElementById('sunrise').textContent = data.daily.sunrise[0].split('T')[1];
-            document.getElementById('sunset').textContent = data.daily.sunset[0].split('T')[1];
-            const [sH, sM] = data.daily.sunrise[0].split('T')[1].split(':').map(Number);
-            const [eH, eM] = data.daily.sunset[0].split('T')[1].split(':').map(Number);
-            currentSunData = { sunriseH: sH + sM/60, sunsetH: eH + eM/60 };
-            drawTideChart();
+            if (diff3h <= -3.0) {
+              banner.style.display = 'block';
+              banner.textContent = `⚠️ ALERTA: CAÍDA BRUSCA (${diff3h} hPa/3h) - RIESGO DE BORRASCA / TORMENTA`;
+              document.getElementById('baroTrendText').textContent = `⚠️ CAÍDA CRÍTICA (${diff3h} hPa)`;
+              document.getElementById('baroTrendText').style.color = 'var(--red)';
+              triggerHaptic(60);
+            } else {
+              banner.style.display = 'none';
+              const tr = h24[h24.length - 1] - h24[0];
+              document.getElementById('baroTrendText').textContent = tr > 1 ? "↗ Subiendo" : tr < -1 ? "↘ Bajando" : "→ Estable";
+              document.getElementById('baroTrendText').style.color = 'var(--accent)';
+            }
           }
           document.getElementById('networkStatus').textContent = "Online API 🟢";
-        } catch (e) {
-          document.getElementById('networkStatus').textContent = "Offline Puro 🟠";
-        }
-
-        const now = new Date();
-        document.getElementById('lastUpdate').textContent = `Sincronizado: ${now.toLocaleTimeString()}`;
-      }, (err) => {
-        document.getElementById('lastUpdate').textContent = "GPS Error: " + err.message;
-      }, { enableHighAccuracy: true, timeout: 8000 });
+        } catch(e) { document.getElementById('networkStatus').textContent = "Offline Puro 🟠"; }
+        document.getElementById('lastUpdate').textContent = `Sincronizado: ${new Date().toLocaleTimeString()}`;
+      }, err => { document.getElementById('lastUpdate').textContent = "GPS Error: " + err.message; }, { enableHighAccuracy: true, timeout: 8000 });
     }
+
+    window.onload = () => { setTheme(localStorage.getItem('hub_theme') || 'dark'); updateAllCalculationsForDate(); };
   </script>
 </body>
 </html>
