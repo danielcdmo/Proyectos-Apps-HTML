@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION - Field Navigator v2.6</title>
+    <title>ORION - Field Navigator v2.7</title>
     <meta name="author" content="danielcdmo">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -361,7 +361,7 @@
         </div>
 
         <div class="topbar-controls-row">
-            <span class="version-tag">v2.6</span>
+            <span class="version-tag">v2.7</span>
             <div class="connectivity-pill" id="connPill">
                 <span class="status-dot-mini" id="connDot" style="background:var(--accent-green);"></span>
                 <span id="connText">ONLINE</span>
@@ -470,8 +470,8 @@
                 </div>
                 <div class="metric-box">
                     <span class="metric-label">Declinación Magnética</span>
-                    <span class="metric-value text-yellow" id="decVal">E 2<span class="unit">°</span></span>
-                    <span class="metric-sub">AJUSTE RELOJ CASIO</span>
+                    <span class="metric-value text-yellow" id="decVal">--<span class="unit">°</span></span>
+                    <span class="metric-sub">AUTO NOAA / OFFLINE</span>
                 </div>
                 <div class="metric-box">
                     <span class="metric-label">Azimut Solar ☀️</span>
@@ -691,7 +691,7 @@
                     <div style="font-size:0.75rem; color:#64748b; font-weight:700; margin-top:3px;" id="repDateTime">Fecha: --</div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:0.75rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 10px; border-radius:6px;">v2.6</span>
+                    <span style="font-size:0.75rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 10px; border-radius:6px;">v2.7</span>
                     <div style="font-size:0.62rem; color:#64748b; font-weight:700; margin-top:4px;">REF: WGS84-GEO</div>
                 </div>
             </div>
@@ -713,7 +713,7 @@
             <div id="reportMapLeaflet"></div>
 
             <div style="margin-top:16px; border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:#64748b;">
-                <span>Sistema Operativo ORION v2.6 • Casio Sync Engine</span>
+                <span>Sistema Operativo ORION v2.7 • Casio Sync Engine</span>
                 <span><strong>Registrado por: danielcdmo</strong></span>
             </div>
         </div>
@@ -730,6 +730,7 @@
         let waypoints = [];
         let totalDistanceKm = 0;
         let lastGpsPos = null;
+        let currentMagneticDeclination = "--";
 
         // Cronómetro de expedición
         let trackingSeconds = 0;
@@ -763,15 +764,46 @@
             return Math.round(qnh * Math.pow(1 - (altGps / 44330), 5.255));
         }
 
-        function calcularDeclinacionMagnetica(lat, lon) {
-            let dec = 0.5 + (lon * 0.15) - (lat * 0.05);
-            let dir = dec >= 0 ? 'E' : 'W';
-            return `${dir} ${Math.abs(Math.round(dec))}`;
+        // MOTOR ONLINE PARA DECLINACIÓN MAGNÉTICA GLOBAL
+        async function fetchMagneticDeclination(lat, lon) {
+            try {
+                if (!navigator.onLine) {
+                    currentMagneticDeclination = "--";
+                    const decEl = document.getElementById('decVal');
+                    if (decEl) decEl.innerHTML = `--<span class="unit">°</span>`;
+                    return;
+                }
+                
+                // Conecta con la base de datos oficial de NOAA (Sin dependencia de API KEY)
+                const url = `https://www.ngdc.noaa.gov/geomag-web/calculators/calculateDeclination?lat1=${lat}&lon1=${lon}&resultFormat=json`;
+                const response = await fetch(url);
+                
+                if (!response.ok) throw new Error("API error");
+                
+                const data = await response.json();
+                if (data && data.result && data.result.length > 0) {
+                    let dec = data.result[0].declination;
+                    let dir = dec >= 0 ? 'E' : 'W';
+                    currentMagneticDeclination = `${dir} ${Math.abs(Math.round(dec))}`;
+                    const decEl = document.getElementById('decVal');
+                    if (decEl) decEl.innerHTML = `${currentMagneticDeclination}<span class="unit">°</span>`;
+                }
+            } catch (e) {
+                console.warn("No se pudo obtener la declinación magnética online (Modo Offline o error de red):", e);
+                currentMagneticDeclination = "--";
+                const decEl = document.getElementById('decVal');
+                if (decEl) decEl.innerHTML = `--<span class="unit">°</span>`;
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             initBezelSvg();
             checkConnectivityStatus();
+            
+            // Asignamos los event listeners SOLO UNA VEZ al arrancar para evitar memory leaks
+            window.addEventListener('online', checkConnectivityStatus);
+            window.addEventListener('offline', checkConnectivityStatus);
+            
             initLiveMap();
             initMasterClockAndWeather();
             
@@ -835,7 +867,7 @@
             document.getElementById('altBaroVal').innerHTML = `${baroAltitude} <span class="unit">m</span>`;
             document.getElementById('qfeVal').innerHTML = `${currentPressure} <span class="unit">hPa</span>`;
             document.getElementById('qnhVal').innerHTML = `${seaLevelPressure} <span class="unit">hPa</span>`;
-            document.getElementById('decVal').innerHTML = `${calcularDeclinacionMagnetica(currentLat, currentLon)}<span class="unit">°</span>`;
+            document.getElementById('decVal').innerHTML = `${currentMagneticDeclination}<span class="unit">°</span>`;
         }
 
         function initLiveMap() {
@@ -858,13 +890,22 @@
             const pill = document.getElementById('connPill');
             const dot = document.getElementById('connDot');
             const txt = document.getElementById('connText');
+            
             if (navigator.onLine) {
-                pill.className = 'connectivity-pill'; dot.style.background = 'var(--accent-green)'; txt.innerText = 'ONLINE';
+                pill.className = 'connectivity-pill'; 
+                dot.style.background = 'var(--accent-green)'; 
+                txt.innerText = 'ONLINE';
+                if (typeof gpsActive !== 'undefined' && gpsActive) fetchMagneticDeclination(currentLat, currentLon);
             } else {
-                pill.className = 'connectivity-pill offline'; dot.style.background = 'var(--accent-orange)'; txt.innerText = 'OFFLINE';
+                pill.className = 'connectivity-pill offline'; 
+                dot.style.background = 'var(--accent-orange)'; 
+                txt.innerText = 'OFFLINE';
+                
+                // Si perdemos la conexión, ponemos de forma autónoma las rayitas en el widget magnético
+                currentMagneticDeclination = "--";
+                const decValEl = document.getElementById('decVal');
+                if (decValEl) decValEl.innerHTML = `--<span class="unit">°</span>`;
             }
-            window.addEventListener('online', checkConnectivityStatus);
-            window.addEventListener('offline', checkConnectivityStatus);
         }
 
         function setTacticalTheme(themeName) {
@@ -904,7 +945,10 @@
                     document.getElementById('latVal').innerHTML = `${Math.abs(currentLat).toFixed(1)}<span class="unit">° ${currentLat>=0?'N':'S'}</span>`;
                     document.getElementById('lonVal').innerHTML = `${Math.abs(currentLon).toFixed(1)}<span class="unit">° ${currentLon>=0?'E':'W'}</span>`;
                     
+                    // Al enganchar el GPS disparador por primera vez intentamos obtener la declinación
+                    fetchMagneticDeclination(currentLat, currentLon);
                     recalcularPresionesYAltitud();
+                    
                     userMarker.setLatLng([currentLat, currentLon]);
                     map.setView([currentLat, currentLon], 16);
 
@@ -1126,7 +1170,7 @@
             // RENDERIZADO VISUAL LUNAR CON ORIENTACIÓN POR HEMISFERIO
             const disc = document.getElementById('moonDiscVisual');
             if (disc) {
-                const isWaxing = ageInDays < 14.765; // Creciente
+                const isWaxing = ageInDays < 14.765;
                 const isNorth = lat >= 0;
 
                 // En Hemisferio Norte la Creciente se ilumina por la DERECHA
@@ -1292,7 +1336,7 @@
             calculateWorldwideTides(currentLat, currentLon, tideDayOffset);
         }
 
-        // MOTOR DE TRACKING Y MAPAS (ORION v2.6 CON RESUMEN Y RESET TOTAL)
+        // MOTOR DE TRACKING Y MAPAS (ORION v2.7 CON RESUMEN Y RESET TOTAL)
         function toggleMissionTracking() {
             if (!gpsActive) { alert("PULSA ACTIVAR GPS ARRIBA PRIMERO."); return; }
             isTracking = !isTracking;
