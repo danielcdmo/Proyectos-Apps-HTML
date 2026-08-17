@@ -46,9 +46,9 @@
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 5px; }
     
-    .data-box { background: var(--box); border: 1px solid var(--border); border-radius: 12px; padding: 8px 4px; text-align: center; }
-    .data-label { font-size: 0.64rem; color: var(--muted); margin-bottom: 2px; }
-    .data-val { font-size: 1.1rem; font-weight: 700; font-family: var(--mono); color: var(--text); }
+    .data-box { background: var(--box); border: 1px solid var(--border); border-radius: 12px; padding: 8px 3px; text-align: center; }
+    .data-label { font-size: 0.63rem; color: var(--muted); margin-bottom: 2px; }
+    .data-val { font-size: 1.05rem; font-weight: 700; font-family: var(--mono); color: var(--text); }
     .data-unit { font-size: 0.7rem; color: var(--muted); margin-left: 2px; }
     .val-highlight { color: var(--green); } .val-amber { color: var(--amber); } .val-orange { color: var(--orange); }
     .help-tag { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; background: rgba(56,189,248,0.15); color: var(--accent); }
@@ -174,7 +174,7 @@
       </div>
     </div>
 
-    <!-- 4. MAREAS (4 EVENTOS + EXPLORADOR TEMPORAL ±30D) -->
+    <!-- 4. MAREAS DINÁMICAS (4 EVENTOS CONTINUOS + ±30D) -->
     <div class="card">
       <div class="card-title"><span>🌊 Pleamares & Bajamares (4 Eventos)</span><span class="help-tag" id="tideStationTag">Costa Local</span></div>
       <div class="time-travel-box">
@@ -189,10 +189,10 @@
         <input type="range" id="timeSlider" min="-30" max="30" value="0" step="1" oninput="onSliderChange(this.value)">
       </div>
       <div class="grid-4" style="margin-bottom:8px;">
-        <div class="data-box"><div class="data-label" style="color:var(--accent);">1ª Pleamar</div><div class="data-val val-highlight" id="tideH1" style="font-size:0.95rem;">--:--</div></div>
-        <div class="data-box"><div class="data-label" style="color:var(--red);">1ª Bajamar</div><div class="data-val" id="tideL1" style="font-size:0.95rem;">--:--</div></div>
-        <div class="data-box"><div class="data-label" style="color:var(--accent);">2ª Pleamar</div><div class="data-val val-highlight" id="tideH2" style="font-size:0.95rem;">--:--</div></div>
-        <div class="data-box"><div class="data-label" style="color:var(--red);">2ª Bajamar</div><div class="data-val" id="tideL2" style="font-size:0.95rem;">--:--</div></div>
+        <div class="data-box"><div class="data-label" style="color:var(--accent);">1ª Pleamar</div><div class="data-val val-highlight" id="tideH1" style="font-size:0.92rem;">--:--</div></div>
+        <div class="data-box"><div class="data-label" style="color:var(--red);">1ª Bajamar</div><div class="data-val" id="tideL1" style="font-size:0.92rem;">--:--</div></div>
+        <div class="data-box"><div class="data-label" style="color:var(--accent);">2ª Pleamar</div><div class="data-val val-highlight" id="tideH2" style="font-size:0.92rem;">--:--</div></div>
+        <div class="data-box"><div class="data-label" style="color:var(--red);">2ª Bajamar</div><div class="data-val" id="tideL2" style="font-size:0.92rem;">--:--</div></div>
       </div>
       <div class="grid-2">
         <div class="data-box"><div class="data-label">INT (Intervalo Lunitidal)</div><div class="data-val" id="lunitidalVal">7:10</div></div>
@@ -297,28 +297,70 @@
       return { sunrise: f(sMin), sunset: f(eMin) };
     }
 
+    // Formateador continuo de mareas con indicación (+1d) o (-1d)
+    function formatTideTime(decimalHour) {
+      if (decimalHour === undefined) return "--:--";
+      let isNext = decimalHour >= 24;
+      let isPrev = decimalHour < 0;
+      let norm = (decimalHour % 24 + 24) % 24;
+      let totalMin = Math.round(norm * 60);
+      let h = Math.floor(totalMin / 60) % 24;
+      let m = Math.floor(totalMin % 60);
+      let timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      if (isNext) return `${timeStr}<span style="font-size:0.65em; opacity:0.8; margin-left:2px;">(+1)</span>`;
+      if (isPrev) return `${timeStr}<span style="font-size:0.65em; opacity:0.8; margin-left:2px;">(-1)</span>`;
+      return timeStr;
+    }
+
     function calculateDailyTides4Events(lat, lon, moonAge, d) {
       const tzOff = -d.getTimezoneOffset() / 60;
       let lunitidal = (lat >= 43) ? 3.10 : (lon < -3.5) ? 1.75 : 7.16;
       let baseHigh = ((moonAge * 0.84) - (lon / 15) + lunitidal + tzOff + 24) % 12.42;
-      let highs = [], lows = [];
-      for (let h = baseHigh - 24.84; h <= 36; h += 12.42) {
-        if (h >= 0 && h < 24) highs.push(h);
-        if ((h + 6.21) >= 0 && (h + 6.21) < 24) lows.push(h + 6.21);
-        if ((h - 6.21) >= 0 && (h - 6.21) < 24) lows.push(h - 6.21);
+
+      let allHighs = [], allLows = [];
+      for (let h = baseHigh - 24.84; h <= baseHigh + 36; h += 12.42) {
+        allHighs.push(h);
+        allLows.push(h + 6.21);
       }
-      highs = [...new Set(highs.map(v => Math.round(v * 100) / 100))].sort((a, b) => a - b);
-      lows = [...new Set(lows.map(v => Math.round(v * 100) / 100))].sort((a, b) => a - b);
-      const fmt = dh => dh === undefined ? "--:--" : `${String(Math.floor(dh)).padStart(2, '0')}:${String(Math.floor((dh % 1) * 60)).padStart(2, '0')}`;
+      allHighs = [...new Set(allHighs.map(v => Math.round(v * 100) / 100))].sort((a, b) => a - b);
+      allLows = [...new Set(allLows.map(v => Math.round(v * 100) / 100))].sort((a, b) => a - b);
+
+      let todayHighs = allHighs.filter(h => h >= 0 && h < 24);
+      let todayLows = allLows.filter(h => h >= 0 && h < 24);
+
+      let finalHighs = [];
+      if (todayHighs.length >= 2) {
+        finalHighs = todayHighs.slice(0, 2);
+      } else if (todayHighs.length === 1) {
+        finalHighs = [todayHighs[0], todayHighs[0] + 12.42];
+      } else {
+        finalHighs = [allHighs.find(h => h >= 24) || 24.5, allHighs.find(h => h < 0) || -0.5];
+      }
+
+      let finalLows = [];
+      if (todayLows.length >= 2) {
+        finalLows = todayLows.slice(0, 2);
+      } else if (todayLows.length === 1) {
+        finalLows = [todayLows[0], todayLows[0] + 12.42];
+      } else {
+        finalLows = [allLows.find(l => l >= 24) || 24.5, allLows.find(l => l < 0) || -0.5];
+      }
+
       const curH = new Date().getHours() + (new Date().getMinutes() / 60);
       let status = "Subiendo hacia Pleamar";
-      if (highs.length && lows.length) {
-        let nH = highs.find(h => h > curH) || highs[0], nL = lows.find(l => l > curH) || lows[0];
+      if (todayHighs.length && todayLows.length) {
+        let nH = todayHighs.find(h => h > curH) || todayHighs[0];
+        let nL = todayLows.find(l => l > curH) || todayLows[0];
         status = nH < nL ? "Subiendo hacia Pleamar" : "Bajando hacia Bajamar";
       }
-      currentTideEvents = { highs, lows, baseHigh };
+
+      currentTideEvents = { highs: todayHighs, lows: todayLows, baseHigh };
+
       return {
-        h1: fmt(highs[0]), l1: fmt(lows[0]), h2: fmt(highs[1]), l2: fmt(lows[1]),
+        h1: formatTideTime(finalHighs[0]),
+        l1: formatTideTime(finalLows[0]),
+        h2: formatTideTime(finalHighs[1]),
+        l2: formatTideTime(finalLows[1]),
         status: dateOffset === 0 ? status : "Modo Consulta",
         station: (lat >= 43) ? "Cantábrico" : (lon < -3.5) ? "Atlántico" : "Mediterráneo",
         lunitidal: `${Math.floor(lunitidal)}:${String(Math.round((lunitidal % 1) * 60)).padStart(2, '0')}`
@@ -404,10 +446,10 @@
       document.getElementById('sunset').textContent = sun.sunset;
 
       const tides = calculateDailyTides4Events(lat, lon, moon.age, target);
-      document.getElementById('tideH1').textContent = tides.h1;
-      document.getElementById('tideL1').textContent = tides.l1;
-      document.getElementById('tideH2').textContent = tides.h2;
-      document.getElementById('tideL2').textContent = tides.l2;
+      document.getElementById('tideH1').innerHTML = tides.h1;
+      document.getElementById('tideL1').innerHTML = tides.l1;
+      document.getElementById('tideH2').innerHTML = tides.h2;
+      document.getElementById('tideL2').innerHTML = tides.l2;
       document.getElementById('tideStatusText').textContent = tides.status;
       document.getElementById('lunitidalVal').textContent = tides.lunitidal;
       document.getElementById('tideStationTag').textContent = tides.station;
@@ -446,7 +488,6 @@
             const h24 = data.hourly.surface_pressure.slice(0, 24).filter((_, i) => i % 2 === 0);
             drawBaroChart(h24);
             
-            // Monitorización de Caída en 3h (Storm Alarm)
             const curHr = new Date().getHours();
             const pNow = data.hourly.surface_pressure[curHr] || data.current.surface_pressure;
             const pPast3h = data.hourly.surface_pressure[Math.max(0, curHr - 3)];
