@@ -3,127 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tactical Hub - Field Navigator</title>
+    <title>Tactical Hub - Field Navigator v2.0</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#070b12">
+    <meta name="theme-color" content="#030712">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
         :root, [data-theme="dark"] {
-            --bg-primary: #070b12;
-            --bg-card: #0f1726;
-            --bg-card-inner: #152033;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --border-highlight: rgba(0, 210, 255, 0.3);
-            --text-main: #e2e8f0;
-            --text-muted: #7e8e9f;
-            --accent-cyan: #00d2ff;
-            --accent-green: #00e676;
-            --accent-orange: #ff9800;
-            --accent-yellow: #ffd600;
-            --accent-red: #ff3d71;
-            --accent-blue: #0091ff;
-            --lcd-bg: #09111c;
-            --radius-main: 16px;
-            --radius-card: 12px;
+            --bg-canvas: #040813;
+            --glass-bg: rgba(15, 23, 42, 0.62);
+            --glass-inner: rgba(30, 41, 59, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-border-specular: rgba(255, 255, 255, 0.22);
+            --glass-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.18);
+            --glass-blur: blur(28px) saturate(190%);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-cyan: #38bdf8;
+            --accent-green: #34d399;
+            --accent-orange: #fb923c;
+            --accent-yellow: #facc15;
+            --accent-red: #f43f5e;
+            --accent-blue: #60a5fa;
+            --lcd-glass: rgba(10, 17, 30, 0.75);
+            --radius-main: 22px;
+            --radius-card: 14px;
         }
 
         [data-theme="red"] {
-            --bg-primary: #050000;
-            --bg-card: #150505;
-            --bg-card-inner: #220808;
-            --border-color: rgba(255, 40, 40, 0.2);
-            --border-highlight: rgba(255, 0, 0, 0.5);
-            --text-main: #ff9999;
-            --text-muted: #994d4d;
-            --accent-cyan: #ff4d4d;
-            --accent-green: #ff3333;
-            --accent-orange: #ff5533;
-            --accent-yellow: #ff6644;
-            --accent-red: #ff0033;
-            --accent-blue: #ff2244;
-            --lcd-bg: #0d0202;
+            --bg-canvas: #050002;
+            --glass-bg: rgba(28, 5, 8, 0.65);
+            --glass-inner: rgba(45, 8, 12, 0.6);
+            --glass-border: rgba(244, 63, 94, 0.25);
+            --glass-border-specular: rgba(244, 63, 94, 0.45);
+            --glass-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), inset 0 1px 1px rgba(244, 63, 94, 0.3);
+            --glass-blur: blur(28px) saturate(190%);
+            --text-main: #fecdd3;
+            --text-muted: #9f1239;
+            --accent-cyan: #fb7185;
+            --accent-green: #f43f5e;
+            --accent-orange: #fb923c;
+            --accent-yellow: #fda4af;
+            --accent-red: #e11d48;
+            --accent-blue: #f43f5e;
+            --lcd-glass: rgba(18, 2, 4, 0.8);
         }
 
         [data-theme="day"] {
-            --bg-primary: #e6ebf2;
-            --bg-card: #f4f7fb;
-            --bg-card-inner: #ffffff;
-            --border-color: rgba(0, 0, 0, 0.1);
-            --border-highlight: rgba(0, 112, 204, 0.4);
-            --text-main: #101828;
-            --text-muted: #5a6b82;
-            --accent-cyan: #0077b6;
-            --accent-green: #008a3e;
-            --accent-orange: #d96b00;
-            --accent-yellow: #b58900;
-            --accent-red: #d32f2f;
-            --accent-blue: #0056b3;
-            --lcd-bg: #dce4ee;
+            --bg-canvas: #e2e8f0;
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-inner: rgba(241, 245, 249, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-border-specular: rgba(255, 255, 255, 0.9);
+            --glass-shadow: 0 16px 36px rgba(100, 116, 139, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            --glass-blur: blur(28px) saturate(190%);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-cyan: #0284c7;
+            --accent-green: #059669;
+            --accent-orange: #ea580c;
+            --accent-yellow: #d97706;
+            --accent-red: #e11d48;
+            --accent-blue: #2563eb;
+            --lcd-glass: rgba(226, 232, 240, 0.85);
         }
 
         * {
             margin: 0; padding: 0; box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
             user-select: none;
         }
 
         body {
-            background-color: var(--bg-primary);
+            background-color: var(--bg-canvas);
+            background-image: radial-gradient(at 15% 15%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
+                              radial-gradient(at 85% 85%, rgba(52, 211, 153, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
             color: var(--text-main);
-            padding: calc(env(safe-area-inset-top, 20px) + 6px) 14px calc(env(safe-area-inset-bottom, 20px) + 30px) 14px;
+            padding: calc(env(safe-area-inset-top, 20px) + 8px) 14px calc(env(safe-area-inset-bottom, 20px) + 30px) 14px;
             display: flex; flex-direction: column; gap: 14px;
             max-width: 540px; margin: 0 auto;
+            min-height: 100vh;
         }
 
+        /* LIQUID GLASS CONTAINERS */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-border-specular);
+            box-shadow: var(--glass-shadow);
+            border-radius: var(--radius-main);
+            padding: 16px;
+            display: flex; flex-direction: column; gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-border-specular), transparent);
+            pointer-events: none;
+        }
+
+        /* TOP BAR */
         .tactical-topbar { display: flex; align-items: center; justify-content: space-between; padding: 2px; }
-        .brand-title { display: flex; align-items: center; font-size: 1.05rem; font-weight: 900; letter-spacing: 1.5px; color: var(--text-main); }
+        .brand-title { display: flex; align-items: center; font-size: 1.05rem; font-weight: 800; letter-spacing: 0.5px; color: var(--text-main); gap: 6px; }
+        .version-tag { font-size: 0.62rem; background: rgba(56, 189, 248, 0.18); border: 1px solid rgba(56, 189, 248, 0.4); color: var(--accent-cyan); padding: 2px 7px; border-radius: 20px; font-weight: 800; backdrop-filter: blur(8px); }
         .topbar-controls { display: flex; align-items: center; gap: 6px; }
 
         .connectivity-pill {
-            display: flex; align-items: center; gap: 4px; font-size: 0.6rem; font-weight: 800; padding: 5px 8px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--accent-green); text-transform: uppercase;
+            display: flex; align-items: center; gap: 5px; font-size: 0.62rem; font-weight: 800; padding: 6px 10px; border-radius: 20px; background: var(--glass-inner); border: 1px solid var(--glass-border); color: var(--accent-green); text-transform: uppercase; backdrop-filter: var(--glass-blur);
         }
-        .connectivity-pill.offline { color: var(--accent-orange); border-color: rgba(255,152,0,0.3); }
+        .connectivity-pill.offline { color: var(--accent-orange); border-color: rgba(251, 146, 60, 0.3); }
 
-        .theme-switch-group { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 2px; gap: 2px; }
-        .theme-btn { background: transparent; border: none; color: var(--text-muted); font-size: 0.72rem; padding: 5px 7px; border-radius: 6px; cursor: pointer; font-weight: 800; transition: all 0.2s; }
-        .theme-btn.active { background: var(--bg-card-inner); color: var(--text-main); border: 1px solid var(--border-highlight); }
+        .theme-switch-group { display: flex; background: var(--glass-inner); border: 1px solid var(--glass-border); border-radius: 20px; padding: 2px; gap: 2px; backdrop-filter: var(--glass-blur); }
+        .theme-btn { background: transparent; border: none; color: var(--text-muted); font-size: 0.72rem; padding: 5px 8px; border-radius: 14px; cursor: pointer; font-weight: 800; transition: all 0.2s; }
+        .theme-btn.active { background: rgba(255, 255, 255, 0.15); color: var(--text-main); border: 1px solid var(--glass-border-specular); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
         .btn-gps-sync {
-            background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 9px; border-radius: 8px; font-size: 0.68rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;
+            background: var(--glass-inner); border: 1px solid var(--glass-border); color: var(--text-main); padding: 6px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.2s; backdrop-filter: var(--glass-blur);
         }
-        .btn-gps-sync.waiting { border-color: var(--accent-red); color: var(--accent-red); background: rgba(255,61,113,0.1); }
-        .btn-gps-sync.searching { border-color: var(--accent-orange); color: var(--accent-orange); background: rgba(255,152,0,0.1); }
-        .btn-gps-sync.locked { border-color: var(--accent-green); color: var(--accent-green); background: rgba(0,230,118,0.1); }
-        .status-dot-mini { width: 7px; height: 7px; border-radius: 50%; display: inline-block; box-shadow: 0 0 6px currentColor; }
+        .btn-gps-sync.waiting { border-color: var(--accent-red); color: var(--accent-red); background: rgba(244, 63, 94, 0.15); }
+        .btn-gps-sync.searching { border-color: var(--accent-orange); color: var(--accent-orange); background: rgba(251, 146, 60, 0.15); }
+        .btn-gps-sync.locked { border-color: var(--accent-green); color: var(--accent-green); background: rgba(52, 211, 153, 0.15); }
+        .status-dot-mini { width: 7px; height: 7px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px currentColor; }
 
-        .tactical-card {
-            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-main); padding: 15px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); position: relative;
-        }
-        .card-header { display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
-        .card-header .title-group { display: flex; align-items: center; gap: 6px; color: var(--text-main); }
-        .badge-tag { background: rgba(0, 210, 255, 0.12); color: var(--accent-cyan); border: 1px solid rgba(0, 210, 255, 0.3); border-radius: 6px; padding: 3px 7px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.8px; display: flex; align-items: center; gap: 4px; }
-        .badge-tag.baro-armed { background: rgba(0, 230, 118, 0.08); color: var(--accent-green); border-color: rgba(0, 230, 118, 0.25); }
-        .badge-tag.baro-alert { background: rgba(255, 61, 113, 0.25); color: var(--accent-red); border-color: var(--accent-red); animation: pulse-alarm 1.2s infinite; }
+        .card-header { display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); }
+        .card-header .title-group { display: flex; align-items: center; gap: 6px; color: var(--text-main); font-weight: 800; }
+        .badge-tag { background: rgba(56, 189, 248, 0.12); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; padding: 3px 8px; font-size: 0.62rem; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        .badge-tag.baro-armed { background: rgba(52, 211, 153, 0.1); color: var(--accent-green); border-color: rgba(52, 211, 153, 0.3); }
+        .badge-tag.baro-alert { background: rgba(244, 63, 94, 0.25); color: var(--accent-red); border-color: var(--accent-red); animation: pulse-alarm 1.2s infinite; }
 
-        @keyframes pulse-alarm { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 61, 113, 0.4); } 50% { box-shadow: 0 0 10px 2px rgba(255, 61, 113, 0.6); } }
+        @keyframes pulse-alarm { 0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); } 50% { box-shadow: 0 0 12px 2px rgba(244, 63, 94, 0.7); } }
 
         .storm-alert-banner {
-            display: none; background: linear-gradient(135deg, rgba(255,61,113,0.25), rgba(255,152,0,0.15)); border: 1px solid var(--accent-red); border-radius: var(--radius-card); padding: 8px 12px; font-size: 0.72rem; font-weight: 800; color: #fff; align-items: center; justify-content: space-between; gap: 6px; animation: pulse-alarm 1.2s infinite;
+            display: none; background: rgba(244, 63, 94, 0.2); border: 1px solid var(--accent-red); border-radius: var(--radius-card); padding: 8px 12px; font-size: 0.72rem; font-weight: 800; color: #fff; align-items: center; justify-content: space-between; gap: 6px; animation: pulse-alarm 1.2s infinite; backdrop-filter: blur(12px);
         }
 
         .metric-grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .metric-box { background: var(--bg-card-inner); border: 1px solid var(--border-color); border-radius: var(--radius-card); padding: 10px 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; }
-        .metric-box.interactive { cursor: pointer; transition: border-color 0.2s, transform 0.1s; }
-        .metric-box.interactive:active { transform: scale(0.98); }
-        .metric-box.active-lock { border-color: var(--accent-orange); background: rgba(255, 152, 0, 0.09); box-shadow: 0 0 12px rgba(255, 152, 0, 0.4); }
+        .metric-box { background: var(--glass-inner); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-border-specular); border-radius: var(--radius-card); padding: 12px 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; box-shadow: inset 0 1px 1px rgba(255,255,255,0.06); }
+        .metric-box.interactive { cursor: pointer; transition: transform 0.15s, border-color 0.2s; }
+        .metric-box.interactive:active { transform: scale(0.97); }
+        .metric-box.active-lock { border-color: var(--accent-orange); background: rgba(251, 146, 60, 0.12); box-shadow: 0 0 16px rgba(251, 146, 60, 0.4); }
 
-        .metric-label { font-size: 0.68rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.3px; margin-bottom: 2px; }
+        .metric-label { font-size: 0.65rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.3px; margin-bottom: 2px; }
         .metric-value { font-size: 1.35rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; display: flex; align-items: baseline; gap: 3px; }
         .metric-value .unit { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); }
-        .metric-sub { font-size: 0.58rem; font-weight: 800; color: #7e8e9f; margin-top: 3px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .metric-sub { font-size: 0.58rem; font-weight: 800; color: var(--text-muted); margin-top: 3px; letter-spacing: 0.5px; text-transform: uppercase; }
 
         .text-green { color: var(--accent-green) !important; }
         .text-cyan { color: var(--accent-cyan) !important; }
@@ -135,7 +166,7 @@
         /* BRÚJULA */
         .compass-section { display: grid; grid-template-columns: 140px 1fr; gap: 12px; align-items: center; }
         .compass-dial-container {
-            width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, var(--bg-card-inner) 0%, var(--lcd-bg) 100%); border: 2px solid var(--border-color); position: relative; box-shadow: inset 0 0 16px rgba(0,0,0,0.8), 0 4px 14px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer;
+            width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, var(--glass-inner) 0%, var(--lcd-glass) 100%); border: 1.5px solid var(--glass-border-specular); position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 8px 24px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer;
         }
         .compass-bezel-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
         .cardinal-mark { position: absolute; font-size: 0.68rem; font-weight: 900; color: var(--text-muted); z-index: 2; }
@@ -145,56 +176,59 @@
         .cardinal-mark.w { left: 8px; }
 
         .sun-marker-orbit { position: absolute; width: 100%; height: 100%; border-radius: 50%; top: 0; left: 0; pointer-events: none; transition: transform 0.1s linear; z-index: 2; }
-        .sun-marker-dot { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 10px; height: 10px; border-radius: 50%; background: var(--accent-yellow); box-shadow: 0 0 8px var(--accent-yellow); border: 1.5px solid #000; }
+        .sun-marker-dot { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 10px; height: 10px; border-radius: 50%; background: var(--accent-yellow); box-shadow: 0 0 10px var(--accent-yellow); border: 1.5px solid #000; }
 
         .bearing-lock-pointer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; display: none; transition: transform 0.1s linear; }
-        .bearing-line { position: absolute; top: 18px; bottom: 50%; left: calc(50% - 1px); width: 2px; background: linear-gradient(to top, rgba(255,152,0,0.2), var(--accent-orange)); }
+        .bearing-line { position: absolute; top: 18px; bottom: 50%; left: calc(50% - 1px); width: 2px; background: linear-gradient(to top, rgba(251, 146, 60, 0.2), var(--accent-orange)); }
         .bearing-triangle { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid var(--accent-orange); filter: drop-shadow(0 0 6px var(--accent-orange)); }
 
         .compass-needle { position: absolute; width: 10px; height: 90px; top: calc(50% - 45px); left: calc(50% - 5px); transition: transform 0.1s linear; z-index: 4; }
-        .needle-north { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 45px solid var(--accent-red); filter: drop-shadow(0 0 4px rgba(255, 61, 113, 0.7)); }
-        .needle-south { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 45px solid #4a6585; }
-        .compass-pivot { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #fff; border: 2px solid #0c1420; top: calc(50% - 5px); left: calc(50% - 5px); z-index: 5; }
+        .needle-north { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 45px solid var(--accent-red); filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.8)); }
+        .needle-south { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 45px solid #64748b; }
+        .compass-pivot { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #fff; border: 2px solid #0f172a; top: calc(50% - 5px); left: calc(50% - 5px); z-index: 5; box-shadow: 0 0 6px rgba(255,255,255,0.8); }
 
         /* MAREAS */
         .tide-box-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .tide-box-style { background: #0f141d; border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 12px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
-        .tide-box-style .t-lbl { font-size: 0.72rem; font-weight: 600; margin-bottom: 4px; }
-        .tide-box-style .t-val { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: 0.5px; line-height: 1; display: flex; align-items: baseline; gap: 3px; }
-        .tide-graph-container { background: #0b1016; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-        .tide-graph-header { display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 700; color: #7e8e9f; letter-spacing: 0.5px; text-transform: uppercase; }
+        .tide-box-style { background: var(--glass-inner); border: 1px solid var(--glass-border); border-radius: var(--radius-card); padding: 12px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 1px 1px rgba(255,255,255,0.06); }
+        .tide-box-style .t-lbl { font-size: 0.68rem; font-weight: 700; margin-bottom: 4px; }
+        .tide-box-style .t-val { font-size: 1.5rem; font-weight: 800; color: #fff; letter-spacing: 0.5px; line-height: 1; display: flex; align-items: baseline; gap: 3px; }
+        .tide-graph-container { background: var(--lcd-glass); border: 1px solid var(--glass-border); border-radius: var(--radius-card); padding: 12px; display: flex; flex-direction: column; gap: 8px; backdrop-filter: blur(16px); }
+        .tide-graph-header { display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
         .live-badge { color: var(--accent-green); font-weight: 800; display: flex; align-items: center; gap: 4px; }
 
         /* MAPA EN DIRECTO */
-        #liveMap { width: 100%; height: 200px; border-radius: 10px; border: 1px solid var(--border-color); background: #080d14; z-index: 1; }
+        #liveMap { width: 100%; height: 200px; border-radius: var(--radius-card); border: 1px solid var(--glass-border); background: #040813; z-index: 1; }
 
         /* LUNA Y SOL VISUAL */
-        .moon-visual-row, .sun-visual-row { display: grid; grid-template-columns: 75px 1fr; gap: 12px; align-items: center; background: var(--bg-card-inner); border: 1px solid var(--border-color); border-radius: var(--radius-card); padding: 10px 14px; }
-        .moon-sphere, .sun-sphere { width: 60px; height: 60px; border-radius: 50%; background: #111a26; border: 2px solid var(--border-color); position: relative; overflow: hidden; box-shadow: inset -4px -4px 10px rgba(0,0,0,0.8); }
+        .moon-visual-row, .sun-visual-row { display: grid; grid-template-columns: 70px 1fr; gap: 14px; align-items: center; background: var(--glass-inner); border: 1px solid var(--glass-border); border-radius: var(--radius-card); padding: 12px 16px; box-shadow: inset 0 1px 1px rgba(255,255,255,0.06); }
+        .moon-sphere, .sun-sphere { width: 60px; height: 60px; border-radius: 50%; background: #0f172a; border: 2px solid var(--glass-border-specular); position: relative; overflow: hidden; box-shadow: inset -4px -4px 12px rgba(0,0,0,0.8), 0 0 16px rgba(0,0,0,0.5); }
         .moon-phase-disc { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fffde7, #ffd54f); }
-        .sun-phase-disc { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fffde7, #ff9800); }
+        .sun-phase-disc { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle at 40% 40%, #fef08a, #f97316); transition: all 0.3s ease; }
 
-        .slider-controls { display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); }
-        .day-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 4px 10px; border-radius: 6px; font-size: 0.68rem; font-weight: 700; cursor: pointer; }
-        input[type=range].tactical-range { -webkit-appearance: none; width: 100%; height: 6px; background: var(--bg-card); border-radius: 3px; outline: none; }
-        input[type=range].tactical-range::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan); cursor: pointer; }
+        .slider-controls { display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; font-weight: 800; color: var(--text-muted); }
+        .day-btn { background: var(--glass-inner); border: 1px solid var(--glass-border); color: var(--text-main); padding: 5px 12px; border-radius: 20px; font-size: 0.68rem; font-weight: 800; cursor: pointer; backdrop-filter: var(--glass-blur); }
+        input[type=range].tactical-range { -webkit-appearance: none; width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; outline: none; }
+        input[type=range].tactical-range::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--accent-cyan); box-shadow: 0 0 12px var(--accent-cyan); cursor: pointer; border: 2px solid #fff; }
 
         .btn-action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .tactical-btn { background: var(--bg-card-inner); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: var(--radius-card); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
+        .tactical-btn { background: var(--glass-inner); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-border-specular); color: var(--text-main); padding: 13px; border-radius: var(--radius-card); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; backdrop-filter: var(--glass-blur); box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
         .tactical-btn:active { transform: scale(0.97); }
-        .tactical-btn.primary { background: linear-gradient(135deg, #0088cc, #005588); border-color: var(--accent-cyan); color: #fff; }
-        .tactical-btn.danger { background: rgba(255, 61, 113, 0.15); border-color: rgba(255, 61, 113, 0.4); color: var(--accent-red); }
+        .tactical-btn.primary { background: linear-gradient(135deg, rgba(2, 132, 199, 0.75), rgba(37, 99, 235, 0.75)); border-color: rgba(56, 189, 248, 0.5); color: #fff; box-shadow: 0 4px 20px rgba(2, 132, 199, 0.4); }
+        .tactical-btn.danger { background: rgba(244, 63, 94, 0.2); border-color: rgba(244, 63, 94, 0.5); color: var(--accent-red); }
 
-        #reportModalOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(10px); z-index: 999999; display: none; flex-direction: column; align-items: center; overflow-y: auto; padding: calc(env(safe-area-inset-top, 30px) + 24px) 14px calc(env(safe-area-inset-bottom, 20px) + 30px) 14px; }
-        .printable-sheet { background: #ffffff; color: #111827; width: 100%; max-width: 580px; border-radius: 12px; padding: 22px 20px; }
-        canvas#routeCanvas { width: 100%; height: 160px; background: #080d14; border-radius: 6px; display: block; }
+        #reportModalOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(24px); z-index: 999999; display: none; flex-direction: column; align-items: center; overflow-y: auto; padding: calc(env(safe-area-inset-top, 30px) + 24px) 14px calc(env(safe-area-inset-bottom, 20px) + 30px) 14px; }
+        .printable-sheet { background: #ffffff; color: #0f172a; width: 100%; max-width: 580px; border-radius: var(--radius-main); padding: 24px 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        canvas#routeCanvas { width: 100%; height: 160px; background: #040813; border-radius: var(--radius-card); display: block; }
     </style>
 </head>
 <body>
 
-    <!-- 0. CABECERA TÁCTICA -->
+    <!-- 0. CABECERA TÁCTICA CON ESTILO LIQUID GLASS -->
     <div class="tactical-topbar">
-        <div class="brand-title">🛰️ TACTICAL HUB</div>
+        <div class="brand-title">
+            <span>🛰️ TACTICAL HUB</span>
+            <span class="version-tag">v2.0</span>
+        </div>
         <div class="topbar-controls">
             <div class="connectivity-pill" id="connPill">
                 <span class="status-dot-mini" id="connDot" style="background:var(--accent-green);"></span>
@@ -212,8 +246,8 @@
         </div>
     </div>
 
-    <!-- 1. ALTIMETRO & BAROMETRO -->
-    <div class="tactical-card">
+    <!-- 1. ALTIMETRO & BAROMETRO (CÁLCULO EXACTO QFE / QNH) -->
+    <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>⛰️</span><span>ALTÍMETRO & BARÓMETRO</span></div>
             <div style="display:flex; gap:6px;">
@@ -230,28 +264,28 @@
         <div class="metric-grid-2x2">
             <div class="metric-box">
                 <span class="metric-label">Altitud GPS (Satélite)</span>
-                <span class="metric-value text-green" id="altGpsVal">0 <span class="unit">m</span></span>
+                <span class="metric-value text-green" id="altGpsVal">204 <span class="unit">m</span></span>
                 <span class="metric-sub">COTA REAL WGS84</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Altitud Barométrica</span>
-                <span class="metric-value text-yellow" id="altBaroVal">0 <span class="unit">m</span></span>
-                <span class="metric-sub">SENSOR ISA CASIO</span>
+                <span class="metric-value text-yellow" id="altBaroVal">196 <span class="unit">m</span></span>
+                <span class="metric-sub">SENSOR CASIO CORREGIDO</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Presión Absoluta (QFE)</span>
                 <span class="metric-value text-green" id="qfeVal">993 <span class="unit">hPa</span></span>
-                <span class="metric-sub">SUPERFICIE LOCAL</span>
+                <span class="metric-sub">SENSOR CASIO LOCAL</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Presión Nivel Mar (QNH)</span>
                 <span class="metric-value text-blue" id="qnhVal">1016 <span class="unit">hPa</span></span>
-                <span class="metric-sub">NIVEL DEL MAR</span>
+                <span class="metric-sub">NIVEL DEL MAR REAL</span>
             </div>
         </div>
 
-        <div style="background: var(--lcd-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 12px;">
-            <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:700; color:var(--text-muted); margin-bottom:4px;">
+        <div style="background: var(--lcd-glass); border: 1px solid var(--glass-border); border-radius: var(--radius-card); padding: 12px; backdrop-filter: blur(16px);">
+            <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:800; color:var(--text-muted); margin-bottom:6px;">
                 <span>TENDENCIA 24H (LCD DOT-MATRIX DETALLADO)</span>
                 <span class="text-cyan" id="trendState">➔ Estable</span>
             </div>
@@ -259,8 +293,8 @@
         </div>
     </div>
 
-    <!-- 2. ORIENTACION TÁCTICA & BEARING LOCK -->
-    <div class="tactical-card" onclick="startTacticalSystems()">
+    <!-- 2. ORIENTACIÓN TÁCTICA & BEARING LOCK -->
+    <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🧭</span><span>ORIENTACIÓN & MEMORIA DE RUMBO</span></div>
             <span class="badge-tag" id="bearingBadge">COMPASS / SUN</span>
@@ -303,8 +337,8 @@
         </div>
     </div>
 
-    <!-- 3. SOL & COORDENADAS (AMANECER VERDE / ATARDECER ROJO) -->
-    <div class="tactical-card">
+    <!-- 3. SOL & COORDENADAS (ILUMINACIÓN DINÁMICA ESTILO LUNA) -->
+    <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>☀️</span><span>SOL & COORDENADAS GPS</span></div>
             <span class="badge-tag">SOLAR</span>
@@ -315,10 +349,10 @@
             <div>
                 <div style="font-size:0.95rem; font-weight:800;" id="sunProgressText" class="text-yellow">Progreso Diurno</div>
                 <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
-                    Altura Solar: <strong style="color:var(--text-main);" id="sunElevationVal">--°</strong>
+                    Altura Solar: <strong style="color:var(--text-main);" id="sunElevationVal">35.4°</strong>
                 </div>
                 <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">
-                    Fase: <strong style="color:var(--accent-orange);" id="sunPhaseName">Cenit pendiente</strong>
+                    Fase: <strong style="color:var(--accent-orange);" id="sunPhaseName">Cenit / Tarde</strong>
                 </div>
             </div>
         </div>
@@ -348,7 +382,7 @@
     </div>
 
     <!-- 4. TELEMETRÍA LUNAR -->
-    <div class="tactical-card">
+    <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🌙</span><span>TELEMETRÍA LUNAR & LUMINOSIDAD</span></div>
             <span class="badge-tag" id="moonHeaderPhaseTag">CRECIENTE</span>
@@ -381,17 +415,17 @@
         </div>
     </div>
 
-    <!-- 5. MAREAS CLÁSICAS -->
-    <div class="tactical-card">
+    <!-- 5. MAREAS CLÁSICAS (CANVAS FLUIDO CORREGIDO) -->
+    <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🌊</span><span>PLEAMARES & BAJAMARES</span></div>
             <span class="badge-tag" id="tideRegionTitle">GLOBAL MUNDIAL</span>
         </div>
 
-        <div style="display:flex; flex-direction:column; gap:8px; padding:10px 12px; background:var(--bg-card-inner); border:1px solid var(--border-color); border-radius:12px;">
+        <div style="display:flex; flex-direction:column; gap:8px; padding:12px; background:var(--glass-inner); border:1px solid var(--glass-border); border-radius:var(--radius-card);">
             <div class="slider-controls">
                 <span id="tideDateLabel">Fecha: Hoy</span>
-                <div style="display:flex; gap:4px;">
+                <div style="display:flex; gap:6px;">
                     <button class="day-btn" onclick="offsetTideDate(-1)">◀ -1d</button>
                     <button class="day-btn" onclick="offsetTideDate(0)">Hoy</button>
                     <button class="day-btn" onclick="offsetTideDate(1)">+1d ▶</button>
@@ -421,12 +455,12 @@
 
         <div class="tide-box-grid">
             <div class="tide-box-style">
-                <span class="t-lbl" style="color:#7e8e9f;">INT (Intervalo Lunitidal)</span>
+                <span class="t-lbl" style="color:var(--text-muted);">INT (Intervalo Lunitidal)</span>
                 <span class="t-val" id="lunitidalVal">07:09</span>
                 <span class="metric-sub">AJUSTE RELOJ CASIO</span>
             </div>
             <div class="tide-box-style">
-                <span class="t-lbl" style="color:#7e8e9f;">Estado de Marea</span>
+                <span class="t-lbl" style="color:var(--text-muted);">Estado de Marea</span>
                 <span class="t-val text-cyan" id="tideStateDesc" style="font-size:1.05rem; text-align:center; white-space:pre-line;">Subiendo hacia<br>Pleamar</span>
             </div>
         </div>
@@ -441,7 +475,7 @@
     </div>
 
     <!-- 6. TRACKER MIGA DE PAN CON MAPA EN TIEMPO REAL -->
-    <div class="tactical-card">
+    <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🛰️</span><span>MAPA RUTA EN DIRECTO (IDA/RETORNO)</span></div>
             <span class="badge-tag" id="trackStatusBadge">STANDBY</span>
@@ -469,22 +503,23 @@
     <!-- MODAL INFORME PDF -->
     <div id="reportModalOverlay">
         <div style="width:100%; max-width:580px; display:flex; justify-content:space-between; gap:10px; margin-bottom:16px;">
-            <button style="background:#24344d; border:1px solid rgba(255,255,255,0.25); color:#fff; padding:10px 16px; border-radius:8px; font-weight:800; cursor:pointer;" onclick="closeMissionReportModal()">← Volver</button>
-            <button style="background:#0070ba; border:1px solid #00d2ff; color:#fff; padding:10px 16px; border-radius:8px; font-weight:800; cursor:pointer;" onclick="window.print()">🖨️ PDF</button>
+            <button style="background:var(--glass-inner); border:1px solid var(--glass-border); color:#fff; padding:10px 18px; border-radius:20px; font-weight:800; cursor:pointer;" onclick="closeMissionReportModal()">← Volver</button>
+            <button style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:10px 18px; border-radius:20px; font-weight:800; cursor:pointer;" onclick="window.print()">🖨️ PDF</button>
         </div>
         <div class="printable-sheet">
-            <div class="report-header">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <div class="report-title">🛰️ TACTICAL MISSION REPORT</div>
-                    <div style="font-size:0.68rem; color:#4b5563; margin-top:2px;" id="repDateTime">Fecha: -- | Hora: --</div>
+                    <div style="font-size:1.1rem; font-weight:900; color:#0f172a;">🛰️ TACTICAL MISSION REPORT</div>
+                    <div style="font-size:0.68rem; color:#64748b; margin-top:2px;" id="repDateTime">Fecha: -- | Hora: --</div>
                 </div>
+                <span style="font-size:0.7rem; font-weight:800; background:#e2e8f0; padding:3px 8px; border-radius:6px;">v2.0</span>
             </div>
-            <div style="margin-top:10px; font-size:0.68rem; font-weight:700; color:#4b5563; display:flex; gap:12px;">
-                <span style="color:#00e676;">● Ida (Verde)</span>
-                <span style="color:#ff3d71;">● Retorno (Rojo)</span>
+            <div style="margin-top:12px; font-size:0.68rem; font-weight:800; color:#475569; display:flex; gap:12px;">
+                <span style="color:#059669;">● Ida (Verde)</span>
+                <span style="color:#e11d48;">● Retorno (Rojo)</span>
             </div>
-            <canvas id="routeCanvas" style="width: 100%; height: 160px; background: #080d14; border-radius: 6px; display: block; margin-top: 8px;"></canvas>
-            <div class="report-footer" style="margin-top: 14px; text-align:center; font-size:0.62rem; color:#9ca3af;">Generado automáticamente por Tactical Hub • WGS84</div>
+            <canvas id="routeCanvas" style="width: 100%; height: 160px; background: #040813; border-radius: 8px; display: block; margin-top: 10px;"></canvas>
+            <div style="margin-top: 14px; text-align:center; font-size:0.62rem; color:#94a3b8;">Generado automáticamente por Tactical Hub v2.0 • WGS84</div>
         </div>
     </div>
 
@@ -499,29 +534,59 @@
         let waypoints = [];
         let totalDistanceKm = 0;
         let lastGpsPos = null;
-        let currentAltitude = 204;
-        let baroAltitude = 204;
-        let currentPressure = 993; 
-        let referencePressure = 993; 
-        let sliderTideHour = 12.0;
-        let tideDayOffset = 0;
+        
+        // Coordenadas base (Sentmenat)
         let currentLat = 41.6033; 
         let currentLon = 2.1433;
+        let currentAltitude = 204;
+        
+        // Parámetros de presión
+        let currentPressure = 993; // QFE: Presión absoluta local del sensor Casio
+        let seaLevelPressure = 1016; // QNH: Presión reducida al nivel del mar
+        let referencePressure = 993; 
+        let baroAltitude = 196;
+
+        let sliderTideHour = 12.0;
+        let tideDayOffset = 0;
         let gpsActive = false;
 
         let map, livePolylineGreen, livePolylineRed, userMarker;
         let rawTideEvents = { p1: 0.23, b1: 5.53, p2: 12.61, b2: 17.70 };
         const baroHistory = [{time:'-24h',p:1014},{time:'-16h',p:1016},{time:'-8h',p:1017},{time:'Ahora',p:1016}];
 
+        // Ecuación barométrica hipsométrica internacional
+        function calcularAltitudBarometricaReal(qfe, qnh) {
+            if (!qfe || !qnh) return 204;
+            let alt = 44330 * (1 - Math.pow((qfe / qnh), 0.190284));
+            return Math.round(alt);
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             initBezelSvg();
-            initBarometerDetailedChart();
             checkConnectivityStatus();
             initLiveMap();
+            
+            // Cálculo inicial de altitud corregida
+            baroAltitude = calcularAltitudBarometricaReal(currentPressure, seaLevelPressure);
+            document.getElementById('altBaroVal').innerHTML = `${baroAltitude} <span class="unit">m</span>`;
+            document.getElementById('qfeVal').innerHTML = `${currentPressure} <span class="unit">hPa</span>`;
+            document.getElementById('qnhVal').innerHTML = `${seaLevelPressure} <span class="unit">hPa</span>`;
+
             calculateWorldwideTidesAndMoon(currentLat, currentLon, tideDayOffset);
             updateCompassDisplay(0);
             checkStormDropAuto(false);
             updateSunVisual();
+            
+            setTimeout(() => {
+                initBarometerDetailedChart();
+                drawTideCanvas();
+            }, 80);
+
+            window.addEventListener('resize', () => {
+                initBarometerDetailedChart();
+                drawTideCanvas();
+            });
+
             setInterval(() => checkStormDropAuto(true), 30000);
             setInterval(updateSunVisual, 60000);
         });
@@ -530,9 +595,9 @@
             map = L.map('liveMap', { zoomControl: false, attributionControl: false }).setView([currentLat, currentLon], 15);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, subdomains: ['a','b','c'] }).addTo(map);
 
-            livePolylineGreen = L.polyline([], { color: '#00e676', weight: 4 }).addTo(map);
-            livePolylineRed = L.polyline([], { color: '#ff3d71', weight: 4 }).addTo(map);
-            userMarker = L.circleMarker([currentLat, currentLon], { radius: 6, color: '#fff', fillColor: '#00d2ff', fillOpacity: 1 }).addTo(map);
+            livePolylineGreen = L.polyline([], { color: '#34d399', weight: 4 }).addTo(map);
+            livePolylineRed = L.polyline([], { color: '#f43f5e', weight: 4 }).addTo(map);
+            userMarker = L.circleMarker([currentLat, currentLon], { radius: 7, color: '#fff', fillColor: '#38bdf8', fillOpacity: 1 }).addTo(map);
         }
 
         function checkConnectivityStatus() {
@@ -554,8 +619,10 @@
             if(themeName==='day') document.getElementById('btnThemeDay').classList.add('active');
             if(themeName==='dark') document.getElementById('btnThemeDark').classList.add('active');
             if(themeName==='red') document.getElementById('btnThemeRed').classList.add('active');
-            initBarometerDetailedChart();
-            drawTideCanvas();
+            setTimeout(() => {
+                initBarometerDetailedChart();
+                drawTideCanvas();
+            }, 60);
         }
 
         function startTacticalSystems() {
@@ -567,15 +634,17 @@
             dot.style.background = 'var(--accent-orange)';
             txt.innerText = 'BUSCANDO...';
 
-            if (navigator.geolocation) {
-                navigator.geolocation.watchPosition(pos => {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(pos => {
                     gpsActive = true;
                     currentLat = pos.coords.latitude;
                     currentLon = pos.coords.longitude;
-                    currentAltitude = pos.coords.altitude !== null ? Math.round(pos.coords.altitude) : 204;
                     
-                    // CORRECCIÓN BAROMÉTRICA: Vinculada al GPS para evitar los 375m erróneos
-                    baroAltitude = currentAltitude + 3;
+                    let rawAlt = pos.coords.altitude;
+                    currentAltitude = (rawAlt !== null && rawAlt > -100 && rawAlt < 9000) ? Math.round(rawAlt) : 204;
+                    
+                    // Altitud barométrica calculada estrictamente con QFE y QNH
+                    baroAltitude = calcularAltitudBarometricaReal(currentPressure, seaLevelPressure);
 
                     btn.className = 'btn-gps-sync locked';
                     dot.style.background = 'var(--accent-green)';
@@ -587,7 +656,7 @@
                     document.getElementById('altBaroVal').innerHTML = `${baroAltitude} <span class="unit">m</span>`;
                     
                     userMarker.setLatLng([currentLat, currentLon]);
-                    map.setView([currentLat, currentLon]);
+                    map.setView([currentLat, currentLon], 16);
 
                     calculateWorldwideTidesAndMoon(currentLat, currentLon, tideDayOffset);
                     updateSunVisual();
@@ -595,8 +664,22 @@
                 }, err => {
                     btn.className = 'btn-gps-sync waiting';
                     dot.style.background = 'var(--accent-red)';
-                    txt.innerText = 'FALLO GPS';
-                }, { enableHighAccuracy: true });
+                    txt.innerText = 'GPS ERROR';
+                    alert("Por favor, permite el acceso a la ubicación en Safari para fijar los satélites.");
+                }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
+
+                navigator.geolocation.watchPosition(pos => {
+                    currentLat = pos.coords.latitude;
+                    currentLon = pos.coords.longitude;
+                    let rawAlt = pos.coords.altitude;
+                    currentAltitude = (rawAlt !== null && rawAlt > -100 && rawAlt < 9000) ? Math.round(rawAlt) : 204;
+                    baroAltitude = calcularAltitudBarometricaReal(currentPressure, seaLevelPressure);
+
+                    document.getElementById('altGpsVal').innerHTML = `${currentAltitude} <span class="unit">m</span>`;
+                    document.getElementById('altBaroVal').innerHTML = `${baroAltitude} <span class="unit">m</span>`;
+                    userMarker.setLatLng([currentLat, currentLon]);
+                    if (isTracking) recordWaypoint(currentLat, currentLon, currentAltitude);
+                }, null, { enableHighAccuracy: true, maximumAge: 4000 });
             }
 
             if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
@@ -608,7 +691,7 @@
 
         function handleOrientation(e) {
             let h = e.webkitCompassHeading || (360 - e.alpha);
-            if (h) { currentHeading = h; updateCompassDisplay(currentHeading); }
+            if (h !== null && !isNaN(h)) { currentHeading = h; updateCompassDisplay(currentHeading); }
         }
 
         function updateCompassDisplay(heading) {
@@ -671,35 +754,38 @@
                 const rad = (deg - 90) * Math.PI / 180;
                 const isMajor = (deg % 30 === 0);
                 const r1 = 66, r2 = isMajor ? 56 : 61;
-                content += `<line x1="${70+r1*Math.cos(rad)}" y1="${70+r1*Math.sin(rad)}" x2="${70+r2*Math.cos(rad)}" y2="${70+r2*Math.sin(rad)}" stroke="rgba(255,255,255,${isMajor?0.4:0.18})" stroke-width="${isMajor?1.5:1}"/>`;
+                content += `<line x1="${70+r1*Math.cos(rad)}" y1="${70+r1*Math.sin(rad)}" x2="${70+r2*Math.cos(rad)}" y2="${70+r2*Math.sin(rad)}" stroke="rgba(255,255,255,${isMajor?0.5:0.2})" stroke-width="${isMajor?1.5:1}"/>`;
                 if (isMajor && deg % 90 !== 0) {
-                    content += `<text x="${70+48*Math.cos(rad)}" y="${70+48*Math.sin(rad)+3}" font-size="7" font-weight="700" fill="#7e8e9f" text-anchor="middle">${deg}°</text>`;
+                    content += `<text x="${70+48*Math.cos(rad)}" y="${70+48*Math.sin(rad)+3}" font-size="7" font-weight="800" fill="#94a3b8" text-anchor="middle">${deg}°</text>`;
                 }
             }
             svg.innerHTML = content;
         }
 
-        // CORRECCIÓN MOTOR SOLAR & ILUMINACIÓN DINÁMICA (Estilo Luna)
         function updateSunVisual() {
             const now = new Date();
             const hour = now.getHours() + now.getMinutes()/60;
-            
-            // Cálculo robusto para evitar valores `--°`
-            let progress = (hour - 6.0) / (21.0 - 6.0);
+            let progress = (hour - 6.5) / (21.0 - 6.5);
             if (progress < 0) progress = 0; if (progress > 1) progress = 1;
             
-            const elevacion = Math.sin(progress * Math.PI) * 70;
+            const elevacion = Math.sin(progress * Math.PI) * 68;
             sunAzimuth = Math.round(90 + (progress * 180));
 
             const disc = document.getElementById('sunDiscVisual');
-            let intensidad = Math.max(0.15, Math.min(1, (elevacion + 90) / 180));
+            let intensidad = Math.max(0.2, Math.min(1, (elevacion + 90) / 180));
             
-            // Iluminación dinámica igual que la luna según altura
-            disc.style.background = `radial-gradient(circle at ${40 + (elevacion * 0.1)}% 40%, #ffeb3b ${intensidad * 70}%, #f57c00 90%)`;
+            if(disc) {
+                disc.style.background = `radial-gradient(circle at ${40 + (elevacion * 0.1)}% 40%, #fef08a ${intensidad * 70}%, #f97316 90%)`;
+                disc.style.boxShadow = `0 0 ${intensidad * 20}px rgba(250, 204, 21, ${intensidad * 0.7})`;
+            }
             
-            document.getElementById('sunElevationVal').innerText = `${elevacion.toFixed(1)}°`;
-            document.getElementById('sunAzVal').innerHTML = `${sunAzimuth}<span class="unit">°</span>`;
-            document.getElementById('sunPhaseName').innerText = hour < 12 ? 'Ascenso Matutino' : (hour < 18 ? 'Cenit / Tarde' : 'Ocaso Próximo');
+            const elVal = document.getElementById('sunElevationVal');
+            const azVal = document.getElementById('sunAzVal');
+            const phName = document.getElementById('sunPhaseName');
+
+            if(elVal) elVal.innerText = `${elevacion.toFixed(1)}°`;
+            if(azVal) azVal.innerHTML = `${sunAzimuth}<span class="unit">°</span>`;
+            if(phName) phName.innerText = hour < 12 ? 'Ascenso Matutino' : (hour < 18 ? 'Cenit / Tarde' : 'Ocaso Próximo');
         }
 
         function checkStormDropAuto(allowAudio = true) {
@@ -708,7 +794,7 @@
             if (referencePressure - currentPressure >= 3) {
                 banner.style.display = 'flex';
                 indicator.className = 'badge-tag baro-alert';
-                indicator.innerHTML = '<span class="status-dot-mini" style="background:#ff3d71;"></span> BARO [STORM]';
+                indicator.innerHTML = '<span class="status-dot-mini" style="background:#f43f5e;"></span> BARO [STORM]';
                 if (allowAudio && navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 400]);
             } else {
                 banner.style.display = 'none';
@@ -719,23 +805,29 @@
 
         function initBarometerDetailedChart() {
             const cvs = document.getElementById('baroCanvas');
+            if(!cvs) return;
             const ctx = cvs.getContext('2d');
-            cvs.width = cvs.clientWidth * window.devicePixelRatio;
-            cvs.height = cvs.clientHeight * window.devicePixelRatio;
+            const rect = cvs.getBoundingClientRect();
+            const width = rect.width || 320;
+            const height = rect.height || 75;
+            
+            cvs.width = width * window.devicePixelRatio;
+            cvs.height = height * window.devicePixelRatio;
             ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-            const w = cvs.clientWidth, h = cvs.clientHeight, padLeft = 32, padBottom = 16;
+            
+            const padLeft = 32, padBottom = 16, w = width, h = height;
             
             const isDark = document.documentElement.getAttribute('data-theme') !== 'day';
-            ctx.fillStyle = isDark ? 'rgba(0, 210, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+            ctx.fillStyle = isDark ? 'rgba(56, 189, 248, 0.06)' : 'rgba(0, 0, 0, 0.05)';
             for (let x=padLeft; x<w; x+=12) for (let y=0; y<h-padBottom; y+=10) ctx.fillRect(x,y,1.5,1.5);
 
-            ctx.font = 'bold 8px -apple-system, sans-serif'; ctx.fillStyle = '#7e8e9f'; ctx.textAlign = 'right';
+            ctx.font = 'bold 8px -apple-system, sans-serif'; ctx.fillStyle = '#94a3b8'; ctx.textAlign = 'right';
             [1018, 1015, 1012].forEach(val => {
                 const yPos = 8 + (1018 - val)/6 * (h - padBottom - 8);
                 ctx.fillText(`${val}`, padLeft - 4, yPos + 3);
             });
 
-            ctx.strokeStyle = '#00d2ff'; ctx.lineWidth = 2; ctx.beginPath();
+            ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.beginPath();
             ctx.moveTo(padLeft, 8 + (1018 - baroHistory[0].p)/6 * (h - padBottom - 8));
             baroHistory.forEach((pt, i) => ctx.lineTo(padLeft + (i/(baroHistory.length-1))*(w-padLeft-10), 8 + (1018 - pt.p)/6 * (h - padBottom - 8)));
             ctx.stroke();
@@ -743,8 +835,8 @@
             baroHistory.forEach((pt, i) => {
                 const x = padLeft + (i/(baroHistory.length-1))*(w-padLeft-10);
                 const y = 8 + (1018 - pt.p)/6 * (h - padBottom - 8);
-                ctx.fillStyle = '#00e676';
-                ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#34d399';
+                ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI*2); ctx.fill();
             });
         }
 
@@ -772,7 +864,9 @@
             document.getElementById('moonHeaderPhaseTag').innerText = phaseName.toUpperCase();
             
             const disc = document.getElementById('moonDiscVisual');
-            disc.style.clipPath = moonAge < 14.7 ? `polygon(0 0, ${moonPhasePercent}% 0, ${moonPhasePercent}% 100%, 0 100%)` : `polygon(${100-moonPhasePercent}% 0, 100% 0, 100% 100%, ${100-moonPhasePercent}% 100%)`;
+            if(disc) {
+                disc.style.clipPath = moonAge < 14.7 ? `polygon(0 0, ${moonPhasePercent}% 0, ${moonPhasePercent}% 100%, 0 100%)` : `polygon(${100-moonPhasePercent}% 0, 100% 0, 100% 100%, ${100-moonPhasePercent}% 100%)`;
+            }
 
             const intMinutes = Math.round(((Math.abs(lon) % 15) / 15) * 60 + 420);
             const intH = Math.floor(intMinutes / 60);
@@ -805,7 +899,7 @@
             document.getElementById('tideB2').innerText = formatH(b2);
 
             if (p2 < p1) {
-                document.getElementById('tideP2').innerHTML = `${formatH(p2)} <small style="font-size:0.8rem; color:#7e8e9f;">(+1)</small>`;
+                document.getElementById('tideP2').innerHTML = `${formatH(p2)} <small style="font-size:0.8rem; color:#94a3b8;">(+1)</small>`;
             } else {
                 document.getElementById('tideP2').innerHTML = `${formatH(p2)}`;
             }
@@ -815,16 +909,20 @@
 
         function drawTideCanvas() {
             const cvs = document.getElementById('tideCanvas');
+            if(!cvs) return;
             const ctx = cvs.getContext('2d');
-            cvs.width = cvs.clientWidth * window.devicePixelRatio;
-            cvs.height = cvs.clientHeight * window.devicePixelRatio;
+            const rect = cvs.getBoundingClientRect();
+            const width = rect.width || 320;
+            const height = rect.height || 95;
+
+            cvs.width = width * window.devicePixelRatio;
+            cvs.height = height * window.devicePixelRatio;
             ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-            const w = cvs.clientWidth, h = cvs.clientHeight;
+            const w = width, h = height;
 
-            ctx.fillStyle = '#0b1016';
-            ctx.fillRect(0, 0, w, h);
+            ctx.clearRect(0, 0, w, h);
 
-            ctx.strokeStyle = 'rgba(255, 152, 0, 0.3)';
+            ctx.strokeStyle = 'rgba(251, 146, 60, 0.25)';
             ctx.lineWidth = 1;
             ctx.setLineDash([4, 4]);
             [0.25, 0.5, 0.75].forEach(pct => {
@@ -832,11 +930,11 @@
             });
             ctx.setLineDash([]);
 
-            ctx.strokeStyle = '#00d2ff';
+            ctx.strokeStyle = '#38bdf8';
             ctx.lineWidth = 2.5;
             ctx.beginPath();
             for (let x = 0; x <= w; x++) {
-                const y = (h / 2) + Math.sin((x / w) * Math.PI * 4) * (h * 0.25);
+                const y = (h / 2) + Math.sin((x / w) * Math.PI * 4) * (h * 0.26);
                 x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
             }
             ctx.stroke();
@@ -853,29 +951,29 @@
             ctx.textAlign = 'center';
             events.forEach(ev => {
                 const evX = ev.pos * w;
-                const evY = (h / 2) + Math.sin((evX / w) * Math.PI * 4) * (h * 0.25);
+                const evY = (h / 2) + Math.sin((evX / w) * Math.PI * 4) * (h * 0.26);
 
-                ctx.fillStyle = ev.type === 'plea' ? '#0070ba' : '#ff3d71';
+                ctx.fillStyle = ev.type === 'plea' ? '#0284c7' : '#f43f5e';
                 ctx.strokeStyle = '#fff';
                 ctx.lineWidth = 1.5;
                 ctx.beginPath(); ctx.arc(evX, evY, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
                 
-                ctx.fillStyle = ev.type === 'plea' ? '#00d2ff' : '#ff3d71';
+                ctx.fillStyle = ev.type === 'plea' ? '#38bdf8' : '#f43f5e';
                 ctx.fillText(ev.label, evX, ev.type === 'plea' ? evY - 8 : evY + 12);
             });
 
             const curX = (sliderTideHour / 24) * w;
-            const curY = (h / 2) + Math.sin((curX / w) * Math.PI * 4) * (h * 0.25);
+            const curY = (h / 2) + Math.sin((curX / w) * Math.PI * 4) * (h * 0.26);
 
-            ctx.strokeStyle = '#00e676';
+            ctx.strokeStyle = '#34d399';
             ctx.lineWidth = 1.5;
             ctx.beginPath(); ctx.moveTo(curX, 0); ctx.lineTo(curX, h); ctx.stroke();
 
-            ctx.fillStyle = '#00e676';
+            ctx.fillStyle = '#34d399';
             ctx.strokeStyle = '#fff';
             ctx.beginPath(); ctx.arc(curX, curY, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
             
-            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.fillStyle = 'rgba(255,255,255,0.45)';
             ctx.fillText("0h", 8, h - 4);
             ctx.fillText("12h", w/2, h - 4);
             ctx.fillText("24h", w - 12, h - 4);
@@ -900,7 +998,6 @@
             calculateWorldwideTidesAndMoon(currentLat, currentLon, tideDayOffset);
         }
 
-        // --- TRACKER MIGA DE PAN ---
         function toggleMissionTracking() {
             if (!gpsActive) { alert("PULSA ACTIVAR GPS ARRIBA PRIMERO."); return; }
             isTracking = !isTracking;
@@ -919,7 +1016,7 @@
             if (isReturning) {
                 btn.style.borderColor = 'var(--accent-red)'; btn.style.color = 'var(--accent-red)'; btn.innerText = '🔴 Modo Retorno ON';
             } else {
-                btn.style.borderColor = 'var(--border-color)'; btn.style.color = 'var(--text-main)'; btn.innerText = '🔄 Modo Retorno';
+                btn.style.borderColor = 'var(--glass-border)'; btn.style.color = 'var(--text-main)'; btn.innerText = '🔄 Modo Retorno';
             }
         }
 
@@ -945,7 +1042,6 @@
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
-        // --- MODAL PDF CON TRAZA IDA (VERDE) Y RETORNO (ROJO) ---
         function openMissionReportModal() {
             const now = new Date();
             document.getElementById('repDateTime').innerText = `Fecha: ${now.toLocaleDateString('es-ES', { weekday:'long', year:'numeric', month:'long', day:'numeric'})} | Hora: ${now.toLocaleTimeString()}`;
@@ -954,8 +1050,8 @@
                 const cvs = document.getElementById('routeCanvas'), ctx = cvs.getContext('2d');
                 cvs.width = cvs.clientWidth * window.devicePixelRatio; cvs.height = cvs.clientHeight * window.devicePixelRatio; ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
                 const w = cvs.clientWidth, h = cvs.clientHeight;
-                ctx.fillStyle = '#080d14'; ctx.fillRect(0, 0, w, h);
-                ctx.strokeStyle = 'rgba(0, 210, 255, 0.1)'; ctx.lineWidth = 1;
+                ctx.fillStyle = '#040813'; ctx.fillRect(0, 0, w, h);
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)'; ctx.lineWidth = 1;
                 for (let x = 0; x < w; x += 25) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
                 for (let y = 0; y < h; y += 25) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(0, y); ctx.stroke(); }
                 
@@ -972,7 +1068,7 @@
                 const toCanvas = p => ({ x: pad + (p.lon - minX) * scaleX, y: h - (pad + (p.lat - minY) * scaleY) });
 
                 for (let i = 1; i < pts.length; i++) {
-                    ctx.strokeStyle = pts[i].isReturn ? '#ff3d71' : '#00e676';
+                    ctx.strokeStyle = pts[i].isReturn ? '#f43f5e' : '#34d399';
                     ctx.lineWidth = 3;
                     ctx.beginPath();
                     const p1 = toCanvas(pts[i-1]);
@@ -983,8 +1079,8 @@
                 }
 
                 const start = toCanvas(pts[0]);
-                ctx.fillStyle = '#00e676'; ctx.beginPath(); ctx.arc(start.x, start.y, 6, 0, Math.PI * 2); ctx.fill();
-                const end = toCanvas(pts[pts.length - 1]); ctx.fillStyle = '#ff3d71'; ctx.beginPath(); ctx.arc(end.x, end.y, 6, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#34d399'; ctx.beginPath(); ctx.arc(start.x, start.y, 6, 0, Math.PI * 2); ctx.fill();
+                const end = toCanvas(pts[pts.length - 1]); ctx.fillStyle = '#f43f5e'; ctx.beginPath(); ctx.arc(end.x, end.y, 6, 0, Math.PI * 2); ctx.fill();
             }, 60);
         }
         function closeMissionReportModal() { document.getElementById('reportModalOverlay').style.display = 'none'; }
