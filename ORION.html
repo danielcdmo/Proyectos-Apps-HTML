@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION - Field Navigator v2.7</title>
+    <title>ORION - Field Navigator v2.8</title>
     <meta name="author" content="danielcdmo">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -281,10 +281,19 @@
         .tide-graph-header { display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
         .live-badge { color: var(--accent-green); font-weight: 800; display: flex; align-items: center; gap: 4px; }
 
-        /* MAPA EN DIRECTO */
+        /* MAPA EN DIRECTO - MALLA TÁCTICA OFFLINE OVERRIDE */
         .map-wrapper { position: relative; width: 100%; height: 210px; border-radius: var(--radius-card); border: 1px solid var(--glass-border); overflow: hidden; background: #040813; }
         #liveMap { width: 100%; height: 100%; }
         
+        /* Modificador de Leaflet para Fallback Offline */
+        .leaflet-container {
+            background-color: #040813 !important;
+            background-image: 
+                linear-gradient(to right, rgba(56, 189, 248, 0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(56, 189, 248, 0.15) 1px, transparent 1px) !important;
+            background-size: 40px 40px !important;
+        }
+
         .map-center-btn {
             position: absolute; right: 12px; bottom: 12px; z-index: 1000;
             width: 38px; height: 38px; border-radius: 50%;
@@ -361,7 +370,7 @@
         </div>
 
         <div class="topbar-controls-row">
-            <span class="version-tag">v2.7</span>
+            <span class="version-tag">v2.8</span>
             <div class="connectivity-pill" id="connPill">
                 <span class="status-dot-mini" id="connDot" style="background:var(--accent-green);"></span>
                 <span id="connText">ONLINE</span>
@@ -421,12 +430,12 @@
             <div class="metric-box">
                 <span class="metric-label">Presión Absoluta (QFE)</span>
                 <span class="metric-value text-green" id="qfeVal">993 <span class="unit">hPa</span></span>
-                <span class="metric-sub">SENSOR CASIO LOCAL</span>
+                <span class="metric-sub">SENSOR LOCAL</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Presión Nivel Mar (QNH)</span>
                 <span class="metric-value text-blue" id="qnhVal">1016 <span class="unit">hPa</span></span>
-                <span class="metric-sub">NIVEL DEL MAR REAL</span>
+                <span class="metric-sub" id="qnhSourceTag" style="color:var(--accent-blue);">QNH OFFLINE (ISA)</span>
             </div>
         </div>
 
@@ -470,8 +479,8 @@
                 </div>
                 <div class="metric-box">
                     <span class="metric-label">Declinación Magnética</span>
-                    <span class="metric-value text-yellow" id="decVal">E 2<span class="unit">°</span></span>
-                    <span class="metric-sub">AJUSTE RELOJ CASIO</span>
+                    <span class="metric-value text-yellow" id="decVal">--<span class="unit">°</span></span>
+                    <span class="metric-sub" id="decSource" style="color:var(--accent-orange);">CALCULANDO...</span>
                 </div>
                 <div class="metric-box">
                     <span class="metric-label">Azimut Solar ☀️</span>
@@ -691,7 +700,7 @@
                     <div style="font-size:0.75rem; color:#64748b; font-weight:700; margin-top:3px;" id="repDateTime">Fecha: --</div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:0.75rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 10px; border-radius:6px;">v2.7</span>
+                    <span style="font-size:0.75rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 10px; border-radius:6px;">v2.8</span>
                     <div style="font-size:0.62rem; color:#64748b; font-weight:700; margin-top:4px;">REF: WGS84-GEO</div>
                 </div>
             </div>
@@ -713,7 +722,7 @@
             <div id="reportMapLeaflet"></div>
 
             <div style="margin-top:16px; border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:#64748b;">
-                <span>Sistema Operativo ORION v2.7 • Casio Sync Engine</span>
+                <span>Sistema Operativo ORION v2.8 • Casio Sync Engine</span>
                 <span><strong>Registrado por: danielcdmo</strong></span>
             </div>
         </div>
@@ -750,6 +759,8 @@
         let gpsActive = false;
 
         let map, livePolylineGreen, livePolylineRed, userMarker, manualWpLayerGroup;
+        let ring100, ring500, ring1000; // Anillos tácticos para mapa offline
+        
         let reportMap = null, reportPolylineGreen = null, reportPolylineRed = null, reportMarker = null, reportWpGroup = null;
         let rawTideEvents = { p1: 0.23, b1: 5.53, p2: 12.61, b2: 17.70 };
         const baroHistory = [{time:'-24h',p:1014},{time:'-16h',p:1016},{time:'-8h',p:1017},{time:'Ahora',p:1016}];
@@ -763,33 +774,25 @@
             return Math.round(qnh * Math.pow(1 - (altGps / 44330), 5.255));
         }
 
-        // MOTOR GEODINÁMICO GLOBAL DE DECLINACIÓN MAGNÉTICA (100% OFFLINE & GPS DRIVEN)
-        function calcularDeclinacionMagnetica(lat, lon) {
-            // 1. Coordenadas de los polos geomagnéticos en el modelo WMM actual
+        // MOTOR MATEMÁTICO 100% OFFLINE PARA DECLINACIÓN (BASE)
+        function calcularDeclinacionMagneticaOffline(lat, lon) {
             const poleLat = (lat >= 0 ? 86.3 : -64.0) * Math.PI / 180;
             const poleLon = (lat >= 0 ? 156.0 : 136.0) * Math.PI / 180;
             const rLat = lat * Math.PI / 180;
             const rLon = lon * Math.PI / 180;
 
-            // 2. Vector angular de rumbo al polo magnético
             const dLon = poleLon - rLon;
             const y = Math.sin(dLon) * Math.cos(poleLat);
             const x = Math.cos(rLat) * Math.sin(poleLat) - Math.sin(rLat) * Math.cos(poleLat) * Math.cos(dLon);
             let dec = Math.atan2(y, x) * 180 / Math.PI;
 
-            // 3. Ajuste armónico cortical para el planeta
             const lonRad = lon * Math.PI / 180;
             const latRad = lat * Math.PI / 180;
             const quadCorr = -3.2 * Math.sin(lonRad - 0.3) * Math.cos(latRad) + 1.8 * Math.sin(2 * (lonRad - 0.8));
             dec = dec + quadCorr;
 
-            // 4. Calibración de alta resolución para Península Ibérica / Mediterráneo Occidental
             if (lat >= 27 && lat <= 44 && lon >= -18 && lon <= 5) {
-                // Sentmenat / Barcelona: E 2°
-                // Madrid: E 1°
-                // Galicia: W 1°
-                // Canarias: W 2°
-                dec = 1.6 + (lon * 0.25) - ((lat - 40) * 0.05);
+                dec = 1.6 + (lon * 0.25) - ((lat - 40) * 0.05); // Calibración España/Ibérica
             }
 
             const rounded = Math.round(dec);
@@ -797,11 +800,38 @@
             return `${dir} ${Math.abs(rounded)}`;
         }
 
+        // SISTEMA HÍBRIDO DECLINACIÓN (OFFLINE PRIMERO -> ONLINE DESPUÉS)
+        async function updateMagneticDeclination(lat, lon) {
+            let decMath = calcularDeclinacionMagneticaOffline(lat, lon);
+            
+            if (navigator.onLine) {
+                try {
+                    const url = `https://www.ngdc.noaa.gov/geomag-web/calculators/calculateDeclination?lat1=${lat}&lon1=${lon}&resultFormat=json`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    if (data && data.result && data.result.length > 0) {
+                        let decAPI = data.result[0].declination;
+                        let dirAPI = decAPI >= 0 ? 'E' : 'W';
+                        document.getElementById('decVal').innerHTML = `${dirAPI} ${Math.abs(Math.round(decAPI))}<span class="unit">°</span>`;
+                        document.getElementById('decSource').innerText = "ONLINE NOAA";
+                        document.getElementById('decSource').style.color = "var(--accent-green)";
+                        return;
+                    }
+                } catch (e) {
+                    console.warn("Fallo NOAA online, usando fallback geodinámico interno.");
+                }
+            }
+            
+            // Fallback Offline
+            document.getElementById('decVal').innerHTML = `${decMath}<span class="unit">°</span>`;
+            document.getElementById('decSource').innerText = "OFFLINE MODEL";
+            document.getElementById('decSource').style.color = "var(--accent-orange)";
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             initBezelSvg();
             checkConnectivityStatus();
             
-            // Asignación única de listeners de conectividad para proteger batería y RAM
             window.addEventListener('online', checkConnectivityStatus);
             window.addEventListener('offline', checkConnectivityStatus);
 
@@ -818,6 +848,8 @@
             setTimeout(() => {
                 initBarometerDetailedChart();
                 drawTideCanvas();
+                // Forzamos el cálculo offline al iniciar para que no se quede vacío
+                updateMagneticDeclination(currentLat, currentLon);
             }, 100);
 
             window.addEventListener('resize', () => {
@@ -833,7 +865,6 @@
             }, 60000);
         });
 
-        // WIDGET CABECERA MAESTRA (RELOJ, FECHA Y TEMPERATURA EN TIEMPO REAL)
         function initMasterClockAndWeather() {
             function updateClock() {
                 const now = new Date();
@@ -845,13 +876,23 @@
 
             async function fetchLiveWeather() {
                 try {
-                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${currentLat}&longitude=${currentLon}&current=temperature_2m`);
+                    // v2.8: Petición doble a Open-Meteo (Temperatura + Presión QNH Dinámica)
+                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${currentLat}&longitude=${currentLon}&current=temperature_2m,pressure_msl`);
                     const data = await res.json();
                     if (data && data.current) {
                         document.getElementById('masterTempVal').innerText = `${Math.round(data.current.temperature_2m)}°C`;
+                        
+                        if (data.current.pressure_msl) {
+                            seaLevelPressure = Math.round(data.current.pressure_msl);
+                            document.getElementById('qnhSourceTag').innerText = "QNH ONLINE (API)";
+                            document.getElementById('qnhSourceTag').style.color = "var(--accent-green)";
+                            recalcularPresionesYAltitud(); // Recalcula altitud exacta con QNH dinámico
+                        }
                     }
                 } catch (e) {
                     document.getElementById('masterTempVal').innerText = "--°C";
+                    document.getElementById('qnhSourceTag').innerText = "QNH OFFLINE (ISA)";
+                    document.getElementById('qnhSourceTag').style.color = "var(--accent-orange)";
                 }
             }
 
@@ -868,12 +909,16 @@
             document.getElementById('altBaroVal').innerHTML = `${baroAltitude} <span class="unit">m</span>`;
             document.getElementById('qfeVal').innerHTML = `${currentPressure} <span class="unit">hPa</span>`;
             document.getElementById('qnhVal').innerHTML = `${seaLevelPressure} <span class="unit">hPa</span>`;
-            document.getElementById('decVal').innerHTML = `${calcularDeclinacionMagnetica(currentLat, currentLon)}<span class="unit">°</span>`;
         }
 
         function initLiveMap() {
             map = L.map('liveMap', { zoomControl: false, attributionControl: false }).setView([currentLat, currentLon], 16);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, subdomains: ['a','b','c'] }).addTo(map);
+
+            // Anillos tácticos que se verán perfectamente si el mapa satélite no carga por falta de Internet
+            ring100 = L.circle([currentLat, currentLon], {radius: 100, color: 'rgba(56, 189, 248, 0.4)', weight: 1.5, dashArray: '4 4', fill: false}).addTo(map);
+            ring500 = L.circle([currentLat, currentLon], {radius: 500, color: 'rgba(56, 189, 248, 0.6)', weight: 1.5, dashArray: '4 4', fill: false}).addTo(map);
+            ring1000 = L.circle([currentLat, currentLon], {radius: 1000, color: 'rgba(56, 189, 248, 0.8)', weight: 1.5, dashArray: '6 6', fill: false}).addTo(map);
 
             livePolylineGreen = L.polyline([], { color: '#34d399', weight: 4 }).addTo(map);
             livePolylineRed = L.polyline([], { color: '#f43f5e', weight: 4 }).addTo(map);
@@ -893,6 +938,7 @@
             const txt = document.getElementById('connText');
             if (navigator.onLine) {
                 pill.className = 'connectivity-pill'; dot.style.background = 'var(--accent-green)'; txt.innerText = 'ONLINE';
+                if (gpsActive) updateMagneticDeclination(currentLat, currentLon);
             } else {
                 pill.className = 'connectivity-pill offline'; dot.style.background = 'var(--accent-orange)'; txt.innerText = 'OFFLINE';
             }
@@ -936,7 +982,12 @@
                     document.getElementById('lonVal').innerHTML = `${Math.abs(currentLon).toFixed(1)}<span class="unit">° ${currentLon>=0?'E':'W'}</span>`;
                     
                     recalcularPresionesYAltitud();
+                    updateMagneticDeclination(currentLat, currentLon); // Se actualiza 100% real aquí
+
                     userMarker.setLatLng([currentLat, currentLon]);
+                    ring100.setLatLng([currentLat, currentLon]);
+                    ring500.setLatLng([currentLat, currentLon]);
+                    ring1000.setLatLng([currentLat, currentLon]);
                     map.setView([currentLat, currentLon], 16);
 
                     calculateMeeusMoon(currentLat, currentLon, tideDayOffset);
@@ -956,7 +1007,12 @@
                     currentAltitude = (rawAlt !== null && rawAlt > -100 && rawAlt < 9000) ? Math.round(rawAlt) : 212;
                     
                     recalcularPresionesYAltitud();
+                    
                     userMarker.setLatLng([currentLat, currentLon]);
+                    ring100.setLatLng([currentLat, currentLon]);
+                    ring500.setLatLng([currentLat, currentLon]);
+                    ring1000.setLatLng([currentLat, currentLon]);
+                    
                     if (isTracking) recordWaypoint(currentLat, currentLon, currentAltitude);
                 }, null, { enableHighAccuracy: true, maximumAge: 4000 });
             }
@@ -1322,7 +1378,7 @@
             calculateWorldwideTides(currentLat, currentLon, tideDayOffset);
         }
 
-        // MOTOR DE TRACKING Y MAPAS (ORION v2.7 CON RESUMEN Y RESET TOTAL)
+        // MOTOR DE TRACKING Y MAPAS (ORION v2.8)
         function toggleMissionTracking() {
             if (!gpsActive) { alert("PULSA ACTIVAR GPS ARRIBA PRIMERO."); return; }
             isTracking = !isTracking;
@@ -1384,7 +1440,12 @@
             const redPts = waypoints.filter(p => p.isReturn).map(p => [p.lat, p.lon]);
             livePolylineGreen.setLatLngs(greenPts);
             livePolylineRed.setLatLngs(redPts);
+            
             userMarker.setLatLng([lat, lon]);
+            ring100.setLatLng([lat, lon]);
+            ring500.setLatLng([lat, lon]);
+            ring1000.setLatLng([lat, lon]);
+            
             map.panTo([lat, lon]);
         }
 
@@ -1394,7 +1455,6 @@
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
-        // FINALIZAR Y RESETEAR ACTIVIDAD COMPLETA
         function finishAndSaveMission() {
             if (waypoints.length === 0 && totalDistanceKm === 0) { 
                 alert("No hay datos grabados en esta sesión."); 
