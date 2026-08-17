@@ -124,9 +124,9 @@
       </div>
     </div>
 
-    <!-- 2. BRÚJULA TÁCTICA -->
+    <!-- 2. BRÚJULA TÁCTICA, RUMBO INVERSO & BRÚJULA SOLAR -->
     <div class="card">
-      <div class="card-title"><span>🧭 Orientación & Brújula Táctica</span><span class="help-tag">COMPASS</span></div>
+      <div class="card-title"><span>🧭 Orientación, Retorno & Azimut Solar</span><span class="help-tag">COMPASS / SUN</span></div>
       <div class="compass-wrapper">
         <div class="compass-outer">
           <svg class="compass-svg" id="compassSvg" viewBox="0 0 200 200">
@@ -141,19 +141,37 @@
             <polygon points="100,22 107,100 100,92" fill="#b91c1c" />
             <polygon points="100,178 93,100 100,108" fill="var(--muted)" />
             <polygon points="100,178 107,100 100,108" fill="#475569" />
+            
+            <!-- Marcador de Posición Solar en el Dial (Brújula Solar de Respaldo) -->
+            <g id="sunDialMarker" transform="rotate(0, 100, 100)">
+              <circle cx="100" cy="22" r="6" fill="#f59e0b" stroke="#fff" stroke-width="1.5" />
+              <text x="100" y="25" font-size="7" font-weight="bold" fill="#000" text-anchor="middle">☀️</text>
+            </g>
           </svg>
           <div class="compass-center-cap"></div>
         </div>
         <div style="flex:1;">
-          <div class="grid-2">
+          <div class="grid-2" style="margin-bottom:6px;">
             <div class="data-box">
               <div class="data-label">Rumbo Actual</div>
               <div class="data-val val-highlight" id="heading">---<span class="data-unit">°</span></div>
               <div class="data-label" id="cardinalHeading" style="color:var(--accent); font-weight:bold; margin-top:2px;">---</div>
             </div>
             <div class="data-box">
+              <div class="data-label" style="color:var(--orange);">Rumbo Retorno</div>
+              <div class="data-val val-orange" id="backHeading">---<span class="data-unit">°</span></div>
+              <div class="data-label" style="font-size:0.55rem; color:var(--muted); margin-top:2px;">Retorno (180°)</div>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="data-box">
+              <div class="data-label">Azimut Solar ☀️</div>
+              <div class="data-val val-amber" id="solarAzimuth">---<span class="data-unit">°</span></div>
+              <div class="data-label" style="font-size:0.55rem; color:var(--muted); margin-top:2px;">Sol Real</div>
+            </div>
+            <div class="data-box">
               <div class="data-label">Ajuste DEC</div>
-              <div class="data-val val-orange" id="magDec">---</div>
+              <div class="data-val" id="magDec">---</div>
               <div class="data-label" style="font-size:0.55rem; color:var(--muted); margin-top:2px;">Norte Real</div>
             </div>
           </div>
@@ -225,7 +243,7 @@
 
   <script>
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
-    let dateOffset = 0, currentSunData = { sunriseH: 7.02, sunsetH: 20.82 }, currentTideEvents = null;
+    let dateOffset = 0, currentSunData = { sunriseH: 7.02, sunsetH: 20.82 }, currentTideEvents = null, currentSolarAzimuth = 180;
 
     function setTheme(t) {
       document.body.className = '';
@@ -252,10 +270,34 @@
       let c = e.webkitCompassHeading || (360 - e.alpha);
       if (c !== undefined) {
         const h = Math.round(c), cards = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+        const back = (h + 180) % 360;
         document.getElementById('heading').innerHTML = `${h}<span class="data-unit">°</span>`;
+        document.getElementById('backHeading').innerHTML = `${back}<span class="data-unit">°</span>`;
         document.getElementById('cardinalHeading').textContent = cards[Math.round(h / 22.5) % 16];
         document.getElementById('compassSvg').style.transform = `rotate(${-h}deg)`;
       }
+    }
+
+    function calculateSolarAzimuth(lat, lon, d) {
+      const rad = Math.PI / 180;
+      const start = new Date(d.getFullYear(), 0, 0);
+      const dayOfYear = Math.floor((d - start) / 86400000);
+      const b = (360 / 365) * (dayOfYear - 81) * rad;
+      const eot = 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
+      const dec = 23.45 * Math.sin(b) * rad;
+
+      const utcHours = d.getUTCHours() + d.getUTCMinutes() / 60 + d.getUTCSeconds() / 3600;
+      const solarTime = (utcHours * 60 + 4 * lon + eot) / 60;
+      const hourAngle = (solarTime - 12) * 15 * rad;
+
+      const latRad = lat * rad;
+      const sinAlt = Math.sin(latRad) * Math.sin(dec) + Math.cos(latRad) * Math.cos(dec) * Math.cos(hourAngle);
+      const alt = Math.asin(Math.max(-1, Math.min(1, sinAlt)));
+
+      const cosAz = (Math.sin(dec) - Math.sin(latRad) * sinAlt) / (Math.cos(latRad) * Math.cos(alt));
+      let az = Math.acos(Math.max(-1, Math.min(1, cosAz))) * (180 / Math.PI);
+      if (Math.sin(hourAngle) > 0) az = 360 - az;
+      return Math.round(az);
     }
 
     function stepDate(d) { dateOffset = Math.max(-30, Math.min(30, dateOffset + d)); document.getElementById('timeSlider').value = dateOffset; updateAllCalculationsForDate(); }
@@ -311,53 +353,18 @@
       return timeStr;
     }
 
-    // Matriz Geográfica Mundial de Intervalos Lunitidales
     function getWorldwideLunitidal(lat, lon) {
-      // 1. Japón y Pacífico Noroeste
-      if (lat >= 24 && lat <= 46 && lon >= 122 && lon <= 146) {
-        return { val: 5.75, name: "Japón (Pacífico)" };
-      }
-      // 2. Costa Este de EE. UU. y Florida
-      if (lat >= 24 && lat <= 45 && lon >= -82 && lon <= -65) {
-        return { val: 7.50, name: "Atlántico EE.UU." };
-      }
-      // 3. Costa Oeste de EE. UU. (California / Oregón / Washington)
-      if (lat >= 30 && lat <= 49 && lon >= -125 && lon <= -115) {
-        return { val: 9.80, name: "Pacífico EE.UU." };
-      }
-      // 4. Hawái
-      if (lat >= 18 && lat <= 23 && lon >= -161 && lon <= -154) {
-        return { val: 3.80, name: "Hawái" };
-      }
-      // 5. Reino Unido y Mar del Norte
-      if (lat >= 50 && lat <= 61 && lon >= -11 && lon <= 9) {
-        return { val: 0.25, name: "Mar del Norte / UK" };
-      }
-      // 6. Australia Este (Sídney / Brisbane)
-      if (lat >= -39 && lat <= -10 && lon >= 140 && lon <= 155) {
-        return { val: 8.50, name: "Australia Este" };
-      }
-      // 7. Caribe y Golfo de México
-      if (lat >= 15 && lat <= 30 && lon >= -98 && lon <= -60) {
-        return { val: 8.10, name: "Caribe / Golfo" };
-      }
-      // 8. Islas Canarias
-      if (lat >= 27 && lat <= 30 && lon >= -19 && lon <= -13) {
-        return { val: 1.20, name: "Canarias" };
-      }
-      // 9. Península Ibérica - Cantábrico
-      if (lat >= 43 && lon >= -10 && lon <= 0) {
-        return { val: 3.10, name: "Cantábrico" };
-      }
-      // 10. Península Ibérica - Atlántico (Galicia / Portugal / Cádiz)
-      if (lat >= 35 && lat < 43 && lon >= -10 && lon < -3.5) {
-        return { val: 1.75, name: "Atlántico Ibérico" };
-      }
-      // 11. Mediterráneo (España / Francia / Italia / Grecia)
-      if (lat >= 35 && lat <= 45 && lon >= -3.5 && lon <= 25) {
-        return { val: 7.16, name: "Mediterráneo" };
-      }
-      // 12. Estimación Global por Cuenca
+      if (lat >= 24 && lat <= 46 && lon >= 122 && lon <= 146) return { val: 5.75, name: "Japón (Pacífico)" };
+      if (lat >= 24 && lat <= 45 && lon >= -82 && lon <= -65) return { val: 7.50, name: "Atlántico EE.UU." };
+      if (lat >= 30 && lat <= 49 && lon >= -125 && lon <= -115) return { val: 9.80, name: "Pacífico EE.UU." };
+      if (lat >= 18 && lat <= 23 && lon >= -161 && lon <= -154) return { val: 3.80, name: "Hawái" };
+      if (lat >= 50 && lat <= 61 && lon >= -11 && lon <= 9) return { val: 0.25, name: "Mar del Norte / UK" };
+      if (lat >= -39 && lat <= -10 && lon >= 140 && lon <= 155) return { val: 8.50, name: "Australia Este" };
+      if (lat >= 15 && lat <= 30 && lon >= -98 && lon <= -60) return { val: 8.10, name: "Caribe / Golfo" };
+      if (lat >= 27 && lat <= 30 && lon >= -19 && lon <= -13) return { val: 1.20, name: "Canarias" };
+      if (lat >= 43 && lon >= -10 && lon <= 0) return { val: 3.10, name: "Cantábrico" };
+      if (lat >= 35 && lat < 43 && lon >= -10 && lon < -3.5) return { val: 1.75, name: "Atlántico Ibérico" };
+      if (lat >= 35 && lat <= 45 && lon >= -3.5 && lon <= 25) return { val: 7.16, name: "Mediterráneo" };
       if (lon >= -70 && lon <= 20) return { val: 2.00, name: "Atlántico Global" };
       if (lon > 20 && lon <= 100) return { val: 4.50, name: "Índico Global" };
       return { val: 6.00, name: "Pacífico Global" };
@@ -496,6 +503,10 @@
       const sun = calculateOfflineSun(lat, lon, target);
       document.getElementById('sunrise').textContent = sun.sunrise;
       document.getElementById('sunset').textContent = sun.sunset;
+
+      currentSolarAzimuth = calculateSolarAzimuth(lat, lon, new Date());
+      document.getElementById('solarAzimuth').innerHTML = `${currentSolarAzimuth}<span class="data-unit">°</span>`;
+      document.getElementById('sunDialMarker').setAttribute('transform', `rotate(${currentSolarAzimuth}, 100, 100)`);
 
       const tides = calculateDailyTides4Events(lat, lon, moon.age, target);
       document.getElementById('tideH1').innerHTML = tides.h1;
