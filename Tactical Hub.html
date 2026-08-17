@@ -109,6 +109,14 @@
             box-shadow: 0 0 6px currentColor;
         }
 
+        .status-dot-mini {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 5px currentColor;
+        }
+
         .btn-gps-sync {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -172,7 +180,7 @@
             letter-spacing: 0.8px;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
         }
 
         .badge-tag.orange {
@@ -182,9 +190,9 @@
         }
 
         .badge-tag.baro-armed {
-            background: rgba(0, 230, 118, 0.12);
+            background: rgba(0, 230, 118, 0.08);
             color: var(--accent-green);
-            border-color: rgba(0, 230, 118, 0.3);
+            border-color: rgba(0, 230, 118, 0.25);
         }
 
         .badge-tag.baro-alert {
@@ -202,7 +210,7 @@
         /* BANNER ALERTA DE TORMENTA */
         .storm-alert-banner {
             display: none;
-            background: linear-gradient(135deg, rgba(255,61,113,0.2), rgba(255,152,0,0.15));
+            background: linear-gradient(135deg, rgba(255,61,113,0.25), rgba(255,152,0,0.15));
             border: 1px solid var(--accent-red);
             border-radius: var(--radius-card);
             padding: 8px 12px;
@@ -280,6 +288,7 @@
         .text-cyan { color: var(--accent-cyan) !important; }
         .text-orange { color: var(--accent-orange) !important; }
         .text-yellow { color: var(--accent-yellow) !important; }
+        .text-red { color: var(--accent-red) !important; }
 
         /* LCD CANVAS BOXES */
         .lcd-canvas-container {
@@ -714,7 +723,7 @@
         </div>
     </div>
 
-    <!-- 1. ALTIMETRO, BAROMETRO & ALERTA DE TORMENTA CASIO (UMBRAL AUTOMÁTICO >= 3 hPa) -->
+    <!-- 1. ALTIMETRO, BAROMETRO & ALERTA DE TORMENTA CASIO (AUTOMÁTICA Y SUTIL) -->
     <div class="tactical-card">
         <div class="card-header">
             <div class="title-group">
@@ -722,17 +731,17 @@
                 <span>ALTÍMETRO & GRÁFICO BAROMÉTRICO</span>
             </div>
             <div style="display:flex; gap:6px;">
-                <!-- ICONO CASIO INDICADOR DE ALARMA ARMADA -->
+                <!-- INDICADOR SUTIL DE CENTINELA ARMADO -->
                 <span class="badge-tag baro-armed" id="stormAlarmIndicator">
-                    <span style="font-size:0.75rem;">⚡</span> BARO [ARMED]
+                    <span class="status-dot-mini" style="background:#00e676;"></span> BARO
                 </span>
                 <span class="badge-tag">ALTI / BARO</span>
             </div>
         </div>
 
-        <!-- Banner de Alarma de Tormenta Activa -->
+        <!-- Banner de Alerta de Tormenta Activa -->
         <div class="storm-alert-banner" id="stormBanner">
-            <span>⚠️ <strong>ALERTA DE TORMENTA:</strong> Caída rápida de presión (&ge; 3 hPa)</span>
+            <span>⚠️ <strong>ALERTA DE TORMENTA:</strong> Caída barométrica rápida (&ge; 3 hPa)</span>
             <span style="font-size:0.65rem; background:rgba(0,0,0,0.4); padding:2px 6px; border-radius:4px;">CASIO ALARM</span>
         </div>
 
@@ -853,7 +862,7 @@
         </div>
     </div>
 
-    <!-- 4. MOTOR MUNDIAL DE MAREAS CON HORAS E ICONOS DENTRO DEL GRÁFICO LCD -->
+    <!-- 4. MOTOR MUNDIAL DE MAREAS (PLEAMARES AZUL / BAJAMARES ROJO) -->
     <div class="tactical-card">
         <div class="card-header">
             <div class="title-group">
@@ -875,30 +884,35 @@
             <input type="range" min="0" max="23.9" step="0.1" value="17.6" class="tactical-range" id="tideTimeSlider" oninput="updateTideSlider(this.value)">
         </div>
 
+        <!-- GRÁFICO ONDA DE MAREAS LCD (AZUL/ROJO) -->
         <div class="lcd-canvas-container">
             <div class="lcd-header">
                 <span>CICLO MAREAL 24H (LCD WAVE + EVENTOS)</span>
-                <span class="text-green" id="tideStateDesc">Subiendo hacia Pleamar</span>
+                <span class="text-cyan" id="tideStateDesc">Subiendo hacia Pleamar</span>
             </div>
             <canvas id="tideCanvas" class="lcd-chart" style="height: 75px;"></canvas>
         </div>
 
         <div class="metric-grid-2x2">
+            <!-- Pleamares en Azul Cian -->
             <div class="metric-box">
                 <span class="metric-label">1ª Pleamar</span>
-                <span class="metric-value text-green" id="tideP1">12:17</span>
+                <span class="metric-value text-cyan" id="tideP1">12:17</span>
             </div>
+            <!-- Bajamares en Rojo -->
             <div class="metric-box">
                 <span class="metric-label">1ª Bajamar</span>
-                <span class="metric-value" id="tideB1">06:05</span>
+                <span class="metric-value text-red" id="tideB1">06:05</span>
             </div>
+            <!-- Pleamares en Azul Cian -->
             <div class="metric-box">
                 <span class="metric-label">2ª Pleamar</span>
-                <span class="metric-value text-green" id="tideP2">00:43 <span class="unit" style="font-size:0.6rem;">(+1)</span></span>
+                <span class="metric-value text-cyan" id="tideP2">00:43 <span class="unit" style="font-size:0.6rem;">(+1)</span></span>
             </div>
+            <!-- Bajamares en Rojo -->
             <div class="metric-box">
                 <span class="metric-label">2ª Bajamar</span>
-                <span class="metric-value" id="tideB2">18:30</span>
+                <span class="metric-value text-red" id="tideB2">18:30</span>
             </div>
         </div>
 
@@ -1024,7 +1038,7 @@
         let lastGpsPos = null;
         let currentAltitude = 213.0;
         let currentPressure = 993; // hPa
-        let referencePressure = 996; // Presión base para medir caídas
+        let referencePressure = 993; // Inicializada igual a la actual para evitar falsas alarmas al abrir
         let currentQnh = 1016;
         let sliderTideHour = 17.6;
         let tideDayOffset = 0;
@@ -1041,9 +1055,9 @@
             initSensors();
             updateCompassDisplay(currentHeading);
             
-            // Monitor automático continuo de presión
-            checkStormDropAuto();
-            setInterval(checkStormDropAuto, 30000); // Comprobación periódica cada 30s
+            // Monitor de tormenta silencioso en el arranque
+            checkStormDropAuto(false);
+            setInterval(() => checkStormDropAuto(true), 30000);
         });
 
         // --- CONECTIVIDAD ONLINE / OFFLINE ---
@@ -1081,8 +1095,8 @@
             }
         }
 
-        // --- ALERTA DE TORMENTA CASIO AUTOMÁTICA (CAÍDA >= 3 hPa) ---
-        function checkStormDropAuto() {
+        // --- ALERTA DE TORMENTA CASIO AUTOMÁTICA (SILENCIOSA EN ARRANQUE) ---
+        function checkStormDropAuto(allowAudio = true) {
             const banner = document.getElementById('stormBanner');
             const indicator = document.getElementById('stormAlarmIndicator');
             
@@ -1093,13 +1107,17 @@
                 // Alerta activa
                 banner.style.display = 'flex';
                 indicator.className = 'badge-tag baro-alert';
-                indicator.innerHTML = '<span style="font-size:0.75rem;">⚡</span> BARO [STORM]';
-                playTacticalAlarmBeep();
+                indicator.innerHTML = '<span class="status-dot-mini" style="background:#ff3d71;"></span> BARO [STORM]';
+                
+                if (allowAudio) {
+                    playTacticalAlarmBeep();
+                    if (navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 400]);
+                }
             } else {
-                // Modo centinela normal armado
+                // Modo centinela normal sutil
                 banner.style.display = 'none';
                 indicator.className = 'badge-tag baro-armed';
-                indicator.innerHTML = '<span style="font-size:0.75rem;">⚡</span> BARO [ARMED]';
+                indicator.innerHTML = '<span class="status-dot-mini" style="background:#00e676;"></span> BARO';
             }
         }
 
@@ -1287,7 +1305,7 @@
             drawTideCanvas();
         }
 
-        // --- GRÁFICO LCD CON HORAS E ICONOS INCRUSTADOS EN LA ONDA ---
+        // --- GRÁFICO LCD CON PLEAMARES EN AZUL Y BAJAMARES EN ROJO ---
         function drawTideCanvas() {
             const cvs = document.getElementById('tideCanvas');
             const ctx = cvs.getContext('2d');
@@ -1305,6 +1323,7 @@
                 }
             }
 
+            // Trazo de la Onda Senoidal
             ctx.strokeStyle = '#00d2ff';
             ctx.lineWidth = 2.2;
             ctx.beginPath();
@@ -1338,17 +1357,18 @@
                 const evY = (h / 2) + Math.sin(angle) * (h * 0.28);
 
                 if (ev.type === 'plea') {
-                    ctx.fillStyle = '#00e676';
+                    // Pleamar: AZUL CIAN
+                    ctx.fillStyle = '#00d2ff';
                     ctx.beginPath();
                     ctx.arc(evX, evY, 3.5, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.fillText(`▲ ${ev.label}`, evX, evY - 6);
                 } else {
-                    ctx.fillStyle = '#00d2ff';
+                    // Bajamar: ROJO TÁCTICO
+                    ctx.fillStyle = '#ff3d71';
                     ctx.beginPath();
                     ctx.arc(evX, evY, 3.5, 0, Math.PI * 2);
                     ctx.fill();
-                    ctx.fillStyle = '#94a3b8';
                     ctx.fillText(`▼ ${ev.label}`, evX, evY + 12);
                 }
             });
