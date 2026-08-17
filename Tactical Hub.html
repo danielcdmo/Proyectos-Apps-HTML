@@ -174,9 +174,9 @@
       </div>
     </div>
 
-    <!-- 4. MAREAS DINÁMICAS (4 EVENTOS CONTINUOS + ±30D) -->
+    <!-- 4. MAREAS GLOBALES (MATRIZ MUNDIAL + EXPLORADOR ±30D) -->
     <div class="card">
-      <div class="card-title"><span>🌊 Pleamares & Bajamares (4 Eventos)</span><span class="help-tag" id="tideStationTag">Costa Local</span></div>
+      <div class="card-title"><span>🌊 Pleamares & Bajamares (4 Eventos)</span><span class="help-tag" id="tideStationTag">Global</span></div>
       <div class="time-travel-box">
         <div class="time-travel-header">
           <span id="timeTravelLabel">Fecha: Hoy</span>
@@ -195,7 +195,7 @@
         <div class="data-box"><div class="data-label" style="color:var(--red);">2ª Bajamar</div><div class="data-val" id="tideL2" style="font-size:0.92rem;">--:--</div></div>
       </div>
       <div class="grid-2">
-        <div class="data-box"><div class="data-label">INT (Intervalo Lunitidal)</div><div class="data-val" id="lunitidalVal">7:10</div></div>
+        <div class="data-box"><div class="data-label">INT (Intervalo Lunitidal)</div><div class="data-val val-highlight" id="lunitidalVal">7:10</div></div>
         <div class="data-box"><div class="data-label">Estado de Marea</div><div class="data-val" id="tideStatusText" style="font-size:0.82rem; color:var(--accent);">Calculando...</div></div>
       </div>
       <div class="chart-box">
@@ -297,7 +297,6 @@
       return { sunrise: f(sMin), sunset: f(eMin) };
     }
 
-    // Formateador continuo de mareas con indicación (+1d) o (-1d)
     function formatTideTime(decimalHour) {
       if (decimalHour === undefined) return "--:--";
       let isNext = decimalHour >= 24;
@@ -312,9 +311,62 @@
       return timeStr;
     }
 
+    // Matriz Geográfica Mundial de Intervalos Lunitidales
+    function getWorldwideLunitidal(lat, lon) {
+      // 1. Japón y Pacífico Noroeste
+      if (lat >= 24 && lat <= 46 && lon >= 122 && lon <= 146) {
+        return { val: 5.75, name: "Japón (Pacífico)" };
+      }
+      // 2. Costa Este de EE. UU. y Florida
+      if (lat >= 24 && lat <= 45 && lon >= -82 && lon <= -65) {
+        return { val: 7.50, name: "Atlántico EE.UU." };
+      }
+      // 3. Costa Oeste de EE. UU. (California / Oregón / Washington)
+      if (lat >= 30 && lat <= 49 && lon >= -125 && lon <= -115) {
+        return { val: 9.80, name: "Pacífico EE.UU." };
+      }
+      // 4. Hawái
+      if (lat >= 18 && lat <= 23 && lon >= -161 && lon <= -154) {
+        return { val: 3.80, name: "Hawái" };
+      }
+      // 5. Reino Unido y Mar del Norte
+      if (lat >= 50 && lat <= 61 && lon >= -11 && lon <= 9) {
+        return { val: 0.25, name: "Mar del Norte / UK" };
+      }
+      // 6. Australia Este (Sídney / Brisbane)
+      if (lat >= -39 && lat <= -10 && lon >= 140 && lon <= 155) {
+        return { val: 8.50, name: "Australia Este" };
+      }
+      // 7. Caribe y Golfo de México
+      if (lat >= 15 && lat <= 30 && lon >= -98 && lon <= -60) {
+        return { val: 8.10, name: "Caribe / Golfo" };
+      }
+      // 8. Islas Canarias
+      if (lat >= 27 && lat <= 30 && lon >= -19 && lon <= -13) {
+        return { val: 1.20, name: "Canarias" };
+      }
+      // 9. Península Ibérica - Cantábrico
+      if (lat >= 43 && lon >= -10 && lon <= 0) {
+        return { val: 3.10, name: "Cantábrico" };
+      }
+      // 10. Península Ibérica - Atlántico (Galicia / Portugal / Cádiz)
+      if (lat >= 35 && lat < 43 && lon >= -10 && lon < -3.5) {
+        return { val: 1.75, name: "Atlántico Ibérico" };
+      }
+      // 11. Mediterráneo (España / Francia / Italia / Grecia)
+      if (lat >= 35 && lat <= 45 && lon >= -3.5 && lon <= 25) {
+        return { val: 7.16, name: "Mediterráneo" };
+      }
+      // 12. Estimación Global por Cuenca
+      if (lon >= -70 && lon <= 20) return { val: 2.00, name: "Atlántico Global" };
+      if (lon > 20 && lon <= 100) return { val: 4.50, name: "Índico Global" };
+      return { val: 6.00, name: "Pacífico Global" };
+    }
+
     function calculateDailyTides4Events(lat, lon, moonAge, d) {
       const tzOff = -d.getTimezoneOffset() / 60;
-      let lunitidal = (lat >= 43) ? 3.10 : (lon < -3.5) ? 1.75 : 7.16;
+      const zone = getWorldwideLunitidal(lat, lon);
+      let lunitidal = zone.val;
       let baseHigh = ((moonAge * 0.84) - (lon / 15) + lunitidal + tzOff + 24) % 12.42;
 
       let allHighs = [], allLows = [];
@@ -362,7 +414,7 @@
         h2: formatTideTime(finalHighs[1]),
         l2: formatTideTime(finalLows[1]),
         status: dateOffset === 0 ? status : "Modo Consulta",
-        station: (lat >= 43) ? "Cantábrico" : (lon < -3.5) ? "Atlántico" : "Mediterráneo",
+        station: zone.name,
         lunitidal: `${Math.floor(lunitidal)}:${String(Math.round((lunitidal % 1) * 60)).padStart(2, '0')}`
       };
     }
