@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pit Stop Moto Pro</title>
+    <style>
+        :root {
+            --bg-grad: linear-gradient(135deg, #090d16 0%, #111827 100%);
+            --card-bg: rgba(31, 41, 55, 0.7);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --accent-orange: #f97316;
+            --accent-glow: rgba(249, 115, 22, 0.35);
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --text-main: #f9fafb;
+            --text-sub: #9ca3af;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-grad);
+            color: var(--text-main);
+            margin: 0;
+            padding: 16px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 520px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #f97316 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 4px 0;
+            text-transform: uppercase;
+        }
+        .header p {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin: 0;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 12px 14px;
+            margin-top: 6px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(17, 24, 39, 0.7);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+        .row > div { flex: 1; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .grid-box {
+            background: rgba(17, 24, 39, 0.5);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .grid-box .val {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-top: 4px;
+        }
+        .grid-box .lbl {
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            border: none;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            margin-top: 14px;
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+        .btn-action:active { transform: scale(0.98); }
+
+        .log-list {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .log-item {
+            background: rgba(17, 24, 39, 0.4);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 0.82rem;
+            display: flex;
+            justify-content: space-between;
+            border-left: 3px solid var(--accent-cyan);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>🏍️ Pit Stop Moto Pro</h1>
+        <p>Ajuste Térmico de Presiones & Bitácora</p>
+    </div>
+
+    <!-- CALCU DE PRESIONES -->
+    <div class="card">
+        <div class="card-title">🛞 Ajuste de Presión en Garaje (Gay-Lussac)</div>
+        
+        <div class="row">
+            <div>
+                <label>Presión Objetivo (20°C):</label>
+                <input type="number" id="targetBar" value="2.0" step="0.1" oninput="calcPressure()">
+            </div>
+            <div>
+                <label>Unidad:</label>
+                <select id="unit" onchange="calcPressure()">
+                    <option value="bar">Bar</option>
+                    <option value="psi">PSI</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div>
+                <label>Temp. Garaje Actual (°C):</label>
+                <input type="number" id="tempGarage" value="10" step="1" oninput="calcPressure()">
+            </div>
+            <div>
+                <label>Temp. Rodaje Est. (°C):</label>
+                <input type="number" id="tempRiding" value="35" step="1" oninput="calcPressure()">
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="grid-box">
+                <div class="lbl">Hinchado Frío Garaje</div>
+                <div class="val" id="resCold" style="color: var(--accent-cyan);">1.93 Bar</div>
+            </div>
+            <div class="grid-box">
+                <div class="lbl">Presión en Rodaje</div>
+                <div class="val" id="resHot" style="color: var(--accent-orange);">2.10 Bar</div>
+            </div>
+        </div>
+        <p style="font-size:0.75rem; color:var(--text-sub); margin-top:10px; text-align:center;">
+            * Compensación matemática según la variación de temperatura ambiente vs estándar $20^\circ\text{C}$.
+        </p>
+    </div>
+
+    <!-- CONSUMO DE COMBUSTIBLE -->
+    <div class="card">
+        <div class="card-title">⛽ Calculadora de Consumo Medio</div>
+        
+        <div class="row">
+            <div>
+                <label>Km Recorridos:</label>
+                <input type="number" id="kms" value="280" step="5">
+            </div>
+            <div>
+                <label>Litros Repostados:</label>
+                <input type="number" id="liters" value="9.2" step="0.1">
+            </div>
+        </div>
+
+        <button class="btn-action" onclick="calcFuel()">📊 Calcular & Guardar en Bitácora</button>
+
+        <div class="grid-2">
+            <div class="grid-box">
+                <div class="lbl">Consumo Medio</div>
+                <div class="val" id="resConsumption" style="color: var(--accent-green);">3.28 L/100</div>
+            </div>
+            <div class="grid-box">
+                <div class="lbl">Autonomía Est. (11L)</div>
+                <div class="val" id="resRange" style="color: var(--accent-cyan);">335 km</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BITÁCORA PERSISTENTE -->
+    <div class="card">
+        <div class="card-title">📋 Bitácora de Repostajes (LocalStorage)</div>
+        <div class="log-list" id="logContainer">
+            <!-- Carga dinámica -->
+        </div>
+        <button onclick="clearLog()" style="background:transparent; border:none; color:var(--text-sub); font-size:0.75rem; margin-top:8px; cursor:pointer; text-decoration:underline;">Borrar historial de bitácora</button>
+    </div>
+
+</div>
+
+<script>
+    function calcPressure() {
+        const pTarget = parseFloat(document.getElementById('targetBar').value) || 0;
+        const u = document.getElementById('unit').value;
+        const tGar = parseFloat(document.getElementById('tempGarage').value) || 0;
+        const tRide = parseFloat(document.getElementById('tempRiding').value) || 0;
+
+        // Temperatura absoluta en Kelvin
+        const tkStd = 20 + 273.15;
+        const tkGar = tGar + 273.15;
+        const tkRide = tRide + 273.15;
+
+        // Presión ajustada para hinchado en garaje
+        const pCold = pTarget * (tkGar / tkStd);
+        const pHot = pTarget * (tkRide / tkStd);
+
+        document.getElementById('resCold').innerText = `${pCold.toFixed(2)} ${u.toUpperCase()}`;
+        document.getElementById('resHot').innerText = `${pHot.toFixed(2)} ${u.toUpperCase()}`;
+    }
+
+    function calcFuel() {
+        const kms = parseFloat(document.getElementById('kms').value) || 0;
+        const liters = parseFloat(document.getElementById('liters').value) || 0;
+
+        if (kms <= 0 || liters <= 0) return;
+
+        const l100 = (liters / kms) * 100;
+        const estRange = (11 / l100) * 100; // Depósito estándar ~11L
+
+        document.getElementById('resConsumption').innerText = `${l100.toFixed(2)} L/100`;
+        document.getElementById('resRange').innerText = `${Math.round(estRange)} km`;
+
+        // Guardar registro en LocalStorage
+        const log = JSON.parse(localStorage.getItem('moto_fuel_log') || '[]');
+        const today = new Date().toLocaleDateString([], {day:'2-digit', month:'2-digit'});
+        log.unshift({ date: today, kms: kms, l: liters, avg: l100.toFixed(2) });
+        
+        if (log.length > 10) log.pop(); // Mantener últimos 10
+        localStorage.setItem('moto_fuel_log', JSON.stringify(log));
+
+        renderLog();
+    }
+
+    function renderLog() {
+        const log = JSON.parse(localStorage.getItem('moto_fuel_log') || '[]');
+        const container = document.getElementById('logContainer');
+        
+        if (log.length === 0) {
+            container.innerHTML = `<div style="text-align:center; color:#666; font-size:0.8rem; padding:10px;">Sin registros guardados</div>`;
+            return;
+        }
+
+        container.innerHTML = log.map(item => `
+            <div class="log-item">
+                <span>📅 ${item.date} — ${item.kms} km (${item.l} L)</span>
+                <strong style="color:var(--accent-green)">${item.avg} L/100</strong>
+            </div>
+        `).join('');
+    }
+
+    function clearLog() {
+        localStorage.removeItem('moto_fuel_log');
+        renderLog();
+    }
+
+    // Carga inicial
+    calcPressure();
+    renderLog();
+</script>
+    
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
+
+</body>
+</html>
