@@ -6,6 +6,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Tactical Hub</title>
+  
+  <!-- Librería Cartográfica Táctica Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <style>
     :root {
       --bg: #050811; --card: #0d1527; --box: rgba(0,0,0,0.4); --border: rgba(255,255,255,0.08);
@@ -44,6 +49,7 @@
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-bottom: 10px; }
     .card-title { font-size: 0.76rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
     .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 5px; }
     
     .data-box { background: var(--box); border: 1px solid var(--border); border-radius: 12px; padding: 8px 3px; text-align: center; }
@@ -53,7 +59,6 @@
     .val-highlight { color: var(--green); } .val-amber { color: var(--amber); } .val-orange { color: var(--orange); }
     .help-tag { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; background: rgba(56,189,248,0.15); color: var(--accent); }
 
-    /* Alerta Parpadeante de Tormenta */
     @keyframes stormBlink {
       0% { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); }
       50% { background: rgba(239, 68, 68, 0.45); border-color: #ef4444; box-shadow: 0 0 12px rgba(239, 68, 68, 0.5); }
@@ -79,6 +84,23 @@
     .time-step-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 5px 10px; border-radius: 8px; font-size: 0.72rem; font-weight: 700; cursor: pointer; }
     .time-step-btn:active { transform: scale(0.95); }
     input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+
+    #trackMap {
+      width: 100%; height: 200px; border-radius: 12px; border: 1px solid var(--border);
+      background: #070c16; margin-top: 8px; z-index: 1; overflow: hidden;
+    }
+    body.theme-red #trackMap .leaflet-tile-container img {
+      filter: brightness(0.65) sepia(100%) hue-rotate(-50deg) saturate(700%);
+    }
+
+    .track-controls { display: flex; gap: 6px; margin-bottom: 8px; }
+    .btn-track {
+      flex: 1; padding: 9px 4px; border-radius: 10px; border: 1px solid var(--border);
+      font-size: 0.72rem; font-weight: 800; cursor: pointer; font-family: var(--mono);
+      background: var(--box); color: var(--text); display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+    .btn-track.active-rec { background: var(--red); color: #fff; border-color: var(--red); animation: stormBlink 1.5s infinite; }
+    .btn-track.active-back { background: var(--orange); color: #fff; border-color: var(--orange); }
   </style>
 </head>
 <body>
@@ -99,7 +121,41 @@
       <span>🛰️ Sincronizar Sensores & GPS</span>
     </button>
 
-    <!-- 1. ALTIMETRÍA & BAROMETRÍA CON ALERTA DE TORMENTA -->
+    <!-- 1. RETORNO & MAPA HÍBRIDO -->
+    <div class="card">
+      <div class="card-title">
+        <span>🗺️ Miguitas de Pan & Retorno (TrackBack)</span>
+        <span class="help-tag" id="trackModeTag">Inactivo</span>
+      </div>
+      <div class="track-controls">
+        <button class="btn-track" id="btnTrackRec" onclick="toggleTracking()">
+          <span>🔴 Grabar Ruta</span>
+        </button>
+        <button class="btn-track" id="btnTrackBack" onclick="toggleTrackBack()">
+          <span>🔄 Modo Retorno</span>
+        </button>
+        <button class="btn-track" onclick="clearTrack()">
+          <span>🗑️ Reset</span>
+        </button>
+      </div>
+      <div class="grid-3" style="margin-bottom:8px;">
+        <div class="data-box">
+          <div class="data-label">Distancia Total</div>
+          <div class="data-val val-highlight" id="trackDist">0.00<span class="data-unit">km</span></div>
+        </div>
+        <div class="data-box">
+          <div class="data-label" style="color:var(--orange);">Distancia a Inicio</div>
+          <div class="data-val val-orange" id="distToStart">0<span class="data-unit">m</span></div>
+        </div>
+        <div class="data-box">
+          <div class="data-label" style="color:var(--accent);">Rumbo a P0</div>
+          <div class="data-val" id="bearingToStart" style="color:var(--accent);">---°</div>
+        </div>
+      </div>
+      <div id="trackMap"></div>
+    </div>
+
+    <!-- 2. ALTIMETRÍA & BAROMETRÍA CON ALERTA DE TORMENTA -->
     <div class="card">
       <div class="card-title"><span>🏔️ Altímetro & Gráfico Barométrico</span><span class="help-tag">ALTI / BARO</span></div>
       <div class="grid-2">
@@ -110,12 +166,9 @@
         <div class="data-box"><div class="data-label">Presión Nivel Mar (QNH)</div><div class="data-val val-amber" id="baroSea">---<span class="data-unit">hPa</span></div></div>
         <div class="data-box"><div class="data-label">Gradiente ISA Teórico</div><div class="data-val" id="baroGrad">~9<span class="data-unit">hPa/100m</span></div></div>
       </div>
-
-      <!-- Banner de Alerta Parpadeante -->
       <div class="storm-alert-banner" id="stormAlertBanner">
         ⚠️ ALERTA METEOROLÓGICA: CAÍDA BRUSCA DE PRESIÓN (RIESGO DE BORRASCA)
       </div>
-
       <div class="chart-box">
         <div class="data-label" style="display:flex; justify-content:space-between; margin-bottom:4px;">
           <span>TENDENCIA 24H (LCD DOT-MATRIX)</span><span id="baroTrendText" style="color:var(--accent);">Estable</span>
@@ -124,7 +177,7 @@
       </div>
     </div>
 
-    <!-- 2. BRÚJULA TÁCTICA, RUMBO INVERSO & BRÚJULA SOLAR -->
+    <!-- 3. BRÚJULA TÁCTICA, RETORNO & BRÚJULA SOLAR -->
     <div class="card">
       <div class="card-title"><span>🧭 Orientación, Retorno & Azimut Solar</span><span class="help-tag">COMPASS / SUN</span></div>
       <div class="compass-wrapper">
@@ -141,8 +194,6 @@
             <polygon points="100,22 107,100 100,92" fill="#b91c1c" />
             <polygon points="100,178 93,100 100,108" fill="var(--muted)" />
             <polygon points="100,178 107,100 100,108" fill="#475569" />
-            
-            <!-- Marcador de Posición Solar en el Dial (Brújula Solar de Respaldo) -->
             <g id="sunDialMarker" transform="rotate(0, 100, 100)">
               <circle cx="100" cy="22" r="6" fill="#f59e0b" stroke="#fff" stroke-width="1.5" />
               <text x="100" y="25" font-size="7" font-weight="bold" fill="#000" text-anchor="middle">☀️</text>
@@ -179,7 +230,7 @@
       </div>
     </div>
 
-    <!-- 3. SOL & COORDENADAS -->
+    <!-- 4. SOL & COORDENADAS -->
     <div class="card">
       <div class="card-title"><span>☀️ Salida / Puesta de Sol & Coordenadas</span><span class="help-tag">SOLAR</span></div>
       <div class="grid-2" style="margin-bottom:8px;">
@@ -192,7 +243,7 @@
       </div>
     </div>
 
-    <!-- 4. MAREAS GLOBALES (MATRIZ MUNDIAL + EXPLORADOR ±30D) -->
+    <!-- 5. MAREAS GLOBALES (MATRIZ MUNDIAL + EXPLORADOR ±30D) -->
     <div class="card">
       <div class="card-title"><span>🌊 Pleamares & Bajamares (4 Eventos)</span><span class="help-tag" id="tideStationTag">Global</span></div>
       <div class="time-travel-box">
@@ -224,7 +275,7 @@
       </div>
     </div>
 
-    <!-- 5. FASE LUNAR -->
+    <!-- 6. FASE LUNAR -->
     <div class="card">
       <div class="card-title"><span>🌙 Fase & Datos Lunares</span><span class="help-tag">LUNAR</span></div>
       <div class="grid-2" style="align-items:center; margin-bottom:8px;">
@@ -245,6 +296,33 @@
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
     let dateOffset = 0, currentSunData = { sunriseH: 7.02, sunsetH: 20.82 }, currentTideEvents = null, currentSolarAzimuth = 180;
 
+    let map = null, currentTileLayer = null, polyline = null, startMarker = null, currentMarker = null;
+    let trackPoints = [], isRecording = false, isTrackBack = false, watchId = null;
+    let totalTrackDistance = 0;
+
+    function initMap(lat, lon) {
+      if (typeof L === 'undefined' || map) return;
+      try {
+        map = L.map('trackMap', { zoomControl: false, attributionControl: false, dragging: true, tap: false }).setView([lat, lon], 16);
+        updateMapTileLayer(localStorage.getItem('hub_theme') || 'dark');
+        const st = getComputedStyle(document.body);
+        polyline = L.polyline([], { color: st.getPropertyValue('--accent').trim() || '#38bdf8', weight: 4, opacity: 0.9 }).addTo(map);
+        setTimeout(() => { if (map) map.invalidateSize(); }, 300);
+      } catch(e) { console.warn("Modo mapa simplificado"); }
+    }
+
+    function updateMapTileLayer(theme) {
+      if (!map || typeof L === 'undefined') return;
+      if (currentTileLayer) map.removeLayer(currentTileLayer);
+      const tileUrl = (theme === 'day') 
+        ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png' 
+        : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      currentTileLayer = L.tileLayer(tileUrl, { maxZoom: 19, subdomains: 'abcd' }).addTo(map);
+      if (polyline) {
+        polyline.setStyle({ color: isTrackBack ? '#f97316' : (theme === 'red' ? '#ef4444' : theme === 'day' ? '#0284c7' : '#38bdf8') });
+      }
+    }
+
     function setTheme(t) {
       document.body.className = '';
       document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
@@ -252,11 +330,124 @@
       else if (t === 'day') { document.body.classList.add('theme-day'); document.getElementById('btnThemeDay').classList.add('active'); }
       else { document.getElementById('btnThemeDark').classList.add('active'); }
       localStorage.setItem('hub_theme', t);
+      updateMapTileLayer(t);
       drawTideChart();
     }
 
     function triggerHaptic(ms=15) {
       if (window.navigator.vibrate) window.navigator.vibrate(ms);
+    }
+
+    function toggleTracking() {
+      triggerHaptic(25);
+      if (!isRecording) {
+        isRecording = true;
+        document.getElementById('btnTrackRec').classList.add('active-rec');
+        document.getElementById('btnTrackRec').innerHTML = '<span>⏹ Detener</span>';
+        document.getElementById('trackModeTag').textContent = 'Grabando 🔴';
+        document.getElementById('trackModeTag').style.background = 'rgba(239,68,68,0.2)';
+        document.getElementById('trackModeTag').style.color = 'var(--red)';
+        startGpsTracking();
+      } else {
+        isRecording = false;
+        document.getElementById('btnTrackRec').classList.remove('active-rec');
+        document.getElementById('btnTrackRec').innerHTML = '<span>🔴 Grabar Ruta</span>';
+        document.getElementById('trackModeTag').textContent = 'Pausado';
+        document.getElementById('trackModeTag').style.background = 'rgba(56,189,248,0.15)';
+        document.getElementById('trackModeTag').style.color = 'var(--accent)';
+      }
+    }
+
+    function toggleTrackBack() {
+      triggerHaptic(30);
+      isTrackBack = !isTrackBack;
+      const btn = document.getElementById('btnTrackBack');
+      if (isTrackBack) {
+        btn.classList.add('active-back');
+        document.getElementById('trackModeTag').textContent = 'Retorno 🔄';
+        document.getElementById('trackModeTag').style.background = 'rgba(249,115,22,0.2)';
+        document.getElementById('trackModeTag').style.color = 'var(--orange)';
+        if (polyline) polyline.setStyle({ color: '#f97316' });
+      } else {
+        btn.classList.remove('active-back');
+        document.getElementById('trackModeTag').textContent = isRecording ? 'Grabando 🔴' : 'Inactivo';
+        const curTheme = localStorage.getItem('hub_theme') || 'dark';
+        if (polyline) polyline.setStyle({ color: curTheme === 'red' ? '#ef4444' : curTheme === 'day' ? '#0284c7' : '#38bdf8' });
+      }
+    }
+
+    function clearTrack() {
+      triggerHaptic(40);
+      isRecording = false; isTrackBack = false;
+      document.getElementById('btnTrackRec').classList.remove('active-rec');
+      document.getElementById('btnTrackRec').innerHTML = '<span>🔴 Grabar Ruta</span>';
+      document.getElementById('btnTrackBack').classList.remove('active-back');
+      document.getElementById('trackModeTag').textContent = 'Inactivo';
+      document.getElementById('trackModeTag').style.background = 'rgba(56,189,248,0.15)';
+      document.getElementById('trackModeTag').style.color = 'var(--accent)';
+
+      trackPoints = []; totalTrackDistance = 0;
+      if (polyline) polyline.setLatLngs([]);
+      if (startMarker && map) { map.removeLayer(startMarker); startMarker = null; }
+      document.getElementById('trackDist').innerHTML = `0.00<span class="data-unit">km</span>`;
+      document.getElementById('distToStart').innerHTML = `0<span class="data-unit">m</span>`;
+      document.getElementById('bearingToStart').textContent = `---°`;
+    }
+
+    function startGpsTracking() {
+      if (!navigator.geolocation) return;
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+
+      watchId = navigator.geolocation.watchPosition(pos => {
+        const lat = pos.coords.latitude, lon = pos.coords.longitude;
+        if (!map) initMap(lat, lon);
+
+        const currentLatLng = [lat, lon];
+
+        if (trackPoints.length === 0) {
+          trackPoints.push(currentLatLng);
+          if (map && typeof L !== 'undefined') {
+            startMarker = L.circleMarker(currentLatLng, { radius: 7, color: '#22c55e', fillColor: '#22c55e', fillOpacity: 0.9 }).addTo(map);
+          }
+        } else {
+          const lastPoint = trackPoints[trackPoints.length - 1];
+          const distIncrement = getDistanceInMeters(lastPoint[0], lastPoint[1], lat, lon);
+
+          if (distIncrement >= 4) {
+            totalTrackDistance += distIncrement;
+            trackPoints.push(currentLatLng);
+            if (polyline) polyline.setLatLngs(trackPoints);
+          }
+        }
+
+        if (map && typeof L !== 'undefined') {
+          if (currentMarker) map.removeLayer(currentMarker);
+          currentMarker = L.circleMarker(currentLatLng, { radius: 6, color: '#38bdf8', fillColor: '#ffffff', fillOpacity: 1 }).addTo(map);
+          map.panTo(currentLatLng);
+        }
+
+        document.getElementById('trackDist').innerHTML = `${(totalTrackDistance / 1000).toFixed(2)}<span class="data-unit">km</span>`;
+        if (trackPoints.length > 0) {
+          const p0 = trackPoints[0];
+          const dStart = Math.round(getDistanceInMeters(lat, lon, p0[0], p0[1]));
+          const bStart = Math.round(calculateBearing(lat, lon, p0[0], p0[1]));
+          document.getElementById('distToStart').innerHTML = `${dStart}<span class="data-unit">m</span>`;
+          document.getElementById('bearingToStart').textContent = `${bStart}°`;
+        }
+      }, err => console.log(err), { enableHighAccuracy: true, maximumAge: 1000 });
+    }
+
+    function getDistanceInMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371e3, φ1 = lat1 * Math.PI / 180, φ2 = lat2 * Math.PI / 180;
+      const Δφ = (lat2 - lat1) * Math.PI / 180, Δλ = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2);
+      return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+    }
+
+    function calculateBearing(lat1, lon1, lat2, lon2) {
+      const y = Math.sin((lon2 - lon1) * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180);
+      const x = Math.cos(lat1 * Math.PI / 180) * Math.sin(lat2 * Math.PI / 180) - Math.sin(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.cos((lon2 - lon1) * Math.PI / 180);
+      return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
     }
 
     function initGPSAndSensors() {
@@ -387,23 +578,8 @@
       let todayHighs = allHighs.filter(h => h >= 0 && h < 24);
       let todayLows = allLows.filter(h => h >= 0 && h < 24);
 
-      let finalHighs = [];
-      if (todayHighs.length >= 2) {
-        finalHighs = todayHighs.slice(0, 2);
-      } else if (todayHighs.length === 1) {
-        finalHighs = [todayHighs[0], todayHighs[0] + 12.42];
-      } else {
-        finalHighs = [allHighs.find(h => h >= 24) || 24.5, allHighs.find(h => h < 0) || -0.5];
-      }
-
-      let finalLows = [];
-      if (todayLows.length >= 2) {
-        finalLows = todayLows.slice(0, 2);
-      } else if (todayLows.length === 1) {
-        finalLows = [todayLows[0], todayLows[0] + 12.42];
-      } else {
-        finalLows = [allLows.find(l => l >= 24) || 24.5, allLows.find(l => l < 0) || -0.5];
-      }
+      let finalHighs = (todayHighs.length >= 2) ? todayHighs.slice(0, 2) : (todayHighs.length === 1 ? [todayHighs[0], todayHighs[0] + 12.42] : [24.5, -0.5]);
+      let finalLows = (todayLows.length >= 2) ? todayLows.slice(0, 2) : (todayLows.length === 1 ? [todayLows[0], todayLows[0] + 12.42] : [24.5, -0.5]);
 
       const curH = new Date().getHours() + (new Date().getMinutes() / 60);
       let status = "Subiendo hacia Pleamar";
@@ -533,6 +709,8 @@
         document.getElementById('gpsAlt').innerHTML = `${altVal}<span class="data-unit">m</span>`;
         const dec = 0.8 + (lon * 0.45);
         document.getElementById('magDec').textContent = `${dec >= 0 ? 'E' : 'W'} ${Math.round(Math.abs(dec)) || 1}°`;
+        
+        initMap(lat, lon);
         updateAllCalculationsForDate();
 
         const pSurf = Math.round(1013.25 * Math.pow(1 - (0.0065 * altVal) / 288.15, 5.255));
