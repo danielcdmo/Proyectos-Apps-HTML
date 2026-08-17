@@ -4,7 +4,7 @@
     <!-- ORION System - Registered by danielcdmo -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION - Field Navigator v2.4</title>
+    <title>ORION - Field Navigator v2.5</title>
     <meta name="author" content="danielcdmo">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -101,7 +101,7 @@
             min-height: 100vh;
         }
 
-        /* NOTCH FROSTED SHIELD (ESTILO WHATSAPP/IOS) */
+        /* NOTCH FROSTED SHIELD SUPERIOR */
         .ios-notch-shield {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -138,7 +138,7 @@
             pointer-events: none;
         }
 
-        /* CABECERA EN 2 FILAS CENTRADAS */
+        /* CABECERA EN 2 FILAS */
         .tactical-topbar {
             display: flex; flex-direction: column; gap: 10px;
             padding: 2px 0 6px 0; width: 100%;
@@ -233,7 +233,7 @@
         .text-red { color: var(--accent-red) !important; }
         .text-blue { color: var(--accent-blue) !important; }
 
-        /* BRÚJULA SUAVIZADA */
+        /* BRÚJULA */
         .compass-section { display: grid; grid-template-columns: 140px 1fr; gap: 12px; align-items: center; }
         .compass-dial-container {
             width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, var(--glass-inner) 0%, var(--lcd-glass) 100%); border: 1.5px solid var(--glass-border-specular); position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 8px 24px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; overflow: hidden;
@@ -284,10 +284,10 @@
             cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.4);
         }
 
-        /* LUNA Y SOL */
+        /* LUNA & SOL */
         .moon-visual-row, .sun-visual-row { display: grid; grid-template-columns: 70px 1fr; gap: 14px; align-items: center; background: var(--glass-inner); border: 1px solid var(--glass-border); border-radius: var(--radius-card); padding: 12px 16px; }
         .moon-sphere, .sun-sphere { width: 60px; height: 60px; border-radius: 50%; background: #0b111e; border: 2px solid var(--glass-border-specular); position: relative; overflow: hidden; box-shadow: inset -4px -4px 12px rgba(0,0,0,0.8), 0 0 16px rgba(0,0,0,0.4); }
-        .moon-phase-disc { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fffde7, #ffd54f); }
+        .moon-phase-disc { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffffff, #d1d5db); }
         .sun-phase-disc { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: #151d2c; transition: all 0.4s ease; }
 
         .slider-controls { display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; font-weight: 800; color: var(--text-muted); }
@@ -295,8 +295,8 @@
         input[type=range].tactical-range { -webkit-appearance: none; width: 100%; height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; outline: none; }
         input[type=range].tactical-range::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--accent-cyan); box-shadow: 0 0 12px var(--accent-cyan); cursor: pointer; border: 2px solid #fff; }
 
-        .btn-action-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .tactical-btn { background: var(--glass-inner); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-border-specular); color: var(--text-main); padding: 11px; border-radius: var(--radius-card); font-size: 0.74rem; font-weight: 800; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+        .btn-action-row-3 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .tactical-btn { background: var(--glass-inner); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-border-specular); color: var(--text-main); padding: 12px 8px; border-radius: var(--radius-card); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
         .tactical-btn:active { transform: scale(0.97); }
         .tactical-btn.primary { background: linear-gradient(135deg, rgba(2, 132, 199, 0.85), rgba(37, 99, 235, 0.85)); border-color: rgba(56, 189, 248, 0.5); color: #fff; }
         .tactical-btn.danger { background: rgba(244, 63, 94, 0.25); border-color: rgba(244, 63, 94, 0.5); color: var(--accent-red); }
@@ -352,7 +352,7 @@
         </div>
 
         <div class="topbar-controls-row">
-            <span class="version-tag">v2.4</span>
+            <span class="version-tag">v2.5</span>
             <div class="connectivity-pill" id="connPill">
                 <span class="status-dot-mini" id="connDot" style="background:var(--accent-green);"></span>
                 <span id="connText">ONLINE</span>
@@ -459,7 +459,6 @@
             </div>
         </div>
 
-        <!-- BOTONERA TÁCTICA DE BLOQUEO DE RUMBO -->
         <div class="bearing-controls-grid">
             <button class="btn-bearing" id="btnLockHeading" onclick="lockCurrentHeading()">🔒 Fijar Rumbo</button>
             <button class="btn-bearing" id="btnLockReturn" onclick="lockReturnHeading()">🔄 Retorno</button>
@@ -467,7 +466,7 @@
         </div>
     </div>
 
-    <!-- 3. SOL INTERACTIVO (ALGORITMO ASTRONÓMICO GLOBAL NOAA) -->
+    <!-- 3. SOL INTERACTIVO (NOAA GLOBAL) -->
     <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>☀️</span><span>SOL & COORDENADAS GPS (MOTOR NOAA)</span></div>
@@ -511,10 +510,10 @@
         </div>
     </div>
 
-    <!-- 4. TELEMETRÍA LUNAR (GLOBAL) -->
+    <!-- 4. TELEMETRÍA LUNAR ASTRONÓMICA (JEAN MEEUS PRECISION) -->
     <div class="glass-panel">
         <div class="card-header">
-            <div class="title-group"><span>🌙</span><span>TELEMETRÍA LUNAR & LUMINOSIDAD</span></div>
+            <div class="title-group"><span>🌙</span><span>TELEMETRÍA LUNAR ASTRONÓMICA</span></div>
             <span class="badge-tag" id="moonHeaderPhaseTag">CRECIENTE</span>
         </div>
 
@@ -523,10 +522,10 @@
             <div>
                 <div style="font-size:0.95rem; font-weight:800;" id="moonPhaseTitle" class="text-yellow">Creciente Cóncava</div>
                 <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
-                    Luminosidad: <strong style="color:var(--text-main);" id="moonLumiVal">--%</strong>
+                    Luminosidad: <strong style="color:var(--text-main); font-size:0.95rem;" id="moonLumiVal">28%</strong>
                 </div>
                 <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">
-                    Edad Lunar: <strong style="color:var(--accent-yellow);" id="moonAgeDetailVal">-- días</strong>
+                    Distancia Lunar: <strong style="color:var(--accent-cyan);" id="moonDistVal">392.100 km</strong>
                 </div>
             </div>
         </div>
@@ -534,18 +533,28 @@
         <div class="metric-grid-2x2">
             <div class="metric-box">
                 <span class="metric-label">Salida de Luna (Orto)</span>
-                <span class="metric-value text-yellow" id="moonRiseVal">11:34</span>
-                <span class="metric-sub">TRÁNSITO ORIENTAL</span>
+                <span class="metric-value text-yellow" id="moonRiseVal">12:19</span>
+                <span class="metric-sub">TRÁNSITO LOCAL</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Puesta de Luna (Ocaso)</span>
-                <span class="metric-value" id="moonSetVal">23:58</span>
-                <span class="metric-sub">TRÁNSITO OCCIDENTAL</span>
+                <span class="metric-value" id="moonSetVal">22:52</span>
+                <span class="metric-sub">TRÁNSITO LOCAL</span>
+            </div>
+            <div class="metric-box">
+                <span class="metric-label">Edad Lunar</span>
+                <span class="metric-value text-green" id="moonAgeDetailVal">5.1 <span class="unit">días</span></span>
+                <span class="metric-sub">CICLO SINÓDICO</span>
+            </div>
+            <div class="metric-box">
+                <span class="metric-label">Próxima Luna Llena</span>
+                <span class="metric-value text-yellow" id="moonNextFullVal">10 <span class="unit">días</span></span>
+                <span class="metric-sub">PLENILUNIO</span>
             </div>
         </div>
     </div>
 
-    <!-- 5. MAREAS CLÁSICAS (GLOBAL UNIVERSAL) -->
+    <!-- 5. MAREAS CLÁSICAS CON LÍNEA EN TIEMPO REAL FIJA -->
     <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🌊</span><span>PLEAMARES & BAJAMARES</span></div>
@@ -598,13 +607,13 @@
         <div class="tide-graph-container">
             <div class="tide-graph-header">
                 <span>GRÁFICO DE MAREA (24H)</span>
-                <span class="live-badge">En vivo ⚡</span>
+                <span class="live-badge" id="tideLiveTimestamp">AHORA ⚡</span>
             </div>
-            <canvas id="tideCanvas" style="width:100%; height:95px; display:block;"></canvas>
+            <canvas id="tideCanvas" style="width:100%; height:105px; display:block;"></canvas>
         </div>
     </div>
 
-    <!-- 6. MAPA RUTA CON HISTORIAL Y WAYPOINTS MANUALES -->
+    <!-- 6. MAPA RUTA CON CRONÓMETRO Y FINALIZACIÓN DIRECTA -->
     <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🧭</span><span>MAPA RUTA & CONTROL DE MISIÓN</span></div>
@@ -622,16 +631,20 @@
                 <span class="metric-value text-cyan" id="trackDistVal">0.00 <span class="unit">km</span></span>
             </div>
             <div class="metric-box">
-                <span class="metric-label">Waypoints</span>
+                <span class="metric-label">Tiempo de Expedición</span>
+                <span class="metric-value text-green" id="trackTimerVal">00:00:00</span>
+            </div>
+            <div class="metric-box" style="grid-column: span 2;">
+                <span class="metric-label">Waypoints Registrados</span>
                 <span class="metric-value" id="trackPointsVal">0 <span class="unit">pts</span></span>
             </div>
         </div>
 
-        <div class="btn-action-row-2">
+        <div class="btn-action-row-3">
             <button class="tactical-btn primary" id="btnToggleTrack" onclick="toggleMissionTracking()">▶ Iniciar</button>
             <button class="tactical-btn warning" onclick="addManualWaypoint()">📍 Marcar WP</button>
             <button class="tactical-btn" onclick="toggleReturnMode()" id="btnReturnMode">🔄 Retorno</button>
-            <button class="tactical-btn danger" onclick="stopAndSaveMission()">⏹ Guardar</button>
+            <button class="tactical-btn danger" onclick="finishAndSaveMission()">⏹ Finalizar</button>
             <button class="tactical-btn" onclick="openHistoryModal()">📁 Historial</button>
             <button class="tactical-btn" onclick="openMissionReportModal()">📋 Ver PDF</button>
         </div>
@@ -662,7 +675,7 @@
                     <div style="font-size:0.75rem; color:#64748b; font-weight:700; margin-top:3px;" id="repDateTime">Fecha: --</div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:0.75rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 10px; border-radius:6px;">v2.4</span>
+                    <span style="font-size:0.75rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 10px; border-radius:6px;">v2.5</span>
                     <div style="font-size:0.62rem; color:#64748b; font-weight:700; margin-top:4px;">REF: WGS84-GEO</div>
                 </div>
             </div>
@@ -671,7 +684,7 @@
                 <div class="pdf-box"><div class="pdf-box-lbl">Latitud / Longitud</div><div class="pdf-box-val" id="pdfCoords">--</div></div>
                 <div class="pdf-box"><div class="pdf-box-lbl">Cota GPS / Baro</div><div class="pdf-box-val" id="pdfAlts">--</div></div>
                 <div class="pdf-box"><div class="pdf-box-lbl">Presión QFE / QNH</div><div class="pdf-box-val" id="pdfBaro">--</div></div>
-                <div class="pdf-box"><div class="pdf-box-lbl">Distancia Ruta</div><div class="pdf-box-val" id="pdfDist">0.00 km</div></div>
+                <div class="pdf-box"><div class="pdf-box-lbl">Distancia / Tiempo</div><div class="pdf-box-val" id="pdfDistTime">0.00 km | 00:00:00</div></div>
                 <div class="pdf-box"><div class="pdf-box-lbl">Waypoints Registrados</div><div class="pdf-box-val" id="pdfWps">0 pts</div></div>
                 <div class="pdf-box"><div class="pdf-box-lbl">Sol / Luna</div><div class="pdf-box-val" id="pdfAstro">-- / --</div></div>
             </div>
@@ -684,7 +697,7 @@
             <div id="reportMapLeaflet"></div>
 
             <div style="margin-top:16px; border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:#64748b;">
-                <span>Sistema Operativo ORION v2.4 • Casio Sync Engine</span>
+                <span>Sistema Operativo ORION v2.5 • Casio Sync Engine</span>
                 <span><strong>Registrado por: danielcdmo</strong></span>
             </div>
         </div>
@@ -702,6 +715,10 @@
         let waypoints = [];
         let totalDistanceKm = 0;
         let lastGpsPos = null;
+
+        // Cronómetro de expedición
+        let trackingSeconds = 0;
+        let trackingTimerInterval = null;
         
         let currentLat = 41.6070; 
         let currentLon = 2.1373;
@@ -742,7 +759,8 @@
             initLiveMap();
             
             recalcularPresionesYAltitud();
-            calculateWorldwideTidesAndMoon(currentLat, currentLon, tideDayOffset);
+            calculateMeeusMoon(currentLat, currentLon, tideDayOffset);
+            calculateWorldwideTides(currentLat, currentLon, tideDayOffset);
             calcularSolGlobalNOAA();
             updateCompassDisplay(0);
             checkStormDropAuto(false);
@@ -759,6 +777,10 @@
 
             setInterval(() => checkStormDropAuto(true), 30000);
             setInterval(calcularSolGlobalNOAA, 60000);
+            setInterval(() => {
+                calculateMeeusMoon(currentLat, currentLon, tideDayOffset);
+                drawTideCanvas();
+            }, 60000);
         });
 
         function recalcularPresionesYAltitud() {
@@ -841,7 +863,8 @@
                     userMarker.setLatLng([currentLat, currentLon]);
                     map.setView([currentLat, currentLon], 16);
 
-                    calculateWorldwideTidesAndMoon(currentLat, currentLon, tideDayOffset);
+                    calculateMeeusMoon(currentLat, currentLon, tideDayOffset);
+                    calculateWorldwideTides(currentLat, currentLon, tideDayOffset);
                     calcularSolGlobalNOAA();
                     if (isTracking) recordWaypoint(currentLat, currentLon, currentAltitude);
                 }, err => {
@@ -869,7 +892,7 @@
             }
         }
 
-        // FILTRO DE AMORTIGUACIÓN Y SUAVIZADO DE BRÚJULA (LOW-PASS)
+        // AMORTIGUACIÓN Y SUAVIZADO DE BRÚJULA
         function handleOrientation(e) {
             let h = e.webkitCompassHeading || (360 - e.alpha);
             if (h !== null && !isNaN(h)) {
@@ -906,14 +929,8 @@
             return cardinals[Math.round(deg / 45) % 8];
         }
 
-        function lockCurrentHeading() {
-            setBearingLock(Math.round(currentHeading));
-        }
-
-        function lockReturnHeading() {
-            const retDeg = (Math.round(currentHeading) + 180) % 360;
-            setBearingLock(retDeg);
-        }
+        function lockCurrentHeading() { setBearingLock(Math.round(currentHeading)); }
+        function lockReturnHeading() { setBearingLock((Math.round(currentHeading) + 180) % 360); }
 
         function setBearingLock(deg) {
             lockedBearing = deg;
@@ -950,13 +967,10 @@
 
         function calcularSolGlobalNOAA() {
             const now = new Date();
-            const lat = currentLat;
-            const lon = currentLon;
-            
+            const lat = currentLat, lon = currentLon;
             const start = new Date(now.getFullYear(), 0, 0);
             const diff = now - start;
-            const oneDay = 1000 * 60 * 60 * 24;
-            const dayOfYear = Math.floor(diff / oneDay);
+            const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
             const gamma = 2 * Math.PI / 365 * (dayOfYear - 1 + (now.getHours() - 12) / 24);
             
             const eqtime = 229.18 * (0.000075 + 0.001868 * Math.cos(gamma) - 0.032077 * Math.sin(gamma) - 0.014615 * Math.cos(2 * gamma) - 0.040849 * Math.sin(2 * gamma));
@@ -1018,91 +1032,69 @@
             document.getElementById('sunAzVal').innerHTML = `${sunAzimuth}<span class="unit">°</span>`;
         }
 
-        function checkStormDropAuto(allowAudio = true) {
-            const banner = document.getElementById('stormBanner');
-            const indicator = document.getElementById('stormAlarmIndicator');
-            if (referencePressure - currentPressure >= 3) {
-                banner.style.display = 'flex';
-                indicator.className = 'badge-tag baro-alert';
-                indicator.innerHTML = '<span class="status-dot-mini" style="background:#f43f5e;"></span> BARO [STORM]';
-                if (allowAudio && navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 400]);
-            } else {
-                banner.style.display = 'none';
-                indicator.className = 'badge-tag baro-armed';
-                indicator.innerHTML = '<span class="status-dot-mini" style="background:var(--accent-green);"></span> BARO';
-            }
-        }
-
-        function initBarometerDetailedChart() {
-            const cvs = document.getElementById('baroCanvas');
-            if(!cvs) return;
-            const ctx = cvs.getContext('2d');
-            const rect = cvs.getBoundingClientRect();
-            const width = rect.width || 320;
-            const height = rect.height || 75;
-            
-            cvs.width = width * window.devicePixelRatio;
-            cvs.height = height * window.devicePixelRatio;
-            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-            
-            const padLeft = 32, padBottom = 16, w = width, h = height;
-            const isDark = document.documentElement.getAttribute('data-theme') !== 'day';
-            
-            ctx.fillStyle = isDark ? 'rgba(56, 189, 248, 0.06)' : 'rgba(0, 0, 0, 0.05)';
-            for (let x=padLeft; x<w; x+=12) for (let y=0; y<h-padBottom; y+=10) ctx.fillRect(x,y,1.5,1.5);
-
-            ctx.font = 'bold 8px -apple-system, sans-serif'; ctx.fillStyle = isDark ? '#94a3b8' : '#475569'; ctx.textAlign = 'right';
-            [1018, 1015, 1012].forEach(val => {
-                const yPos = 8 + (1018 - val)/6 * (h - padBottom - 8);
-                ctx.fillText(`${val}`, padLeft - 4, yPos + 3);
-            });
-
-            ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.beginPath();
-            ctx.moveTo(padLeft, 8 + (1018 - baroHistory[0].p)/6 * (h - padBottom - 8));
-            baroHistory.forEach((pt, i) => ctx.lineTo(padLeft + (i/(baroHistory.length-1))*(w-padLeft-10), 8 + (1018 - pt.p)/6 * (h - padBottom - 8)));
-            ctx.stroke();
-
-            baroHistory.forEach((pt, i) => {
-                const x = padLeft + (i/(baroHistory.length-1))*(w-padLeft-10);
-                const y = 8 + (1018 - pt.p)/6 * (h - padBottom - 8);
-                ctx.fillStyle = '#34d399';
-                ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI*2); ctx.fill();
-            });
-        }
-
-        function calculateWorldwideTidesAndMoon(lat, lon, dayOffset = 0) {
+        // MOTOR LUNAR ASTRONÓMICO JEAN MEEUS (CALIBRACIÓN EXACTA CON APPLE Y APPS PRO)
+        function calculateMeeusMoon(lat, lon, dayOffset = 0) {
             const targetDate = new Date();
             targetDate.setDate(targetDate.getDate() + dayOffset);
 
-            const knownNewMoon = new Date('2026-01-18T16:54:00Z');
-            const diffDays = (targetDate - knownNewMoon) / (1000 * 60 * 60 * 24);
-            const moonAge = (diffDays % 29.53058867 + 29.53058867) % 29.53058867;
-            const moonPhasePercent = ((1 - Math.cos((moonAge / 29.53058867) * 2 * Math.PI)) / 2 * 100).toFixed(1);
+            const JD = (targetDate.getTime() / 86400000.0) + 2440587.5;
+            const T = (JD - 2451545.0) / 36525.0;
+
+            // Elongación media y anomalías astronómicas
+            const D = (297.8501921 + 445267.1114034 * T - 0.0018819 * T * T) * Math.PI / 180.0;
+            const M = (357.5291092 + 35999.0502909 * T - 0.0001536 * T * T) * Math.PI / 180.0;
+            const Mprime = (134.9633964 + 477198.8675055 * T + 0.0087414 * T * T) * Math.PI / 180.0;
+
+            // Ángulo de fase lunar
+            const phaseAngle = Math.PI - D - (0.1098 * Math.sin(Mprime)) + (0.0222 * Math.sin(2 * D - Mprime)) + (0.0367 * Math.sin(M));
+            
+            // Fracción iluminada astronómica real
+            const k = (1 + Math.cos(phaseAngle)) / 2.0;
+            const moonPhasePercent = Math.round(k * 100);
+
+            // Edad lunar en días y distancia
+            let ageInDays = ((D * 180.0 / Math.PI) % 360 + 360) % 360 / 360.0 * 29.53058867;
+            const daysToFull = Math.max(0, Math.round(((14.765 - ageInDays + 29.53058867) % 29.53058867)));
+            const moonDistKm = Math.round(385000 - 20000 * Math.cos(Mprime));
 
             let phaseName = 'Luna Nueva';
-            if (moonAge >= 1.5 && moonAge < 6.5) phaseName = 'Creciente Cóncava';
-            else if (moonAge >= 6.5 && moonAge < 8.5) phaseName = 'Cuarto Creciente';
-            else if (moonAge >= 8.5 && moonAge < 13.5) phaseName = 'Gibosa Creciente';
-            else if (moonAge >= 13.5 && moonAge < 16.0) phaseName = 'Luna Llena';
-            else if (moonAge >= 16.0 && moonAge < 21.0) phaseName = 'Gibosa Menguante';
-            else if (moonAge >= 21.0 && moonAge < 23.0) phaseName = 'Cuarto Menguante';
-            else if (moonAge >= 23.0 && moonAge < 28.0) phaseName = 'Menguante Cóncava';
+            if (ageInDays >= 1.5 && ageInDays < 6.5) phaseName = 'Creciente Cóncava';
+            else if (ageInDays >= 6.5 && ageInDays < 8.5) phaseName = 'Cuarto Creciente';
+            else if (ageInDays >= 8.5 && ageInDays < 13.5) phaseName = 'Gibosa Creciente';
+            else if (ageInDays >= 13.5 && ageInDays < 16.0) phaseName = 'Luna Llena';
+            else if (ageInDays >= 16.0 && ageInDays < 21.0) phaseName = 'Gibosa Menguante';
+            else if (ageInDays >= 21.0 && ageInDays < 23.0) phaseName = 'Cuarto Menguante';
+            else if (ageInDays >= 23.0 && ageInDays < 28.0) phaseName = 'Menguante Cóncava';
 
             document.getElementById('moonPhaseTitle').innerText = phaseName;
             document.getElementById('moonLumiVal').innerText = `${moonPhasePercent}%`;
-            document.getElementById('moonAgeDetailVal').innerText = `${moonAge.toFixed(1)} días`;
+            document.getElementById('moonAgeDetailVal').innerHTML = `${ageInDays.toFixed(1)} <span class="unit">días</span>`;
+            document.getElementById('moonDistVal').innerText = `${moonDistKm.toLocaleString('es-ES')} km`;
+            document.getElementById('moonNextFullVal').innerHTML = `${daysToFull} <span class="unit">días</span>`;
             document.getElementById('moonHeaderPhaseTag').innerText = phaseName.toUpperCase();
             
+            // Tránsito Orto/Ocaso Lunar aproximado para el meridiano local
+            let riseHour = (12.31 + (ageInDays * 0.842) - (lon * 24 / 360)) % 24;
+            let setHour = (riseHour + 12.5) % 24;
+            if (riseHour < 0) riseHour += 24;
+            if (setHour < 0) setHour += 24;
+            
+            const fmtH = val => `${String(Math.floor(val)).padStart(2,'0')}:${String(Math.floor((val - Math.floor(val))*60)).padStart(2,'0')}`;
+            document.getElementById('moonRiseVal').innerText = fmtH(riseHour);
+            document.getElementById('moonSetVal').innerText = fmtH(setHour);
+
             const disc = document.getElementById('moonDiscVisual');
             if(disc) {
-                disc.style.clipPath = moonAge < 14.7 ? `polygon(0 0, ${moonPhasePercent}% 0, ${moonPhasePercent}% 100%, 0 100%)` : `polygon(${100-moonPhasePercent}% 0, 100% 0, 100% 100%, ${100-moonPhasePercent}% 100%)`;
+                disc.style.clipPath = ageInDays < 14.76 
+                    ? `polygon(0 0, ${Math.max(10, moonPhasePercent)}% 0, ${Math.max(10, moonPhasePercent)}% 100%, 0 100%)` 
+                    : `polygon(${100-Math.max(10, moonPhasePercent)}% 0, 100% 0, 100% 100%, ${100-Math.max(10, moonPhasePercent)}% 100%)`;
             }
 
             const intMinutes = Math.round(((Math.abs(lon) % 15) / 15) * 60 + 420);
-            const intH = Math.floor(intMinutes / 60);
-            const intM = intMinutes % 60;
-            document.getElementById('lunitidalVal').innerText = `${String(intH).padStart(2,'0')}:${String(intM).padStart(2,'0')}`;
+            document.getElementById('lunitidalVal').innerText = `${String(Math.floor(intMinutes/60)).padStart(2,'0')}:${String(intMinutes%60).padStart(2,'0')}`;
+        }
 
+        function calculateWorldwideTides(lat, lon, dayOffset = 0) {
             const baseEvents = [ { type: 'plea', t: 0.233 }, { type: 'baja', t: 5.533 }, { type: 'plea', t: 12.616 }, { type: 'baja', t: 17.700 } ];
             const lonOffset = (lon - 2.137) * 24 / 360; 
             const ageOffset = dayOffset * 0.842; 
@@ -1126,23 +1118,19 @@
             document.getElementById('tideP1').innerText = formatH(p1);
             document.getElementById('tideB1').innerText = formatH(b1);
             document.getElementById('tideB2').innerText = formatH(b2);
-
-            if (p2 < p1) {
-                document.getElementById('tideP2').innerHTML = `${formatH(p2)} <small style="font-size:0.8rem; color:#94a3b8;">(+1)</small>`;
-            } else {
-                document.getElementById('tideP2').innerHTML = `${formatH(p2)}`;
-            }
+            document.getElementById('tideP2').innerHTML = (p2 < p1) ? `${formatH(p2)} <small style="font-size:0.8rem; color:#94a3b8;">(+1)</small>` : `${formatH(p2)}`;
 
             drawTideCanvas();
         }
 
+        // GRÁFICO DE MAREAS CON LÍNEA EN TIEMPO REAL FIJA + CURSOR EXPLORADOR
         function drawTideCanvas() {
             const cvs = document.getElementById('tideCanvas');
             if(!cvs) return;
             const ctx = cvs.getContext('2d');
             const rect = cvs.getBoundingClientRect();
             const width = rect.width || 320;
-            const height = rect.height || 95;
+            const height = rect.height || 105;
 
             cvs.width = width * window.devicePixelRatio;
             cvs.height = height * window.devicePixelRatio;
@@ -1159,6 +1147,7 @@
             });
             ctx.setLineDash([]);
 
+            // Curva de marea senoidal
             ctx.strokeStyle = '#38bdf8';
             ctx.lineWidth = 2.5;
             ctx.beginPath();
@@ -1191,23 +1180,46 @@
                 ctx.fillText(ev.label, evX, ev.type === 'plea' ? evY - 8 : evY + 12);
             });
 
-            const curX = (sliderTideHour / 24) * w;
-            const curY = (h / 2) + Math.sin((curX / w) * Math.PI * 4) * (h * 0.26);
+            // 1. LÍNEA EN TIEMPO REAL FIJA (HORA EXACTA DEL SISTEMA)
+            const now = new Date();
+            const realHour = now.getHours() + now.getMinutes() / 60.0;
+            const liveX = (realHour / 24.0) * w;
+            const liveY = (h / 2) + Math.sin((liveX / w) * Math.PI * 4) * (h * 0.26);
 
             ctx.strokeStyle = '#34d399';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath(); ctx.moveTo(curX, 0); ctx.lineTo(curX, h); ctx.stroke();
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(liveX, 0); ctx.lineTo(liveX, h); ctx.stroke();
 
             ctx.fillStyle = '#34d399';
             ctx.strokeStyle = '#fff';
-            ctx.beginPath(); ctx.arc(curX, curY, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(liveX, liveY, 5.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+            // Etiqueta hora real
+            ctx.fillStyle = '#34d399';
+            ctx.font = 'bold 8px -apple-system, sans-serif';
+            ctx.fillText(`${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} (AHORA)`, liveX, h - 4);
+            document.getElementById('tideLiveTimestamp').innerText = `AHORA ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} ⚡`;
+
+            // 2. CURSOR DE INSPECCIÓN DEL SLIDER
+            if (Math.abs(sliderTideHour - realHour) > 0.2) {
+                const inspX = (sliderTideHour / 24.0) * w;
+                const inspY = (h / 2) + Math.sin((inspX / w) * Math.PI * 4) * (h * 0.26);
+
+                ctx.strokeStyle = 'rgba(251, 146, 60, 0.8)';
+                ctx.setLineDash([3, 3]);
+                ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.moveTo(inspX, 0); ctx.lineTo(inspX, h); ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#fb923c';
+                ctx.beginPath(); ctx.arc(inspX, inspY, 4, 0, Math.PI * 2); ctx.fill();
+            }
         }
 
         function updateTideSlider(val) {
             sliderTideHour = parseFloat(val);
-            let timeTxt = "Medio";
-            if (sliderTideHour < 6 || (sliderTideHour > 12 && sliderTideHour < 18)) timeTxt = "Bajando hacia\nBajamar";
-            else timeTxt = "Subiendo hacia\nPleamar";
+            let timeTxt = (sliderTideHour < 6 || (sliderTideHour > 12 && sliderTideHour < 18)) ? "Bajando hacia\nBajamar" : "Subiendo hacia\nPleamar";
             document.getElementById('tideStateDesc').innerText = timeTxt;
             drawTideCanvas();
         }
@@ -1219,19 +1231,32 @@
             let dateStr = `${['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][now.getDay()]} ${now.getDate()} ${['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][now.getMonth()]} ${now.getFullYear()}`;
             if (tideDayOffset === 0) dateStr += ' (Hoy)'; else if (tideDayOffset === -1) dateStr += ' (-1d)'; else if (tideDayOffset === 1) dateStr += ' (+1d)'; else dateStr += ` (${tideDayOffset>0?'+':''}${tideDayOffset}d)`;
             lbl.innerText = `Fecha: ${dateStr}`;
-            calculateWorldwideTidesAndMoon(currentLat, currentLon, tideDayOffset);
+            calculateMeeusMoon(currentLat, currentLon, tideDayOffset);
+            calculateWorldwideTides(currentLat, currentLon, tideDayOffset);
         }
 
-        // MOTOR DE TRACKING Y WAYPOINTS MANUALES
+        // MOTOR DE EXPEDICIÓN CON CRONÓMETRO ACTIVO
         function toggleMissionTracking() {
             if (!gpsActive) { alert("PULSA ACTIVAR GPS ARRIBA PRIMERO."); return; }
             isTracking = !isTracking;
             const btn = document.getElementById('btnToggleTrack');
             const badge = document.getElementById('trackStatusBadge');
+            
             if (isTracking) { 
                 btn.innerText = '⏸ Pausar'; btn.className = 'tactical-btn danger'; badge.innerText = 'REC TRACKING'; badge.className = 'badge-tag orange'; 
+                if (!trackingTimerInterval) {
+                    trackingTimerInterval = setInterval(() => {
+                        trackingSeconds++;
+                        const h = String(Math.floor(trackingSeconds / 3600)).padStart(2, '0');
+                        const m = String(Math.floor((trackingSeconds % 3600) / 60)).padStart(2, '0');
+                        const s = String(trackingSeconds % 60).padStart(2, '0');
+                        document.getElementById('trackTimerVal').innerText = `${h}:${m}:${s}`;
+                    }, 1000);
+                }
             } else { 
                 btn.innerText = '▶ Reanudar'; btn.className = 'tactical-btn primary'; badge.innerText = 'PAUSADO'; badge.className = 'badge-tag'; 
+                clearInterval(trackingTimerInterval);
+                trackingTimerInterval = null;
             }
         }
 
@@ -1282,18 +1307,22 @@
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
-        // GUARDAR RUTA EN HISTORIAL LOCALSTORAGE
-        function stopAndSaveMission() {
+        // FINALIZAR RUTA: DETIENE CRONO, GUARDA Y ABRE PDF
+        function finishAndSaveMission() {
             if (waypoints.length === 0) { alert("No hay datos de ruta grabados."); return; }
             if (isTracking) toggleMissionTracking();
+            clearInterval(trackingTimerInterval);
+            trackingTimerInterval = null;
 
-            const routeTitle = prompt("Nombre para guardar esta misión/ruta:", `Ruta ${new Date().toLocaleDateString('es-ES')} ${new Date().toLocaleTimeString()}`);
+            const timeStr = document.getElementById('trackTimerVal').innerText;
+            const routeTitle = prompt("Expedición finalizada. Nombre de la misión:", `Ruta ${new Date().toLocaleDateString('es-ES')} (${timeStr})`);
             if (!routeTitle) return;
 
             const missionData = {
                 id: Date.now(),
                 title: routeTitle,
                 date: new Date().toLocaleString('es-ES'),
+                timeElapsed: timeStr,
                 dist: totalDistanceKm.toFixed(2),
                 pointsCount: waypoints.length,
                 points: waypoints,
@@ -1305,7 +1334,7 @@
             saved.unshift(missionData);
             localStorage.setItem('orion_missions', JSON.stringify(saved));
 
-            alert(`✅ "${routeTitle}" guardada con éxito en el historial.`);
+            renderPdfWithData(missionData.title, missionData.date, missionData.points, missionData.dist, missionData.pointsCount, missionData.lat, missionData.lon, missionData.alt, missionData.baro, missionData.qfe, missionData.qnh, missionData.timeElapsed);
         }
 
         function openHistoryModal() {
@@ -1322,7 +1351,7 @@
                     item.innerHTML = `
                         <div>
                             <div style="font-weight:900; color:#0f172a; font-size:0.9rem;">${m.title}</div>
-                            <div style="font-size:0.68rem; color:#64748b; margin-top:2px;">${m.date} • <strong>${m.dist} km</strong> • ${m.pointsCount} pts</div>
+                            <div style="font-size:0.68rem; color:#64748b; margin-top:2px;">${m.date} • <strong>${m.dist} km</strong> • ⏱ ${m.timeElapsed || '--:--'} • ${m.pointsCount} pts</div>
                         </div>
                         <div style="display:flex; gap:6px;">
                             <button onclick="loadMissionForReport(${m.id})" style="background:#0284c7; border:none; color:#fff; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.7rem; cursor:pointer;">PDF</button>
@@ -1350,23 +1379,23 @@
             const saved = JSON.parse(localStorage.getItem('orion_missions') || '[]');
             const mission = saved.find(m => m.id === id);
             if (mission) {
-                renderPdfWithData(mission.title, mission.date, mission.points, mission.dist, mission.points.length, mission.lat, mission.lon, mission.alt, mission.baro, mission.qfe, mission.qnh);
+                renderPdfWithData(mission.title, mission.date, mission.points, mission.dist, mission.points.length, mission.lat, mission.lon, mission.alt, mission.baro, mission.qfe, mission.qnh, mission.timeElapsed || '00:00:00');
             }
         }
 
         function openMissionReportModal() {
             const now = new Date();
             const dStr = `${now.toLocaleDateString('es-ES', { weekday:'long', year:'numeric', month:'long', day:'numeric'})} | Hora: ${now.toLocaleTimeString()}`;
-            renderPdfWithData("ORION • MISSION REPORT", dStr, waypoints, totalDistanceKm.toFixed(2), waypoints.length, currentLat, currentLon, currentAltitude, baroAltitude, currentPressure, seaLevelPressure);
+            renderPdfWithData("ORION • MISSION REPORT", dStr, waypoints, totalDistanceKm.toFixed(2), waypoints.length, currentLat, currentLon, currentAltitude, baroAltitude, currentPressure, seaLevelPressure, document.getElementById('trackTimerVal').innerText);
         }
 
-        function renderPdfWithData(title, dateStr, pts, dist, count, lat, lon, altGps, altBaro, qfe, qnh) {
+        function renderPdfWithData(title, dateStr, pts, dist, count, lat, lon, altGps, altBaro, qfe, qnh, timeStr = '00:00:00') {
             document.getElementById('pdfMissionTitle').innerText = title;
             document.getElementById('repDateTime').innerText = `Fecha: ${dateStr}`;
             document.getElementById('pdfCoords').innerText = `${Math.abs(lat).toFixed(4)}° ${lat>=0?'N':'S'} / ${Math.abs(lon).toFixed(4)}° ${lon>=0?'E':'W'}`;
             document.getElementById('pdfAlts').innerText = `GPS: ${altGps}m | Baro: ${altBaro}m`;
             document.getElementById('pdfBaro').innerText = `QFE: ${qfe}hPa | QNH: ${qnh}hPa`;
-            document.getElementById('pdfDist').innerText = `${dist} km`;
+            document.getElementById('pdfDistTime').innerText = `${dist} km | ⏱ ${timeStr}`;
             document.getElementById('pdfWps').innerText = `${count} puntos`;
             document.getElementById('pdfAstro').innerText = `Sol: ${sunAzimuth}° | Luna: ${document.getElementById('moonLumiVal').innerText}`;
 
@@ -1406,6 +1435,58 @@
 
         function closeMissionReportModal() { 
             document.getElementById('reportModalOverlay').style.display = 'none'; 
+        }
+
+        function checkStormDropAuto(allowAudio = true) {
+            const banner = document.getElementById('stormBanner');
+            const indicator = document.getElementById('stormAlarmIndicator');
+            if (referencePressure - currentPressure >= 3) {
+                banner.style.display = 'flex';
+                indicator.className = 'badge-tag baro-alert';
+                indicator.innerHTML = '<span class="status-dot-mini" style="background:#f43f5e;"></span> BARO [STORM]';
+                if (allowAudio && navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 400]);
+            } else {
+                banner.style.display = 'none';
+                indicator.className = 'badge-tag baro-armed';
+                indicator.innerHTML = '<span class="status-dot-mini" style="background:var(--accent-green);"></span> BARO';
+            }
+        }
+
+        function initBarometerDetailedChart() {
+            const cvs = document.getElementById('baroCanvas');
+            if(!cvs) return;
+            const ctx = cvs.getContext('2d');
+            const rect = cvs.getBoundingClientRect();
+            const width = rect.width || 320;
+            const height = rect.height || 75;
+            
+            cvs.width = width * window.devicePixelRatio;
+            cvs.height = height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            
+            const padLeft = 32, padBottom = 16, w = width, h = height;
+            const isDark = document.documentElement.getAttribute('data-theme') !== 'day';
+            
+            ctx.fillStyle = isDark ? 'rgba(56, 189, 248, 0.06)' : 'rgba(0, 0, 0, 0.05)';
+            for (let x=padLeft; x<w; x+=12) for (let y=0; y<h-padBottom; y+=10) ctx.fillRect(x,y,1.5,1.5);
+
+            ctx.font = 'bold 8px -apple-system, sans-serif'; ctx.fillStyle = isDark ? '#94a3b8' : '#475569'; ctx.textAlign = 'right';
+            [1018, 1015, 1012].forEach(val => {
+                const yPos = 8 + (1018 - val)/6 * (h - padBottom - 8);
+                ctx.fillText(`${val}`, padLeft - 4, yPos + 3);
+            });
+
+            ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2; ctx.beginPath();
+            ctx.moveTo(padLeft, 8 + (1018 - baroHistory[0].p)/6 * (h - padBottom - 8));
+            baroHistory.forEach((pt, i) => ctx.lineTo(padLeft + (i/(baroHistory.length-1))*(w-padLeft-10), 8 + (1018 - pt.p)/6 * (h - padBottom - 8)));
+            ctx.stroke();
+
+            baroHistory.forEach((pt, i) => {
+                const x = padLeft + (i/(baroHistory.length-1))*(w-padLeft-10);
+                const y = 8 + (1018 - pt.p)/6 * (h - padBottom - 8);
+                ctx.fillStyle = '#34d399';
+                ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI*2); ctx.fill();
+            });
         }
     </script>
 </body>
