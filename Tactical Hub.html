@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tactical Hub - Field Navigator</title>
+    <title>Tactical Hub Pro - Field Navigator</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0a0f18">
+    <meta name="theme-color" content="#070b12">
     <style>
         :root {
-            --bg-primary: #090d16;
-            --bg-card: #121927;
-            --bg-card-inner: #182234;
-            --border-color: rgba(255, 255, 255, 0.08);
+            --bg-primary: #070b12;
+            --bg-card: #0f1726;
+            --bg-card-inner: #152033;
+            --border-color: rgba(255, 255, 255, 0.07);
             --border-highlight: rgba(0, 210, 255, 0.25);
             --text-main: #e2e8f0;
-            --text-muted: #8492a6;
+            --text-muted: #7e8e9f;
             --accent-cyan: #00d2ff;
             --accent-green: #00e676;
             --accent-orange: #ff9800;
             --accent-orange-glow: rgba(255, 152, 0, 0.4);
             --accent-yellow: #ffd600;
             --accent-red: #ff3d71;
-            --lcd-bg: #0b141d;
+            --lcd-bg: #09111c;
             --radius-main: 16px;
             --radius-card: 12px;
         }
@@ -32,19 +32,102 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Roboto, sans-serif;
             user-select: none;
         }
 
         body {
             background-color: var(--bg-primary);
             color: var(--text-main);
-            padding: env(safe-area-inset-top, 20px) 14px calc(env(safe-area-inset-bottom, 20px) + 30px) 14px;
+            padding: calc(env(safe-area-inset-top, 20px) + 8px) 14px calc(env(safe-area-inset-bottom, 20px) + 30px) 14px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
             max-width: 540px;
             margin: 0 auto;
+        }
+
+        /* 0. CABECERA TÁCTICA SUPERIOR */
+        .tactical-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 2px;
+        }
+
+        .brand-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            color: #fff;
+        }
+
+        .brand-title span {
+            color: var(--accent-cyan);
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: 1px solid var(--accent-cyan);
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            padding: 4px 9px;
+            border-radius: 20px;
+            background: rgba(0, 230, 118, 0.12);
+            color: var(--accent-green);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+            text-transform: uppercase;
+        }
+
+        .status-pill.offline {
+            background: rgba(255, 61, 113, 0.12);
+            color: var(--accent-red);
+            border-color: rgba(255, 61, 113, 0.3);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 6px currentColor;
+        }
+
+        .btn-gps-sync {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: #b0c4de;
+            padding: 5px 9px;
+            border-radius: 8px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .btn-gps-sync:active {
+            transform: scale(0.95);
+            border-color: var(--accent-cyan);
+            color: #fff;
         }
 
         /* CARD CONTAINERS */
@@ -52,13 +135,12 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-main);
-            padding: 16px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            gap: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
             position: relative;
-            overflow: hidden;
         }
 
         .card-header {
@@ -67,7 +149,7 @@
             justify-content: space-between;
             font-size: 0.72rem;
             font-weight: 800;
-            letter-spacing: 1.2px;
+            letter-spacing: 1px;
             text-transform: uppercase;
             color: var(--text-muted);
         }
@@ -88,12 +170,41 @@
             font-size: 0.65rem;
             font-weight: 700;
             letter-spacing: 0.8px;
+            cursor: pointer;
         }
 
         .badge-tag.orange {
             background: rgba(255, 152, 0, 0.12);
             color: var(--accent-orange);
             border-color: rgba(255, 152, 0, 0.3);
+        }
+
+        .badge-tag.alarm-on {
+            background: rgba(255, 61, 113, 0.18);
+            color: var(--accent-red);
+            border-color: rgba(255, 61, 113, 0.5);
+            animation: pulse-alarm 1.5s infinite;
+        }
+
+        @keyframes pulse-alarm {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 61, 113, 0.4); }
+            50% { box-shadow: 0 0 10px 2px rgba(255, 61, 113, 0.6); }
+        }
+
+        /* BANNER ALERTA DE TORMENTA */
+        .storm-alert-banner {
+            display: none;
+            background: linear-gradient(135deg, rgba(255,61,113,0.2), rgba(255,152,0,0.15));
+            border: 1px solid var(--accent-red);
+            border-radius: var(--radius-card);
+            padding: 8px 12px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #fff;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            animation: pulse-alarm 1.2s infinite;
         }
 
         /* GRID METRICS */
@@ -122,7 +233,7 @@
 
         .metric-box.active-lock {
             border-color: var(--accent-orange);
-            background: rgba(255, 152, 0, 0.08);
+            background: rgba(255, 152, 0, 0.09);
             box-shadow: 0 0 12px var(--accent-orange-glow);
         }
 
@@ -130,8 +241,8 @@
             font-size: 0.68rem;
             color: var(--text-muted);
             font-weight: 600;
-            letter-spacing: 0.4px;
-            margin-bottom: 3px;
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
         }
 
         .metric-value {
@@ -145,7 +256,7 @@
         }
 
         .metric-value .unit {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 600;
             color: var(--text-muted);
         }
@@ -162,12 +273,12 @@
         .text-orange { color: var(--accent-orange) !important; }
         .text-yellow { color: var(--accent-yellow) !important; }
 
-        /* LCD DOT-MATRIX CHART */
+        /* LCD CANVAS BOXES */
         .lcd-canvas-container {
             background: var(--lcd-bg);
             border: 1px solid rgba(0, 210, 255, 0.15);
             border-radius: var(--radius-card);
-            padding: 10px;
+            padding: 10px 12px;
             display: flex;
             flex-direction: column;
             gap: 6px;
@@ -182,9 +293,8 @@
             letter-spacing: 0.5px;
         }
 
-        canvas#baroCanvas {
+        canvas.lcd-chart {
             width: 100%;
-            height: 55px;
             display: block;
         }
 
@@ -207,6 +317,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
         }
 
         .cardinal-mark {
@@ -215,7 +326,7 @@
             font-weight: 900;
             color: #627b9b;
         }
-        .cardinal-mark.n { top: 4px; color: var(--accent-red); font-weight: 900; }
+        .cardinal-mark.n { top: 4px; color: var(--accent-red); }
         .cardinal-mark.s { bottom: 4px; }
         .cardinal-mark.e { right: 6px; }
         .cardinal-mark.w { left: 6px; }
@@ -318,7 +429,7 @@
             z-index: 5;
         }
 
-        /* TIDES SLIDER */
+        /* TIDES SLIDER & TIMELINE */
         .slider-wrapper {
             display: flex;
             flex-direction: column;
@@ -368,7 +479,7 @@
             cursor: pointer;
         }
 
-        /* ACTIONS */
+        /* ACTION BUTTONS */
         .btn-action-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -397,21 +508,21 @@
         .tactical-btn.primary { background: linear-gradient(135deg, #0088cc, #005588); border-color: #00d2ff; color: #fff; }
         .tactical-btn.danger { background: rgba(255, 61, 113, 0.15); border-color: rgba(255, 61, 113, 0.4); color: var(--accent-red); }
 
-        /* MODAL REPORT / PDF CON MAPA 2D */
+        /* MODAL REPORT / PDF BLINDADO */
         #reportModalOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 99999;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(10px);
+            z-index: 999999;
             display: none;
             flex-direction: column;
             align-items: center;
             overflow-y: auto;
-            padding: 20px 14px 40px 14px;
+            padding: calc(env(safe-area-inset-top, 30px) + 24px) 14px calc(env(safe-area-inset-bottom, 20px) + 30px) 14px;
         }
 
         .modal-toolbar {
@@ -420,15 +531,12 @@
             display: flex;
             justify-content: space-between;
             gap: 10px;
-            margin-bottom: 14px;
-            position: sticky;
-            top: 0;
-            z-index: 100000;
+            margin-bottom: 16px;
         }
 
         .modal-btn-close {
             background: #24344d;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.25);
             color: #fff;
             padding: 10px 16px;
             border-radius: 8px;
@@ -438,6 +546,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
         .modal-btn-print {
@@ -452,6 +561,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
         .printable-sheet {
@@ -517,7 +627,6 @@
             margin-top: 2px;
         }
 
-        /* CONTENEDOR MAPA DE RUTA EN EL PDF */
         .report-map-card {
             border: 1px solid #d1d5db;
             border-radius: 8px;
@@ -573,7 +682,7 @@
 
         @media print {
             body { background: #fff !important; padding: 0 !important; }
-            .tactical-card, #reportModalOverlay .modal-toolbar { display: none !important; }
+            .tactical-topbar, .tactical-card, #reportModalOverlay .modal-toolbar { display: none !important; }
             #reportModalOverlay { position: static !important; width: 100% !important; height: auto !important; background: transparent !important; padding: 0 !important; display: block !important; }
             .printable-sheet { max-width: 100% !important; box-shadow: none !important; border-radius: 0 !important; padding: 0 !important; }
         }
@@ -581,20 +690,44 @@
 </head>
 <body>
 
-    <!-- 1. ALTIMETRO & GRAFICO BAROMETRICO -->
+    <!-- 0. CABECERA TÁCTICA -->
+    <div class="tactical-topbar">
+        <div class="brand-title">
+            🛰️ TACTICAL HUB <span>PRO</span>
+        </div>
+        <div class="topbar-actions">
+            <div class="status-pill" id="connStatus">
+                <div class="status-dot"></div>
+                <span id="connStatusText">ONLINE</span>
+            </div>
+            <button class="btn-gps-sync" onclick="syncGPSManual()">
+                <span>🛰️</span> SYNC GPS
+            </button>
+        </div>
+    </div>
+
+    <!-- 1. ALTIMETRO, BAROMETRO & ALERTA DE TORMENTA CASIO -->
     <div class="tactical-card">
         <div class="card-header">
             <div class="title-group">
                 <span>⛰️</span>
                 <span>ALTÍMETRO & GRÁFICO BAROMÉTRICO</span>
             </div>
-            <span class="badge-tag">ALTI / BARO</span>
+            <div style="display:flex; gap:6px;">
+                <span class="badge-tag" id="stormAlarmBtn" onclick="toggleStormAlarm()">⚡ ALARM OFF</span>
+                <span class="badge-tag">ALTI / BARO</span>
+            </div>
+        </div>
+
+        <div class="storm-alert-banner" id="stormBanner">
+            <span>⚠️ <strong>ALERTA DE TORMENTA:</strong> Caída barométrica rápida detectada</span>
+            <span style="font-size:0.65rem; background:rgba(0,0,0,0.4); padding:2px 6px; border-radius:4px;">CASIO ALARM</span>
         </div>
 
         <div class="metric-grid-2x2">
             <div class="metric-box">
                 <span class="metric-label">Altitud GPS (Referencia)</span>
-                <span class="metric-value text-green" id="altGpsVal">205 <span class="unit">m</span></span>
+                <span class="metric-value text-green" id="altGpsVal">213 <span class="unit">m</span></span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Presión Superficie (QFE)</span>
@@ -615,11 +748,11 @@
                 <span>TENDENCIA 24H (LCD DOT-MATRIX)</span>
                 <span class="text-cyan" id="trendState">➔ Estable</span>
             </div>
-            <canvas id="baroCanvas"></canvas>
+            <canvas id="baroCanvas" class="lcd-chart" style="height: 55px;"></canvas>
         </div>
     </div>
 
-    <!-- 2. ORIENTACION & BEARING MEMORY -->
+    <!-- 2. ORIENTACION, RETORNO & BEARING MEMORY -->
     <div class="tactical-card">
         <div class="card-header">
             <div class="title-group">
@@ -654,12 +787,12 @@
             </div>
 
             <div class="metric-grid-2x2">
-                <div class="metric-box" id="boxRumboActual" onclick="toggleBearingFromCurrent()" title="Bloquear rumbo actual">
+                <div class="metric-box" id="boxRumboActual" onclick="toggleBearingFromCurrent()" title="Fijar rumbo actual">
                     <span class="metric-label">Rumbo Actual</span>
                     <span class="metric-value text-green" id="headingVal">233<span class="unit">°</span></span>
                     <span class="metric-sub" id="headingCard">SW</span>
                 </div>
-                <div class="metric-box" id="boxRumboRetorno" onclick="toggleBearingReturn()" title="Bloquear rumbo de retorno">
+                <div class="metric-box" id="boxRumboRetorno" onclick="toggleBearingReturn()" title="Fijar retorno (180°)">
                     <span class="metric-label text-orange">Rumbo Retorno</span>
                     <span class="metric-value text-orange" id="returnVal">53<span class="unit">°</span></span>
                     <span class="metric-sub" id="returnDesc">Retorno (180°)</span>
@@ -708,14 +841,14 @@
         </div>
     </div>
 
-    <!-- 4. MAREAS -->
+    <!-- 4. MOTOR MUNDIAL DE MAREAS & FASES LUNARES -->
     <div class="tactical-card">
         <div class="card-header">
             <div class="title-group">
                 <span>🌊</span>
-                <span>PLEAMARES & BAJAMARES (4 EVENTOS)</span>
+                <span id="tideRegionTitle">MAREAS GLOBALES (ASTRONÓMICO)</span>
             </div>
-            <span class="badge-tag">MEDITERRÁNEO</span>
+            <span class="badge-tag" id="tideMoonPhaseTag">LUNA: 25%</span>
         </div>
 
         <div class="slider-wrapper">
@@ -727,7 +860,15 @@
                     <button class="day-btn" onclick="offsetTideDate(1)">+1d ▶</button>
                 </div>
             </div>
-            <input type="range" min="0" max="23.9" step="0.1" value="16.9" class="tactical-range" id="tideTimeSlider">
+            <input type="range" min="0" max="23.9" step="0.1" value="17.6" class="tactical-range" id="tideTimeSlider" oninput="updateTideSlider(this.value)">
+        </div>
+
+        <div class="lcd-canvas-container">
+            <div class="lcd-header">
+                <span>CICLO MAREAL 24H (LCD WAVE)</span>
+                <span class="text-green" id="tideStateDesc">Subiendo hacia Pleamar</span>
+            </div>
+            <canvas id="tideCanvas" class="lcd-chart" style="height: 60px;"></canvas>
         </div>
 
         <div class="metric-grid-2x2">
@@ -748,9 +889,20 @@
                 <span class="metric-value" id="tideB2">18:30</span>
             </div>
         </div>
+
+        <div class="metric-grid-2x2" style="margin-top:-2px;">
+            <div class="metric-box" style="padding:6px 10px;">
+                <span class="metric-label">Intervalo Lunitidal (INT)</span>
+                <span class="metric-value text-cyan" style="font-size:1.05rem;" id="lunitidalVal">07:10</span>
+            </div>
+            <div class="metric-box" style="padding:6px 10px;">
+                <span class="metric-label">Edad Lunar</span>
+                <span class="metric-value text-yellow" style="font-size:1.05rem;" id="moonAgeVal">4.2 <span class="unit">días</span></span>
+            </div>
+        </div>
     </div>
 
-    <!-- 5. TRACKER MIGA DE PAN & BOTONES DE INFORME -->
+    <!-- 5. TRACKER MIGA DE PAN & ACCIONES -->
     <div class="tactical-card">
         <div class="card-header">
             <div class="title-group">
@@ -804,7 +956,7 @@
                 </div>
                 <div class="report-box">
                     <div class="lbl">Altitud Barométrica / GPS</div>
-                    <div class="val" id="repAlt">205.0 m</div>
+                    <div class="val" id="repAlt">213.0 m</div>
                 </div>
                 <div class="report-box">
                     <div class="lbl">Presión QFE / QNH</div>
@@ -812,7 +964,6 @@
                 </div>
             </div>
 
-            <!-- MAPA VECTORIAL DE TRAZA DE RUTA -->
             <div class="report-map-card">
                 <div class="report-map-title">
                     <span>TRAZADO VECTORIAL DE RUTA (MIGA DE PAN)</span>
@@ -839,7 +990,7 @@
                     </tr>
                     <tr>
                         <th>Fase Lunar & Marea:</th>
-                        <td>Creciente Inicial (25%) | Mediterráneo</td>
+                        <td id="repMoonTide">Creciente Inicial (25%) | Global</td>
                     </tr>
                 </table>
             </div>
@@ -851,7 +1002,7 @@
     </div>
 
     <script>
-        // --- ESTADO GLOBAL ---
+        // --- VARIABLES GLOBALES ---
         let currentHeading = 233;
         let lockedBearing = null;
         let sunAzimuth = 228;
@@ -859,15 +1010,102 @@
         let waypoints = [];
         let totalDistanceKm = 0;
         let lastGpsPos = null;
-        let currentAltitude = 205.0;
+        let currentAltitude = 213.0;
         let currentPressure = 993;
         let currentQnh = 1016;
+        let sliderTideHour = 17.6;
+        let tideDayOffset = 0;
+        let stormAlarmActive = false;
+        let stormAlarmAudioCtx = null;
+        let currentLat = 41.606989;
+        let currentLon = 2.137218;
 
         window.addEventListener('DOMContentLoaded', () => {
+            initConnectivity();
             initBarometerChart();
+            calculateWorldwideTides(currentLat, currentLon, tideDayOffset);
             initSensors();
             updateCompassDisplay(currentHeading);
         });
+
+        // --- ESTADO ONLINE / OFFLINE ---
+        function initConnectivity() {
+            const updateStatus = () => {
+                const pill = document.getElementById('connStatus');
+                const txt = document.getElementById('connStatusText');
+                if (navigator.onLine) {
+                    pill.className = 'status-pill';
+                    txt.innerText = 'ONLINE';
+                } else {
+                    pill.className = 'status-pill offline';
+                    txt.innerText = 'OFFLINE';
+                }
+            };
+            window.addEventListener('online', updateStatus);
+            window.addEventListener('offline', updateStatus);
+            updateStatus();
+        }
+
+        function syncGPSManual() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    currentLat = pos.coords.latitude;
+                    currentLon = pos.coords.longitude;
+                    currentAltitude = pos.coords.altitude || currentAltitude;
+
+                    document.getElementById('latVal').innerHTML = `${currentLat.toFixed(1)}<span class="unit">° ${currentLat>=0?'N':'S'}</span>`;
+                    document.getElementById('lonVal').innerHTML = `${currentLon.toFixed(1)}<span class="unit">° ${currentLon>=0?'E':'W'}</span>`;
+                    document.getElementById('altGpsVal').innerHTML = `${Math.round(currentAltitude)} <span class="unit">m</span>`;
+                    
+                    calculateWorldwideTides(currentLat, currentLon, tideDayOffset);
+                    if (isTracking) recordWaypoint(currentLat, currentLon, currentAltitude);
+                }, () => {}, { enableHighAccuracy: true });
+            }
+        }
+
+        // --- ALERTA DE TORMENTAS CASIO (BARO STORM ALARM) ---
+        function toggleStormAlarm() {
+            stormAlarmActive = !stormAlarmActive;
+            const btn = document.getElementById('stormAlarmBtn');
+            const banner = document.getElementById('stormBanner');
+
+            if (stormAlarmActive) {
+                btn.className = 'badge-tag alarm-on';
+                btn.innerText = '⚡ ALARM ON';
+                checkStormDrop(true);
+            } else {
+                btn.className = 'badge-tag';
+                btn.innerText = '⚡ ALARM OFF';
+                banner.style.display = 'none';
+            }
+        }
+
+        function checkStormDrop(simulateDrop = false) {
+            const banner = document.getElementById('stormBanner');
+            if (stormAlarmActive && (simulateDrop || currentPressure < 995)) {
+                banner.style.display = 'flex';
+                playTacticalAlarmBeep();
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+
+        function playTacticalAlarmBeep() {
+            try {
+                if (!stormAlarmAudioCtx) stormAlarmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = stormAlarmAudioCtx.createOscillator();
+                const gain = stormAlarmAudioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(880, stormAlarmAudioCtx.currentTime);
+                osc.frequency.setValueAtTime(1760, stormAlarmAudioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.15, stormAlarmAudioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, stormAlarmAudioCtx.currentTime + 0.3);
+                osc.connect(gain);
+                gain.connect(stormAlarmAudioCtx.destination);
+                osc.start();
+                osc.stop(stormAlarmAudioCtx.currentTime + 0.3);
+            } catch (e) {}
+        }
 
         // --- CASIO BEARING MEMORY ---
         function toggleBearingFromCurrent() {
@@ -943,23 +1181,20 @@
 
             if (navigator.geolocation) {
                 navigator.geolocation.watchPosition(pos => {
-                    const lat = pos.coords.latitude;
-                    const lon = pos.coords.longitude;
-                    const alt = pos.coords.altitude || 205.0;
+                    currentLat = pos.coords.latitude;
+                    currentLon = pos.coords.longitude;
+                    currentAltitude = pos.coords.altitude || currentAltitude;
 
-                    currentAltitude = alt;
-                    document.getElementById('latVal').innerHTML = `${lat.toFixed(1)}<span class="unit">° N</span>`;
-                    document.getElementById('lonVal').innerHTML = `${lon.toFixed(1)}<span class="unit">° E</span>`;
-                    document.getElementById('altGpsVal').innerHTML = `${Math.round(alt)} <span class="unit">m</span>`;
+                    document.getElementById('latVal').innerHTML = `${currentLat.toFixed(1)}<span class="unit">° ${currentLat>=0?'N':'S'}</span>`;
+                    document.getElementById('lonVal').innerHTML = `${currentLon.toFixed(1)}<span class="unit">° ${currentLon>=0?'E':'W'}</span>`;
+                    document.getElementById('altGpsVal').innerHTML = `${Math.round(currentAltitude)} <span class="unit">m</span>`;
 
-                    if (isTracking) {
-                        recordWaypoint(lat, lon, alt);
-                    }
+                    if (isTracking) recordWaypoint(currentLat, currentLon, currentAltitude);
                 }, err => {}, { enableHighAccuracy: true });
             }
         }
 
-        // --- GRAFICO BAROMETRICO ---
+        // --- GRAFICO BAROMETRICO LCD DOT-MATRIX ---
         function initBarometerChart() {
             const cvs = document.getElementById('baroCanvas');
             const ctx = cvs.getContext('2d');
@@ -996,6 +1231,111 @@
                 ctx.arc(p.x, p.y, (idx === pts.length - 1) ? 3.5 : 2.5, 0, Math.PI * 2);
                 ctx.fill();
             });
+        }
+
+        // --- MOTOR ASTRONÓMICO MUNDIAL DE MAREAS ---
+        function calculateWorldwideTides(lat, lon, dayOffset = 0) {
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + dayOffset);
+
+            const knownNewMoon = new Date('2026-01-18T16:54:00Z');
+            const diffDays = (targetDate - knownNewMoon) / (1000 * 60 * 60 * 24);
+            const moonAge = (diffDays % 29.53058867 + 29.53058867) % 29.53058867;
+            const moonPhasePercent = Math.round((1 - Math.cos((moonAge / 29.53058867) * 2 * Math.PI)) / 2 * 100);
+
+            document.getElementById('moonAgeVal').innerHTML = `${moonAge.toFixed(1)} <span class="unit">días</span>`;
+            document.getElementById('tideMoonPhaseTag').innerText = `LUNA: ${moonPhasePercent}%`;
+
+            const intMinutes = Math.round(((Math.abs(lon) % 15) / 15) * 60 + 420);
+            const intH = Math.floor(intMinutes / 60);
+            const intM = intMinutes % 60;
+            const intStr = `${String(intH).padStart(2,'0')}:${String(intM).padStart(2,'0')}`;
+            document.getElementById('lunitidalVal').innerText = intStr;
+
+            const baseCulmination = (moonAge * 0.84) % 24;
+            const p1 = (baseCulmination + (intMinutes / 60)) % 24;
+            const b1 = (p1 + 6.21) % 24;
+            const p2 = (p1 + 12.42) % 24;
+            const b2 = (p2 + 6.21) % 24;
+
+            const formatHour = (h) => {
+                const hh = Math.floor(h);
+                const mm = Math.floor((h - hh) * 60);
+                return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+            };
+
+            document.getElementById('tideP1').innerText = formatHour(p1);
+            document.getElementById('tideB1').innerText = formatHour(b1);
+            document.getElementById('tideP2').innerHTML = `${formatHour(p2)} <span class="unit" style="font-size:0.6rem;">(+1)</span>`;
+            document.getElementById('tideB2').innerText = formatHour(b2);
+
+            drawTideCanvas();
+        }
+
+        // --- GRÁFICO LCD DE ONDA DE MAREAS ---
+        function drawTideCanvas() {
+            const cvs = document.getElementById('tideCanvas');
+            const ctx = cvs.getContext('2d');
+            cvs.width = cvs.clientWidth * window.devicePixelRatio;
+            cvs.height = cvs.clientHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            const w = cvs.clientWidth;
+            const h = cvs.clientHeight;
+
+            ctx.fillStyle = 'rgba(0, 210, 255, 0.08)';
+            for (let x = 0; x < w; x += 12) {
+                for (let y = 0; y < h; y += 10) {
+                    ctx.fillRect(x, y, 1.5, 1.5);
+                }
+            }
+
+            ctx.strokeStyle = '#00d2ff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let x = 0; x <= w; x++) {
+                const angle = (x / w) * Math.PI * 4;
+                const y = (h / 2) + Math.sin(angle) * (h * 0.35);
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            const curX = (sliderTideHour / 24) * w;
+            const curAngle = (curX / w) * Math.PI * 4;
+            const curY = (h / 2) + Math.sin(curAngle) * (h * 0.35);
+
+            ctx.strokeStyle = 'rgba(0, 230, 118, 0.4)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 2]);
+            ctx.beginPath();
+            ctx.moveTo(curX, 0); ctx.lineTo(curX, h);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = '#00e676';
+            ctx.shadowColor = '#00e676';
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.arc(curX, curY, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        function updateTideSlider(val) {
+            sliderTideHour = parseFloat(val);
+            drawTideCanvas();
+        }
+
+        function offsetTideDate(offset) {
+            tideDayOffset = (offset === 0) ? 0 : tideDayOffset + offset;
+            const lbl = document.getElementById('tideDateLabel');
+            if (tideDayOffset === 0) lbl.innerText = 'Fecha: Lun 17 Ago (Hoy)';
+            else if (tideDayOffset === -1) lbl.innerText = 'Fecha: Dom 16 Ago (-1d)';
+            else if (tideDayOffset === 1) lbl.innerText = 'Fecha: Mar 18 Ago (+1d)';
+            else lbl.innerText = `Fecha: Compensación (${tideDayOffset>0?'+':''}${tideDayOffset}d)`;
+            
+            calculateWorldwideTides(currentLat, currentLon, tideDayOffset);
         }
 
         // --- TRACKER MIGA DE PAN ---
@@ -1040,7 +1380,7 @@
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
-        // --- DIBUJO DEL MAPA VECTORIAL DE RUTA EN EL PDF ---
+        // --- DIBUJO MAPA VECTORIAL 2D ---
         function drawRouteMap() {
             const cvs = document.getElementById('routeCanvas');
             const ctx = cvs.getContext('2d');
@@ -1051,7 +1391,6 @@
             const w = cvs.clientWidth;
             const h = cvs.clientHeight;
 
-            // Fondo y Rejilla Radar
             ctx.fillStyle = '#080d14';
             ctx.fillRect(0, 0, w, h);
 
@@ -1068,7 +1407,6 @@
                 ctx.stroke();
             }
 
-            // Datos de traza (si no hay ruta grabada aún, dibuja traza de demostración)
             let pts = waypoints.map(p => ({ x: p.lon, y: p.lat }));
             if (pts.length < 2) {
                 pts = [
@@ -1078,7 +1416,6 @@
                 ];
             }
 
-            // Calcular escala geográfica
             let minX = Math.min(...pts.map(p => p.x));
             let maxX = Math.max(...pts.map(p => p.x));
             let minY = Math.min(...pts.map(p => p.y));
@@ -1090,10 +1427,9 @@
 
             const toCanvas = (p) => ({
                 x: pad + (p.x - minX) * scaleX,
-                y: h - (pad + (p.y - minY) * scaleY) // Invertir eje Y para latitud
+                y: h - (pad + (p.y - minY) * scaleY)
             });
 
-            // Dibujar línea de la ruta
             ctx.strokeStyle = '#00d2ff';
             ctx.lineWidth = 3;
             ctx.beginPath();
@@ -1105,13 +1441,11 @@
             }
             ctx.stroke();
 
-            // Punto de Origen (Verde)
             ctx.fillStyle = '#00e676';
             ctx.beginPath();
             ctx.arc(start.x, start.y, 6, 0, Math.PI * 2);
             ctx.fill();
 
-            // Punto Final (Rojo)
             const end = toCanvas(pts[pts.length - 1]);
             ctx.fillStyle = '#ff3d71';
             ctx.beginPath();
@@ -1119,7 +1453,7 @@
             ctx.fill();
         }
 
-        // --- MODAL DE INFORME ---
+        // --- MODAL DE INFORME SEGURO ---
         function openMissionReportModal() {
             const now = new Date();
             document.getElementById('repDateTime').innerText = `Fecha: ${now.toLocaleDateString('es-ES', { weekday:'long', year:'numeric', month:'long', day:'numeric'})} | Hora: ${now.toLocaleTimeString()}`;
@@ -1133,23 +1467,16 @@
                 document.getElementById('repOrigin').innerText = `${waypoints[0].lat.toFixed(6)}, ${waypoints[0].lon.toFixed(6)}`;
                 document.getElementById('repLastPos').innerText = `${waypoints[waypoints.length-1].lat.toFixed(6)}, ${waypoints[waypoints.length-1].lon.toFixed(6)}`;
             } else {
-                document.getElementById('repOrigin').innerText = '41.606989, 2.137218 (Sentmenat Base)';
+                document.getElementById('repOrigin').innerText = `${currentLat.toFixed(6)}, ${currentLon.toFixed(6)} (Base GPS)`;
                 document.getElementById('repLastPos').innerText = 'Mismo punto';
             }
 
             document.getElementById('reportModalOverlay').style.display = 'flex';
-            setTimeout(drawRouteMap, 50);
+            setTimeout(drawRouteMap, 60);
         }
 
         function closeMissionReportModal() {
             document.getElementById('reportModalOverlay').style.display = 'none';
-        }
-
-        function offsetTideDate(offset) {
-            const lbl = document.getElementById('tideDateLabel');
-            if (offset === 0) lbl.innerText = 'Fecha: Lun 17 Ago (Hoy)';
-            else if (offset === -1) lbl.innerText = 'Fecha: Dom 16 Ago (-1d)';
-            else if (offset === 1) lbl.innerText = 'Fecha: Mar 18 Ago (+1d)';
         }
     </script>
 </body>
