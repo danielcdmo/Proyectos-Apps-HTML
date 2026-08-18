@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION - Field Navigator v2.8</title>
+    <title>ORION - Field Navigator v2.9</title>
     <meta name="author" content="danielcdmo">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -219,9 +219,14 @@
 
         .card-header { display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); }
         .card-header .title-group { display: flex; align-items: center; gap: 6px; color: var(--text-main); font-weight: 800; }
-        .badge-tag { background: rgba(56, 189, 248, 0.12); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; padding: 3px 8px; font-size: 0.62rem; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        
+        /* Interactive BARO Badge */
+        .badge-tag { background: rgba(56, 189, 248, 0.12); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; padding: 3px 8px; font-size: 0.62rem; font-weight: 700; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
+        .badge-tag.interactive { cursor: pointer; user-select: none; }
+        .badge-tag.interactive:active { transform: scale(0.95); }
         .badge-tag.baro-armed { background: rgba(52, 211, 153, 0.1); color: var(--accent-green); border-color: rgba(52, 211, 153, 0.3); }
         .badge-tag.baro-alert { background: rgba(244, 63, 94, 0.25); color: var(--accent-red); border-color: var(--accent-red); animation: pulse-alarm 1.2s infinite; }
+        .badge-tag.baro-off { background: rgba(100, 116, 139, 0.15); color: #94a3b8; border-color: rgba(100, 116, 139, 0.3); }
 
         @keyframes pulse-alarm { 0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); } 50% { box-shadow: 0 0 12px 2px rgba(244, 63, 94, 0.7); } }
 
@@ -285,7 +290,6 @@
         .map-wrapper { position: relative; width: 100%; height: 210px; border-radius: var(--radius-card); border: 1px solid var(--glass-border); overflow: hidden; background: #040813; }
         #liveMap { width: 100%; height: 100%; }
         
-        /* Modificador de Leaflet para Fallback Offline */
         .leaflet-container {
             background-color: #040813 !important;
             background-image: 
@@ -370,7 +374,7 @@
         </div>
 
         <div class="topbar-controls-row">
-            <span class="version-tag">v2.8</span>
+            <span class="version-tag">v2.9</span>
             <div class="connectivity-pill" id="connPill">
                 <span class="status-dot-mini" id="connDot" style="background:var(--accent-green);"></span>
                 <span id="connText">ONLINE</span>
@@ -406,7 +410,10 @@
         <div class="card-header">
             <div class="title-group"><span>⛰️</span><span>ALTÍMETRO & BARÓMETRO</span></div>
             <div style="display:flex; gap:6px;">
-                <span class="badge-tag baro-armed" id="stormAlarmIndicator"><span class="status-dot-mini" style="background:var(--accent-green);"></span> BARO</span>
+                <!-- Botón BARO Interactivo -->
+                <span class="badge-tag baro-armed interactive" id="stormAlarmIndicator" onclick="toggleStormAlarm()" title="Activar/Desactivar Alarma de Tormenta">
+                    <span class="status-dot-mini" style="background:var(--accent-green);"></span> BARO
+                </span>
                 <span class="badge-tag">ALTI / BARO</span>
             </div>
         </div>
@@ -690,7 +697,7 @@
     <div id="reportModalOverlay">
         <div class="no-print" style="width:100%; max-width:620px; display:flex; justify-content:space-between; gap:10px; margin-bottom:14px;">
             <button style="background:var(--glass-inner); border:1px solid var(--glass-border); color:#fff; padding:10px 18px; border-radius:20px; font-weight:800; cursor:pointer;" onclick="closeMissionReportModal()">← Volver</button>
-            <button style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:10px 20px; border-radius:20px; font-weight:800; cursor:pointer;" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+            <button style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:10px 20px; border-radius:20px; font-weight:800; cursor:pointer;" onclick="window.print()">🖨️ Exportar a PDF</button>
         </div>
         
         <div class="printable-sheet">
@@ -700,7 +707,7 @@
                     <div style="font-size:0.75rem; color:#64748b; font-weight:700; margin-top:3px;" id="repDateTime">Fecha: --</div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:0.75rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 10px; border-radius:6px;">v2.8</span>
+                    <span style="font-size:0.75rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 10px; border-radius:6px;">v2.9</span>
                     <div style="font-size:0.62rem; color:#64748b; font-weight:700; margin-top:4px;">REF: WGS84-GEO</div>
                 </div>
             </div>
@@ -722,7 +729,7 @@
             <div id="reportMapLeaflet"></div>
 
             <div style="margin-top:16px; border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:#64748b;">
-                <span>Sistema Operativo ORION v2.8 • Casio Sync Engine</span>
+                <span>Sistema Operativo ORION v2.9 • Casio Sync Engine</span>
                 <span><strong>Registrado por: danielcdmo</strong></span>
             </div>
         </div>
@@ -757,9 +764,12 @@
         let sliderTideHour = 12.0;
         let tideDayOffset = 0;
         let gpsActive = false;
+        
+        // Estado del pulsador BARO
+        let isStormAlarmEnabled = true; 
 
         let map, livePolylineGreen, livePolylineRed, userMarker, manualWpLayerGroup;
-        let ring100, ring500, ring1000; // Anillos tácticos para mapa offline
+        let ring100, ring500, ring1000; 
         
         let reportMap = null, reportPolylineGreen = null, reportPolylineRed = null, reportMarker = null, reportWpGroup = null;
         let rawTideEvents = { p1: 0.23, b1: 5.53, p2: 12.61, b2: 17.70 };
@@ -774,7 +784,6 @@
             return Math.round(qnh * Math.pow(1 - (altGps / 44330), 5.255));
         }
 
-        // MOTOR MATEMÁTICO 100% OFFLINE PARA DECLINACIÓN (BASE)
         function calcularDeclinacionMagneticaOffline(lat, lon) {
             const poleLat = (lat >= 0 ? 86.3 : -64.0) * Math.PI / 180;
             const poleLon = (lat >= 0 ? 156.0 : 136.0) * Math.PI / 180;
@@ -792,7 +801,7 @@
             dec = dec + quadCorr;
 
             if (lat >= 27 && lat <= 44 && lon >= -18 && lon <= 5) {
-                dec = 1.6 + (lon * 0.25) - ((lat - 40) * 0.05); // Calibración España/Ibérica
+                dec = 1.6 + (lon * 0.25) - ((lat - 40) * 0.05); 
             }
 
             const rounded = Math.round(dec);
@@ -800,7 +809,6 @@
             return `${dir} ${Math.abs(rounded)}`;
         }
 
-        // SISTEMA HÍBRIDO DECLINACIÓN (OFFLINE PRIMERO -> ONLINE DESPUÉS)
         async function updateMagneticDeclination(lat, lon) {
             let decMath = calcularDeclinacionMagneticaOffline(lat, lon);
             
@@ -822,10 +830,15 @@
                 }
             }
             
-            // Fallback Offline
             document.getElementById('decVal').innerHTML = `${decMath}<span class="unit">°</span>`;
             document.getElementById('decSource').innerText = "OFFLINE MODEL";
             document.getElementById('decSource').style.color = "var(--accent-orange)";
+        }
+
+        // Función del nuevo botón interactivo BARO
+        function toggleStormAlarm() {
+            isStormAlarmEnabled = !isStormAlarmEnabled;
+            checkStormDropAuto(false);
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -848,7 +861,6 @@
             setTimeout(() => {
                 initBarometerDetailedChart();
                 drawTideCanvas();
-                // Forzamos el cálculo offline al iniciar para que no se quede vacío
                 updateMagneticDeclination(currentLat, currentLon);
             }, 100);
 
@@ -876,7 +888,6 @@
 
             async function fetchLiveWeather() {
                 try {
-                    // v2.8: Petición doble a Open-Meteo (Temperatura + Presión QNH Dinámica)
                     const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${currentLat}&longitude=${currentLon}&current=temperature_2m,pressure_msl`);
                     const data = await res.json();
                     if (data && data.current) {
@@ -886,7 +897,7 @@
                             seaLevelPressure = Math.round(data.current.pressure_msl);
                             document.getElementById('qnhSourceTag').innerText = "QNH ONLINE (API)";
                             document.getElementById('qnhSourceTag').style.color = "var(--accent-green)";
-                            recalcularPresionesYAltitud(); // Recalcula altitud exacta con QNH dinámico
+                            recalcularPresionesYAltitud(); 
                         }
                     }
                 } catch (e) {
@@ -915,7 +926,6 @@
             map = L.map('liveMap', { zoomControl: false, attributionControl: false }).setView([currentLat, currentLon], 16);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, subdomains: ['a','b','c'] }).addTo(map);
 
-            // Anillos tácticos que se verán perfectamente si el mapa satélite no carga por falta de Internet
             ring100 = L.circle([currentLat, currentLon], {radius: 100, color: 'rgba(56, 189, 248, 0.4)', weight: 1.5, dashArray: '4 4', fill: false}).addTo(map);
             ring500 = L.circle([currentLat, currentLon], {radius: 500, color: 'rgba(56, 189, 248, 0.6)', weight: 1.5, dashArray: '4 4', fill: false}).addTo(map);
             ring1000 = L.circle([currentLat, currentLon], {radius: 1000, color: 'rgba(56, 189, 248, 0.8)', weight: 1.5, dashArray: '6 6', fill: false}).addTo(map);
@@ -982,7 +992,7 @@
                     document.getElementById('lonVal').innerHTML = `${Math.abs(currentLon).toFixed(1)}<span class="unit">° ${currentLon>=0?'E':'W'}</span>`;
                     
                     recalcularPresionesYAltitud();
-                    updateMagneticDeclination(currentLat, currentLon); // Se actualiza 100% real aquí
+                    updateMagneticDeclination(currentLat, currentLon); 
 
                     userMarker.setLatLng([currentLat, currentLon]);
                     ring100.setLatLng([currentLat, currentLon]);
@@ -1024,7 +1034,6 @@
             }
         }
 
-        // AMORTIGUACIÓN Y SUAVIZADO DE BRÚJULA
         function handleOrientation(e) {
             let h = e.webkitCompassHeading || (360 - e.alpha);
             if (h !== null && !isNaN(h)) {
@@ -1210,14 +1219,10 @@
             document.getElementById('moonRiseVal').innerText = fmtH(riseHour);
             document.getElementById('moonSetVal').innerText = fmtH(setHour);
 
-            // RENDERIZADO VISUAL LUNAR CON ORIENTACIÓN POR HEMISFERIO
             const disc = document.getElementById('moonDiscVisual');
             if (disc) {
                 const isWaxing = ageInDays < 14.765;
                 const isNorth = lat >= 0;
-
-                // En Hemisferio Norte la Creciente se ilumina por la DERECHA
-                // En Hemisferio Sur se invierte el sentido
                 const illuminateRight = (isWaxing && isNorth) || (!isWaxing && !isNorth);
                 const p = Math.max(8, moonPhasePercent);
 
@@ -1378,7 +1383,7 @@
             calculateWorldwideTides(currentLat, currentLon, tideDayOffset);
         }
 
-        // MOTOR DE TRACKING Y MAPAS (ORION v2.8)
+        // MOTOR DE TRACKING Y MAPAS (ORION v2.9)
         function toggleMissionTracking() {
             if (!gpsActive) { alert("PULSA ACTIVAR GPS ARRIBA PRIMERO."); return; }
             isTracking = !isTracking;
@@ -1518,6 +1523,7 @@
             alert('Sesión finalizada y guardada. Sistema reseteado a STANDBY.');
         }
 
+        // NUEVO SISTEMA DE HISTORIAL V2.9
         function openHistoryModal() {
             const container = document.getElementById('historyListContainer');
             const saved = JSON.parse(localStorage.getItem('orion_missions') || '[]');
@@ -1535,7 +1541,8 @@
                             <div style="font-size:0.68rem; color:#64748b; margin-top:2px;">${m.date} • <strong>${m.dist} km</strong> • ⏱ ${m.timeElapsed || '--:--'} • ${m.pointsCount} pts</div>
                         </div>
                         <div style="display:flex; gap:6px;">
-                            <button onclick="loadMissionForReport(${m.id})" style="background:#0284c7; border:none; color:#fff; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.7rem; cursor:pointer;">PDF</button>
+                            <button onclick="loadMissionForReport(${m.id})" style="background:#10b981; border:none; color:#fff; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.7rem; cursor:pointer;">🗺️ Entrar</button>
+                            <button onclick="printMissionDirectly(${m.id})" style="background:#0284c7; border:none; color:#fff; padding:6px 10px; border-radius:8px; font-weight:800; font-size:0.7rem; cursor:pointer;">PDF</button>
                             <button onclick="deleteMission(${m.id})" style="background:#f43f5e; border:none; color:#fff; padding:6px 10px; border-radius:8px; font-weight:800; font-size:0.7rem; cursor:pointer;">🗑</button>
                         </div>
                     `;
@@ -1562,6 +1569,11 @@
             if (mission) {
                 renderPdfWithData(mission.title, mission.date, mission.points, mission.dist, mission.points.length, mission.lat, mission.lon, mission.alt, mission.baro, mission.qfe, mission.qnh, mission.timeElapsed || '00:00:00');
             }
+        }
+        
+        function printMissionDirectly(id) {
+            loadMissionForReport(id);
+            setTimeout(() => { window.print(); }, 800); // Da tiempo a cargar el mapa antes de imprimir
         }
 
         function openMissionReportModal() {
@@ -1621,14 +1633,24 @@
         function checkStormDropAuto(allowAudio = true) {
             const banner = document.getElementById('stormBanner');
             const indicator = document.getElementById('stormAlarmIndicator');
+            
+            // Si el usuario desactiva la alarma manualmente
+            if (!isStormAlarmEnabled) {
+                banner.style.display = 'none';
+                indicator.className = 'badge-tag baro-off interactive';
+                indicator.innerHTML = '<span class="status-dot-mini" style="background:#64748b;"></span> BARO OFF';
+                return;
+            }
+
+            // Si está activada, evaluamos la caída de presión
             if (referencePressure - currentPressure >= 3) {
                 banner.style.display = 'flex';
-                indicator.className = 'badge-tag baro-alert';
+                indicator.className = 'badge-tag baro-alert interactive';
                 indicator.innerHTML = '<span class="status-dot-mini" style="background:#f43f5e;"></span> BARO [STORM]';
                 if (allowAudio && navigator.vibrate) navigator.vibrate([300, 150, 300, 150, 400]);
             } else {
                 banner.style.display = 'none';
-                indicator.className = 'badge-tag baro-armed';
+                indicator.className = 'badge-tag baro-armed interactive';
                 indicator.innerHTML = '<span class="status-dot-mini" style="background:var(--accent-green);"></span> BARO';
             }
         }
