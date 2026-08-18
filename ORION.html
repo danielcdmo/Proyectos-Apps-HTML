@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION - Field Navigator v3.3</title>
+    <title>ORION - Field Navigator v3.4</title>
     <meta name="author" content="danielcdmo">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -75,53 +75,26 @@
             --lcd-glass: rgba(226, 232, 240, 0.92);
         }
 
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
-            user-select: none;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif; user-select: none; }
         html, body { width: 100%; overflow-x: hidden; }
 
         body {
             background-color: var(--bg-canvas);
-            background-image: radial-gradient(at 15% 15%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
-                              radial-gradient(at 85% 85%, rgba(52, 211, 153, 0.08) 0px, transparent 50%);
-            background-attachment: fixed;
-            color: var(--text-main);
+            background-image: radial-gradient(at 15% 15%, rgba(56, 189, 248, 0.12) 0px, transparent 50%), radial-gradient(at 85% 85%, rgba(52, 211, 153, 0.08) 0px, transparent 50%);
+            background-attachment: fixed; color: var(--text-main);
             padding: calc(env(safe-area-inset-top, 24px) + 16px) 14px calc(env(safe-area-inset-bottom, 20px) + 30px) 14px;
-            display: flex; flex-direction: column; gap: 14px;
-            max-width: 540px; margin: 0 auto;
-            min-height: 100vh;
+            display: flex; flex-direction: column; gap: 14px; max-width: 540px; margin: 0 auto; min-height: 100vh;
         }
 
-        .ios-notch-shield {
-            position: fixed; top: 0; left: 0; right: 0;
-            height: calc(env(safe-area-inset-top, 24px) + 8px);
-            background: var(--notch-shield-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            z-index: 99999; pointer-events: none; border-bottom: 1px solid var(--glass-border);
-            mask-image: linear-gradient(to bottom, black 70%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-        }
+        .ios-notch-shield { position: fixed; top: 0; left: 0; right: 0; height: calc(env(safe-area-inset-top, 24px) + 8px); background: var(--notch-shield-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); z-index: 99999; pointer-events: none; border-bottom: 1px solid var(--glass-border); mask-image: linear-gradient(to bottom, black 70%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%); }
 
-        .glass-panel {
-            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-border-specular);
-            box-shadow: var(--glass-shadow); border-radius: var(--radius-main); padding: 16px;
-            display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden;
-        }
-        .glass-panel::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--glass-border-specular), transparent); pointer-events: none;
-        }
+        .glass-panel { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-border-specular); box-shadow: var(--glass-shadow); border-radius: var(--radius-main); padding: 16px; display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; }
+        .glass-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--glass-border-specular), transparent); pointer-events: none; }
 
         .tactical-topbar { display: flex; flex-direction: column; gap: 10px; padding: 2px 0 6px 0; width: 100%; }
         .brand-header-center { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; }
         .brand-title-text { font-size: 1.25rem; font-weight: 900; letter-spacing: 2px; color: var(--text-main); text-transform: uppercase; }
-        .brand-icon-wrap {
-            display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px;
-            background: var(--glass-inner); border: 1px solid var(--glass-border); box-shadow: inset 0 1px 1px rgba(255,255,255,0.18), 0 4px 12px rgba(0,0,0,0.3);
-        }
+        .brand-icon-wrap { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; background: var(--glass-inner); border: 1px solid var(--glass-border); box-shadow: inset 0 1px 1px rgba(255,255,255,0.18), 0 4px 12px rgba(0,0,0,0.3); }
 
         .topbar-controls-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%; }
         .version-tag { font-size: 0.62rem; background: rgba(56, 189, 248, 0.16); border: 1px solid rgba(56, 189, 248, 0.35); color: var(--accent-cyan); padding: 4px 9px; border-radius: 20px; font-weight: 800; }
@@ -215,9 +188,8 @@
         .tactical-btn.danger { background: rgba(244, 63, 94, 0.25); border-color: rgba(244, 63, 94, 0.5); color: var(--accent-red); }
         .tactical-btn.warning { background: rgba(251, 146, 60, 0.2); border-color: var(--accent-orange); color: var(--accent-orange); }
 
-        /* MODALES WIKILOC STYLE */
+        /* MODALES WIKILOC STYLE - 100% BLINDADOS */
         #historyModalOverlay, #reportModalOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(24px); display: none; flex-direction: column; align-items: center; overflow-y: auto; padding: calc(env(safe-area-inset-top, 30px) + 20px) 14px calc(env(safe-area-inset-bottom, 20px) + 30px) 14px; }
-        
         #historyModalOverlay { z-index: 999998; }
         #reportModalOverlay { z-index: 999999; }
         
@@ -267,7 +239,7 @@
         </div>
 
         <div class="topbar-controls-row">
-            <span class="version-tag">v3.3</span>
+            <span class="version-tag">v3.4</span>
             <div class="connectivity-pill" id="connPill">
                 <span class="status-dot-mini" id="connDot" style="background:var(--accent-green);"></span>
                 <span id="connText">ONLINE</span>
@@ -284,19 +256,11 @@
         </div>
     </div>
 
+    <!-- PANELES DE DATOS (Master Clock, Altimeter, Compass, Solar, Lunar) -->
     <div class="master-clock-bar">
-        <div class="master-col">
-            <span class="master-lbl">FECHA</span>
-            <span id="masterDateVal" class="master-val">--/--/----</span>
-        </div>
-        <div class="master-col">
-            <span class="master-lbl">HORA ACTUAL</span>
-            <span id="masterTimeVal" class="master-val">00:00:00</span>
-        </div>
-        <div class="master-col">
-            <span class="master-lbl">TEMP GPS</span>
-            <span id="masterTempVal" class="master-val">--°C</span>
-        </div>
+        <div class="master-col"><span class="master-lbl">FECHA</span><span id="masterDateVal" class="master-val">--/--/----</span></div>
+        <div class="master-col"><span class="master-lbl">HORA ACTUAL</span><span id="masterTimeVal" class="master-val">00:00:00</span></div>
+        <div class="master-col"><span class="master-lbl">TEMP GPS</span><span id="masterTempVal" class="master-val">--°C</span></div>
     </div>
 
     <div class="glass-panel">
@@ -309,86 +273,40 @@
                 <span class="badge-tag">ALTI / BARO</span>
             </div>
         </div>
-
         <div class="storm-alert-banner" id="stormBanner">
             <span>⚠️ <strong>ALERTA DE TORMENTA:</strong> Caída rápida de presión (&ge; 3 hPa)</span>
             <span style="font-size:0.65rem; background:rgba(0,0,0,0.4); padding:2px 6px; border-radius:4px;">CASIO ALARM</span>
         </div>
-
         <div class="metric-grid-2x2">
-            <div class="metric-box">
-                <span class="metric-label">Altitud GPS (Satélite)</span>
-                <span class="metric-value text-green" id="altGpsVal">-- <span class="unit">m</span></span>
-                <span class="metric-sub">COTA REAL WGS84</span>
-            </div>
-            <div class="metric-box">
-                <span class="metric-label">Altitud Barométrica</span>
-                <span class="metric-value text-yellow" id="altBaroVal">-- <span class="unit">m</span></span>
-                <span class="metric-sub">SENSOR CASIO CORREGIDO</span>
-            </div>
-            <div class="metric-box">
-                <span class="metric-label">Presión Absoluta (QFE)</span>
-                <span class="metric-value text-green" id="qfeVal">-- <span class="unit">hPa</span></span>
-                <span class="metric-sub">SENSOR LOCAL</span>
-            </div>
-            <div class="metric-box">
-                <span class="metric-label">Presión Nivel Mar (QNH)</span>
-                <span class="metric-value text-blue" id="qnhVal">-- <span class="unit">hPa</span></span>
-                <span class="metric-sub" id="qnhSourceTag" style="color:var(--accent-blue);">QNH OFFLINE (ISA)</span>
-            </div>
+            <div class="metric-box"><span class="metric-label">Altitud GPS (Satélite)</span><span class="metric-value text-green" id="altGpsVal">-- <span class="unit">m</span></span><span class="metric-sub">COTA REAL WGS84</span></div>
+            <div class="metric-box"><span class="metric-label">Altitud Barométrica</span><span class="metric-value text-yellow" id="altBaroVal">-- <span class="unit">m</span></span><span class="metric-sub">SENSOR CASIO CORREGIDO</span></div>
+            <div class="metric-box"><span class="metric-label">Presión Absoluta (QFE)</span><span class="metric-value text-green" id="qfeVal">-- <span class="unit">hPa</span></span><span class="metric-sub">SENSOR LOCAL</span></div>
+            <div class="metric-box"><span class="metric-label">Presión Nivel Mar (QNH)</span><span class="metric-value text-blue" id="qnhVal">-- <span class="unit">hPa</span></span><span class="metric-sub" id="qnhSourceTag" style="color:var(--accent-blue);">QNH OFFLINE (ISA)</span></div>
         </div>
-
         <div style="background: var(--lcd-glass); border: 1px solid var(--glass-border); border-radius: var(--radius-card); padding: 12px;">
-            <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:800; color:var(--text-muted); margin-bottom:6px;">
-                <span>TENDENCIA 24H (LCD DOT-MATRIX DETALLADO)</span>
-                <span class="text-cyan" id="trendState">➔ Estable</span>
-            </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:800; color:var(--text-muted); margin-bottom:6px;"><span>TENDENCIA 24H (LCD DOT-MATRIX DETALLADO)</span><span class="text-cyan" id="trendState">➔ Estable</span></div>
             <canvas id="baroCanvas" style="width:100%; height:75px; display:block;"></canvas>
         </div>
     </div>
 
     <div class="glass-panel">
-        <div class="card-header">
-            <div class="title-group"><span>🧭</span><span>ORIENTACIÓN & MEMORIA DE RUMBO</span></div>
-            <span class="badge-tag" id="bearingBadge">COMPASS / SUN</span>
-        </div>
-
+        <div class="card-header"><div class="title-group"><span>🧭</span><span>ORIENTACIÓN & MEMORIA DE RUMBO</span></div><span class="badge-tag" id="bearingBadge">COMPASS / SUN</span></div>
         <div class="compass-section">
             <div class="compass-dial-container" id="compassContainer">
                 <svg class="compass-bezel-svg" viewBox="0 0 140 140" id="compassBezelSvg"></svg>
-                <span class="cardinal-mark n">N</span><span class="cardinal-mark e">E</span>
-                <span class="cardinal-mark s">S</span><span class="cardinal-mark w">W</span>
-                
+                <span class="cardinal-mark n">N</span><span class="cardinal-mark e">E</span><span class="cardinal-mark s">S</span><span class="cardinal-mark w">W</span>
                 <div class="sun-marker-orbit" id="sunOrbit"><div class="sun-marker-dot"></div></div>
                 <div class="bearing-lock-pointer" id="bearingLockPointer"><div class="bearing-line"></div><div class="bearing-triangle"></div></div>
                 <div class="compass-needle" id="compassNeedle"><div class="needle-north"></div><div class="needle-south"></div></div>
                 <div class="compass-pivot"></div>
             </div>
-
             <div class="metric-grid-2x2">
-                <div class="metric-box">
-                    <span class="metric-label">Rumbo Actual</span>
-                    <span class="metric-value text-green" id="headingVal">0<span class="unit">°</span></span>
-                    <span class="metric-sub" id="headingCard">N</span>
-                </div>
-                <div class="metric-box">
-                    <span class="metric-label text-orange">Retorno (180°)</span>
-                    <span class="metric-value text-orange" id="returnVal">180<span class="unit">°</span></span>
-                    <span class="metric-sub">RUMBO INVERSO</span>
-                </div>
-                <div class="metric-box">
-                    <span class="metric-label">Declinación Magnética</span>
-                    <span class="metric-value text-yellow" id="decVal">--<span class="unit">°</span></span>
-                    <span class="metric-sub" id="decSource" style="color:var(--accent-orange);">CALCULANDO...</span>
-                </div>
-                <div class="metric-box">
-                    <span class="metric-label">Azimut Solar ☀️</span>
-                    <span class="metric-value text-yellow" id="sunAzVal">--<span class="unit">°</span></span>
-                    <span class="metric-sub">SOL REAL NOAA</span>
-                </div>
+                <div class="metric-box"><span class="metric-label">Rumbo Actual</span><span class="metric-value text-green" id="headingVal">0<span class="unit">°</span></span><span class="metric-sub" id="headingCard">N</span></div>
+                <div class="metric-box"><span class="metric-label text-orange">Retorno (180°)</span><span class="metric-value text-orange" id="returnVal">180<span class="unit">°</span></span><span class="metric-sub">RUMBO INVERSO</span></div>
+                <div class="metric-box"><span class="metric-label">Declinación Magnética</span><span class="metric-value text-yellow" id="decVal">--<span class="unit">°</span></span><span class="metric-sub" id="decSource" style="color:var(--accent-orange);">CALCULANDO...</span></div>
+                <div class="metric-box"><span class="metric-label">Azimut Solar ☀️</span><span class="metric-value text-yellow" id="sunAzVal">--<span class="unit">°</span></span><span class="metric-sub">SOL REAL NOAA</span></div>
             </div>
         </div>
-
         <div class="bearing-controls-grid">
             <button class="btn-bearing" id="btnLockHeading" onclick="lockCurrentHeading()">🔒 Fijar Rumbo</button>
             <button class="btn-bearing" id="btnLockReturn" onclick="lockReturnHeading()">🔄 Retorno</button>
@@ -397,92 +315,42 @@
     </div>
 
     <div class="glass-panel">
-        <div class="card-header">
-            <div class="title-group"><span>☀️</span><span>SOL & COORDENADAS GPS (MOTOR NOAA)</span></div>
-            <span class="badge-tag">SOLAR GLOBAL</span>
-        </div>
-
+        <div class="card-header"><div class="title-group"><span>☀️</span><span>SOL & COORDENADAS GPS (MOTOR NOAA)</span></div><span class="badge-tag">SOLAR GLOBAL</span></div>
         <div class="sun-visual-row">
             <div class="sun-sphere"><div class="sun-phase-disc" id="sunDiscVisual"></div></div>
             <div>
                 <div style="font-size:0.95rem; font-weight:800;" id="sunProgressText" class="text-yellow">Progreso Diurno</div>
-                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
-                    Altura Solar: <strong style="color:var(--text-main);" id="sunElevationVal">--°</strong>
-                </div>
-                <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">
-                    Fase: <strong style="color:var(--accent-orange);" id="sunPhaseName">Calculando...</strong>
-                </div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Altura Solar: <strong style="color:var(--text-main);" id="sunElevationVal">--°</strong></div>
+                <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Fase: <strong style="color:var(--accent-orange);" id="sunPhaseName">Calculando...</strong></div>
             </div>
         </div>
-
         <div class="metric-grid-2x2">
-            <div class="metric-box">
-                <span class="metric-label">Amanecer</span>
-                <span class="metric-value text-green" id="sunriseVal">--:--</span>
-                <span class="metric-sub">ORTO SOLAR LOCAL</span>
-            </div>
-            <div class="metric-box">
-                <span class="metric-label">Atardecer</span>
-                <span class="metric-value text-red" id="sunsetVal">--:--</span>
-                <span class="metric-sub">OCASO SOLAR LOCAL</span>
-            </div>
-            <div class="metric-box">
-                <span class="metric-label">Latitud Reloj</span>
-                <span class="metric-value" id="latVal">--<span class="unit">°</span></span>
-                <span class="metric-sub">AJUSTE RELOJ CASIO</span>
-            </div>
-            <div class="metric-box">
-                <span class="metric-label">Longitud Reloj</span>
-                <span class="metric-value" id="lonVal">--<span class="unit">°</span></span>
-                <span class="metric-sub">AJUSTE RELOJ CASIO</span>
-            </div>
+            <div class="metric-box"><span class="metric-label">Amanecer</span><span class="metric-value text-green" id="sunriseVal">--:--</span><span class="metric-sub">ORTO SOLAR LOCAL</span></div>
+            <div class="metric-box"><span class="metric-label">Atardecer</span><span class="metric-value text-red" id="sunsetVal">--:--</span><span class="metric-sub">OCASO SOLAR LOCAL</span></div>
+            <div class="metric-box"><span class="metric-label">Latitud Reloj</span><span class="metric-value" id="latVal">--<span class="unit">°</span></span><span class="metric-sub">AJUSTE RELOJ CASIO</span></div>
+            <div class="metric-box"><span class="metric-label">Longitud Reloj</span><span class="metric-value" id="lonVal">--<span class="unit">°</span></span><span class="metric-sub">AJUSTE RELOJ CASIO</span></div>
         </div>
     </div>
 
     <div class="glass-panel">
-        <div class="card-header">
-            <div class="title-group"><span>🌙</span><span>TELEMETRÍA LUNAR ASTRONÓMICA</span></div>
-            <span class="badge-tag" id="moonHeaderPhaseTag">--</span>
-        </div>
-
+        <div class="card-header"><div class="title-group"><span>🌙</span><span>TELEMETRÍA LUNAR ASTRONÓMICA</span></div><span class="badge-tag" id="moonHeaderPhaseTag">--</span></div>
         <div class="moon-visual-row">
             <div class="moon-sphere"><div class="moon-phase-disc" id="moonDiscVisual"></div></div>
             <div>
                 <div style="font-size:0.95rem; font-weight:800;" id="moonPhaseTitle" class="text-yellow">Calculando...</div>
-                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
-                    Luminosidad: <strong style="color:var(--text-main); font-size:0.95rem;" id="moonLumiVal">--%</strong>
-                </div>
-                <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">
-                    Distancia Lunar: <strong style="color:var(--accent-cyan);" id="moonDistVal">-- km</strong>
-                </div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Luminosidad: <strong style="color:var(--text-main); font-size:0.95rem;" id="moonLumiVal">--%</strong></div>
+                <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Distancia Lunar: <strong style="color:var(--accent-cyan);" id="moonDistVal">-- km</strong></div>
             </div>
         </div>
-
         <div class="metric-grid-2x2">
-            <div class="metric-box">
-                <span class="metric-label">Salida de Luna (Orto)</span>
-                <span class="metric-value text-yellow" id="moonRiseVal">--:--</span>
-                <span class="metric-sub">TRÁNSITO LOCAL</span>
-            </div>
-            <div class="metric-box">
-                <span class="metric-label">Puesta de Luna (Ocaso)</span>
-                <span class="metric-value" id="moonSetVal">--:--</span>
-                <span class="metric-sub">TRÁNSITO LOCAL</span>
-            </div>
-            <div class="metric-box">
-                <span class="metric-label">Edad Lunar</span>
-                <span class="metric-value text-green" id="moonAgeDetailVal">-- <span class="unit">días</span></span>
-                <span class="metric-sub">CICLO SINÓDICO</span>
-            </div>
-            <div class="metric-box">
-                <span class="metric-label">Próxima Luna Llena</span>
-                <span class="metric-value text-yellow" id="moonNextFullVal">-- <span class="unit">días</span></span>
-                <span class="metric-sub">PLENILUNIO</span>
-            </div>
+            <div class="metric-box"><span class="metric-label">Salida de Luna (Orto)</span><span class="metric-value text-yellow" id="moonRiseVal">--:--</span><span class="metric-sub">TRÁNSITO LOCAL</span></div>
+            <div class="metric-box"><span class="metric-label">Puesta de Luna (Ocaso)</span><span class="metric-value" id="moonSetVal">--:--</span><span class="metric-sub">TRÁNSITO LOCAL</span></div>
+            <div class="metric-box"><span class="metric-label">Edad Lunar</span><span class="metric-value text-green" id="moonAgeDetailVal">-- <span class="unit">días</span></span><span class="metric-sub">CICLO SINÓDICO</span></div>
+            <div class="metric-box"><span class="metric-label">Próxima Luna Llena</span><span class="metric-value text-yellow" id="moonNextFullVal">-- <span class="unit">días</span></span><span class="metric-sub">PLENILUNIO</span></div>
         </div>
     </div>
 
-    <!-- WIDGET DE MAREAS -->
+    <!-- WIDGET DE MAREAS HÍBRIDO -->
     <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🌊</span><span>PLEAMARES & BAJAMARES</span></div>
@@ -502,71 +370,32 @@
         </div>
 
         <div class="tide-box-grid">
-            <div class="tide-box-style">
-                <span class="t-lbl text-blue">1ª Pleamar</span>
-                <span class="t-val text-green" id="tideP1">--:--</span>
-            </div>
-            <div class="tide-box-style">
-                <span class="t-lbl text-red">1ª Bajamar</span>
-                <span class="t-val text-red" id="tideB1">--:--</span>
-            </div>
-            <div class="tide-box-style">
-                <span class="t-lbl text-blue">2ª Pleamar</span>
-                <span class="t-val text-green" id="tideP2">--:--</span>
-            </div>
-            <div class="tide-box-style">
-                <span class="t-lbl text-red">2ª Bajamar</span>
-                <span class="t-val text-red" id="tideB2">--:--</span>
-            </div>
+            <div class="tide-box-style"><span class="t-lbl text-blue">1ª Pleamar</span><span class="t-val text-green" id="tideP1">--:--</span></div>
+            <div class="tide-box-style"><span class="t-lbl text-red">1ª Bajamar</span><span class="t-val text-red" id="tideB1">--:--</span></div>
+            <div class="tide-box-style"><span class="t-lbl text-blue">2ª Pleamar</span><span class="t-val text-green" id="tideP2">--:--</span></div>
+            <div class="tide-box-style"><span class="t-lbl text-red">2ª Bajamar</span><span class="t-val text-red" id="tideB2">--:--</span></div>
         </div>
 
         <div class="tide-box-grid">
-            <div class="tide-box-style">
-                <span class="t-lbl" style="color:var(--text-muted);">INT (Intervalo Lunitidal)</span>
-                <span class="t-val" id="lunitidalVal">--:--</span>
-                <span class="metric-sub">AJUSTE RELOJ CASIO</span>
-            </div>
-            <div class="tide-box-style">
-                <span class="t-lbl" style="color:var(--text-muted);">Estado de Marea</span>
-                <span class="t-val text-cyan" id="tideStateDesc" style="font-size:1.05rem; text-align:center; white-space:pre-line;">Calculando...</span>
-            </div>
+            <div class="tide-box-style"><span class="t-lbl" style="color:var(--text-muted);">INT (Intervalo Lunitidal)</span><span class="t-val" id="lunitidalVal">--:--</span><span class="metric-sub">AJUSTE RELOJ CASIO</span></div>
+            <div class="tide-box-style"><span class="t-lbl" style="color:var(--text-muted);">Estado de Marea</span><span class="t-val text-cyan" id="tideStateDesc" style="font-size:1.05rem; text-align:center; white-space:pre-line;">Calculando...</span></div>
         </div>
 
         <div class="tide-graph-container">
-            <div class="tide-graph-header">
-                <span>GRÁFICO DE MAREA (24H)</span>
-                <span class="live-badge" id="tideLiveTimestamp">AHORA ⚡</span>
-            </div>
+            <div class="tide-graph-header"><span>GRÁFICO DE MAREA (24H)</span><span class="live-badge" id="tideLiveTimestamp">AHORA ⚡</span></div>
             <canvas id="tideCanvas" style="width:100%; height:105px; display:block;"></canvas>
         </div>
     </div>
 
+    <!-- PANEL TRACKING -->
     <div class="glass-panel">
-        <div class="card-header">
-            <div class="title-group"><span>🧭</span><span>MAPA RUTA & CONTROL DE MISIÓN</span></div>
-            <span class="badge-tag" id="trackStatusBadge">STANDBY</span>
-        </div>
-        
-        <div class="map-wrapper">
-            <div id="liveMap"></div>
-            <button class="map-center-btn" onclick="recenterMap()" title="Centrar mi posición">🎯</button>
-        </div>
-
+        <div class="card-header"><div class="title-group"><span>🧭</span><span>MAPA RUTA & CONTROL DE MISIÓN</span></div><span class="badge-tag" id="trackStatusBadge">STANDBY</span></div>
+        <div class="map-wrapper"><div id="liveMap"></div><button class="map-center-btn" onclick="recenterMap()" title="Centrar mi posición">🎯</button></div>
         <div class="metric-grid-2x2">
-            <div class="metric-box">
-                <span class="metric-label">Distancia Total</span>
-                <span class="metric-value text-cyan" id="trackDistVal">0.00 <span class="unit">km</span></span>
-            </div>
-            <div class="metric-box">
-                <span class="metric-label">Tiempo de Expedición</span>
-                <span class="metric-value text-green" id="trackTimerVal">00:00:00</span>
-            </div>
-            <div class="metric-box" style="grid-column: span 2;">
-                <span class="metric-label">Waypoints Registrados</span>
-                <span class="metric-value" id="trackPointsVal">0 <span class="unit">pts</span></span>
-            </div>
+            <div class="metric-box"><span class="metric-label">Distancia Total</span><span class="metric-value text-cyan" id="trackDistVal">0.00 <span class="unit">km</span></span></div>
+            <div class="metric-box"><span class="metric-label">Tiempo de Expedición</span><span class="metric-value text-green" id="trackTimerVal">00:00:00</span></div>
+            <div class="metric-box" style="grid-column: span 2;"><span class="metric-label">Waypoints Registrados</span><span class="metric-value" id="trackPointsVal">0 <span class="unit">pts</span></span></div>
         </div>
-
         <div class="btn-action-row-3">
             <button class="tactical-btn primary" id="btnToggleTrack" onclick="toggleMissionTracking()">▶ Iniciar</button>
             <button class="tactical-btn warning" onclick="addManualWaypoint()">📍 Marcar WP</button>
@@ -577,7 +406,7 @@
         </div>
     </div>
 
-    <!-- MODALES WIKILOC STYLE -->
+    <!-- MODALES WIKILOC STYLE (BLINDADOS CONTRA CRASHES) -->
     <div id="historyModalOverlay">
         <div style="width:100%; max-width:620px; display:flex; justify-content:space-between; gap:10px; margin-bottom:14px;">
             <button style="background:var(--glass-inner); border:1px solid var(--glass-border); color:#fff; padding:10px 18px; border-radius:20px; font-weight:800; cursor:pointer;" onclick="closeHistoryModal()">← Volver</button>
@@ -601,7 +430,7 @@
                     <div style="font-size:0.75rem; color:#64748b; font-weight:700; margin-top:3px;" id="repDateTime">Fecha: --</div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:0.75rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 10px; border-radius:6px;">v3.3</span>
+                    <span style="font-size:0.75rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 10px; border-radius:6px;">v3.4</span>
                     <div style="font-size:0.62rem; color:#64748b; font-weight:700; margin-top:4px;">REF: WGS84-GEO</div>
                 </div>
             </div>
@@ -628,15 +457,15 @@
             <div id="reportMapLeaflet"></div>
 
             <div style="margin-top:16px; border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:#64748b;">
-                <span>Sistema Operativo ORION v3.3 • Marine Hybrid Sync</span>
+                <span>Sistema Operativo ORION v3.4 • Marine Hybrid Sync</span>
                 <span><strong>Registrado por: danielcdmo</strong></span>
             </div>
         </div>
     </div>
 
+    <!-- SCRIPTS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
-        // CORE VARIABLES
         let currentHeading = 0; let smoothedHeading = 0; let lockedBearing = null; let sunAzimuth = 180;
         let isTracking = false; let isReturning = false; let waypoints = []; let totalDistanceKm = 0; let lastGpsPos = null;
 
@@ -651,7 +480,12 @@
         let ring100, ring500, ring1000; 
         
         let reportMap = null, reportPolylineGreen = null, reportPolylineRed = null, reportMarker = null, reportWpGroup = null;
+        
+        // Mareas Hibridas Globales
         let rawTideEvents = { p1: 0.0, b1: 6.21, p2: 12.42, b2: 18.63 };
+        let onlineTideData = null; // Guardará el array de datos oceánicos de 24h
+        let onlineTideMin = 0; let onlineTideMax = 0;
+
         const baroHistory = [{time:'-24h',p:1014},{time:'-16h',p:1016},{time:'-8h',p:1017},{time:'Ahora',p:1016}];
 
         // BARO / ALTI MATH
@@ -695,14 +529,22 @@
             document.getElementById('decSource').innerText = "OFFLINE MODEL"; document.getElementById('decSource').style.color = "var(--accent-orange)";
         }
 
-        // TIDE ENGINE HYBRID
+        // TIDE ENGINE HYBRID V3.4 (Con renderizado de onda asimétrica real)
         async function fetchOnlineTides(lat, lon, dayOffset) {
             try {
                 const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&hourly=sea_level_height_msl&timezone=auto&past_days=1&forecast_days=3`;
                 const res = await fetch(url); const data = await res.json();
                 if (data && data.hourly && data.hourly.sea_level_height_msl) {
-                    const hData = data.hourly.sea_level_height_msl; let pleas = []; let bajas = [];
-                    let startIdx = 24 + (dayOffset * 24); let endIdx = startIdx + 24;
+                    const hData = data.hourly.sea_level_height_msl; 
+                    let startIdx = 24 + (dayOffset * 24); 
+                    
+                    // Extraemos los 25 puntos exactos del día (00:00 a 24:00) para dibujar la onda real
+                    let dayData = [];
+                    for(let i=0; i<=24; i++) { dayData.push(hData[startIdx + i] || 0); }
+                    onlineTideData = dayData;
+                    onlineTideMin = Math.min(...dayData); onlineTideMax = Math.max(...dayData);
+
+                    let pleas = []; let bajas = []; let endIdx = startIdx + 24;
                     for (let i = startIdx - 1; i <= endIdx + 1; i++) {
                         if (i < 1 || i >= hData.length - 1) continue;
                         let y1 = hData[i-1]; let y2 = hData[i]; let y3 = hData[i+1];
@@ -718,10 +560,12 @@
                     rawTideEvents = { p1, b1, p2, b2 }; return true;
                 }
             } catch(e) {}
+            onlineTideData = null; // Si falla, eliminamos la curva online
             return false;
         }
 
         function calculateTidesMathModel(lat, lon, dayOffset = 0) {
+            onlineTideData = null; // Forzamos curva matemática
             const baseEvents = [ { type: 'plea', t: 0.00 }, { type: 'baja', t: 6.21 }, { type: 'plea', t: 12.42 }, { type: 'baja', t: 18.63 } ];
             const lonOffset = (lon - 2.137) * 24 / 360; const ageOffset = dayOffset * 0.842; const totalOffset = ageOffset - lonOffset;
             let calcEvents = baseEvents.map(ev => { let shifted = (ev.t + totalOffset) % 24; if (shifted < 0) shifted += 24; return { type: ev.type, t: shifted }; });
@@ -750,7 +594,8 @@
             updateTideUI();
         }
 
-        function generateTideCurveData() {
+        // MOTOR DE DIBUJADO DE LA ONDA (ONLINE ASIMÉTRICA vs OFFLINE PERFECTA)
+        function generateOfflineCurveData() {
             let events = [];
             if (rawTideEvents.p1 !== undefined) events.push({ t: rawTideEvents.p1, isHigh: true }); if (rawTideEvents.p2 !== undefined) events.push({ t: rawTideEvents.p2, isHigh: true });
             if (rawTideEvents.b1 !== undefined) events.push({ t: rawTideEvents.b1, isHigh: false }); if (rawTideEvents.b2 !== undefined) events.push({ t: rawTideEvents.b2, isHigh: false });
@@ -758,10 +603,18 @@
             events.unshift({ t: lastEv.t - 24, isHigh: lastEv.isHigh }); events.push({ t: firstEv.t + 24, isHigh: firstEv.isHigh }); return events;
         }
 
-        function getTideY(hour, events, h) {
+        function getOfflineTideY(hour, events, h) {
             let e1, e2; for(let i=0; i<events.length-1; i++) { if (hour >= events[i].t && hour <= events[i+1].t) { e1 = events[i]; e2 = events[i+1]; break; } }
             if (!e1 || !e2) return h/2; let pct = (hour - e1.t) / (e2.t - e1.t); let cosPct = (1 - Math.cos(pct * Math.PI)) / 2;
             let y1 = e1.isHigh ? (h / 2) - (h * 0.28) : (h / 2) + (h * 0.28); let y2 = e2.isHigh ? (h / 2) - (h * 0.28) : (h / 2) + (h * 0.28); return y1 + (y2 - y1) * cosPct;
+        }
+
+        function getOnlineTideY(hour, h) {
+            if(!onlineTideData) return h/2;
+            let idx = Math.floor(hour); let nextIdx = idx < 24 ? idx + 1 : 24; let fraction = hour - idx;
+            let val = onlineTideData[idx] + (onlineTideData[nextIdx] - onlineTideData[idx]) * fraction;
+            let range = (onlineTideMax - onlineTideMin) || 1; let normalized = (val - onlineTideMin) / range;
+            return (h * 0.8) - (normalized * (h * 0.6));
         }
 
         function drawTideCanvas() {
@@ -769,22 +622,48 @@
             const ctx = cvs.getContext('2d'); const rect = cvs.getBoundingClientRect(); const w = rect.width || 320; const h = rect.height || 105;
             cvs.width = w * window.devicePixelRatio; cvs.height = h * window.devicePixelRatio; ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
             ctx.clearRect(0, 0, w, h); ctx.strokeStyle = 'rgba(251, 146, 60, 0.25)'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]); [0.25, 0.5, 0.75].forEach(pct => { ctx.beginPath(); ctx.moveTo(w*pct, 0); ctx.lineTo(w*pct, h); ctx.stroke(); }); ctx.setLineDash([]);
-            const curveEvents = generateTideCurveData();
+            
+            const offlineEvents = onlineTideData ? null : generateOfflineCurveData();
+
+            // Dibujo de la línea (Real asimétrica vs Offline matemática)
             ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.beginPath();
-            for (let x = 0; x <= w; x++) { let hour = (x / w) * 24.0; let y = getTideY(hour, curveEvents, h); x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.stroke();
+            for (let x = 0; x <= w; x++) { 
+                let hour = (x / w) * 24.0; 
+                let y = onlineTideData ? getOnlineTideY(hour, h) : getOfflineTideY(hour, offlineEvents, h); 
+                x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); 
+            } 
+            ctx.stroke();
+
+            // Relleno degradado solo para la onda real online (Para que visualmente sea obvio que es la API)
+            if (onlineTideData) {
+                ctx.lineTo(w, h); ctx.lineTo(0, h);
+                const grad = ctx.createLinearGradient(0, 0, 0, h); grad.addColorStop(0, 'rgba(56, 189, 248, 0.35)'); grad.addColorStop(1, 'rgba(56, 189, 248, 0.0)'); ctx.fillStyle = grad; ctx.fill();
+            }
+
             const formatShortTime = (hVal) => `${String(Math.floor(hVal)).padStart(2,'0')}:${String(Math.floor((hVal - Math.floor(hVal))*60)).padStart(2,'0')}`;
             const plotEvents = [ { type: 'plea', t: rawTideEvents.p1, label: formatShortTime(rawTideEvents.p1) }, { type: 'baja', t: rawTideEvents.b1, label: formatShortTime(rawTideEvents.b1) }, { type: 'plea', t: rawTideEvents.p2, label: formatShortTime(rawTideEvents.p2) }, { type: 'baja', t: rawTideEvents.b2, label: formatShortTime(rawTideEvents.b2) } ];
             ctx.font = 'bold 9px -apple-system, sans-serif'; ctx.textAlign = 'center';
-            plotEvents.forEach(ev => { const evX = (ev.t / 24.0) * w; const evY = ev.type === 'plea' ? (h / 2) - (h * 0.28) : (h / 2) + (h * 0.28); ctx.fillStyle = ev.type === 'plea' ? '#34d399' : '#f43f5e'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(evX, evY, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = ev.type === 'plea' ? '#34d399' : '#f43f5e'; ctx.fillText(ev.label, evX, ev.type === 'plea' ? evY - 8 : evY + 12); });
-            const now = new Date(); const curMinutes = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60.0; const liveX = (curMinutes / 1440.0) * w; const liveY = getTideY(curMinutes/60.0, curveEvents, h);
+            plotEvents.forEach(ev => { 
+                const evX = (ev.t / 24.0) * w; const evY = onlineTideData ? getOnlineTideY(ev.t, h) : (ev.type === 'plea' ? (h / 2) - (h * 0.28) : (h / 2) + (h * 0.28)); 
+                ctx.fillStyle = ev.type === 'plea' ? '#34d399' : '#f43f5e'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(evX, evY, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = ev.type === 'plea' ? '#34d399' : '#f43f5e'; ctx.fillText(ev.label, evX, ev.type === 'plea' ? evY - 8 : evY + 12); 
+            });
+
+            const now = new Date(); const curMinutes = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60.0; 
+            const liveX = (curMinutes / 1440.0) * w; const liveY = onlineTideData ? getOnlineTideY(curMinutes/60.0, h) : getOfflineTideY(curMinutes/60.0, offlineEvents, h);
             ctx.strokeStyle = '#34d399'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(liveX, 0); ctx.lineTo(liveX, h); ctx.stroke(); ctx.fillStyle = '#34d399'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(liveX, liveY, 5.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#34d399'; ctx.font = 'bold 8px -apple-system, sans-serif'; ctx.fillText(`${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} (AHORA)`, liveX, h - 4); document.getElementById('tideLiveTimestamp').innerText = `AHORA ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} ⚡`;
+            
             const realHour = curMinutes / 60.0;
-            if (Math.abs(sliderTideHour - realHour) > 0.2) { const inspX = (sliderTideHour / 24.0) * w; const inspY = getTideY(sliderTideHour, curveEvents, h); ctx.strokeStyle = 'rgba(251, 146, 60, 0.8)'; ctx.setLineDash([3, 3]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(inspX, 0); ctx.lineTo(inspX, h); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = '#fb923c'; ctx.beginPath(); ctx.arc(inspX, inspY, 4, 0, Math.PI * 2); ctx.fill(); }
+            if (Math.abs(sliderTideHour - realHour) > 0.2) { 
+                const inspX = (sliderTideHour / 24.0) * w; const inspY = onlineTideData ? getOnlineTideY(sliderTideHour, h) : getOfflineTideY(sliderTideHour, offlineEvents, h); 
+                ctx.strokeStyle = 'rgba(251, 146, 60, 0.8)'; ctx.setLineDash([3, 3]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(inspX, 0); ctx.lineTo(inspX, h); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = '#fb923c'; ctx.beginPath(); ctx.arc(inspX, inspY, 4, 0, Math.PI * 2); ctx.fill(); 
+            }
         }
 
         function updateTideSlider(val) {
-            sliderTideHour = parseFloat(val); let events = generateTideCurveData(); let isEbbing = false;
-            for(let i=0; i<events.length-1; i++) { if (sliderTideHour >= events[i].t && sliderTideHour <= events[i+1].t) { isEbbing = events[i].isHigh; break; } }
+            sliderTideHour = parseFloat(val); let isEbbing = false;
+            let h1 = rawTideEvents.p1, b1 = rawTideEvents.b1, p2 = rawTideEvents.p2, b2 = rawTideEvents.b2;
+            let phases = [ {t: h1, type: 'P'}, {t: b1, type: 'B'}, {t: p2, type: 'P'}, {t: b2, type: 'B'} ].sort((a,b) => a.t - b.t);
+            for (let i=0; i<phases.length; i++) { let next = phases[(i+1)%4]; let t_start = phases[i].t; let t_end = next.t < t_start ? next.t + 24 : next.t; let s_time = sliderTideHour < t_start && i===0 ? sliderTideHour + 24 : sliderTideHour; if (s_time >= t_start && s_time <= t_end) { isEbbing = (phases[i].type === 'P'); break; } }
             document.getElementById('tideStateDesc').innerText = isEbbing ? "Bajando hacia\nBajamar" : "Subiendo hacia\nPleamar"; drawTideCanvas();
         }
 
@@ -918,13 +797,13 @@
             document.getElementById('trackDistVal').innerHTML = `0.00 <span class="unit">km</span>`; document.getElementById('trackTimerVal').innerText = `00:00:00`; document.getElementById('trackPointsVal').innerHTML = `0 <span class="unit">pts</span>`; document.getElementById('btnToggleTrack').innerText = '▶ Iniciar'; document.getElementById('btnToggleTrack').className = 'tactical-btn primary'; document.getElementById('trackStatusBadge').innerText = 'STANDBY'; document.getElementById('trackStatusBadge').className = 'badge-tag'; document.getElementById('btnReturnMode').style.borderColor = 'var(--glass-border)'; document.getElementById('btnReturnMode').style.color = 'var(--text-main)'; document.getElementById('btnReturnMode').innerText = '🔄 Retorno'; alert('Sesión finalizada y guardada. Sistema reseteado a STANDBY.');
         }
 
-        // HISTORIAL & WIKILOC STYLE MODALS
+        // HISTORIAL & WIKILOC BLINDADOS 100% CONTRA FALLOS
         function openHistoryModal() {
             const container = document.getElementById('historyListContainer'); const saved = JSON.parse(localStorage.getItem('orion_missions') || '[]'); container.innerHTML = '';
             if (saved.length === 0) { container.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8; font-size:0.85rem;">No hay rutas guardadas en memoria.</div>'; } else {
                 saved.forEach(m => {
                     const item = document.createElement('div'); item.className = 'history-item';
-                    item.innerHTML = `<div><div style="font-weight:900; color:#0f172a; font-size:0.9rem;">${m.title}</div><div style="font-size:0.68rem; color:#64748b; margin-top:2px;">${m.date} • <strong>${m.dist} km</strong> • ⏱ ${m.timeElapsed || '--:--'} • ${m.pointsCount} pts</div></div><div style="display:flex; gap:6px;"><button onclick="loadMissionForReport(${m.id})" style="background:#10b981; border:none; color:#fff; padding:6px 12px; border-radius:8px; font-weight:800; font-size:0.7rem; cursor:pointer;">🗺️ Entrar</button><button onclick="deleteMission(${m.id})" style="background:#f43f5e; border:none; color:#fff; padding:6px 10px; border-radius:8px; font-weight:800; font-size:0.7rem; cursor:pointer;">🗑</button></div>`;
+                    item.innerHTML = `<div><div style="font-weight:900; color:#0f172a; font-size:0.9rem;">${m.title}</div><div style="font-size:0.68rem; color:#64748b; margin-top:2px;">${m.date} • <strong>${m.dist} km</strong> • ⏱ ${m.timeElapsed || '--:--'}</div></div><div style="display:flex; gap:6px;"><button onclick="loadMissionForReport(${m.id})" style="background:#0284c7; border:none; color:#fff; padding:8px 16px; border-radius:8px; font-weight:900; font-size:0.75rem; cursor:pointer;">📄 Ver PDF</button><button onclick="deleteMission(${m.id})" style="background:#f43f5e; border:none; color:#fff; padding:8px 12px; border-radius:8px; font-weight:900; font-size:0.75rem; cursor:pointer;">🗑</button></div>`;
                     container.appendChild(item);
                 });
             } document.getElementById('historyModalOverlay').style.display = 'flex';
@@ -948,25 +827,56 @@
 
         function drawAltitudeProfile(pts) {
             const cvs = document.getElementById('pdfAltCanvas'); if(!cvs) return; const ctx = cvs.getContext('2d'); const w = cvs.offsetWidth || 300; const h = cvs.offsetHeight || 90; cvs.width = w * window.devicePixelRatio; cvs.height = h * window.devicePixelRatio; ctx.scale(window.devicePixelRatio, window.devicePixelRatio); ctx.clearRect(0, 0, w, h);
-            if (!pts || pts.length < 2) { ctx.fillStyle = '#94a3b8'; ctx.font = '10px sans-serif'; ctx.fillText("Sin recorrido suficiente", 10, h/2); return; }
-            const alts = pts.map(p => p.alt); const minAlt = Math.min(...alts) - 5; const maxAlt = Math.max(...alts) + 5; const range = maxAlt - minAlt;
-            ctx.strokeStyle = '#059669'; ctx.lineWidth = 2.5; ctx.beginPath(); pts.forEach((p, i) => { const x = (i / (pts.length - 1)) * w; const y = h - ((p.alt - minAlt) / range) * h; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }); ctx.stroke();
+            if (!pts || !Array.isArray(pts) || pts.length < 2) { ctx.fillStyle = '#94a3b8'; ctx.font = '10px sans-serif'; ctx.fillText("Sin recorrido", 10, h/2); return; }
+            const alts = pts.map(p => p.alt || 0); const minAlt = Math.min(...alts) - 5; const maxAlt = Math.max(...alts) + 5; const range = (maxAlt - minAlt) || 1;
+            ctx.strokeStyle = '#059669'; ctx.lineWidth = 2.5; ctx.beginPath(); pts.forEach((p, i) => { const x = (i / (pts.length - 1)) * w; const y = h - (((p.alt||0) - minAlt) / range) * h; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }); ctx.stroke();
             ctx.lineTo(w, h); ctx.lineTo(0, h); const grad = ctx.createLinearGradient(0, 0, 0, h); grad.addColorStop(0, 'rgba(5, 150, 105, 0.35)'); grad.addColorStop(1, 'rgba(5, 150, 105, 0.0)'); ctx.fillStyle = grad; ctx.fill();
         }
 
         function renderPdfWithData(m) {
-            document.getElementById('pdfMissionTitle').innerText = m.title || 'ORION • MISSION REPORT'; document.getElementById('repDateTime').innerText = `Fecha: ${m.date}`; document.getElementById('pdfCoords').innerText = `${Math.abs(m.lat).toFixed(4)}° ${m.lat>=0?'N':'S'} / ${Math.abs(m.lon).toFixed(4)}° ${m.lon>=0?'E':'W'}`; document.getElementById('pdfBaro').innerText = `QFE: ${m.qfe}hPa | QNH: ${m.qnh}hPa`; document.getElementById('pdfDist').innerText = `${m.dist} km`; document.getElementById('pdfTime').innerText = `⏱ ${m.timeElapsed}`; document.getElementById('pdfWps').innerText = `${m.pointsCount || m.points.length} puntos`; document.getElementById('pdfTemp').innerText = m.temp || '--°C';
-            let maxAlt = m.alt, minAlt = m.alt; if (m.points && m.points.length > 0) { const alts = m.points.map(p => p.alt); maxAlt = Math.max(...alts); minAlt = Math.min(...alts); } document.getElementById('pdfAlts').innerText = `▲ ${maxAlt}m | ▼ ${minAlt}m`; 
-            document.getElementById('reportModalOverlay').style.display = 'flex';
-            setTimeout(() => { 
-                drawAltitudeProfile(m.points); 
-                if (!reportMap) { 
-                    reportMap = L.map('reportMapLeaflet', { zoomControl: false, attributionControl: false }).setView([m.lat, m.lon], 16); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, subdomains: ['a','b','c'] }).addTo(reportMap); reportPolylineGreen = L.polyline([], { color: '#059669', weight: 4 }).addTo(reportMap); reportPolylineRed = L.polyline([], { color: '#e11d48', weight: 4 }).addTo(reportMap); reportWpGroup = L.layerGroup().addTo(reportMap); reportMarker = L.circleMarker([m.lat, m.lon], { radius: 7, color: '#fff', fillColor: '#0284c7', fillOpacity: 1 }).addTo(reportMap); 
-                } else { 
-                    reportMap.setView([m.lat, m.lon], 16); reportMarker.setLatLng([m.lat, m.lon]); 
-                } 
-                reportWpGroup.clearLayers(); const greenPts = (m.points||[]).filter(p => !p.isReturn).map(p => [p.lat, p.lon]); const redPts = (m.points||[]).filter(p => p.isReturn).map(p => [p.lat, p.lon]); reportPolylineGreen.setLatLngs(greenPts); reportPolylineRed.setLatLngs(redPts); (m.points||[]).filter(p => p.isManual).forEach(wp => { L.circleMarker([wp.lat, wp.lon], { radius: 5, color: '#000', fillColor: '#fb923c', fillOpacity: 1 }).addTo(reportWpGroup); }); if (m.points && m.points.length > 1) { const bounds = L.latLngBounds(m.points.map(p => [p.lat, p.lon])); reportMap.fitBounds(bounds, { padding: [20, 20] }); } reportMap.invalidateSize(); 
-            }, 120);
+            try {
+                const lat = m.lat || 0; const lon = m.lon || 0;
+                const pts = m.points || []; const count = m.pointsCount || pts.length || 0;
+                
+                document.getElementById('pdfMissionTitle').innerText = m.title || 'ORION • MISSION REPORT'; 
+                document.getElementById('repDateTime').innerText = `Fecha: ${m.date || '--'}`; 
+                document.getElementById('pdfCoords').innerText = `${Math.abs(lat).toFixed(4)}° ${lat>=0?'N':'S'} / ${Math.abs(lon).toFixed(4)}° ${lon>=0?'E':'W'}`; 
+                document.getElementById('pdfBaro').innerText = `QFE: ${m.qfe||'--'}hPa | QNH: ${m.qnh||'--'}hPa`; 
+                document.getElementById('pdfDist').innerText = `${m.dist || '0.00'} km`; 
+                document.getElementById('pdfTime').innerText = `⏱ ${m.timeElapsed || '00:00:00'}`; 
+                document.getElementById('pdfWps').innerText = `${count} puntos`; 
+                document.getElementById('pdfTemp').innerText = m.temp || '--°C';
+
+                let maxAlt = m.alt || 0, minAlt = m.alt || 0; 
+                if (pts.length > 0) { const alts = pts.map(p => p.alt || 0); maxAlt = Math.max(...alts); minAlt = Math.min(...alts); } 
+                document.getElementById('pdfAlts').innerText = `▲ ${maxAlt}m | ▼ ${minAlt}m`; 
+                
+                document.getElementById('reportModalOverlay').style.display = 'flex';
+
+                setTimeout(() => { 
+                    try { drawAltitudeProfile(pts); } catch(e){ console.error(e); }
+                    try {
+                        if (!reportMap) { 
+                            reportMap = L.map('reportMapLeaflet', { zoomControl: false, attributionControl: false }).setView([lat, lon], 16); 
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, subdomains: ['a','b','c'] }).addTo(reportMap); 
+                            reportPolylineGreen = L.polyline([], { color: '#059669', weight: 4 }).addTo(reportMap); 
+                            reportPolylineRed = L.polyline([], { color: '#e11d48', weight: 4 }).addTo(reportMap); 
+                            reportWpGroup = L.layerGroup().addTo(reportMap); 
+                            reportMarker = L.circleMarker([lat, lon], { radius: 7, color: '#fff', fillColor: '#0284c7', fillOpacity: 1 }).addTo(reportMap); 
+                        } else { 
+                            reportMap.setView([lat, lon], 16); reportMarker.setLatLng([lat, lon]); 
+                        } 
+                        reportWpGroup.clearLayers(); 
+                        const greenPts = pts.filter(p => !p.isReturn).map(p => [p.lat, p.lon]); const redPts = pts.filter(p => p.isReturn).map(p => [p.lat, p.lon]); 
+                        reportPolylineGreen.setLatLngs(greenPts); reportPolylineRed.setLatLngs(redPts); 
+                        pts.filter(p => p.isManual).forEach(wp => { L.circleMarker([wp.lat, wp.lon], { radius: 5, color: '#000', fillColor: '#fb923c', fillOpacity: 1 }).addTo(reportWpGroup); }); 
+                        if (pts.length > 1) { const bounds = L.latLngBounds(pts.map(p => [p.lat, p.lon])); reportMap.fitBounds(bounds, { padding: [20, 20] }); } 
+                        reportMap.invalidateSize(); 
+                    } catch(e) { console.error(e); }
+                }, 250);
+            } catch (err) {
+                console.error("Error al abrir PDF:", err); alert("Error de compatibilidad con ruta antigua.");
+            }
         }
 
         function closeMissionReportModal() { document.getElementById('reportModalOverlay').style.display = 'none'; }
