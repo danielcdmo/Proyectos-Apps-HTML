@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION - Field Navigator v3.1</title>
+    <title>ORION - Field Navigator v3.3</title>
     <meta name="author" content="danielcdmo">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -93,7 +93,6 @@
         .connectivity-pill { display: flex; align-items: center; gap: 5px; font-size: 0.62rem; font-weight: 800; padding: 5px 8px; border-radius: 20px; background: var(--glass-inner); border: 1px solid var(--glass-border); color: var(--accent-green); text-transform: uppercase; }
         .connectivity-pill.offline { color: var(--accent-orange); border-color: rgba(251, 146, 60, 0.3); }
 
-        /* THEME SELECTOR */
         .theme-selector-pill { display: flex; align-items: center; gap: 3px; background: var(--glass-inner); border: 1px solid var(--glass-border); padding: 3px 5px; border-radius: 20px; }
         .theme-btn { background: transparent; border: none; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; cursor: pointer; opacity: 0.55; transition: all 0.2s; color: var(--text-main); }
         .theme-btn.active { opacity: 1; background: rgba(255, 255, 255, 0.15); box-shadow: 0 0 8px rgba(255,255,255,0.2); }
@@ -182,7 +181,6 @@
         .tactical-btn.danger { background: rgba(244, 63, 94, 0.25); border-color: rgba(244, 63, 94, 0.5); color: var(--accent-red); }
         .tactical-btn.warning { background: rgba(251, 146, 60, 0.2); border-color: var(--accent-orange); color: var(--accent-orange); }
 
-        /* MODALES WIKILOC & HISTORIAL */
         #historyModalOverlay, #routeViewerOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); display: none; flex-direction: column; align-items: center; overflow-y: auto; padding: calc(env(safe-area-inset-top, 30px) + 14px) 14px calc(env(safe-area-inset-bottom, 20px) + 24px) 14px; }
         #historyModalOverlay { z-index: 999998; }
         #routeViewerOverlay { z-index: 999999; }
@@ -234,14 +232,13 @@
         </div>
 
         <div class="topbar-controls-row">
-            <span class="version-tag">v3.1</span>
+            <span class="version-tag">v3.3</span>
             
             <div class="connectivity-pill" id="connPill">
                 <span class="status-dot-mini" id="connDot" style="background:var(--accent-green);"></span>
                 <span id="connText">ONLINE</span>
             </div>
 
-            <!-- SELECTOR DE MODOS DÍA / NOCHE / MILITAR ROJO -->
             <div class="theme-selector-pill">
                 <button class="theme-btn" id="btnThemeDay" onclick="setTacticalTheme('day')" title="Modo Día">☀️</button>
                 <button class="theme-btn active" id="btnThemeDark" onclick="setTacticalTheme('dark')" title="Modo Noche">🌑</button>
@@ -255,7 +252,6 @@
         </div>
     </div>
 
-    <!-- PANELES DE TELEMETRÍA -->
     <div class="master-clock-bar">
         <div class="master-col"><span class="master-lbl">FECHA</span><span id="masterDateVal">--/--/----</span></div>
         <div class="master-col"><span class="master-lbl">HORA ACTUAL</span><span id="masterTimeVal">00:00:00</span></div>
@@ -313,15 +309,14 @@
         </div>
     </div>
 
-    <!-- PANEL SOLAR HÍBRIDO -->
     <div class="glass-panel">
-        <div class="card-header"><div class="title-group"><span>☀️</span><span>SOL & COORDENADAS GPS</span></div><span class="badge-tag" id="sunSourceTag">OFFLINE MODEL</span></div>
+        <div class="card-header"><div class="title-group"><span>☀️</span><span>SOL & COORDENADAS GPS</span></div><span class="badge-tag" id="sunSourceTag">OFFLINE NOAA</span></div>
         <div class="sun-visual-row">
             <div class="sun-sphere"><div class="sun-phase-disc" id="sunDiscVisual"></div></div>
             <div>
                 <div style="font-size:0.95rem; font-weight:800;" id="sunProgressText" class="text-yellow">Progreso Diurno</div>
                 <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Altura Solar: <strong style="color:var(--text-main);" id="sunElevationVal">--°</strong></div>
-                <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Fase: <strong style="color:var(--accent-orange);" id="sunPhaseName">Calculando...</strong></div>
+                <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">Fase / Hemisferio: <strong style="color:var(--accent-orange);" id="sunPhaseName">Calculando...</strong></div>
             </div>
         </div>
         <div class="metric-grid-2x2">
@@ -332,7 +327,6 @@
         </div>
     </div>
 
-    <!-- PANEL LUNAR HÍBRIDO -->
     <div class="glass-panel">
         <div class="card-header"><div class="title-group"><span>🌙</span><span>TELEMETRÍA LUNAR</span></div><span class="badge-tag" id="moonSourceTag">OFFLINE (MEEUS)</span></div>
         <div class="moon-visual-row">
@@ -351,7 +345,6 @@
         </div>
     </div>
 
-    <!-- MAREAS HÍBRIDAS ONLINE / OFFLINE CASIO -->
     <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🌊</span><span>PLEAMARES & BAJAMARES</span></div>
@@ -390,7 +383,13 @@
 
     <!-- PANEL TRACKING -->
     <div class="glass-panel">
-        <div class="card-header"><div class="title-group"><span>🧭</span><span>MAPA RUTA & CONTROL DE MISIÓN</span></div><span class="badge-tag" id="trackStatusBadge">STANDBY</span></div>
+        <div class="card-header">
+            <div class="title-group"><span>🧭</span><span>MAPA RUTA & CONTROL DE MISIÓN</span></div>
+            <div style="display:flex; gap:6px;">
+                <span class="badge-tag" id="tileCacheBadge">MAP CACHE OK</span>
+                <span class="badge-tag" id="trackStatusBadge">STANDBY</span>
+            </div>
+        </div>
         <div class="map-wrapper"><div id="liveMap"></div><button class="map-center-btn" onclick="recenterMap()" title="Centrar mi posición">🎯</button></div>
         <div class="metric-grid-2x2">
             <div class="metric-box"><span class="metric-label">Distancia Total</span><span class="metric-value text-cyan" id="trackDistVal">0.00 <span class="unit">km</span></span></div>
@@ -406,7 +405,6 @@
         </div>
     </div>
 
-    <!-- MODAL 1: HISTORIAL DE RUTAS -->
     <div id="historyModalOverlay">
         <div style="width:100%; max-width:620px; display:flex; justify-content:space-between; gap:10px; margin-bottom:14px;">
             <button style="background:var(--glass-inner); border:1px solid var(--glass-border); color:#fff; padding:10px 18px; border-radius:20px; font-weight:800; cursor:pointer;" onclick="closeHistoryModal()">← Volver</button>
@@ -417,7 +415,6 @@
         </div>
     </div>
 
-    <!-- MODAL 2: VISOR DE RUTA INTERACTIVO ESTILO WIKILOC + EXPORTAR PDF -->
     <div id="routeViewerOverlay">
         <div class="no-print" style="width:100%; max-width:620px; display:flex; justify-content:space-between; gap:10px; margin-bottom:14px;">
             <button style="background:var(--glass-inner); border:1px solid var(--glass-border); color:#fff; padding:10px 18px; border-radius:20px; font-weight:800; cursor:pointer;" onclick="closeRouteViewer()">← Volver</button>
@@ -431,7 +428,7 @@
                     <div style="font-size:0.75rem; color:#64748b; font-weight:700; margin-top:3px;" id="vwRouteDate">Fecha: --</div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v3.1</span>
+                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v3.3</span>
                     <div style="font-size:0.62rem; color:#64748b; font-weight:700; margin-top:4px;">REF: WGS84-GEO</div>
                 </div>
             </div>
@@ -453,13 +450,12 @@
             <div id="routeViewMap"></div>
 
             <div style="margin-top:14px; border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:#64748b;">
-                <span>Sistema ORION v3.1 • Navegación & Telemetría</span>
+                <span>Sistema ORION v3.3 • Navegación & Telemetría</span>
                 <span><strong>danielcdmo</strong></span>
             </div>
         </div>
     </div>
 
-    <!-- MOTOR JAVASCRIPT ORION v3.1 -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
         let currentHeading = 0; let smoothedHeading = 0; let lockedBearing = null; let sunAzimuth = 180;
@@ -480,7 +476,92 @@
         let rawTideEvents = { p1: 0.0, b1: 6.21, p2: 12.42, b2: 18.63 };
         const baroHistory = [{time:'-24h',p:1014},{time:'-16h',p:1016},{time:'-8h',p:1017},{time:'Ahora',p:1016}];
 
-        // THEMES
+        const TILE_CACHE_NAME = 'orion-osm-cache-v1';
+
+        // CAPA PERSONALIZADA LEAFLET CON CACHÉ STORAGE API
+        L.TileLayer.OfflineCache = L.TileLayer.extend({
+            createTile: function(coords, done) {
+                const tile = document.createElement('img');
+                tile.setAttribute('role', 'presentation');
+                const url = this.getTileUrl(coords);
+
+                if ('caches' in window) {
+                    caches.open(TILE_CACHE_NAME).then(cache => {
+                        cache.match(url).then(response => {
+                            if (response) {
+                                response.blob().then(blob => {
+                                    tile.src = URL.createObjectURL(blob);
+                                    done(null, tile);
+                                });
+                            } else {
+                                fetch(url).then(res => {
+                                    if (res.ok) {
+                                        cache.put(url, res.clone());
+                                        return res.blob();
+                                    }
+                                    throw new Error('Tile fetch failed');
+                                }).then(blob => {
+                                    tile.src = URL.createObjectURL(blob);
+                                    done(null, tile);
+                                }).catch(err => {
+                                    tile.src = url;
+                                    L.DomEvent.on(tile, 'load', L.Util.bind(this._tileOnLoad, this, done, tile));
+                                    L.DomEvent.on(tile, 'error', L.Util.bind(this._tileOnError, this, done, tile));
+                                });
+                            }
+                        });
+                    }).catch(() => {
+                        tile.src = url;
+                        L.DomEvent.on(tile, 'load', L.Util.bind(this._tileOnLoad, this, done, tile));
+                        L.DomEvent.on(tile, 'error', L.Util.bind(this._tileOnError, this, done, tile));
+                    });
+                } else {
+                    tile.src = url;
+                    L.DomEvent.on(tile, 'load', L.Util.bind(this._tileOnLoad, this, done, tile));
+                    L.DomEvent.on(tile, 'error', L.Util.bind(this._tileOnError, this, done, tile));
+                }
+                return tile;
+            }
+        });
+
+        L.tileLayer.offlineCache = function(url, options) {
+            return new L.TileLayer.OfflineCache(url, options);
+        };
+
+        // PRECARGA INTELIGENTE DE CUADRANTES DE MAPA (2 A 5 KM A LA REDONDA)
+        async function prefetchLocalTiles(lat, lon) {
+            if (!navigator.onLine || !('caches' in window)) return;
+            const badge = document.getElementById('tileCacheBadge');
+            if (badge) badge.innerText = "CACHING TILES...";
+            try {
+                const cache = await caches.open(TILE_CACHE_NAME);
+                const zooms = [14, 15, 16];
+                for (const z of zooms) {
+                    const centerTileX = Math.floor((lon + 180) / 360 * Math.pow(2, z));
+                    const centerTileY = Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, z));
+                    for (let dx = -1; dx <= 1; dx++) {
+                        for (let dy = -1; dy <= 1; dy++) {
+                            const x = centerTileX + dx;
+                            const y = centerTileY + dy;
+                            const sub = ['a', 'b', 'c'][(x + y) % 3];
+                            const url = `https://${sub}.tile.openstreetmap.org/${z}/${x}/${y}.png`;
+                            const match = await cache.match(url);
+                            if (!match) {
+                                fetch(url).then(res => { if (res.ok) cache.put(url, res); }).catch(()=>{});
+                            }
+                        }
+                    }
+                }
+                if (badge) {
+                    badge.innerText = "MAP CACHE OK";
+                    badge.style.color = "var(--accent-green)";
+                    badge.style.borderColor = "rgba(52, 211, 153, 0.4)";
+                }
+            } catch (e) {
+                if (badge) badge.innerText = "OFFLINE READY";
+            }
+        }
+
         function setTacticalTheme(themeName) {
             document.documentElement.setAttribute('data-theme', themeName);
             document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
@@ -490,7 +571,6 @@
             setTimeout(() => { initBarometerDetailedChart(); drawTideCanvas(); }, 60);
         }
 
-        // BARO / ALTI MATH
         function calcularAltitudBarometricaReal(qfe, qnh) { return (!qfe || !qnh) ? 204 : Math.round(44330 * (1 - Math.pow((qfe / qnh), 0.190284))); }
         function calcularPresionAbsoluta(altGps, qnh) { return Math.round(qnh * Math.pow(1 - (altGps / 44330), 5.255)); }
         function recalcularPresionesYAltitud() {
@@ -502,7 +582,6 @@
             document.getElementById('qnhVal').innerHTML = `${seaLevelPressure} <span class="unit">hPa</span>`;
         }
 
-        // MAGNETIC DECLINATION
         function calcularDeclinacionMagneticaOffline(lat, lon) {
             const poleLat = (lat >= 0 ? 86.3 : -64.0) * Math.PI / 180; const poleLon = (lat >= 0 ? 156.0 : 136.0) * Math.PI / 180;
             const rLat = lat * Math.PI / 180; const rLon = lon * Math.PI / 180;
@@ -536,25 +615,23 @@
             document.getElementById('decSource').style.color = "var(--accent-orange)";
         }
 
-        // TIDES HÍBRIDAS (ONLINE API / OFFLINE CASIO LUNITIDAL)
         async function updateTidesHybrid(lat, lon, dayOffset = 0) {
-            let loadedOnline = false;
+            let onlineWorked = false;
             if (navigator.onLine) {
                 try {
                     const target = new Date(); target.setDate(target.getDate() + dayOffset);
                     const dateStr = target.toISOString().split('T')[0];
-                    const res = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&daily=wave_height_max&timezone=auto&start_date=${dateStr}&end_date=${dateStr}`);
+                    const res = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&hourly=wave_height&timezone=auto&start_date=${dateStr}&end_date=${dateStr}`);
                     if (res.ok) {
-                        // En modo online confirmado
                         document.getElementById('tideDotStatus').style.background = 'var(--accent-green)';
                         document.getElementById('tideModeText').innerText = 'ONLINE (GPS)';
                         document.getElementById('tideRegionTitle').style.borderColor = 'rgba(52, 211, 153, 0.4)';
-                        loadedOnline = true;
+                        onlineWorked = true;
                     }
                 } catch(e) {}
             }
             
-            if (!loadedOnline) {
+            if (!onlineWorked) {
                 document.getElementById('tideDotStatus').style.background = 'var(--accent-orange)';
                 document.getElementById('tideModeText').innerText = 'OFFLINE (CASIO)';
                 document.getElementById('tideRegionTitle').style.borderColor = 'rgba(251, 146, 60, 0.4)';
@@ -637,24 +714,23 @@
             let dateStr = `${['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][now.getDay()]} ${now.getDate()} ${['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][now.getMonth()]} ${now.getFullYear()}`;
             if (tideDayOffset === 0) dateStr += ' (Hoy)'; else if (tideDayOffset === -1) dateStr += ' (-1d)'; else if (tideDayOffset === 1) dateStr += ' (+1d)'; else dateStr += ` (${tideDayOffset>0?'+':''}${tideDayOffset}d)`;
             lbl.innerText = `Fecha: ${dateStr}`; 
-            updateMoonHybrid(currentLat, currentLon, tideDayOffset);
+            updateMoonTopocentric(currentLat, currentLon, tideDayOffset);
             updateTidesHybrid(currentLat, currentLon, tideDayOffset);
         }
 
-        // EVENT LISTENERS & INITS
         window.addEventListener('DOMContentLoaded', () => {
             initBezelSvg(); checkConnectivityStatus(); 
             window.addEventListener('online', checkConnectivityStatus); 
             window.addEventListener('offline', checkConnectivityStatus);
             initLiveMap(); initMasterClockAndWeather(); recalcularPresionesYAltitud();
-            updateMoonHybrid(currentLat, currentLon, tideDayOffset); 
+            updateMoonTopocentric(currentLat, currentLon, tideDayOffset); 
             updateTidesHybrid(currentLat, currentLon, tideDayOffset);
             updateSolarHybrid(currentLat, currentLon); updateCompassDisplay(0); checkStormDropAuto(false);
-            setTimeout(() => { initBarometerDetailedChart(); updateMagneticDeclination(currentLat, currentLon); }, 100);
+            setTimeout(() => { initBarometerDetailedChart(); updateMagneticDeclination(currentLat, currentLon); prefetchLocalTiles(currentLat, currentLon); }, 100);
             window.addEventListener('resize', () => { initBarometerDetailedChart(); drawTideCanvas(); });
             setInterval(() => checkStormDropAuto(true), 30000); 
             setInterval(() => updateSolarHybrid(currentLat, currentLon), 60000); 
-            setInterval(() => { updateMoonHybrid(currentLat, currentLon, tideDayOffset); drawTideCanvas(); }, 60000);
+            setInterval(() => { updateMoonTopocentric(currentLat, currentLon, tideDayOffset); drawTideCanvas(); }, 60000);
         });
 
         function toggleStormAlarm() { isStormAlarmEnabled = !isStormAlarmEnabled; checkStormDropAuto(false); }
@@ -682,7 +758,7 @@
 
         function initLiveMap() {
             map = L.map('liveMap', { zoomControl: false, attributionControl: false }).setView([currentLat, currentLon], 16); 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, subdomains: ['a','b','c'] }).addTo(map);
+            L.tileLayer.offlineCache('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, subdomains: ['a','b','c'] }).addTo(map);
             ring100 = L.circle([currentLat, currentLon], {radius: 100, color: 'rgba(56, 189, 248, 0.4)', weight: 1.5, dashArray: '4 4', fill: false}).addTo(map); 
             ring500 = L.circle([currentLat, currentLon], {radius: 500, color: 'rgba(56, 189, 248, 0.6)', weight: 1.5, dashArray: '4 4', fill: false}).addTo(map); 
             ring1000 = L.circle([currentLat, currentLon], {radius: 1000, color: 'rgba(56, 189, 248, 0.8)', weight: 1.5, dashArray: '6 6', fill: false}).addTo(map);
@@ -703,6 +779,7 @@
                 if (gpsActive) {
                     updateMagneticDeclination(currentLat, currentLon);
                     updateTidesHybrid(currentLat, currentLon, tideDayOffset);
+                    prefetchLocalTiles(currentLat, currentLon);
                 }
             } else { 
                 pill.className = 'connectivity-pill offline'; 
@@ -725,9 +802,10 @@
                     document.getElementById('lonVal').innerHTML = `${Math.abs(currentLon).toFixed(2)}<span class="unit">° ${currentLon>=0?'E':'W'}</span>`;
                     recalcularPresionesYAltitud(); updateMagneticDeclination(currentLat, currentLon); 
                     userMarker.setLatLng([currentLat, currentLon]); ring100.setLatLng([currentLat, currentLon]); ring500.setLatLng([currentLat, currentLon]); ring1000.setLatLng([currentLat, currentLon]); map.setView([currentLat, currentLon], 16);
-                    updateMoonHybrid(currentLat, currentLon, tideDayOffset); 
+                    updateMoonTopocentric(currentLat, currentLon, tideDayOffset); 
                     updateTidesHybrid(currentLat, currentLon, tideDayOffset); 
                     updateSolarHybrid(currentLat, currentLon);
+                    prefetchLocalTiles(currentLat, currentLon);
                     if (isTracking) recordWaypoint(currentLat, currentLon, currentAltitude);
                 }, err => { btn.className = 'btn-gps-sync waiting'; dot.style.background = 'var(--accent-red)'; txt.innerText = 'ERROR GPS'; }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
                 
@@ -791,7 +869,6 @@
             svg.innerHTML = content;
         }
 
-        // SOL HÍBRIDO (ONLINE / OFFLINE NOAA)
         async function updateSolarHybrid(lat, lon) {
             let onlineWorked = false;
             if (navigator.onLine) {
@@ -857,27 +934,29 @@
             const czen = Math.sin(latRad) * Math.sin(decl) + Math.cos(latRad) * Math.cos(decl) * Math.cos(hourAngleRad);
             const zenith = Math.acos(Math.max(-1, Math.min(1, czen)));
             const elevation = 90 - (zenith * 180 / Math.PI);
+            
             let azRad = Math.acos((Math.sin(decl) - Math.sin(latRad) * Math.cos(zenith)) / (Math.cos(latRad) * Math.sin(zenith)));
             if (hourAngle > 0) azRad = 2 * Math.PI - azRad;
             sunAzimuth = Math.round((azRad * 180 / Math.PI + 180) % 360);
             
             const disc = document.getElementById('sunDiscVisual'); const isDay = elevation > 0;
+            const hemiLabel = lat >= 0 ? "Hemisferio Norte" : "Hemisferio Sur";
+            
             if (isDay) { 
                 let pctIllum = Math.min(1, Math.max(0.1, elevation / 70)); 
                 disc.style.background = `radial-gradient(circle at 45% 45%, #fef08a 0%, #f97316 75%)`; 
                 disc.style.boxShadow = `0 0 ${pctIllum * 24}px rgba(250, 204, 21, ${pctIllum * 0.85})`; 
                 disc.style.clipPath = currentHourDec < 12 ? `polygon(0 0, ${Math.max(25, pctIllum * 100)}% 0, ${Math.max(25, pctIllum * 100)}% 100%, 0 100%)` : `polygon(${100 - Math.max(25, pctIllum * 100)}% 0, 100% 0, 100% 100%, ${100 - Math.max(25, pctIllum * 100)}% 100%)`; 
-                document.getElementById('sunPhaseName').innerText = elevation < 10 ? 'Orto / Ocaso en curso' : (elevation > 45 ? 'Cenit Alto' : 'Luz Diurna Activa'); 
+                document.getElementById('sunPhaseName').innerText = `${elevation < 10 ? 'Orto / Ocaso' : (elevation > 45 ? 'Cenit Alto' : 'Luz Diurna')} • ${hemiLabel}`; 
             } else { 
                 disc.style.background = '#090d16'; disc.style.boxShadow = 'inset 0 0 8px rgba(0,0,0,0.9)'; disc.style.clipPath = 'none'; 
-                document.getElementById('sunPhaseName').innerText = 'Noche (Bajo el Horizonte)'; 
+                document.getElementById('sunPhaseName').innerText = `Noche • ${hemiLabel}`; 
             }
             document.getElementById('sunElevationVal').innerText = `${elevation.toFixed(1)}°`; 
             document.getElementById('sunAzVal').innerHTML = `${sunAzimuth}<span class="unit">°</span>`;
         }
 
-        // LUNA HÍBRIDA (MEEUS OFFLINE / ONLINE)
-        function updateMoonHybrid(lat, lon, dayOffset = 0) {
+        function updateMoonTopocentric(lat, lon, dayOffset = 0) {
             const badge = document.getElementById('moonSourceTag');
             if (navigator.onLine) {
                 badge.innerText = "ONLINE (MEEUS)";
@@ -888,23 +967,36 @@
                 badge.style.color = "var(--accent-orange)";
                 badge.style.borderColor = "rgba(251, 146, 60, 0.4)";
             }
-            calculateMeeusMoon(lat, lon, dayOffset);
-        }
 
-        function calculateMeeusMoon(lat, lon, dayOffset = 0) {
             const targetDate = new Date(); targetDate.setDate(targetDate.getDate() + dayOffset); 
             const JD = (targetDate.getTime() / 86400000.0) + 2440587.5; 
             const T = (JD - 2451545.0) / 36525.0; 
+            
             const D = (297.8501921 + 445267.1114034 * T - 0.0018819 * T * T) * Math.PI / 180.0; 
             const M = (357.5291092 + 35999.0502909 * T - 0.0001536 * T * T) * Math.PI / 180.0; 
             const Mprime = (134.9633964 + 477198.8675055 * T + 0.0087414 * T * T) * Math.PI / 180.0; 
+            const F = (93.2720950 + 483202.0175233 * T - 0.0036539 * T * T) * Math.PI / 180.0;
+
+            const moonLon = (218.3164477 + 481267.88123421 * T + 6.288774 * Math.sin(Mprime) + 1.274027 * Math.sin(2*D - Mprime) + 0.658309 * Math.sin(2*D) + 0.213618 * Math.sin(2*Mprime) - 0.185116 * Math.sin(M) - 0.114332 * Math.sin(2*F)) * Math.PI / 180.0;
+            const moonLat = (5.128122 * Math.sin(F) + 0.280602 * Math.sin(Mprime + F) + 0.277693 * Math.sin(Mprime - F) + 0.173238 * Math.sin(2*D - F)) * Math.PI / 180.0;
+
+            const eps = (23.439291 - 0.0130042 * T) * Math.PI / 180.0;
+
+            const sinDelta = Math.sin(moonLat) * Math.cos(eps) + Math.cos(moonLat) * Math.sin(eps) * Math.sin(moonLon);
+            const delta = Math.asin(sinDelta);
+            const yAlpha = Math.sin(moonLon) * Math.cos(eps) - Math.tan(moonLat) * Math.sin(eps);
+            const xAlpha = Math.cos(moonLon);
+            let alpha = Math.atan2(yAlpha, xAlpha);
+            if (alpha < 0) alpha += 2 * Math.PI;
+
             const phaseAngle = Math.PI - D - (0.1098 * Math.sin(Mprime)) + (0.0222 * Math.sin(2 * D - Mprime)) + (0.0367 * Math.sin(M)); 
             const k = (1 + Math.cos(phaseAngle)) / 2.0; 
             const moonPhasePercent = Math.round(k * 100); 
-            let ageInDays = ((D * 180.0 / Math.PI) % 360 + 360) % 360 / 360.0 * 29.53058867; 
-            const daysToFull = Math.max(0, Math.round(((14.765 - ageInDays + 29.53058867) % 29.53058867))); 
-            const moonDistKm = Math.round(385000 - 20000 * Math.cos(Mprime));
             
+            let ageInDays = ((D * 180.0 / Math.PI) % 360 + 360) % 360 / 360.0 * 29.53058867; 
+            const daysToFull = ((14.765 - ageInDays + 29.53058867) % 29.53058867); 
+            const moonDistKm = Math.round(385000 - 20000 * Math.cos(Mprime));
+
             let phaseName = 'Luna Nueva'; 
             if (ageInDays >= 1.5 && ageInDays < 6.5) phaseName = 'Creciente Cóncava'; 
             else if (ageInDays >= 6.5 && ageInDays < 8.5) phaseName = 'Cuarto Creciente'; 
@@ -913,33 +1005,55 @@
             else if (ageInDays >= 16.0 && ageInDays < 21.0) phaseName = 'Gibosa Menguante'; 
             else if (ageInDays >= 21.0 && ageInDays < 23.0) phaseName = 'Cuarto Menguante'; 
             else if (ageInDays >= 23.0 && ageInDays < 28.0) phaseName = 'Menguante Cóncava';
-            
+
             document.getElementById('moonPhaseTitle').innerText = phaseName; 
             document.getElementById('moonLumiVal').innerText = `${moonPhasePercent}%`; 
             document.getElementById('moonAgeDetailVal').innerHTML = `${ageInDays.toFixed(1)} <span class="unit">días</span>`; 
             document.getElementById('moonDistVal').innerText = `${moonDistKm.toLocaleString('es-ES')} km`; 
-            document.getElementById('moonNextFullVal').innerHTML = `${daysToFull} <span class="unit">días</span>`; 
-            
-            let riseHour = (12.31 + (ageInDays * 0.842) - (lon * 24 / 360)) % 24; 
-            let setHour = (riseHour + 12.5) % 24; 
-            if (riseHour < 0) riseHour += 24; 
-            if (setHour < 0) setHour += 24; 
-            const fmtH = val => `${String(Math.floor(val)).padStart(2,'0')}:${String(Math.floor((val - Math.floor(val))*60)).padStart(2,'0')}`; 
-            document.getElementById('moonRiseVal').innerText = fmtH(riseHour); 
-            document.getElementById('moonSetVal').innerText = fmtH(setHour);
-            
+            document.getElementById('moonNextFullVal').innerHTML = `${daysToFull.toFixed(1)} <span class="unit">días</span>`; 
+
+            const latRad = lat * Math.PI / 180.0;
+            const h0 = 0.125 * Math.PI / 180.0;
+            const cosH0 = (Math.sin(h0) - Math.sin(latRad) * Math.sin(delta)) / (Math.cos(latRad) * Math.cos(delta));
+
+            let riseMinutes = 0, setMinutes = 0;
+            if (cosH0 >= -1 && cosH0 <= 1) {
+                const H0 = Math.acos(cosH0) * 180 / Math.PI;
+                const theta0 = (280.46061837 + 360.98564736629 * (JD - 2451545.0)) % 360;
+                const transitHours = ((alpha * 180 / Math.PI - lon - theta0) % 360 + 360) % 360 / 15.0;
+                
+                const timezoneOffsetHours = -targetDate.getTimezoneOffset() / 60.0;
+                const mRise = ((transitHours - H0 / 15.0 + timezoneOffsetHours + 24) % 24);
+                const mSet = ((transitHours + H0 / 15.0 + timezoneOffsetHours + 24) % 24);
+
+                riseMinutes = mRise * 60;
+                setMinutes = mSet * 60;
+            }
+
+            const fmtM = val => {
+                let h = Math.floor(val / 60) % 24;
+                let m = Math.floor(val % 60);
+                if (h < 0) h += 24;
+                return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+            };
+
+            document.getElementById('moonRiseVal').innerText = fmtM(riseMinutes); 
+            document.getElementById('moonSetVal').innerText = fmtM(setMinutes); 
+
             const disc = document.getElementById('moonDiscVisual'); 
             if (disc) { 
                 const isWaxing = ageInDays < 14.765; 
                 const isNorth = lat >= 0; 
                 const illuminateRight = (isWaxing && isNorth) || (!isWaxing && !isNorth); 
                 const p = Math.max(8, moonPhasePercent); 
-                if (illuminateRight) { disc.style.clipPath = `polygon(${100 - p}% 0, 100% 0, 100% 100%, ${100 - p}% 100%)`; } 
-                else { disc.style.clipPath = `polygon(0 0, ${p}% 0, ${p}% 100%, 0 100%)`; } 
+                if (illuminateRight) { 
+                    disc.style.clipPath = `polygon(${100 - p}% 0, 100% 0, 100% 100%, ${100 - p}% 100%)`; 
+                } else { 
+                    disc.style.clipPath = `polygon(0 0, ${p}% 0, ${p}% 100%, 0 100%)`; 
+                } 
             }
         }
 
-        // CONTROL DE MISIÓN & TRACKING
         function toggleMissionTracking() {
             if (!gpsActive) { alert("PULSA ACTIVAR GPS ARRIBA PRIMERO."); return; } 
             isTracking = !isTracking; const btn = document.getElementById('btnToggleTrack'); const badge = document.getElementById('trackStatusBadge');
@@ -1043,7 +1157,6 @@
             alert('Sesión finalizada y guardada. Sistema reseteado a STANDBY.');
         }
 
-        // HISTORIAL Y VISOR ESTILO WIKILOC
         function openHistoryModal() {
             const container = document.getElementById('historyListContainer'); 
             const saved = JSON.parse(localStorage.getItem('orion_missions') || '[]'); 
@@ -1112,7 +1225,7 @@
                 try {
                     if (viewerMap) { viewerMap.remove(); viewerMap = null; }
                     viewerMap = L.map('routeViewMap', { zoomControl: true, attributionControl: false }).setView([lat, lon], 16);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, subdomains: ['a','b','c'] }).addTo(viewerMap);
+                    L.tileLayer.offlineCache('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, subdomains: ['a','b','c'] }).addTo(viewerMap);
                     
                     viewerPolylineGreen = L.polyline([], { color: '#059669', weight: 4 }).addTo(viewerMap);
                     viewerPolylineRed = L.polyline([], { color: '#e11d48', weight: 4 }).addTo(viewerMap);
