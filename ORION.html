@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION - Field Navigator v3.2</title>
+    <title>ORION - Field Navigator v3.3</title>
     <meta name="author" content="danielcdmo">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -155,23 +155,16 @@
         .badge-tag.baro-off { background: rgba(100, 116, 139, 0.15); color: #94a3b8; border-color: rgba(100, 116, 139, 0.3); }
 
         @keyframes pulse-alarm { 0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); } 50% { box-shadow: 0 0 12px 2px rgba(244, 63, 94, 0.7); } }
-
         .storm-alert-banner { display: none; background: rgba(244, 63, 94, 0.2); border: 1px solid var(--accent-red); border-radius: var(--radius-card); padding: 8px 12px; font-size: 0.72rem; font-weight: 800; color: #fff; align-items: center; justify-content: space-between; gap: 6px; animation: pulse-alarm 1.2s infinite; }
 
         .metric-grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .metric-box { background: var(--glass-inner); border: 1px solid var(--glass-border); border-top: 1px solid var(--glass-border-specular); border-radius: var(--radius-card); padding: 12px 14px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; box-shadow: inset 0 1px 1px rgba(255,255,255,0.06); }
-
         .metric-label { font-size: 0.65rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.3px; margin-bottom: 2px; }
         .metric-value { font-size: 1.35rem; font-weight: 800; color: var(--text-box-val); letter-spacing: -0.5px; display: flex; align-items: baseline; gap: 3px; }
         .metric-value .unit { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); }
         .metric-sub { font-size: 0.58rem; font-weight: 800; color: var(--text-muted); margin-top: 3px; letter-spacing: 0.5px; text-transform: uppercase; }
 
-        .text-green { color: var(--accent-green) !important; }
-        .text-cyan { color: var(--accent-cyan) !important; }
-        .text-orange { color: var(--accent-orange) !important; }
-        .text-yellow { color: var(--accent-yellow) !important; }
-        .text-red { color: var(--accent-red) !important; }
-        .text-blue { color: var(--accent-blue) !important; }
+        .text-green { color: var(--accent-green) !important; } .text-cyan { color: var(--accent-cyan) !important; } .text-orange { color: var(--accent-orange) !important; } .text-yellow { color: var(--accent-yellow) !important; } .text-red { color: var(--accent-red) !important; } .text-blue { color: var(--accent-blue) !important; }
 
         .compass-section { display: grid; grid-template-columns: 140px 1fr; gap: 12px; align-items: center; }
         .compass-dial-container { width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, var(--glass-inner) 0%, var(--lcd-glass) 100%); border: 1.5px solid var(--glass-border-specular); position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 8px 24px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -222,8 +215,12 @@
         .tactical-btn.danger { background: rgba(244, 63, 94, 0.25); border-color: rgba(244, 63, 94, 0.5); color: var(--accent-red); }
         .tactical-btn.warning { background: rgba(251, 146, 60, 0.2); border-color: var(--accent-orange); color: var(--accent-orange); }
 
-        /* MODALES */
-        #reportModalOverlay, #historyModalOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(24px); z-index: 999999; display: none; flex-direction: column; align-items: center; overflow-y: auto; padding: calc(env(safe-area-inset-top, 30px) + 20px) 14px calc(env(safe-area-inset-bottom, 20px) + 30px) 14px; }
+        /* MODALES WIKILOC STYLE */
+        #historyModalOverlay, #reportModalOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(24px); display: none; flex-direction: column; align-items: center; overflow-y: auto; padding: calc(env(safe-area-inset-top, 30px) + 20px) 14px calc(env(safe-area-inset-bottom, 20px) + 30px) 14px; }
+        
+        #historyModalOverlay { z-index: 999998; }
+        #reportModalOverlay { z-index: 999999; }
+        
         .printable-sheet { background: #ffffff; color: #0f172a; width: 100%; max-width: 620px; border-radius: var(--radius-main); padding: 22px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         #reportMapLeaflet { width: 100%; height: 210px; border-radius: 10px; border: 1px solid #cbd5e1; display: block; z-index: 1; }
 
@@ -270,7 +267,7 @@
         </div>
 
         <div class="topbar-controls-row">
-            <span class="version-tag">v3.2</span>
+            <span class="version-tag">v3.3</span>
             <div class="connectivity-pill" id="connPill">
                 <span class="status-dot-mini" id="connDot" style="background:var(--accent-green);"></span>
                 <span id="connText">ONLINE</span>
@@ -321,22 +318,22 @@
         <div class="metric-grid-2x2">
             <div class="metric-box">
                 <span class="metric-label">Altitud GPS (Satélite)</span>
-                <span class="metric-value text-green" id="altGpsVal">212 <span class="unit">m</span></span>
+                <span class="metric-value text-green" id="altGpsVal">-- <span class="unit">m</span></span>
                 <span class="metric-sub">COTA REAL WGS84</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Altitud Barométrica</span>
-                <span class="metric-value text-yellow" id="altBaroVal">193 <span class="unit">m</span></span>
+                <span class="metric-value text-yellow" id="altBaroVal">-- <span class="unit">m</span></span>
                 <span class="metric-sub">SENSOR CASIO CORREGIDO</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Presión Absoluta (QFE)</span>
-                <span class="metric-value text-green" id="qfeVal">993 <span class="unit">hPa</span></span>
+                <span class="metric-value text-green" id="qfeVal">-- <span class="unit">hPa</span></span>
                 <span class="metric-sub">SENSOR LOCAL</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Presión Nivel Mar (QNH)</span>
-                <span class="metric-value text-blue" id="qnhVal">1016 <span class="unit">hPa</span></span>
+                <span class="metric-value text-blue" id="qnhVal">-- <span class="unit">hPa</span></span>
                 <span class="metric-sub" id="qnhSourceTag" style="color:var(--accent-blue);">QNH OFFLINE (ISA)</span>
             </div>
         </div>
@@ -410,7 +407,7 @@
             <div>
                 <div style="font-size:0.95rem; font-weight:800;" id="sunProgressText" class="text-yellow">Progreso Diurno</div>
                 <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
-                    Altura Solar: <strong style="color:var(--text-main);" id="sunElevationVal">0.0°</strong>
+                    Altura Solar: <strong style="color:var(--text-main);" id="sunElevationVal">--°</strong>
                 </div>
                 <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">
                     Fase: <strong style="color:var(--accent-orange);" id="sunPhaseName">Calculando...</strong>
@@ -431,12 +428,12 @@
             </div>
             <div class="metric-box">
                 <span class="metric-label">Latitud Reloj</span>
-                <span class="metric-value" id="latVal">41.6<span class="unit">° N</span></span>
+                <span class="metric-value" id="latVal">--<span class="unit">°</span></span>
                 <span class="metric-sub">AJUSTE RELOJ CASIO</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Longitud Reloj</span>
-                <span class="metric-value" id="lonVal">2.1<span class="unit">° E</span></span>
+                <span class="metric-value" id="lonVal">--<span class="unit">°</span></span>
                 <span class="metric-sub">AJUSTE RELOJ CASIO</span>
             </div>
         </div>
@@ -445,18 +442,18 @@
     <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🌙</span><span>TELEMETRÍA LUNAR ASTRONÓMICA</span></div>
-            <span class="badge-tag" id="moonHeaderPhaseTag">CRECIENTE</span>
+            <span class="badge-tag" id="moonHeaderPhaseTag">--</span>
         </div>
 
         <div class="moon-visual-row">
             <div class="moon-sphere"><div class="moon-phase-disc" id="moonDiscVisual"></div></div>
             <div>
-                <div style="font-size:0.95rem; font-weight:800;" id="moonPhaseTitle" class="text-yellow">Creciente Cóncava</div>
+                <div style="font-size:0.95rem; font-weight:800;" id="moonPhaseTitle" class="text-yellow">Calculando...</div>
                 <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
-                    Luminosidad: <strong style="color:var(--text-main); font-size:0.95rem;" id="moonLumiVal">28%</strong>
+                    Luminosidad: <strong style="color:var(--text-main); font-size:0.95rem;" id="moonLumiVal">--%</strong>
                 </div>
                 <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">
-                    Distancia Lunar: <strong style="color:var(--accent-cyan);" id="moonDistVal">392.100 km</strong>
+                    Distancia Lunar: <strong style="color:var(--accent-cyan);" id="moonDistVal">-- km</strong>
                 </div>
             </div>
         </div>
@@ -464,28 +461,28 @@
         <div class="metric-grid-2x2">
             <div class="metric-box">
                 <span class="metric-label">Salida de Luna (Orto)</span>
-                <span class="metric-value text-yellow" id="moonRiseVal">12:19</span>
+                <span class="metric-value text-yellow" id="moonRiseVal">--:--</span>
                 <span class="metric-sub">TRÁNSITO LOCAL</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Puesta de Luna (Ocaso)</span>
-                <span class="metric-value" id="moonSetVal">22:52</span>
+                <span class="metric-value" id="moonSetVal">--:--</span>
                 <span class="metric-sub">TRÁNSITO LOCAL</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Edad Lunar</span>
-                <span class="metric-value text-green" id="moonAgeDetailVal">5.1 <span class="unit">días</span></span>
+                <span class="metric-value text-green" id="moonAgeDetailVal">-- <span class="unit">días</span></span>
                 <span class="metric-sub">CICLO SINÓDICO</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Próxima Luna Llena</span>
-                <span class="metric-value text-yellow" id="moonNextFullVal">10 <span class="unit">días</span></span>
+                <span class="metric-value text-yellow" id="moonNextFullVal">-- <span class="unit">días</span></span>
                 <span class="metric-sub">PLENILUNIO</span>
             </div>
         </div>
     </div>
 
-    <!-- WIDGET DE MAREAS (HÍBRIDO V3.2) -->
+    <!-- WIDGET DE MAREAS -->
     <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🌊</span><span>PLEAMARES & BAJAMARES</span></div>
@@ -580,7 +577,7 @@
         </div>
     </div>
 
-    <!-- MODAL HISTORIAL -->
+    <!-- MODALES WIKILOC STYLE -->
     <div id="historyModalOverlay">
         <div style="width:100%; max-width:620px; display:flex; justify-content:space-between; gap:10px; margin-bottom:14px;">
             <button style="background:var(--glass-inner); border:1px solid var(--glass-border); color:#fff; padding:10px 18px; border-radius:20px; font-weight:800; cursor:pointer;" onclick="closeHistoryModal()">← Volver</button>
@@ -591,7 +588,6 @@
         </div>
     </div>
 
-    <!-- MODAL DETALLE RUTA (WIKILOC STYLE) -->
     <div id="reportModalOverlay">
         <div class="no-print" style="width:100%; max-width:620px; display:flex; justify-content:space-between; gap:10px; margin-bottom:14px;">
             <button style="background:var(--glass-inner); border:1px solid var(--glass-border); color:#fff; padding:10px 18px; border-radius:20px; font-weight:800; cursor:pointer;" onclick="closeMissionReportModal()">← Volver</button>
@@ -605,7 +601,7 @@
                     <div style="font-size:0.75rem; color:#64748b; font-weight:700; margin-top:3px;" id="repDateTime">Fecha: --</div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:0.75rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 10px; border-radius:6px;">v3.2</span>
+                    <span style="font-size:0.75rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 10px; border-radius:6px;">v3.3</span>
                     <div style="font-size:0.62rem; color:#64748b; font-weight:700; margin-top:4px;">REF: WGS84-GEO</div>
                 </div>
             </div>
@@ -619,7 +615,6 @@
                 <div class="pdf-box"><div class="pdf-box-lbl">Waypoints Registrados</div><div class="pdf-box-val" id="pdfWps">0 pts</div></div>
             </div>
 
-            <!-- Gráfico de Perfil de Elevación -->
             <div style="margin:12px 0 6px 0; font-size:0.72rem; font-weight:800; color:#334155;">PERFIL DE ELEVACIÓN (ALTIMETRÍA):</div>
             <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:10px; margin-bottom:12px; height: 90px; position: relative;">
                 <canvas id="pdfAltCanvas" style="width:100%; height:100%; display:block;"></canvas>
@@ -633,7 +628,7 @@
             <div id="reportMapLeaflet"></div>
 
             <div style="margin-top:16px; border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:#64748b;">
-                <span>Sistema Operativo ORION v3.2 • Marine Hybrid Sync</span>
+                <span>Sistema Operativo ORION v3.3 • Marine Hybrid Sync</span>
                 <span><strong>Registrado por: danielcdmo</strong></span>
             </div>
         </div>
@@ -641,6 +636,7 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
+        // CORE VARIABLES
         let currentHeading = 0; let smoothedHeading = 0; let lockedBearing = null; let sunAzimuth = 180;
         let isTracking = false; let isReturning = false; let waypoints = []; let totalDistanceKm = 0; let lastGpsPos = null;
 
@@ -655,14 +651,21 @@
         let ring100, ring500, ring1000; 
         
         let reportMap = null, reportPolylineGreen = null, reportPolylineRed = null, reportMarker = null, reportWpGroup = null;
-        
-        // Objeto de mareas centralizado
         let rawTideEvents = { p1: 0.0, b1: 6.21, p2: 12.42, b2: 18.63 };
         const baroHistory = [{time:'-24h',p:1014},{time:'-16h',p:1016},{time:'-8h',p:1017},{time:'Ahora',p:1016}];
 
+        // BARO / ALTI MATH
         function calcularAltitudBarometricaReal(qfe, qnh) { return (!qfe || !qnh) ? 204 : Math.round(44330 * (1 - Math.pow((qfe / qnh), 0.190284))); }
         function calcularPresionAbsoluta(altGps, qnh) { return Math.round(qnh * Math.pow(1 - (altGps / 44330), 5.255)); }
+        function recalcularPresionesYAltitud() {
+            try {
+                currentPressure = calcularPresionAbsoluta(currentAltitude, seaLevelPressure); baroAltitude = calcularAltitudBarometricaReal(currentPressure, seaLevelPressure);
+                document.getElementById('altGpsVal').innerHTML = `${currentAltitude} <span class="unit">m</span>`; document.getElementById('altBaroVal').innerHTML = `${baroAltitude} <span class="unit">m</span>`;
+                document.getElementById('qfeVal').innerHTML = `${currentPressure} <span class="unit">hPa</span>`; document.getElementById('qnhVal').innerHTML = `${seaLevelPressure} <span class="unit">hPa</span>`;
+            } catch(e) {}
+        }
 
+        // MAGNETIC DECLINATION
         function calcularDeclinacionMagneticaOffline(lat, lon) {
             const poleLat = (lat >= 0 ? 86.3 : -64.0) * Math.PI / 180; const poleLon = (lat >= 0 ? 156.0 : 136.0) * Math.PI / 180;
             const rLat = lat * Math.PI / 180; const rLon = lon * Math.PI / 180;
@@ -675,7 +678,6 @@
             if (lat >= 27 && lat <= 44 && lon >= -18 && lon <= 5) { dec = 1.6 + (lon * 0.25) - ((lat - 40) * 0.05); }
             const rounded = Math.round(dec); const dir = rounded >= 0 ? 'E' : 'W'; return `${dir} ${Math.abs(rounded)}`;
         }
-
         async function updateMagneticDeclination(lat, lon) {
             let decMath = calcularDeclinacionMagneticaOffline(lat, lon);
             if (navigator.onLine) {
@@ -687,223 +689,103 @@
                         document.getElementById('decVal').innerHTML = `${dirAPI} ${Math.abs(Math.round(decAPI))}<span class="unit">°</span>`;
                         document.getElementById('decSource').innerText = "ONLINE NOAA"; document.getElementById('decSource').style.color = "var(--accent-green)"; return;
                     }
-                } catch (e) { console.warn("Fallo NOAA online, usando fallback geodinámico interno."); }
+                } catch (e) {}
             }
             document.getElementById('decVal').innerHTML = `${decMath}<span class="unit">°</span>`;
             document.getElementById('decSource').innerText = "OFFLINE MODEL"; document.getElementById('decSource').style.color = "var(--accent-orange)";
         }
 
-        // ==========================================
-        // MOTOR DE MAREAS HÍBRIDO (ONLINE API / OFFLINE CASIO)
-        // ==========================================
-        
+        // TIDE ENGINE HYBRID
         async function fetchOnlineTides(lat, lon, dayOffset) {
             try {
-                // Descargamos datos oceanográficos desde ayer hasta pasado mañana (precisión horaria del nivel del mar)
                 const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&hourly=sea_level_height_msl&timezone=auto&past_days=1&forecast_days=3`;
-                const res = await fetch(url);
-                const data = await res.json();
-                
+                const res = await fetch(url); const data = await res.json();
                 if (data && data.hourly && data.hourly.sea_level_height_msl) {
-                    const hData = data.hourly.sea_level_height_msl;
-                    let pleas = []; let bajas = [];
-                    
-                    // Índice 24 equivale a las 00:00 del día actual local
-                    let startIdx = 24 + (dayOffset * 24);
-                    let endIdx = startIdx + 24;
-                    
-                    // Escaneo de picos y valles (derivada y extrapolación cuadrática para hallar la hora exacta)
+                    const hData = data.hourly.sea_level_height_msl; let pleas = []; let bajas = [];
+                    let startIdx = 24 + (dayOffset * 24); let endIdx = startIdx + 24;
                     for (let i = startIdx - 1; i <= endIdx + 1; i++) {
                         if (i < 1 || i >= hData.length - 1) continue;
-                        
                         let y1 = hData[i-1]; let y2 = hData[i]; let y3 = hData[i+1];
                         if (y1 === null || y2 === null || y3 === null) continue;
-
-                        let isPeak = y2 >= y1 && y2 >= y3 && (y2 > y1 || y2 > y3);
-                        let isValley = y2 <= y1 && y2 <= y3 && (y2 < y1 || y2 < y3);
-
-                        if (isPeak) {
-                            let denom = 2 * (y1 - 2*y2 + y3);
-                            let offset = denom !== 0 ? (y1 - y3) / denom : 0;
-                            let peakHour = (i - startIdx) + offset;
-                            if (peakHour >= 0 && peakHour < 24) pleas.push(peakHour);
-                        } else if (isValley) {
-                            let denom = 2 * (y1 - 2*y2 + y3);
-                            let offset = denom !== 0 ? (y1 - y3) / denom : 0;
-                            let peakHour = (i - startIdx) + offset;
-                            if (peakHour >= 0 && peakHour < 24) bajas.push(peakHour);
-                        }
+                        let isPeak = y2 >= y1 && y2 >= y3 && (y2 > y1 || y2 > y3); let isValley = y2 <= y1 && y2 <= y3 && (y2 < y1 || y2 < y3);
+                        if (isPeak) { let denom = 2 * (y1 - 2*y2 + y3); let offset = denom !== 0 ? (y1 - y3) / denom : 0; let peakHour = (i - startIdx) + offset; if (peakHour >= 0 && peakHour < 24) pleas.push(peakHour); }
+                        else if (isValley) { let denom = 2 * (y1 - 2*y2 + y3); let offset = denom !== 0 ? (y1 - y3) / denom : 0; let peakHour = (i - startIdx) + offset; if (peakHour >= 0 && peakHour < 24) bajas.push(peakHour); }
                     }
-                    
-                    pleas.sort((a,b) => a-b);
-                    bajas.sort((a,b) => a-b);
-                    
-                    if (pleas.length === 0 || bajas.length === 0) return false; // Fallback de seguridad si el mar está totalmente plano
-
-                    // Asignación con inteligencia artificial para rellenar huecos si la costa bloquea una marea
-                    let p1 = pleas.length > 0 ? pleas[0] : 0;
-                    let p2 = pleas.length > 1 ? pleas[1] : (p1 + 12.42) % 24;
-                    let b1 = bajas.length > 0 ? bajas[0] : 6.21;
-                    let b2 = bajas.length > 1 ? bajas[1] : (b1 + 12.42) % 24;
-                    
-                    rawTideEvents = { p1, b1, p2, b2 };
-                    return true;
+                    pleas.sort((a,b) => a-b); bajas.sort((a,b) => a-b);
+                    if (pleas.length === 0 || bajas.length === 0) return false; 
+                    let p1 = pleas.length > 0 ? pleas[0] : 0; let p2 = pleas.length > 1 ? pleas[1] : (p1 + 12.42) % 24;
+                    let b1 = bajas.length > 0 ? bajas[0] : 6.21; let b2 = bajas.length > 1 ? bajas[1] : (b1 + 12.42) % 24;
+                    rawTideEvents = { p1, b1, p2, b2 }; return true;
                 }
-            } catch(e) { console.warn("Fallo API Mareas, usando modelo Casio Offline.", e); }
+            } catch(e) {}
             return false;
         }
 
         function calculateTidesMathModel(lat, lon, dayOffset = 0) {
             const baseEvents = [ { type: 'plea', t: 0.00 }, { type: 'baja', t: 6.21 }, { type: 'plea', t: 12.42 }, { type: 'baja', t: 18.63 } ];
-            const lonOffset = (lon - 2.137) * 24 / 360; 
-            const ageOffset = dayOffset * 0.842; 
-            const totalOffset = ageOffset - lonOffset;
-
-            let calcEvents = baseEvents.map(ev => {
-                let shifted = (ev.t + totalOffset) % 24;
-                if (shifted < 0) shifted += 24; return { type: ev.type, t: shifted };
-            });
+            const lonOffset = (lon - 2.137) * 24 / 360; const ageOffset = dayOffset * 0.842; const totalOffset = ageOffset - lonOffset;
+            let calcEvents = baseEvents.map(ev => { let shifted = (ev.t + totalOffset) % 24; if (shifted < 0) shifted += 24; return { type: ev.type, t: shifted }; });
             calcEvents.sort((a, b) => a.t - b.t);
-
-            let p1 = calcEvents.filter(e => e.type === 'plea')[0]?.t || 0;
-            let p2 = calcEvents.filter(e => e.type === 'plea')[1]?.t || (p1 + 12.42) % 24;
-            let b1 = calcEvents.filter(e => e.type === 'baja')[0]?.t || 0;
-            let b2 = calcEvents.filter(e => e.type === 'baja')[1]?.t || (b1 + 12.42) % 24;
-
+            let p1 = calcEvents.filter(e => e.type === 'plea')[0]?.t || 0; let p2 = calcEvents.filter(e => e.type === 'plea')[1]?.t || (p1 + 12.42) % 24;
+            let b1 = calcEvents.filter(e => e.type === 'baja')[0]?.t || 0; let b2 = calcEvents.filter(e => e.type === 'baja')[1]?.t || (b1 + 12.42) % 24;
             rawTideEvents = { p1, b1, p2, b2 };
         }
 
         function updateTideUI() {
             const formatH = val => `${String(Math.floor(val)).padStart(2,'0')}:${String(Math.floor((val - Math.floor(val))*60)).padStart(2,'0')}`;
-            document.getElementById('tideP1').innerText = formatH(rawTideEvents.p1);
-            document.getElementById('tideB1').innerText = formatH(rawTideEvents.b1);
-            document.getElementById('tideB2').innerText = formatH(rawTideEvents.b2);
-            document.getElementById('tideP2').innerHTML = (rawTideEvents.p2 < rawTideEvents.p1) ? `${formatH(rawTideEvents.p2)} <small style="font-size:0.8rem; color:#94a3b8;">(+1)</small>` : `${formatH(rawTideEvents.p2)}`;
-            updateTideSlider(document.getElementById('tideTimeSlider').value); // Fuerza el recálculo visual del slider
+            document.getElementById('tideP1').innerText = formatH(rawTideEvents.p1); document.getElementById('tideB1').innerText = formatH(rawTideEvents.b1);
+            document.getElementById('tideB2').innerText = formatH(rawTideEvents.b2); document.getElementById('tideP2').innerHTML = (rawTideEvents.p2 < rawTideEvents.p1) ? `${formatH(rawTideEvents.p2)} <small style="font-size:0.8rem; color:#94a3b8;">(+1)</small>` : `${formatH(rawTideEvents.p2)}`;
+            updateTideSlider(document.getElementById('tideTimeSlider').value);
         }
 
         async function updateMareasData(lat, lon, dayOffset = 0) {
-            document.getElementById('tideRegionTitle').innerHTML = '<span class="status-dot-mini" style="background:var(--accent-orange);"></span> CALCULANDO...';
-            document.getElementById('tideRegionTitle').style.color = "var(--accent-orange)";
-            
-            let isOnline = navigator.onLine; let success = false;
-            if (isOnline) { success = await fetchOnlineTides(lat, lon, dayOffset); }
-            
+            document.getElementById('tideRegionTitle').innerHTML = '<span class="status-dot-mini" style="background:var(--accent-orange);"></span> CALCULANDO...'; document.getElementById('tideRegionTitle').style.color = "var(--accent-orange)";
+            let success = navigator.onLine ? await fetchOnlineTides(lat, lon, dayOffset) : false;
             if (success) {
-                document.getElementById('tideRegionTitle').innerHTML = '<span class="status-dot-mini" style="background:var(--accent-green);"></span> ONLINE API';
-                document.getElementById('tideRegionTitle').style.color = "var(--accent-green)";
-                document.getElementById('tideRegionTitle').style.borderColor = "rgba(52, 211, 153, 0.3)";
-                document.getElementById('tideRegionTitle').style.background = "rgba(52, 211, 153, 0.1)";
+                document.getElementById('tideRegionTitle').innerHTML = '<span class="status-dot-mini" style="background:var(--accent-green);"></span> ONLINE API'; document.getElementById('tideRegionTitle').style.color = "var(--accent-green)"; document.getElementById('tideRegionTitle').style.borderColor = "rgba(52, 211, 153, 0.3)"; document.getElementById('tideRegionTitle').style.background = "rgba(52, 211, 153, 0.1)";
             } else {
                 calculateTidesMathModel(lat, lon, dayOffset);
-                document.getElementById('tideRegionTitle').innerHTML = '<span class="status-dot-mini" style="background:var(--accent-orange);"></span> OFFLINE (CASIO)';
-                document.getElementById('tideRegionTitle').style.color = "var(--accent-orange)";
-                document.getElementById('tideRegionTitle').style.borderColor = "rgba(251, 146, 60, 0.3)";
-                document.getElementById('tideRegionTitle').style.background = "rgba(251, 146, 60, 0.1)";
+                document.getElementById('tideRegionTitle').innerHTML = '<span class="status-dot-mini" style="background:var(--accent-orange);"></span> OFFLINE (CASIO)'; document.getElementById('tideRegionTitle').style.color = "var(--accent-orange)"; document.getElementById('tideRegionTitle').style.borderColor = "rgba(251, 146, 60, 0.3)"; document.getElementById('tideRegionTitle').style.background = "rgba(251, 146, 60, 0.1)";
             }
             updateTideUI();
         }
 
-        // ==========================================
-        // DIBUJADO DINÁMICO DE LA ONDA ASIMÉTRICA
-        // ==========================================
         function generateTideCurveData() {
             let events = [];
-            if (rawTideEvents.p1 !== undefined) events.push({ t: rawTideEvents.p1, isHigh: true });
-            if (rawTideEvents.p2 !== undefined) events.push({ t: rawTideEvents.p2, isHigh: true });
-            if (rawTideEvents.b1 !== undefined) events.push({ t: rawTideEvents.b1, isHigh: false });
-            if (rawTideEvents.b2 !== undefined) events.push({ t: rawTideEvents.b2, isHigh: false });
-
-            events.sort((a, b) => a.t - b.t);
-            let firstEv = events[0]; let lastEv = events[events.length - 1];
-            
-            // Metemos un rebote imaginario previo y posterior para que la línea cruce los márgenes de la pantalla
-            events.unshift({ t: lastEv.t - 24, isHigh: lastEv.isHigh });
-            events.push({ t: firstEv.t + 24, isHigh: firstEv.isHigh });
-            return events;
+            if (rawTideEvents.p1 !== undefined) events.push({ t: rawTideEvents.p1, isHigh: true }); if (rawTideEvents.p2 !== undefined) events.push({ t: rawTideEvents.p2, isHigh: true });
+            if (rawTideEvents.b1 !== undefined) events.push({ t: rawTideEvents.b1, isHigh: false }); if (rawTideEvents.b2 !== undefined) events.push({ t: rawTideEvents.b2, isHigh: false });
+            events.sort((a, b) => a.t - b.t); let firstEv = events[0]; let lastEv = events[events.length - 1];
+            events.unshift({ t: lastEv.t - 24, isHigh: lastEv.isHigh }); events.push({ t: firstEv.t + 24, isHigh: firstEv.isHigh }); return events;
         }
 
         function getTideY(hour, events, h) {
-            let e1, e2;
-            for(let i=0; i<events.length-1; i++) {
-                if (hour >= events[i].t && hour <= events[i+1].t) { e1 = events[i]; e2 = events[i+1]; break; }
-            }
-            if (!e1 || !e2) return h/2;
-
-            let pct = (hour - e1.t) / (e2.t - e1.t);
-            let cosPct = (1 - Math.cos(pct * Math.PI)) / 2;
-            let y1 = e1.isHigh ? (h / 2) - (h * 0.28) : (h / 2) + (h * 0.28);
-            let y2 = e2.isHigh ? (h / 2) - (h * 0.28) : (h / 2) + (h * 0.28);
-            return y1 + (y2 - y1) * cosPct;
+            let e1, e2; for(let i=0; i<events.length-1; i++) { if (hour >= events[i].t && hour <= events[i+1].t) { e1 = events[i]; e2 = events[i+1]; break; } }
+            if (!e1 || !e2) return h/2; let pct = (hour - e1.t) / (e2.t - e1.t); let cosPct = (1 - Math.cos(pct * Math.PI)) / 2;
+            let y1 = e1.isHigh ? (h / 2) - (h * 0.28) : (h / 2) + (h * 0.28); let y2 = e2.isHigh ? (h / 2) - (h * 0.28) : (h / 2) + (h * 0.28); return y1 + (y2 - y1) * cosPct;
         }
 
         function drawTideCanvas() {
             const cvs = document.getElementById('tideCanvas'); if(!cvs) return;
-            const ctx = cvs.getContext('2d'); const rect = cvs.getBoundingClientRect();
-            const w = rect.width || 320; const h = rect.height || 105;
+            const ctx = cvs.getContext('2d'); const rect = cvs.getBoundingClientRect(); const w = rect.width || 320; const h = rect.height || 105;
             cvs.width = w * window.devicePixelRatio; cvs.height = h * window.devicePixelRatio; ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-
-            ctx.clearRect(0, 0, w, h);
-            ctx.strokeStyle = 'rgba(251, 146, 60, 0.25)'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
-            [0.25, 0.5, 0.75].forEach(pct => { ctx.beginPath(); ctx.moveTo(w*pct, 0); ctx.lineTo(w*pct, h); ctx.stroke(); }); ctx.setLineDash([]);
-
+            ctx.clearRect(0, 0, w, h); ctx.strokeStyle = 'rgba(251, 146, 60, 0.25)'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]); [0.25, 0.5, 0.75].forEach(pct => { ctx.beginPath(); ctx.moveTo(w*pct, 0); ctx.lineTo(w*pct, h); ctx.stroke(); }); ctx.setLineDash([]);
             const curveEvents = generateTideCurveData();
-
-            // Dibujo de la onda hiper-precisa que pasa obligatoriamente por los puntos asimétricos
             ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.beginPath();
-            for (let x = 0; x <= w; x++) {
-                let hour = (x / w) * 24.0;
-                let y = getTideY(hour, curveEvents, h);
-                x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-
+            for (let x = 0; x <= w; x++) { let hour = (x / w) * 24.0; let y = getTideY(hour, curveEvents, h); x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.stroke();
             const formatShortTime = (hVal) => `${String(Math.floor(hVal)).padStart(2,'0')}:${String(Math.floor((hVal - Math.floor(hVal))*60)).padStart(2,'0')}`;
-            const plotEvents = [
-                { type: 'plea', t: rawTideEvents.p1, label: formatShortTime(rawTideEvents.p1) },
-                { type: 'baja', t: rawTideEvents.b1, label: formatShortTime(rawTideEvents.b1) },
-                { type: 'plea', t: rawTideEvents.p2, label: formatShortTime(rawTideEvents.p2) },
-                { type: 'baja', t: rawTideEvents.b2, label: formatShortTime(rawTideEvents.b2) }
-            ];
-
+            const plotEvents = [ { type: 'plea', t: rawTideEvents.p1, label: formatShortTime(rawTideEvents.p1) }, { type: 'baja', t: rawTideEvents.b1, label: formatShortTime(rawTideEvents.b1) }, { type: 'plea', t: rawTideEvents.p2, label: formatShortTime(rawTideEvents.p2) }, { type: 'baja', t: rawTideEvents.b2, label: formatShortTime(rawTideEvents.b2) } ];
             ctx.font = 'bold 9px -apple-system, sans-serif'; ctx.textAlign = 'center';
-            plotEvents.forEach(ev => {
-                const evX = (ev.t / 24.0) * w; const evY = ev.type === 'plea' ? (h / 2) - (h * 0.28) : (h / 2) + (h * 0.28);
-                ctx.fillStyle = ev.type === 'plea' ? '#34d399' : '#f43f5e'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
-                ctx.beginPath(); ctx.arc(evX, evY, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-                ctx.fillStyle = ev.type === 'plea' ? '#34d399' : '#f43f5e'; ctx.fillText(ev.label, evX, ev.type === 'plea' ? evY - 8 : evY + 12);
-            });
-
-            const now = new Date(); const curMinutes = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60.0;
-            const liveX = (curMinutes / 1440.0) * w; const liveY = getTideY(curMinutes/60.0, curveEvents, h);
-
-            ctx.strokeStyle = '#34d399'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(liveX, 0); ctx.lineTo(liveX, h); ctx.stroke();
-            ctx.fillStyle = '#34d399'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(liveX, liveY, 5.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-            ctx.fillStyle = '#34d399'; ctx.font = 'bold 8px -apple-system, sans-serif'; ctx.fillText(`${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} (AHORA)`, liveX, h - 4);
-            document.getElementById('tideLiveTimestamp').innerText = `AHORA ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} ⚡`;
-
+            plotEvents.forEach(ev => { const evX = (ev.t / 24.0) * w; const evY = ev.type === 'plea' ? (h / 2) - (h * 0.28) : (h / 2) + (h * 0.28); ctx.fillStyle = ev.type === 'plea' ? '#34d399' : '#f43f5e'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(evX, evY, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = ev.type === 'plea' ? '#34d399' : '#f43f5e'; ctx.fillText(ev.label, evX, ev.type === 'plea' ? evY - 8 : evY + 12); });
+            const now = new Date(); const curMinutes = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60.0; const liveX = (curMinutes / 1440.0) * w; const liveY = getTideY(curMinutes/60.0, curveEvents, h);
+            ctx.strokeStyle = '#34d399'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(liveX, 0); ctx.lineTo(liveX, h); ctx.stroke(); ctx.fillStyle = '#34d399'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(liveX, liveY, 5.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#34d399'; ctx.font = 'bold 8px -apple-system, sans-serif'; ctx.fillText(`${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} (AHORA)`, liveX, h - 4); document.getElementById('tideLiveTimestamp').innerText = `AHORA ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} ⚡`;
             const realHour = curMinutes / 60.0;
-            if (Math.abs(sliderTideHour - realHour) > 0.2) {
-                const inspX = (sliderTideHour / 24.0) * w; const inspY = getTideY(sliderTideHour, curveEvents, h);
-                ctx.strokeStyle = 'rgba(251, 146, 60, 0.8)'; ctx.setLineDash([3, 3]); ctx.lineWidth = 1.5;
-                ctx.beginPath(); ctx.moveTo(inspX, 0); ctx.lineTo(inspX, h); ctx.stroke(); ctx.setLineDash([]);
-                ctx.fillStyle = '#fb923c'; ctx.beginPath(); ctx.arc(inspX, inspY, 4, 0, Math.PI * 2); ctx.fill();
-            }
+            if (Math.abs(sliderTideHour - realHour) > 0.2) { const inspX = (sliderTideHour / 24.0) * w; const inspY = getTideY(sliderTideHour, curveEvents, h); ctx.strokeStyle = 'rgba(251, 146, 60, 0.8)'; ctx.setLineDash([3, 3]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(inspX, 0); ctx.lineTo(inspX, h); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = '#fb923c'; ctx.beginPath(); ctx.arc(inspX, inspY, 4, 0, Math.PI * 2); ctx.fill(); }
         }
 
         function updateTideSlider(val) {
-            sliderTideHour = parseFloat(val);
-            let events = generateTideCurveData();
-            let isEbbing = false;
-            
-            for(let i=0; i<events.length-1; i++) {
-                if (sliderTideHour >= events[i].t && sliderTideHour <= events[i+1].t) {
-                    isEbbing = events[i].isHigh; // Si venimos de un pico alto, el agua baja
-                    break;
-                }
-            }
-            document.getElementById('tideStateDesc').innerText = isEbbing ? "Bajando hacia\nBajamar" : "Subiendo hacia\nPleamar";
-            drawTideCanvas();
+            sliderTideHour = parseFloat(val); let events = generateTideCurveData(); let isEbbing = false;
+            for(let i=0; i<events.length-1; i++) { if (sliderTideHour >= events[i].t && sliderTideHour <= events[i+1].t) { isEbbing = events[i].isHigh; break; } }
+            document.getElementById('tideStateDesc').innerText = isEbbing ? "Bajando hacia\nBajamar" : "Subiendo hacia\nPleamar"; drawTideCanvas();
         }
 
         function offsetTideDate(offset) {
@@ -911,114 +793,67 @@
             const lbl = document.getElementById('tideDateLabel'); const now = new Date(); now.setDate(now.getDate() + tideDayOffset);
             let dateStr = `${['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][now.getDay()]} ${now.getDate()} ${['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][now.getMonth()]} ${now.getFullYear()}`;
             if (tideDayOffset === 0) dateStr += ' (Hoy)'; else if (tideDayOffset === -1) dateStr += ' (-1d)'; else if (tideDayOffset === 1) dateStr += ' (+1d)'; else dateStr += ` (${tideDayOffset>0?'+':''}${tideDayOffset}d)`;
-            lbl.innerText = `Fecha: ${dateStr}`;
-            calculateMeeusMoon(currentLat, currentLon, tideDayOffset);
-            updateMareasData(currentLat, currentLon, tideDayOffset);
+            lbl.innerText = `Fecha: ${dateStr}`; calculateMeeusMoon(currentLat, currentLon, tideDayOffset); updateMareasData(currentLat, currentLon, tideDayOffset);
         }
 
-        // ==========================================
-        // RESTO DE FUNCIONES DEL SISTEMA
-        // ==========================================
-        
-        function toggleStormAlarm() {
-            isStormAlarmEnabled = !isStormAlarmEnabled; checkStormDropAuto(false);
-        }
-
+        // EVENT LISTENERS & INITS
         window.addEventListener('DOMContentLoaded', () => {
             initBezelSvg(); checkConnectivityStatus(); window.addEventListener('online', checkConnectivityStatus); window.addEventListener('offline', checkConnectivityStatus);
             initLiveMap(); initMasterClockAndWeather(); recalcularPresionesYAltitud();
-            calculateMeeusMoon(currentLat, currentLon, tideDayOffset); 
-            updateMareasData(currentLat, currentLon, tideDayOffset);
+            calculateMeeusMoon(currentLat, currentLon, tideDayOffset); updateMareasData(currentLat, currentLon, tideDayOffset);
             calcularSolGlobalNOAA(); updateCompassDisplay(0); checkStormDropAuto(false);
-            
             setTimeout(() => { initBarometerDetailedChart(); updateMagneticDeclination(currentLat, currentLon); }, 100);
             window.addEventListener('resize', () => { initBarometerDetailedChart(); drawTideCanvas(); });
-            setInterval(() => checkStormDropAuto(true), 30000); setInterval(calcularSolGlobalNOAA, 60000);
-            setInterval(() => { calculateMeeusMoon(currentLat, currentLon, tideDayOffset); drawTideCanvas(); }, 60000);
+            setInterval(() => checkStormDropAuto(true), 30000); setInterval(calcularSolGlobalNOAA, 60000); setInterval(() => { calculateMeeusMoon(currentLat, currentLon, tideDayOffset); drawTideCanvas(); }, 60000);
         });
 
+        function toggleStormAlarm() { isStormAlarmEnabled = !isStormAlarmEnabled; checkStormDropAuto(false); }
+
         function initMasterClockAndWeather() {
-            function updateClock() {
-                const now = new Date(); const dOpts = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
-                document.getElementById('masterDateVal').innerText = now.toLocaleDateString('es-ES', dOpts).toUpperCase();
-                document.getElementById('masterTimeVal').innerText = now.toTimeString().split(' ')[0]; drawTideCanvas();
-            }
+            function updateClock() { const now = new Date(); const dOpts = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }; document.getElementById('masterDateVal').innerText = now.toLocaleDateString('es-ES', dOpts).toUpperCase(); document.getElementById('masterTimeVal').innerText = now.toTimeString().split(' ')[0]; drawTideCanvas(); }
             async function fetchLiveWeather() {
-                try {
-                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${currentLat}&longitude=${currentLon}&current=temperature_2m,pressure_msl`);
-                    const data = await res.json();
-                    if (data && data.current) {
-                        document.getElementById('masterTempVal').innerText = `${Math.round(data.current.temperature_2m)}°C`;
-                        if (data.current.pressure_msl) {
-                            seaLevelPressure = Math.round(data.current.pressure_msl);
-                            document.getElementById('qnhSourceTag').innerText = "QNH ONLINE (API)"; document.getElementById('qnhSourceTag').style.color = "var(--accent-green)";
-                            recalcularPresionesYAltitud(); 
-                        }
-                    }
-                } catch (e) {
-                    document.getElementById('masterTempVal').innerText = "--°C";
-                    document.getElementById('qnhSourceTag').innerText = "QNH OFFLINE (ISA)"; document.getElementById('qnhSourceTag').style.color = "var(--accent-orange)";
-                }
+                try { const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${currentLat}&longitude=${currentLon}&current=temperature_2m,pressure_msl`); const data = await res.json(); if (data && data.current) { document.getElementById('masterTempVal').innerText = `${Math.round(data.current.temperature_2m)}°C`; if (data.current.pressure_msl) { seaLevelPressure = Math.round(data.current.pressure_msl); document.getElementById('qnhSourceTag').innerText = "QNH ONLINE (API)"; document.getElementById('qnhSourceTag').style.color = "var(--accent-green)"; recalcularPresionesYAltitud(); } } } 
+                catch (e) { document.getElementById('masterTempVal').innerText = "--°C"; document.getElementById('qnhSourceTag').innerText = "QNH OFFLINE (ISA)"; document.getElementById('qnhSourceTag').style.color = "var(--accent-orange)"; }
             }
             setInterval(updateClock, 1000); updateClock(); fetchLiveWeather(); setInterval(fetchLiveWeather, 600000);
         }
 
-        function recalcularPresionesYAltitud() {
-            currentPressure = calcularPresionAbsoluta(currentAltitude, seaLevelPressure); baroAltitude = calcularAltitudBarometricaReal(currentPressure, seaLevelPressure);
-            document.getElementById('altGpsVal').innerHTML = `${currentAltitude} <span class="unit">m</span>`; document.getElementById('altBaroVal').innerHTML = `${baroAltitude} <span class="unit">m</span>`;
-            document.getElementById('qfeVal').innerHTML = `${currentPressure} <span class="unit">hPa</span>`; document.getElementById('qnhVal').innerHTML = `${seaLevelPressure} <span class="unit">hPa</span>`;
-        }
-
         function initLiveMap() {
-            map = L.map('liveMap', { zoomControl: false, attributionControl: false }).setView([currentLat, currentLon], 16);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, subdomains: ['a','b','c'] }).addTo(map);
-            ring100 = L.circle([currentLat, currentLon], {radius: 100, color: 'rgba(56, 189, 248, 0.4)', weight: 1.5, dashArray: '4 4', fill: false}).addTo(map);
-            ring500 = L.circle([currentLat, currentLon], {radius: 500, color: 'rgba(56, 189, 248, 0.6)', weight: 1.5, dashArray: '4 4', fill: false}).addTo(map);
-            ring1000 = L.circle([currentLat, currentLon], {radius: 1000, color: 'rgba(56, 189, 248, 0.8)', weight: 1.5, dashArray: '6 6', fill: false}).addTo(map);
-            livePolylineGreen = L.polyline([], { color: '#34d399', weight: 4 }).addTo(map); livePolylineRed = L.polyline([], { color: '#f43f5e', weight: 4 }).addTo(map);
-            manualWpLayerGroup = L.layerGroup().addTo(map); userMarker = L.circleMarker([currentLat, currentLon], { radius: 7, color: '#fff', fillColor: '#38bdf8', fillOpacity: 1 }).addTo(map);
+            map = L.map('liveMap', { zoomControl: false, attributionControl: false }).setView([currentLat, currentLon], 16); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, subdomains: ['a','b','c'] }).addTo(map);
+            ring100 = L.circle([currentLat, currentLon], {radius: 100, color: 'rgba(56, 189, 248, 0.4)', weight: 1.5, dashArray: '4 4', fill: false}).addTo(map); ring500 = L.circle([currentLat, currentLon], {radius: 500, color: 'rgba(56, 189, 248, 0.6)', weight: 1.5, dashArray: '4 4', fill: false}).addTo(map); ring1000 = L.circle([currentLat, currentLon], {radius: 1000, color: 'rgba(56, 189, 248, 0.8)', weight: 1.5, dashArray: '6 6', fill: false}).addTo(map);
+            livePolylineGreen = L.polyline([], { color: '#34d399', weight: 4 }).addTo(map); livePolylineRed = L.polyline([], { color: '#f43f5e', weight: 4 }).addTo(map); manualWpLayerGroup = L.layerGroup().addTo(map); userMarker = L.circleMarker([currentLat, currentLon], { radius: 7, color: '#fff', fillColor: '#38bdf8', fillOpacity: 1 }).addTo(map);
         }
 
         function recenterMap() { if (map && userMarker) map.setView([currentLat, currentLon], 16, { animate: true }); }
 
         function checkConnectivityStatus() {
             const pill = document.getElementById('connPill'); const dot = document.getElementById('connDot'); const txt = document.getElementById('connText');
-            if (navigator.onLine) { pill.className = 'connectivity-pill'; dot.style.background = 'var(--accent-green)'; txt.innerText = 'ONLINE'; if (gpsActive) updateMagneticDeclination(currentLat, currentLon);
-            } else { pill.className = 'connectivity-pill offline'; dot.style.background = 'var(--accent-orange)'; txt.innerText = 'OFFLINE'; }
+            if (navigator.onLine) { pill.className = 'connectivity-pill'; dot.style.background = 'var(--accent-green)'; txt.innerText = 'ONLINE'; if (gpsActive) updateMagneticDeclination(currentLat, currentLon); } else { pill.className = 'connectivity-pill offline'; dot.style.background = 'var(--accent-orange)'; txt.innerText = 'OFFLINE'; }
         }
 
         function setTacticalTheme(themeName) {
             document.documentElement.setAttribute('data-theme', themeName); document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-            if(themeName==='day') document.getElementById('btnThemeDay').classList.add('active'); if(themeName==='dark') document.getElementById('btnThemeDark').classList.add('active'); if(themeName==='red') document.getElementById('btnThemeRed').classList.add('active');
-            setTimeout(() => { initBarometerDetailedChart(); drawTideCanvas(); }, 60);
+            if(themeName==='day') document.getElementById('btnThemeDay').classList.add('active'); if(themeName==='dark') document.getElementById('btnThemeDark').classList.add('active'); if(themeName==='red') document.getElementById('btnThemeRed').classList.add('active'); setTimeout(() => { initBarometerDetailedChart(); drawTideCanvas(); }, 60);
         }
 
         function startTacticalSystems() {
-            const btn = document.getElementById('btnGpsSync'); const dot = document.getElementById('gpsSyncDot'); const txt = document.getElementById('gpsSyncText');
-            btn.className = 'btn-gps-sync searching'; dot.style.background = 'var(--accent-orange)'; txt.innerText = 'BUSCANDO';
-
+            const btn = document.getElementById('btnGpsSync'); const dot = document.getElementById('gpsSyncDot'); const txt = document.getElementById('gpsSyncText'); btn.className = 'btn-gps-sync searching'; dot.style.background = 'var(--accent-orange)'; txt.innerText = 'BUSCANDO';
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(pos => {
-                    gpsActive = true; currentLat = pos.coords.latitude; currentLon = pos.coords.longitude;
-                    let rawAlt = pos.coords.altitude; currentAltitude = (rawAlt !== null && rawAlt > -100 && rawAlt < 9000) ? Math.round(rawAlt) : 212;
+                    gpsActive = true; currentLat = pos.coords.latitude; currentLon = pos.coords.longitude; let rawAlt = pos.coords.altitude; currentAltitude = (rawAlt !== null && rawAlt > -100 && rawAlt < 9000) ? Math.round(rawAlt) : 212;
                     btn.className = 'btn-gps-sync locked'; dot.style.background = 'var(--accent-green)'; txt.innerText = 'GPS OK';
                     document.getElementById('latVal').innerHTML = `${Math.abs(currentLat).toFixed(1)}<span class="unit">° ${currentLat>=0?'N':'S'}</span>`; document.getElementById('lonVal').innerHTML = `${Math.abs(currentLon).toFixed(1)}<span class="unit">° ${currentLon>=0?'E':'W'}</span>`;
-                    
                     recalcularPresionesYAltitud(); updateMagneticDeclination(currentLat, currentLon); 
                     userMarker.setLatLng([currentLat, currentLon]); ring100.setLatLng([currentLat, currentLon]); ring500.setLatLng([currentLat, currentLon]); ring1000.setLatLng([currentLat, currentLon]); map.setView([currentLat, currentLon], 16);
-
                     calculateMeeusMoon(currentLat, currentLon, tideDayOffset); updateMareasData(currentLat, currentLon, tideDayOffset); calcularSolGlobalNOAA();
                     if (isTracking) recordWaypoint(currentLat, currentLon, currentAltitude);
                 }, err => { btn.className = 'btn-gps-sync waiting'; dot.style.background = 'var(--accent-red)'; txt.innerText = 'ERROR GPS'; }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
-
                 navigator.geolocation.watchPosition(pos => {
-                    currentLat = pos.coords.latitude; currentLon = pos.coords.longitude;
-                    let rawAlt = pos.coords.altitude; currentAltitude = (rawAlt !== null && rawAlt > -100 && rawAlt < 9000) ? Math.round(rawAlt) : 212; recalcularPresionesYAltitud();
+                    currentLat = pos.coords.latitude; currentLon = pos.coords.longitude; let rawAlt = pos.coords.altitude; currentAltitude = (rawAlt !== null && rawAlt > -100 && rawAlt < 9000) ? Math.round(rawAlt) : 212; recalcularPresionesYAltitud();
                     userMarker.setLatLng([currentLat, currentLon]); ring100.setLatLng([currentLat, currentLon]); ring500.setLatLng([currentLat, currentLon]); ring1000.setLatLng([currentLat, currentLon]);
                     if (isTracking) recordWaypoint(currentLat, currentLon, currentAltitude);
                 }, null, { enableHighAccuracy: true, maximumAge: 4000 });
             }
-
             if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') { DeviceOrientationEvent.requestPermission().then(state => { if (state === 'granted') window.addEventListener('deviceorientation', handleOrientation, true); }).catch(console.error); } else if (window.DeviceOrientationEvent) { window.addEventListener('deviceorientation', handleOrientation, true); }
         }
 
@@ -1046,12 +881,7 @@
         }
 
         function calcularSolGlobalNOAA() {
-            const now = new Date(); const lat = currentLat, lon = currentLon;
-            const start = new Date(now.getFullYear(), 0, 0); const diff = now - start; const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const gamma = 2 * Math.PI / 365 * (dayOfYear - 1 + (now.getHours() - 12) / 24);
-            const eqtime = 229.18 * (0.000075 + 0.001868 * Math.cos(gamma) - 0.032077 * Math.sin(gamma) - 0.014615 * Math.cos(2 * gamma) - 0.040849 * Math.sin(2 * gamma));
-            const decl = 0.006918 - 0.399912 * Math.cos(gamma) + 0.070257 * Math.sin(gamma) - 0.006758 * Math.cos(2 * gamma) + 0.000907 * Math.sin(2 * gamma) - 0.002697 * Math.cos(3 * gamma) + 0.00148 * Math.sin(3 * gamma);
-            const latRad = lat * Math.PI / 180; const cosHA = (Math.cos(90.833 * Math.PI / 180) / (Math.cos(latRad) * Math.cos(decl))) - (Math.tan(latRad) * Math.tan(decl));
+            const now = new Date(); const lat = currentLat, lon = currentLon; const start = new Date(now.getFullYear(), 0, 0); const diff = now - start; const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24)); const gamma = 2 * Math.PI / 365 * (dayOfYear - 1 + (now.getHours() - 12) / 24); const eqtime = 229.18 * (0.000075 + 0.001868 * Math.cos(gamma) - 0.032077 * Math.sin(gamma) - 0.014615 * Math.cos(2 * gamma) - 0.040849 * Math.sin(2 * gamma)); const decl = 0.006918 - 0.399912 * Math.cos(gamma) + 0.070257 * Math.sin(gamma) - 0.006758 * Math.cos(2 * gamma) + 0.000907 * Math.sin(2 * gamma) - 0.002697 * Math.cos(3 * gamma) + 0.00148 * Math.sin(3 * gamma); const latRad = lat * Math.PI / 180; const cosHA = (Math.cos(90.833 * Math.PI / 180) / (Math.cos(latRad) * Math.cos(decl))) - (Math.tan(latRad) * Math.tan(decl));
             if (cosHA > 1) { document.getElementById('sunriseVal').innerText = "Noche Polar"; document.getElementById('sunsetVal').innerText = "Noche Polar"; } else if (cosHA < -1) { document.getElementById('sunriseVal').innerText = "Día Polar"; document.getElementById('sunsetVal').innerText = "Día Polar"; } else { const ha = Math.acos(cosHA) * 180 / Math.PI; const timezoneOffset = -now.getTimezoneOffset(); const sunriseMinutes = 720 - 4 * lon - eqtime - ha * 4 + timezoneOffset; const sunsetMinutes = 720 - 4 * lon - eqtime + ha * 4 + timezoneOffset; const fmtTime = (m) => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(Math.floor(m % 60)).padStart(2, '0')}`; document.getElementById('sunriseVal').innerText = fmtTime(sunriseMinutes); document.getElementById('sunsetVal').innerText = fmtTime(sunsetMinutes); }
             const currentHourDec = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600; const timeOffset = eqtime + 4 * lon - (-now.getTimezoneOffset()); const trueSolarTime = (currentHourDec * 60 + timeOffset + 1440) % 1440; const hourAngle = (trueSolarTime / 4 < 0) ? (trueSolarTime / 4 + 180) : (trueSolarTime / 4 - 180); const hourAngleRad = hourAngle * Math.PI / 180; const czen = Math.sin(latRad) * Math.sin(decl) + Math.cos(latRad) * Math.cos(decl) * Math.cos(hourAngleRad); const zenith = Math.acos(Math.max(-1, Math.min(1, czen))); const elevation = 90 - (zenith * 180 / Math.PI);
             let azRad = Math.acos((Math.sin(decl) - Math.sin(latRad) * Math.cos(zenith)) / (Math.cos(latRad) * Math.sin(zenith))); if (hourAngle > 0) azRad = 2 * Math.PI - azRad; sunAzimuth = Math.round((azRad * 180 / Math.PI + 180) % 360);
@@ -1060,9 +890,17 @@
             document.getElementById('sunElevationVal').innerText = `${elevation.toFixed(1)}°`; document.getElementById('sunAzVal').innerHTML = `${sunAzimuth}<span class="unit">°</span>`;
         }
 
+        function calculateMeeusMoon(lat, lon, dayOffset = 0) {
+            const targetDate = new Date(); targetDate.setDate(targetDate.getDate() + dayOffset); const JD = (targetDate.getTime() / 86400000.0) + 2440587.5; const T = (JD - 2451545.0) / 36525.0; const D = (297.8501921 + 445267.1114034 * T - 0.0018819 * T * T) * Math.PI / 180.0; const M = (357.5291092 + 35999.0502909 * T - 0.0001536 * T * T) * Math.PI / 180.0; const Mprime = (134.9633964 + 477198.8675055 * T + 0.0087414 * T * T) * Math.PI / 180.0; const phaseAngle = Math.PI - D - (0.1098 * Math.sin(Mprime)) + (0.0222 * Math.sin(2 * D - Mprime)) + (0.0367 * Math.sin(M)); const k = (1 + Math.cos(phaseAngle)) / 2.0; const moonPhasePercent = Math.round(k * 100); let ageInDays = ((D * 180.0 / Math.PI) % 360 + 360) % 360 / 360.0 * 29.53058867; const daysToFull = Math.max(0, Math.round(((14.765 - ageInDays + 29.53058867) % 29.53058867))); const moonDistKm = Math.round(385000 - 20000 * Math.cos(Mprime));
+            let phaseName = 'Luna Nueva'; if (ageInDays >= 1.5 && ageInDays < 6.5) phaseName = 'Creciente Cóncava'; else if (ageInDays >= 6.5 && ageInDays < 8.5) phaseName = 'Cuarto Creciente'; else if (ageInDays >= 8.5 && ageInDays < 13.5) phaseName = 'Gibosa Creciente'; else if (ageInDays >= 13.5 && ageInDays < 16.0) phaseName = 'Luna Llena'; else if (ageInDays >= 16.0 && ageInDays < 21.0) phaseName = 'Gibosa Menguante'; else if (ageInDays >= 21.0 && ageInDays < 23.0) phaseName = 'Cuarto Menguante'; else if (ageInDays >= 23.0 && ageInDays < 28.0) phaseName = 'Menguante Cóncava';
+            document.getElementById('moonPhaseTitle').innerText = phaseName; document.getElementById('moonLumiVal').innerText = `${moonPhasePercent}%`; document.getElementById('moonAgeDetailVal').innerHTML = `${ageInDays.toFixed(1)} <span class="unit">días</span>`; document.getElementById('moonDistVal').innerText = `${moonDistKm.toLocaleString('es-ES')} km`; document.getElementById('moonNextFullVal').innerHTML = `${daysToFull} <span class="unit">días</span>`; document.getElementById('moonHeaderPhaseTag').innerText = phaseName.toUpperCase();
+            let riseHour = (12.31 + (ageInDays * 0.842) - (lon * 24 / 360)) % 24; let setHour = (riseHour + 12.5) % 24; if (riseHour < 0) riseHour += 24; if (setHour < 0) setHour += 24; const fmtH = val => `${String(Math.floor(val)).padStart(2,'0')}:${String(Math.floor((val - Math.floor(val))*60)).padStart(2,'0')}`; document.getElementById('moonRiseVal').innerText = fmtH(riseHour); document.getElementById('moonSetVal').innerText = fmtH(setHour);
+            const disc = document.getElementById('moonDiscVisual'); if (disc) { const isWaxing = ageInDays < 14.765; const isNorth = lat >= 0; const illuminateRight = (isWaxing && isNorth) || (!isWaxing && !isNorth); const p = Math.max(8, moonPhasePercent); if (illuminateRight) { disc.style.clipPath = `polygon(${100 - p}% 0, 100% 0, 100% 100%, ${100 - p}% 100%)`; } else { disc.style.clipPath = `polygon(0 0, ${p}% 0, ${p}% 100%, 0 100%)`; } }
+            const intMinutes = Math.round(((Math.abs(lon) % 15) / 15) * 60 + 420); document.getElementById('lunitidalVal').innerText = `${String(Math.floor(intMinutes/60)).padStart(2,'0')}:${String(intMinutes%60).padStart(2,'0')}`;
+        }
+
         function toggleMissionTracking() {
-            if (!gpsActive) { alert("PULSA ACTIVAR GPS ARRIBA PRIMERO."); return; }
-            isTracking = !isTracking; const btn = document.getElementById('btnToggleTrack'); const badge = document.getElementById('trackStatusBadge');
+            if (!gpsActive) { alert("PULSA ACTIVAR GPS ARRIBA PRIMERO."); return; } isTracking = !isTracking; const btn = document.getElementById('btnToggleTrack'); const badge = document.getElementById('trackStatusBadge');
             if (isTracking) { btn.innerText = '⏸ Pausar'; btn.className = 'tactical-btn danger'; badge.innerText = 'REC TRACKING'; badge.className = 'badge-tag orange'; if (!trackingTimerInterval) { trackingTimerInterval = setInterval(() => { trackingSeconds++; const h = String(Math.floor(trackingSeconds / 3600)).padStart(2, '0'); const m = String(Math.floor((trackingSeconds % 3600) / 60)).padStart(2, '0'); const s = String(trackingSeconds % 60).padStart(2, '0'); document.getElementById('trackTimerVal').innerText = `${h}:${m}:${s}`; }, 1000); } } else { btn.innerText = '▶ Reanudar'; btn.className = 'tactical-btn primary'; badge.innerText = 'PAUSADO'; badge.className = 'badge-tag'; clearInterval(trackingTimerInterval); trackingTimerInterval = null; }
         }
 
@@ -1072,8 +910,7 @@
         function calcHaversine(lat1, lon1, lat2, lon2) { const R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180; const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2); return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); }
 
         function finishAndSaveMission() {
-            if (waypoints.length === 0 && totalDistanceKm === 0) { alert("No hay datos grabados en esta sesión."); return; }
-            if (trackingTimerInterval) { clearInterval(trackingTimerInterval); trackingTimerInterval = null; }
+            if (waypoints.length === 0 && totalDistanceKm === 0) { alert("No hay datos grabados en esta sesión."); return; } if (trackingTimerInterval) { clearInterval(trackingTimerInterval); trackingTimerInterval = null; }
             const timeStr = document.getElementById('trackTimerVal').innerText; const routeTitle = prompt("Expedición finalizada. Nombre de la misión para guardar:", `Ruta ${new Date().toLocaleDateString('es-ES')} (${timeStr})`);
             if (routeTitle) { const missionData = { id: Date.now(), title: routeTitle, date: new Date().toLocaleString('es-ES'), timeElapsed: timeStr, dist: totalDistanceKm.toFixed(2), pointsCount: waypoints.length, points: [...waypoints], lat: currentLat, lon: currentLon, alt: currentAltitude, baro: baroAltitude, qfe: currentPressure, qnh: seaLevelPressure, temp: document.getElementById('masterTempVal').innerText }; let saved = JSON.parse(localStorage.getItem('orion_missions') || '[]'); saved.unshift(missionData); localStorage.setItem('orion_missions', JSON.stringify(saved)); }
             isTracking = false; isReturning = false; trackingSeconds = 0; totalDistanceKm = 0; lastGpsPos = null; waypoints = [];
@@ -1081,6 +918,7 @@
             document.getElementById('trackDistVal').innerHTML = `0.00 <span class="unit">km</span>`; document.getElementById('trackTimerVal').innerText = `00:00:00`; document.getElementById('trackPointsVal').innerHTML = `0 <span class="unit">pts</span>`; document.getElementById('btnToggleTrack').innerText = '▶ Iniciar'; document.getElementById('btnToggleTrack').className = 'tactical-btn primary'; document.getElementById('trackStatusBadge').innerText = 'STANDBY'; document.getElementById('trackStatusBadge').className = 'badge-tag'; document.getElementById('btnReturnMode').style.borderColor = 'var(--glass-border)'; document.getElementById('btnReturnMode').style.color = 'var(--text-main)'; document.getElementById('btnReturnMode').innerText = '🔄 Retorno'; alert('Sesión finalizada y guardada. Sistema reseteado a STANDBY.');
         }
 
+        // HISTORIAL & WIKILOC STYLE MODALS
         function openHistoryModal() {
             const container = document.getElementById('historyListContainer'); const saved = JSON.parse(localStorage.getItem('orion_missions') || '[]'); container.innerHTML = '';
             if (saved.length === 0) { container.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8; font-size:0.85rem;">No hay rutas guardadas en memoria.</div>'; } else {
@@ -1094,8 +932,19 @@
 
         function closeHistoryModal() { document.getElementById('historyModalOverlay').style.display = 'none'; }
         function deleteMission(id) { if (!confirm("¿Seguro que deseas eliminar esta ruta?")) return; let saved = JSON.parse(localStorage.getItem('orion_missions') || '[]'); saved = saved.filter(m => m.id !== id); localStorage.setItem('orion_missions', JSON.stringify(saved)); openHistoryModal(); }
-        function loadMissionForReport(id) { closeHistoryModal(); const saved = JSON.parse(localStorage.getItem('orion_missions') || '[]'); const mission = saved.find(m => m.id === id); if (mission) { renderPdfWithData(mission); } }
-        function openMissionReportModalLive() { const now = new Date(); const m = { title: "ORION • MISSION REPORT (LIVE)", date: `${now.toLocaleDateString('es-ES')} | ${now.toLocaleTimeString()}`, lat: currentLat, lon: currentLon, alt: currentAltitude, baro: baroAltitude, qfe: currentPressure, qnh: seaLevelPressure, dist: totalDistanceKm.toFixed(2), timeElapsed: document.getElementById('trackTimerVal').innerText, pointsCount: waypoints.length, points: waypoints, temp: document.getElementById('masterTempVal').innerText }; renderPdfWithData(m); }
+        
+        function loadMissionForReport(id) { 
+            closeHistoryModal(); 
+            const saved = JSON.parse(localStorage.getItem('orion_missions') || '[]'); 
+            const mission = saved.find(m => m.id === id); 
+            if (mission) { renderPdfWithData(mission); } 
+        }
+        
+        function openMissionReportModalLive() { 
+            const now = new Date(); 
+            const m = { title: "ORION • MISSION REPORT (LIVE)", date: `${now.toLocaleDateString('es-ES')} | ${now.toLocaleTimeString()}`, lat: currentLat, lon: currentLon, alt: currentAltitude, baro: baroAltitude, qfe: currentPressure, qnh: seaLevelPressure, dist: totalDistanceKm.toFixed(2), timeElapsed: document.getElementById('trackTimerVal').innerText, pointsCount: waypoints.length, points: waypoints, temp: document.getElementById('masterTempVal').innerText }; 
+            renderPdfWithData(m); 
+        }
 
         function drawAltitudeProfile(pts) {
             const cvs = document.getElementById('pdfAltCanvas'); if(!cvs) return; const ctx = cvs.getContext('2d'); const w = cvs.offsetWidth || 300; const h = cvs.offsetHeight || 90; cvs.width = w * window.devicePixelRatio; cvs.height = h * window.devicePixelRatio; ctx.scale(window.devicePixelRatio, window.devicePixelRatio); ctx.clearRect(0, 0, w, h);
@@ -1107,8 +956,17 @@
 
         function renderPdfWithData(m) {
             document.getElementById('pdfMissionTitle').innerText = m.title || 'ORION • MISSION REPORT'; document.getElementById('repDateTime').innerText = `Fecha: ${m.date}`; document.getElementById('pdfCoords').innerText = `${Math.abs(m.lat).toFixed(4)}° ${m.lat>=0?'N':'S'} / ${Math.abs(m.lon).toFixed(4)}° ${m.lon>=0?'E':'W'}`; document.getElementById('pdfBaro').innerText = `QFE: ${m.qfe}hPa | QNH: ${m.qnh}hPa`; document.getElementById('pdfDist').innerText = `${m.dist} km`; document.getElementById('pdfTime').innerText = `⏱ ${m.timeElapsed}`; document.getElementById('pdfWps').innerText = `${m.pointsCount || m.points.length} puntos`; document.getElementById('pdfTemp').innerText = m.temp || '--°C';
-            let maxAlt = m.alt, minAlt = m.alt; if (m.points && m.points.length > 0) { const alts = m.points.map(p => p.alt); maxAlt = Math.max(...alts); minAlt = Math.min(...alts); } document.getElementById('pdfAlts').innerText = `▲ ${maxAlt}m | ▼ ${minAlt}m`; document.getElementById('reportModalOverlay').style.display = 'flex';
-            setTimeout(() => { drawAltitudeProfile(m.points); if (!reportMap) { reportMap = L.map('reportMapLeaflet', { zoomControl: false, attributionControl: false }).setView([m.lat, m.lon], 16); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, subdomains: ['a','b','c'] }).addTo(reportMap); reportPolylineGreen = L.polyline([], { color: '#059669', weight: 4 }).addTo(reportMap); reportPolylineRed = L.polyline([], { color: '#e11d48', weight: 4 }).addTo(reportMap); reportWpGroup = L.layerGroup().addTo(reportMap); reportMarker = L.circleMarker([m.lat, m.lon], { radius: 7, color: '#fff', fillColor: '#0284c7', fillOpacity: 1 }).addTo(reportMap); } else { reportMap.setView([m.lat, m.lon], 16); reportMarker.setLatLng([m.lat, m.lon]); } reportWpGroup.clearLayers(); const greenPts = (m.points||[]).filter(p => !p.isReturn).map(p => [p.lat, p.lon]); const redPts = (m.points||[]).filter(p => p.isReturn).map(p => [p.lat, p.lon]); reportPolylineGreen.setLatLngs(greenPts); reportPolylineRed.setLatLngs(redPts); (m.points||[]).filter(p => p.isManual).forEach(wp => { L.circleMarker([wp.lat, wp.lon], { radius: 5, color: '#000', fillColor: '#fb923c', fillOpacity: 1 }).addTo(reportWpGroup); }); if (m.points && m.points.length > 1) { const bounds = L.latLngBounds(m.points.map(p => [p.lat, p.lon])); reportMap.fitBounds(bounds, { padding: [20, 20] }); } reportMap.invalidateSize(); }, 120);
+            let maxAlt = m.alt, minAlt = m.alt; if (m.points && m.points.length > 0) { const alts = m.points.map(p => p.alt); maxAlt = Math.max(...alts); minAlt = Math.min(...alts); } document.getElementById('pdfAlts').innerText = `▲ ${maxAlt}m | ▼ ${minAlt}m`; 
+            document.getElementById('reportModalOverlay').style.display = 'flex';
+            setTimeout(() => { 
+                drawAltitudeProfile(m.points); 
+                if (!reportMap) { 
+                    reportMap = L.map('reportMapLeaflet', { zoomControl: false, attributionControl: false }).setView([m.lat, m.lon], 16); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, subdomains: ['a','b','c'] }).addTo(reportMap); reportPolylineGreen = L.polyline([], { color: '#059669', weight: 4 }).addTo(reportMap); reportPolylineRed = L.polyline([], { color: '#e11d48', weight: 4 }).addTo(reportMap); reportWpGroup = L.layerGroup().addTo(reportMap); reportMarker = L.circleMarker([m.lat, m.lon], { radius: 7, color: '#fff', fillColor: '#0284c7', fillOpacity: 1 }).addTo(reportMap); 
+                } else { 
+                    reportMap.setView([m.lat, m.lon], 16); reportMarker.setLatLng([m.lat, m.lon]); 
+                } 
+                reportWpGroup.clearLayers(); const greenPts = (m.points||[]).filter(p => !p.isReturn).map(p => [p.lat, p.lon]); const redPts = (m.points||[]).filter(p => p.isReturn).map(p => [p.lat, p.lon]); reportPolylineGreen.setLatLngs(greenPts); reportPolylineRed.setLatLngs(redPts); (m.points||[]).filter(p => p.isManual).forEach(wp => { L.circleMarker([wp.lat, wp.lon], { radius: 5, color: '#000', fillColor: '#fb923c', fillOpacity: 1 }).addTo(reportWpGroup); }); if (m.points && m.points.length > 1) { const bounds = L.latLngBounds(m.points.map(p => [p.lat, p.lon])); reportMap.fitBounds(bounds, { padding: [20, 20] }); } reportMap.invalidateSize(); 
+            }, 120);
         }
 
         function closeMissionReportModal() { document.getElementById('reportModalOverlay').style.display = 'none'; }
