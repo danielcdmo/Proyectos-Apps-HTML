@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION - Field Navigator v4.0</title>
+    <title>ORION - Field Navigator v4.1</title>
     <meta name="author" content="danielcdmo">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -179,9 +179,9 @@
         .tide-graph-header { display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
         .live-badge { color: var(--accent-green); font-weight: 800; display: flex; align-items: center; gap: 4px; }
 
-        /* CONTENEDOR DE MAPA Y OVERFLOW SEGURO */
+        /* CONTENEDOR DE MAPA CON OVERSCAN TOTAL (SIN BORDES NEGROS) */
         .map-wrapper { position: relative; width: 100%; height: 220px; border-radius: var(--radius-card); border: 1px solid var(--glass-border); overflow: hidden; background: #040813; }
-        #liveMap { width: 100%; height: 100%; transform-origin: center center; will-change: transform; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+        #liveMap { position: absolute; width: 170%; height: 170%; left: -35%; top: -35%; transform-origin: center center; will-change: transform; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
         .leaflet-container { background-color: #040813 !important; }
         .map-floating-btn-group { position: absolute; right: 12px; bottom: 12px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
         .map-control-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--glass-inner); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); color: var(--text-main); font-size: 0.95rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.3); font-weight: 900; }
@@ -223,7 +223,6 @@
         .history-item { background: var(--glass-inner); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; }
         .history-item:active { transform: scale(0.98); }
 
-        /* REGLAS ESTRICTAS DE PAGINACIÓN PDF */
         .wp-table-container { margin-top: 14px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; }
         .wp-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; text-align: left; }
         .wp-table th { background: #0f172a; color: #fff; padding: 6px 8px; font-weight: 800; }
@@ -268,7 +267,7 @@
         </div>
 
         <div class="topbar-controls-row">
-            <span class="version-tag">v4.0</span>
+            <span class="version-tag">v4.1</span>
             
             <button class="btn-sync-master" id="btnMasterSync" onclick="startTacticalSystems()">
                 ⚡ SYNC HARDWARE
@@ -351,6 +350,7 @@
         </div>
     </div>
 
+    <!-- ALTÍMETRO & BARÓMETRO CON TELEMETRÍA GNSS / FIX SATELITAL DETALLADA -->
     <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>⛰️</span><span>ALTÍMETRO & BARÓMETRO</span></div>
@@ -358,7 +358,7 @@
                 <span class="badge-tag baro-armed interactive" id="stormAlarmIndicator" onclick="toggleStormAlarm()">
                     <span class="status-dot-mini" style="background:var(--accent-green);"></span> BARO
                 </span>
-                <span class="badge-tag">ALTI / BARO</span>
+                <span class="badge-tag" id="gnssMultiBadge">GNSS MULTIBANDA</span>
             </div>
         </div>
         <div class="storm-alert-banner" id="stormBanner">
@@ -366,10 +366,26 @@
             <span style="font-size:0.65rem; background:rgba(0,0,0,0.4); padding:2px 6px; border-radius:4px;">CASIO ALARM</span>
         </div>
         <div class="metric-grid-2x2">
-            <div class="metric-box"><span class="metric-label">Altitud GPS (Satélite)</span><span class="metric-value text-green" id="altGpsVal">-- <span class="unit">m</span></span><span class="metric-sub">COTA REAL WGS84</span></div>
-            <div class="metric-box"><span class="metric-label">Altitud Barométrica</span><span class="metric-value text-yellow" id="altBaroVal">-- <span class="unit">m</span></span><span class="metric-sub">SENSOR CASIO CORREGIDO</span></div>
-            <div class="metric-box"><span class="metric-label">Presión Absoluta (QFE)</span><span class="metric-value text-green" id="qfeVal">-- <span class="unit">hPa</span></span><span class="metric-sub">SENSOR LOCAL</span></div>
-            <div class="metric-box"><span class="metric-label">Presión Nivel Mar (QNH)</span><span class="metric-value text-blue" id="qnhVal">-- <span class="unit">hPa</span></span><span class="metric-sub" id="qnhSourceTag" style="color:var(--accent-blue);">QNH OFFLINE (ISA)</span></div>
+            <div class="metric-box">
+                <span class="metric-label">Altitud GPS (Satélite)</span>
+                <span class="metric-value text-green" id="altGpsVal">-- <span class="unit">m</span></span>
+                <span class="metric-sub" id="satFixSub" style="color:var(--accent-cyan);">FIX 3D SAT (COTA WGS84)</span>
+            </div>
+            <div class="metric-box">
+                <span class="metric-label">Altitud Barométrica</span>
+                <span class="metric-value text-yellow" id="altBaroVal">-- <span class="unit">m</span></span>
+                <span class="metric-sub">SENSOR CASIO CORREGIDO</span>
+            </div>
+            <div class="metric-box">
+                <span class="metric-label">Presión Absoluta (QFE)</span>
+                <span class="metric-value text-green" id="qfeVal">-- <span class="unit">hPa</span></span>
+                <span class="metric-sub">SENSOR LOCAL</span>
+            </div>
+            <div class="metric-box">
+                <span class="metric-label">Presión Nivel Mar (QNH)</span>
+                <span class="metric-value text-blue" id="qnhVal">-- <span class="unit">hPa</span></span>
+                <span class="metric-sub" id="qnhSourceTag" style="color:var(--accent-blue);">QNH OFFLINE (ISA)</span>
+            </div>
         </div>
         <div style="background: var(--lcd-glass); border: 1px solid var(--glass-border); border-radius: var(--radius-card); padding: 12px;">
             <div style="display:flex; justify-content:space-between; font-size:0.65rem; font-weight:800; color:var(--text-muted); margin-bottom:6px;"><span>TENDENCIA 24H (LCD DOT-MATRIX)</span><span class="text-cyan" id="trendState">➔ Estable</span></div>
@@ -479,7 +495,7 @@
         </div>
     </div>
 
-    <!-- PANEL TRACKING CON ROTACIÓN COMPÁS AMORTIGUADA Y SIN VIBRACIÓN -->
+    <!-- PANEL TRACKING CON ROTACIÓN COMPÁS FLUIDA Y MÁRGENES CUBIERTOS -->
     <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🧭</span><span>MAPA RUTA & CONTROL DE MISIÓN</span></div>
@@ -536,7 +552,7 @@
                     <div style="font-size:0.75rem; color:#64748b; font-weight:700; margin-top:3px;" id="vwRouteDate">Fecha: --</div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v4.0</span>
+                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v4.1</span>
                     <div style="font-size:0.62rem; color:#64748b; font-weight:700; margin-top:4px;">REF: WGS84-GEO</div>
                 </div>
             </div>
@@ -579,7 +595,7 @@
             </div>
 
             <div style="margin-top:14px; border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:#64748b;">
-                <span>Sistema ORION v4.0 • Navegación & Telemetría</span>
+                <span>Sistema ORION v4.1 • Navegación & Telemetría</span>
                 <span><strong>danielcdmo</strong></span>
             </div>
         </div>
@@ -1030,7 +1046,6 @@
             }
         }
 
-        // BUCLE DE RENDERIZADO FLUIDO (ELIMINA VIBRACIÓN Y BORROSIDAD)
         function startMapRenderLoop() {
             function render() {
                 if (!isMapCompassMode) return;
@@ -1041,7 +1056,7 @@
                 if (Math.abs(diff) > 0.3) {
                     renderedMapAngle = renderedMapAngle + diff * 0.12;
                     const mapEl = document.getElementById('liveMap');
-                    if (mapEl) mapEl.style.transform = `scale(1.45) rotate(${renderedMapAngle}deg) translate3d(0,0,0)`;
+                    if (mapEl) mapEl.style.transform = `rotate(${renderedMapAngle}deg) translate3d(0,0,0)`;
                 }
                 animFrameId = requestAnimationFrame(render);
             }
@@ -1084,10 +1099,20 @@
                 navigator.geolocation.getCurrentPosition(pos => {
                     gpsActive = true; currentLat = pos.coords.latitude; currentLon = pos.coords.longitude; 
                     let rawAlt = pos.coords.altitude; currentAltitude = (rawAlt !== null && rawAlt > -100 && rawAlt < 9000) ? Math.round(rawAlt) : 212;
+                    let acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : 5;
                     
                     hudGpsPill.className = 'hud-pill ok';
                     hudGpsDot.style.background = 'var(--accent-green)';
                     hudGpsText.innerText = 'GPS OK';
+
+                    const satSub = document.getElementById('satFixSub');
+                    if (pos.coords.altitudeAccuracy !== null || acc <= 6) {
+                        satSub.innerText = `FIX 3D SAT (±${acc}m)`;
+                        satSub.style.color = "var(--accent-green)";
+                    } else {
+                        satSub.innerText = `FIX 2D SAT (±${acc}m)`;
+                        satSub.style.color = "var(--accent-orange)";
+                    }
 
                     document.getElementById('latVal').innerHTML = `${Math.abs(currentLat).toFixed(2)}<span class="unit">° ${currentLat>=0?'N':'S'}</span>`; 
                     document.getElementById('lonVal').innerHTML = `${Math.abs(currentLon).toFixed(2)}<span class="unit">° ${currentLon>=0?'E':'W'}</span>`;
@@ -1107,6 +1132,17 @@
                 navigator.geolocation.watchPosition(pos => {
                     currentLat = pos.coords.latitude; currentLon = pos.coords.longitude; 
                     let rawAlt = pos.coords.altitude; currentAltitude = (rawAlt !== null && rawAlt > -100 && rawAlt < 9000) ? Math.round(rawAlt) : 212; 
+                    let acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : 5;
+                    
+                    const satSub = document.getElementById('satFixSub');
+                    if (pos.coords.altitudeAccuracy !== null || acc <= 6) {
+                        satSub.innerText = `FIX 3D SAT (±${acc}m)`;
+                        satSub.style.color = "var(--accent-green)";
+                    } else {
+                        satSub.innerText = `FIX 2D SAT (±${acc}m)`;
+                        satSub.style.color = "var(--accent-orange)";
+                    }
+
                     recalcularPresionesYAltitud();
                     userMarker.setLatLng([currentLat, currentLon]); ring100.setLatLng([currentLat, currentLon]); ring500.setLatLng([currentLat, currentLon]); ring1000.setLatLng([currentLat, currentLon]);
                     if (isTracking) recordWaypoint(currentLat, currentLon, currentAltitude);
@@ -1509,7 +1545,7 @@
             } 
             document.getElementById('vwRouteAlts').innerText = `▲ ${maxAlt}m / ▼ ${minAlt}m`;
 
-            // VOLCADO COMPLETO Y CORRELATIVO DE WAYPOINTS
+            // VOLCADO COMPLETO Y CORRELATIVO DE TODOS LOS PUNTOS
             const tbody = document.getElementById('viewerWpTableBody');
             tbody.innerHTML = '';
             
