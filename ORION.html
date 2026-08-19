@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION - Field Navigator v3.7</title>
+    <title>ORION - Field Navigator v3.8</title>
     <meta name="author" content="danielcdmo">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -176,9 +176,9 @@
         .tide-graph-header { display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
         .live-badge { color: var(--accent-green); font-weight: 800; display: flex; align-items: center; gap: 4px; }
 
-        /* MAP CONTAINER & ROTATION */
+        /* MAPA SUAVE Y ROTACIÓN SIN CORTES */
         .map-wrapper { position: relative; width: 100%; height: 220px; border-radius: var(--radius-card); border: 1px solid var(--glass-border); overflow: hidden; background: #040813; }
-        #liveMap { width: 100%; height: 100%; transform-origin: center center; transition: transform 0.15s ease-out; }
+        #liveMap { width: 100%; height: 100%; transform-origin: center center; will-change: transform; transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1); }
         .leaflet-container { background-color: #040813 !important; }
         .map-floating-btn-group { position: absolute; right: 12px; bottom: 12px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
         .map-control-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--glass-inner); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); color: var(--text-main); font-size: 0.95rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.3); font-weight: 900; }
@@ -205,6 +205,9 @@
         #historyModalOverlay { z-index: 999998; }
         #routeViewerOverlay { z-index: 999999; }
         
+        .modal-nav-btn { background: var(--glass-inner); border: 1.5px solid var(--glass-border); color: var(--text-main); padding: 10px 18px; border-radius: 20px; font-weight: 800; font-size: 0.82rem; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        [data-theme="day"] .modal-nav-btn { background: #ffffff; color: #0f172a; border-color: #cbd5e1; }
+
         .wikiloc-card { background: #ffffff; color: #0f172a; width: 100%; max-width: 620px; border-radius: var(--radius-main); padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         #routeViewMap { width: 100%; height: 260px; border-radius: 12px; border: 1px solid #cbd5e1; display: block; z-index: 1; margin: 12px 0; }
 
@@ -217,7 +220,7 @@
         .history-item { background: var(--glass-inner); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; }
         .history-item:active { transform: scale(0.98); }
 
-        .wp-table-container { margin-top: 14px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; }
+        .wp-table-container { margin-top: 14px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; page-break-inside: auto; break-inside: auto; }
         .wp-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; text-align: left; }
         .wp-table th { background: #0f172a; color: #fff; padding: 6px 8px; font-weight: 800; }
         .wp-table td { padding: 6px 8px; border-bottom: 1px solid #e2e8f0; color: #334155; }
@@ -227,9 +230,10 @@
             body { background: #fff !important; padding: 0 !important; color: #000 !important; }
             body > *:not(#routeViewerOverlay) { display: none !important; }
             #routeViewerOverlay { display: block !important; position: static !important; width: 100% !important; height: auto !important; background: transparent !important; padding: 0 !important; backdrop-filter: none !important; }
-            .wikiloc-card { box-shadow: none !important; max-width: 100% !important; border-radius: 0 !important; padding: 0 !important; }
+            .wikiloc-card { box-shadow: none !important; max-width: 100% !important; border-radius: 0 !important; padding: 0 !important; page-break-inside: avoid; break-inside: avoid; }
             .no-print { display: none !important; }
-            #routeViewMap { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            #routeViewMap { -webkit-print-color-adjust: exact; print-color-adjust: exact; page-break-inside: avoid; }
+            tr { page-break-inside: avoid !important; break-inside: avoid !important; }
         }
     </style>
 </head>
@@ -258,7 +262,7 @@
         </div>
 
         <div class="topbar-controls-row">
-            <span class="version-tag">v3.7</span>
+            <span class="version-tag">v3.8</span>
             
             <div class="connectivity-pill" id="connPill">
                 <span class="status-dot-mini" id="connDot" style="background:var(--accent-green);"></span>
@@ -414,7 +418,7 @@
         </div>
     </div>
 
-    <!-- MAREAS CON INTERVALO LUNITIDAL DINÁMICO UNIVERSAL -->
+    <!-- MAREAS CON INT UNIVERSAL -->
     <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🌊</span><span>PLEAMARES & BAJAMARES</span></div>
@@ -455,7 +459,7 @@
         </div>
     </div>
 
-    <!-- PANEL TRACKING CON ROTACIÓN COMPÁS EN VIVO -->
+    <!-- PANEL TRACKING CON ROTACIÓN COMPÁS AMORTIGUADA -->
     <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🧭</span><span>MAPA RUTA & CONTROL DE MISIÓN</span></div>
@@ -488,7 +492,7 @@
 
     <div id="historyModalOverlay">
         <div style="width:100%; max-width:620px; display:flex; justify-content:space-between; gap:10px; margin-bottom:14px;">
-            <button style="background:var(--glass-inner); border:1px solid var(--glass-border); color:#fff; padding:10px 18px; border-radius:20px; font-weight:800; cursor:pointer;" onclick="closeHistoryModal()">← Volver</button>
+            <button class="modal-nav-btn" onclick="closeHistoryModal()">← Volver</button>
             <span style="font-weight:900; color:#fff; font-size:1.05rem; display:flex; align-items:center;">📁 HISTORIAL DE RUTAS</span>
         </div>
         <div style="width:100%; max-width:620px;">
@@ -498,7 +502,7 @@
 
     <div id="routeViewerOverlay">
         <div class="no-print" style="width:100%; max-width:620px; display:flex; justify-content:space-between; gap:10px; margin-bottom:14px;">
-            <button style="background:var(--glass-inner); border:1px solid var(--glass-border); color:#fff; padding:10px 18px; border-radius:20px; font-weight:800; cursor:pointer;" onclick="closeRouteViewer()">← Volver</button>
+            <button class="modal-nav-btn" onclick="closeRouteViewer()">← Volver</button>
             <button style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:10px 20px; border-radius:20px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:6px;" onclick="window.print()">🖨️ Exportar / Imprimir PDF</button>
         </div>
         
@@ -509,7 +513,7 @@
                     <div style="font-size:0.75rem; color:#64748b; font-weight:700; margin-top:3px;" id="vwRouteDate">Fecha: --</div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v3.7</span>
+                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v3.8</span>
                     <div style="font-size:0.62rem; color:#64748b; font-weight:700; margin-top:4px;">REF: WGS84-GEO</div>
                 </div>
             </div>
@@ -535,12 +539,12 @@
                 <canvas id="viewerElevationCanvas" style="width:100%; height:80px; display:block;"></canvas>
             </div>
 
-            <div style="margin:12px 0 4px 0; font-size:0.72rem; font-weight:800; color:#334155;">REGISTRO CORRELATIVO DE WAYPOINTS:</div>
+            <div style="margin:12px 0 4px 0; font-size:0.72rem; font-weight:800; color:#334155;">REGISTRO CORRELATIVO DE HITOS & WAYPOINTS:</div>
             <div class="wp-table-container">
                 <table class="wp-table">
                     <thead>
                         <tr>
-                            <th>WP</th>
+                            <th>HITO</th>
                             <th>HORA</th>
                             <th>COORDENADAS</th>
                             <th>ALTITUD</th>
@@ -552,7 +556,7 @@
             </div>
 
             <div style="margin-top:14px; border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:#64748b;">
-                <span>Sistema ORION v3.7 • Navegación & Telemetría</span>
+                <span>Sistema ORION v3.8 • Navegación & Telemetría</span>
                 <span><strong>danielcdmo</strong></span>
             </div>
         </div>
@@ -572,6 +576,7 @@
 
         // MODO ROTACIÓN MAPA (COMPÁS)
         let isMapCompassMode = false;
+        let smoothedMapAngle = 0;
 
         // HORAS MUNDIALES CASIO
         let isDstActive = true;
@@ -579,7 +584,7 @@
         let selectedCityCode = "BCN";
 
         // INTERVALO LUNITIDAL DINÁMICO
-        let calculatedLunitidalHours = 7.15; // Defecto
+        let calculatedLunitidalHours = 7.15;
 
         let map, livePolylineGreen, livePolylineRed, userMarker, manualWpLayerGroup;
         let ring100, ring500, ring1000; 
@@ -726,7 +731,7 @@
             document.getElementById('decSource').style.color = "var(--accent-orange)";
         }
 
-        // MOTOR UNIVERSAL DE MAREAS & CÁLCULO DINÁMICO DE INT (ONLINE / OFFLINE)
+        // MOTOR UNIVERSAL DE MAREAS & CÁLCULO DINÁMICO DE INT
         async function updateTidesHybrid(lat, lon, dayOffset = 0) {
             let onlineWorked = false;
             if (navigator.onLine) {
@@ -736,7 +741,6 @@
                     let p1_real = 0.22, b1_real = 7.47, p2_real = 12.57, b2_real = 19.73;
 
                     if (!isMed) {
-                        // Cálculo astronómico universal para cualquier océano/mar
                         const targetDate = new Date(); targetDate.setDate(targetDate.getDate() + dayOffset);
                         const JD = (targetDate.getTime() / 86400000.0) + 2440587.5;
                         const T = (JD - 2451545.0) / 36525.0;
@@ -756,7 +760,6 @@
                         b2: (b2_real + dOffsetHours) % 24
                     };
 
-                    // CÁLCULO DINÁMICO DEL INT EN TIEMPO REAL
                     const targetDate = new Date();
                     const JD = (targetDate.getTime() / 86400000.0) + 2440587.5;
                     const T = (JD - 2451545.0) / 36525.0;
@@ -985,7 +988,7 @@
             isMapCompassMode = false;
             document.getElementById('btnMapCompassMode').classList.remove('active');
             const mapEl = document.getElementById('liveMap');
-            if (mapEl) mapEl.style.transform = 'rotate(0deg)';
+            if (mapEl) mapEl.style.transform = 'none';
             if (map) map.setView([currentLat, currentLon], map.getZoom(), { animate: true });
         }
 
@@ -995,7 +998,7 @@
             btn.classList.toggle('active', isMapCompassMode);
             if (!isMapCompassMode) {
                 const mapEl = document.getElementById('liveMap');
-                if (mapEl) mapEl.style.transform = 'rotate(0deg)';
+                if (mapEl) mapEl.style.transform = 'none';
             }
         }
 
@@ -1057,13 +1060,17 @@
             let h = e.webkitCompassHeading || (360 - e.alpha);
             if (h !== null && !isNaN(h)) { 
                 let diff = h - smoothedHeading; while (diff < -180) diff += 360; while (diff > 180) diff -= 360; 
-                smoothedHeading = (smoothedHeading + diff * 0.22 + 360) % 360; currentHeading = smoothedHeading; 
+                smoothedHeading = (smoothedHeading + diff * 0.18 + 360) % 360; currentHeading = smoothedHeading; 
                 updateCompassDisplay(currentHeading); 
                 
-                // ROTACIÓN DINÁMICA DEL MAPA EN MODO COMPÁS
+                // ROTACIÓN AMORTIGUADA DEL MAPA EN MODO COMPÁS (SIN VIBRACIÓN)
                 if (isMapCompassMode) {
+                    let mapDiff = (-currentHeading) - smoothedMapAngle;
+                    while (mapDiff < -180) mapDiff += 360;
+                    while (mapDiff > 180) mapDiff -= 360;
+                    smoothedMapAngle = smoothedMapAngle + mapDiff * 0.15;
                     const mapEl = document.getElementById('liveMap');
-                    if (mapEl) mapEl.style.transform = `rotate(${-currentHeading}deg)`;
+                    if (mapEl) mapEl.style.transform = `scale(1.45) rotate(${smoothedMapAngle}deg)`;
                 }
             }
         }
@@ -1430,9 +1437,21 @@
             } 
             document.getElementById('vwRouteAlts').innerText = `▲ ${maxAlt}m / ▼ ${minAlt}m`;
 
+            // FILTRADO INTELIGENTE DE WAYPOINTS PARA TABLA PDF LIMPIA
             const tbody = document.getElementById('viewerWpTableBody');
             tbody.innerHTML = '';
-            pts.forEach((pt, idx) => {
+            
+            let displayPts = [];
+            if (pts.length > 0) {
+                displayPts.push({ ...pts[0], label: 'Inicio Ruta' });
+                const manuals = pts.filter((p, idx) => p.isManual && idx !== 0 && idx !== pts.length - 1);
+                displayPts.push(...manuals);
+                if (pts.length > 1) {
+                    displayPts.push({ ...pts[pts.length - 1], label: 'Fin Misión' });
+                }
+            }
+
+            displayPts.forEach((pt, idx) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${pt.label || 'WP-' + (idx+1)}</strong></td>
