@@ -258,7 +258,6 @@
 
         .print-title { display: none; }
 
-        /* MODO IMPRESIÓN AJUSTADO A 1 PÁGINA */
         @media print {
             @page {
                 size: A4 portrait;
@@ -354,7 +353,7 @@
                 <option value="suunto_nautic">🤿 3. Suunto Nautic S (Buceo / Bühlmann 16 GF)</option>
                 <option value="protrek_prg340">🪵 4. Casio ProTrek PRG-340 (Triple Sensor / Solar)</option>
                 <option value="rangeman_gw9400">🧗 5. Casio G-Shock Rangeman GW-9400 (R/C Solar)</option>
-                <option value="gab010">👟 6. Casio G-Shock GA-B010 (Bluetooth / Podómetro)</option>
+                <option value="gbx_h5600">🏄 6. Casio G-Shock GBX-H5600 (FC / Mareas / Polar)</option>
                 <option value="g7900">🌊 7. Casio G-Shock G-7900 (Mareas y Luna)</option>
                 <option value="dw6900rl">⏱️ 8. Casio G-Shock DW-6900RL (Clásico Digital)</option>
                 <option value="apple_watch">⌚ 9. Apple Watch (Komoot Offline & Salud)</option>
@@ -566,36 +565,40 @@
                 }
             ]
         },
-        gab010: {
-            name: "Casio G-Shock GA-B010",
+        gbx_h5600: {
+            name: "Casio G-Shock GBX-H5600 (G-LIDE)",
             phases: [
                 {
                     title: "🏠 En casa (Antes de salir)",
                     items: [
-                        "☀️ Nivel de carga: Comprobar carga solar en esfera o app CASIO WATCHES.",
-                        "📲 Sincronización: Abrir app para hora exacta y fijar objetivo de pasos."
+                        "⚡ Batería & Carga USB: Comprobar icono en display MIP y cargar con clip USB si está en LOW.",
+                        "📲 Sincronización & Perfil: Abrir CASIO WATCHES para hora exacta, datos físicos (FC máx/reposo) y VO2Max.",
+                        "🌊 Puerto de Marea (Tide Graph): Seleccionar el puerto deseado en la app (3.300 puntos) o en el menú del reloj.",
+                        "🌙 Recuperación / Nightly Recharge™: Consultar en el reloj el estado del sueño (Sleep/ANS Charge) de la noche."
                     ]
                 },
                 {
                     title: "🚗 En el punto de inicio",
                     items: [
-                        "📍 Punto de salida: Pulsar D para grabar TIME&PLACE (GPS/hora coche).",
-                        "👟 Podómetro: Comprobar o reiniciar conteo del día si se desea."
+                        "🌊 Comprobación Marea y Sol: Entrar en TIDE GRAPH (botón A) para ver pleamar/bajamar y ALMANAC para orto/ocaso.",
+                        "💓 Ajuste Sensor FC: Ajustar la correa firme a 1 dedo del hueso de la muñeca para lectura óptica precisa.",
+                        "🏃 Modo Actividad & GPS: Pulsar A, elegir actividad (RUNNING/WALKING/TIMER) y conectar con GPS del móvil si aplica."
                     ]
                 },
                 {
                     title: "🥾 Durante la ruta",
                     items: [
-                        "📊 Seguimiento pasos: Pulsar B para ver contador y gráfico.",
-                        "📍 Waypoints clave: Pulsar D en hitos para registrar TIME&PLACE.",
-                        "🪡 Hand Shift: Mantener L y pulsar C para apartar manecillas de la pantalla."
+                        "💓 Monitorización Zonas FC: Controlar esfuerzo en las 5 zonas Polar y atender alertas de fuera de rango.",
+                        "🫁 SpO2 / Breathing: Usar BLOOD OXYGEN (brazo quieto) o BREATHING EXERCISE si hay fatiga o parada.",
+                        "🪡 Modo Silencioso: Mantener pulsado D durante 3 s para activar modo solo vibración si se requiere discreción."
                     ]
                 },
                 {
                     title: "🏁 Al finalizar",
                     items: [
-                        "📲 Volcado actividad: Mantener C 3 s para volcar pasos y ubicaciones.",
-                        "🪥 Mantenimiento: Enjuagar con agua dulce y secar con paño suave."
+                        "💾 Guardar Actividad: Pulsar A (pausa), elegir SAVE con botón C y confirmar con botón A para guardar sesión.",
+                        "📲 Volcado & Cardio Load: Sincronizar con CASIO WATCHES y revisar estado de carga cardiovascular.",
+                        "🪥 Mantenimiento: Enjuagar con agua dulce (20 BAR), limpiar contactos de carga y sensor óptico, y secar bien."
                     ]
                 }
             ]
