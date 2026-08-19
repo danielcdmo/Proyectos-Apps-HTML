@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION - Field Navigator v4.1</title>
+    <title>ORION - Field Navigator v4.2</title>
     <meta name="author" content="danielcdmo">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -179,7 +179,7 @@
         .tide-graph-header { display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
         .live-badge { color: var(--accent-green); font-weight: 800; display: flex; align-items: center; gap: 4px; }
 
-        /* CONTENEDOR DE MAPA CON OVERSCAN TOTAL (SIN BORDES NEGROS) */
+        /* CONTENEDOR DE MAPA CON OVERSCAN TOTAL */
         .map-wrapper { position: relative; width: 100%; height: 220px; border-radius: var(--radius-card); border: 1px solid var(--glass-border); overflow: hidden; background: #040813; }
         #liveMap { position: absolute; width: 170%; height: 170%; left: -35%; top: -35%; transform-origin: center center; will-change: transform; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
         .leaflet-container { background-color: #040813 !important; }
@@ -223,6 +223,7 @@
         .history-item { background: var(--glass-inner); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; }
         .history-item:active { transform: scale(0.98); }
 
+        /* REGLAS DE PAGINACIÓN PDF */
         .wp-table-container { margin-top: 14px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; }
         .wp-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; text-align: left; }
         .wp-table th { background: #0f172a; color: #fff; padding: 6px 8px; font-weight: 800; }
@@ -267,7 +268,7 @@
         </div>
 
         <div class="topbar-controls-row">
-            <span class="version-tag">v4.1</span>
+            <span class="version-tag">v4.2</span>
             
             <button class="btn-sync-master" id="btnMasterSync" onclick="startTacticalSystems()">
                 ⚡ SYNC HARDWARE
@@ -350,7 +351,7 @@
         </div>
     </div>
 
-    <!-- ALTÍMETRO & BARÓMETRO CON TELEMETRÍA GNSS / FIX SATELITAL DETALLADA -->
+    <!-- ALTÍMETRO & BARÓMETRO CON TELEMETRÍA GNSS DINÁMICA -->
     <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>⛰️</span><span>ALTÍMETRO & BARÓMETRO</span></div>
@@ -358,7 +359,7 @@
                 <span class="badge-tag baro-armed interactive" id="stormAlarmIndicator" onclick="toggleStormAlarm()">
                     <span class="status-dot-mini" style="background:var(--accent-green);"></span> BARO
                 </span>
-                <span class="badge-tag" id="gnssMultiBadge">GNSS MULTIBANDA</span>
+                <span class="badge-tag" id="gnssDynamicBadge" style="color:var(--text-muted); border-color:var(--glass-border);">GNSS STANDBY</span>
             </div>
         </div>
         <div class="storm-alert-banner" id="stormBanner">
@@ -369,7 +370,7 @@
             <div class="metric-box">
                 <span class="metric-label">Altitud GPS (Satélite)</span>
                 <span class="metric-value text-green" id="altGpsVal">-- <span class="unit">m</span></span>
-                <span class="metric-sub" id="satFixSub" style="color:var(--accent-cyan);">FIX 3D SAT (COTA WGS84)</span>
+                <span class="metric-sub" id="satFixSub" style="color:var(--text-muted);">COTA WGS84 (STANDBY)</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Altitud Barométrica</span>
@@ -495,7 +496,7 @@
         </div>
     </div>
 
-    <!-- PANEL TRACKING CON ROTACIÓN COMPÁS FLUIDA Y MÁRGENES CUBIERTOS -->
+    <!-- PANEL TRACKING CON ROTACIÓN COMPÁS AMORTIGUADA Y SIN VIBRACIÓN -->
     <div class="glass-panel">
         <div class="card-header">
             <div class="title-group"><span>🧭</span><span>MAPA RUTA & CONTROL DE MISIÓN</span></div>
@@ -552,7 +553,7 @@
                     <div style="font-size:0.75rem; color:#64748b; font-weight:700; margin-top:3px;" id="vwRouteDate">Fecha: --</div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v4.1</span>
+                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v4.2</span>
                     <div style="font-size:0.62rem; color:#64748b; font-weight:700; margin-top:4px;">REF: WGS84-GEO</div>
                 </div>
             </div>
@@ -595,7 +596,7 @@
             </div>
 
             <div style="margin-top:14px; border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:#64748b;">
-                <span>Sistema ORION v4.1 • Navegación & Telemetría</span>
+                <span>Sistema ORION v4.2 • Navegación & Telemetría</span>
                 <span><strong>danielcdmo</strong></span>
             </div>
         </div>
@@ -1090,10 +1091,15 @@
             const hudGpsPill = document.getElementById('hudGpsPill');
             const hudGpsDot = document.getElementById('hudGpsDot');
             const hudGpsText = document.getElementById('hudGpsText');
+            const gnssBadge = document.getElementById('gnssDynamicBadge');
             
             hudGpsPill.className = 'hud-pill warn';
             hudGpsDot.style.background = 'var(--accent-orange)';
             hudGpsText.innerText = 'BUSCANDO';
+
+            gnssBadge.innerText = "GNSS BUSCANDO...";
+            gnssBadge.style.color = "var(--accent-orange)";
+            gnssBadge.style.borderColor = "rgba(251, 146, 60, 0.4)";
 
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(pos => {
@@ -1106,11 +1112,23 @@
                     hudGpsText.innerText = 'GPS OK';
 
                     const satSub = document.getElementById('satFixSub');
-                    if (pos.coords.altitudeAccuracy !== null || acc <= 6) {
-                        satSub.innerText = `FIX 3D SAT (±${acc}m)`;
+                    if (acc <= 4) {
+                        gnssBadge.innerText = `GNSS MULTIBANDA (±${acc}m)`;
+                        gnssBadge.style.color = "var(--accent-green)";
+                        gnssBadge.style.borderColor = "rgba(52, 211, 153, 0.4)";
+                        satSub.innerText = `FIX 3D DUAL-BAND L1/L5 (±${acc}m)`;
                         satSub.style.color = "var(--accent-green)";
+                    } else if (acc <= 8) {
+                        gnssBadge.innerText = `GNSS FIX 3D (±${acc}m)`;
+                        gnssBadge.style.color = "var(--accent-cyan)";
+                        gnssBadge.style.borderColor = "rgba(56, 189, 248, 0.4)";
+                        satSub.innerText = `FIX 3D SAT WGS84 (±${acc}m)`;
+                        satSub.style.color = "var(--accent-cyan)";
                     } else {
-                        satSub.innerText = `FIX 2D SAT (±${acc}m)`;
+                        gnssBadge.innerText = `GNSS FIX 2D (±${acc}m)`;
+                        gnssBadge.style.color = "var(--accent-orange)";
+                        gnssBadge.style.borderColor = "rgba(251, 146, 60, 0.4)";
+                        satSub.innerText = `FIX 2D (±${acc}m)`;
                         satSub.style.color = "var(--accent-orange)";
                     }
 
@@ -1127,6 +1145,9 @@
                     hudGpsPill.className = 'hud-pill err';
                     hudGpsDot.style.background = 'var(--accent-red)';
                     hudGpsText.innerText = 'GPS ERR';
+                    gnssBadge.innerText = "GNSS SIN SEÑAL";
+                    gnssBadge.style.color = "var(--accent-red)";
+                    gnssBadge.style.borderColor = "rgba(244, 63, 94, 0.4)";
                 }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
                 
                 navigator.geolocation.watchPosition(pos => {
@@ -1135,11 +1156,23 @@
                     let acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : 5;
                     
                     const satSub = document.getElementById('satFixSub');
-                    if (pos.coords.altitudeAccuracy !== null || acc <= 6) {
-                        satSub.innerText = `FIX 3D SAT (±${acc}m)`;
+                    if (acc <= 4) {
+                        gnssBadge.innerText = `GNSS MULTIBANDA (±${acc}m)`;
+                        gnssBadge.style.color = "var(--accent-green)";
+                        gnssBadge.style.borderColor = "rgba(52, 211, 153, 0.4)";
+                        satSub.innerText = `FIX 3D DUAL-BAND L1/L5 (±${acc}m)`;
                         satSub.style.color = "var(--accent-green)";
+                    } else if (acc <= 8) {
+                        gnssBadge.innerText = `GNSS FIX 3D (±${acc}m)`;
+                        gnssBadge.style.color = "var(--accent-cyan)";
+                        gnssBadge.style.borderColor = "rgba(56, 189, 248, 0.4)";
+                        satSub.innerText = `FIX 3D SAT WGS84 (±${acc}m)`;
+                        satSub.style.color = "var(--accent-cyan)";
                     } else {
-                        satSub.innerText = `FIX 2D SAT (±${acc}m)`;
+                        gnssBadge.innerText = `GNSS FIX 2D (±${acc}m)`;
+                        gnssBadge.style.color = "var(--accent-orange)";
+                        gnssBadge.style.borderColor = "rgba(251, 146, 60, 0.4)";
+                        satSub.innerText = `FIX 2D (±${acc}m)`;
                         satSub.style.color = "var(--accent-orange)";
                     }
 
@@ -1545,7 +1578,6 @@
             } 
             document.getElementById('vwRouteAlts').innerText = `▲ ${maxAlt}m / ▼ ${minAlt}m`;
 
-            // VOLCADO COMPLETO Y CORRELATIVO DE TODOS LOS PUNTOS
             const tbody = document.getElementById('viewerWpTableBody');
             tbody.innerHTML = '';
             
