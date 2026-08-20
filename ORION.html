@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION - Field Navigator v4.8</title>
+    <title>ORION - Field Navigator v5.7</title>
     <meta name="author" content="danielcdmo">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -267,7 +267,7 @@
         </div>
 
         <div class="topbar-controls-row">
-            <span class="version-tag">v4.8</span>
+            <span class="version-tag">v5.7</span>
             
             <button class="btn-sync-master" id="btnMasterSync" onclick="startTacticalSystems()">
                 ⚡ SYNC HARDWARE
@@ -350,6 +350,103 @@
         </div>
     </div>
 
+    <!-- CRONÓMETRO DUAL Y TEMPORIZADOR ESTILO CASIO -->
+    <div class="glass-panel">
+        <div class="card-header">
+            <div class="title-group"><span>⏱️</span><span>CRONÓMETRO & TEMPORIZADOR</span></div>
+            <span class="badge-tag" id="chronoModeBadge" style="color:var(--text-muted); border-color:var(--glass-border);">STANDBY</span>
+        </div>
+
+        <!-- Selector de pestaña -->
+        <div style="display:flex; gap:8px; margin-bottom:14px;">
+            <button class="tactical-btn primary" id="tabChrono" onclick="switchChronoTab('chrono')" style="flex:1;">⏱ Cronómetro</button>
+            <button class="tactical-btn" id="tabTimer" onclick="switchChronoTab('timer')" style="flex:1;">⏳ Temporizador</button>
+        </div>
+
+        <!-- ============ CRONÓMETRO ============ -->
+        <div id="chronoPane">
+            <div style="background:var(--lcd-glass); border:1px solid var(--glass-border); border-radius:var(--radius-card); padding:16px 12px; text-align:center; margin-bottom:12px;">
+                <div style="font-size:0.6rem; font-weight:800; color:var(--text-muted); letter-spacing:1px; margin-bottom:4px;">TIEMPO TOTAL</div>
+                <div id="chronoMain" style="font-size:2.5rem; font-weight:900; letter-spacing:1px; color:var(--text-main); line-height:1; font-variant-numeric:tabular-nums;">00:00:00<span style="font-size:1.3rem; color:var(--accent-cyan);">.00</span></div>
+                <div style="font-size:0.6rem; font-weight:800; color:var(--text-muted); letter-spacing:1px; margin-top:12px;">PARCIAL / VUELTA</div>
+                <div id="chronoSplit" style="font-size:1.35rem; font-weight:800; color:var(--accent-cyan); line-height:1.2; font-variant-numeric:tabular-nums;">00:00:00<span style="font-size:0.85rem;">.00</span></div>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-bottom:12px;">
+                <button class="tactical-btn primary" id="btnChronoStart" onclick="chronoStartStop()" style="flex:1.2;">▶ Iniciar</button>
+                <button class="tactical-btn" id="btnChronoLap" onclick="chronoLap()" style="flex:1;">🚩 Vuelta</button>
+                <button class="tactical-btn" id="btnChronoReset" onclick="chronoReset()" style="flex:1;">↺ Reset</button>
+            </div>
+
+            <div style="background:var(--lcd-glass); border:1px solid var(--glass-border); border-radius:var(--radius-card); padding:10px 12px; max-height:190px; overflow-y:auto;">
+                <div style="display:flex; justify-content:space-between; font-size:0.62rem; font-weight:800; color:var(--text-muted); letter-spacing:0.5px; margin-bottom:6px;">
+                    <span>VUELTAS REGISTRADAS</span><span id="chronoLapCount">0</span>
+                </div>
+                <div id="chronoLapList" style="font-size:0.78rem; font-variant-numeric:tabular-nums;">
+                    <div style="color:var(--text-muted); text-align:center; padding:12px 0; font-size:0.72rem;">Sin vueltas</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ TEMPORIZADOR ============ -->
+        <div id="timerPane" style="display:none;">
+            <div style="background:var(--lcd-glass); border:1px solid var(--glass-border); border-radius:var(--radius-card); padding:16px 12px; text-align:center; margin-bottom:12px;">
+                <div style="font-size:0.6rem; font-weight:800; color:var(--text-muted); letter-spacing:1px; margin-bottom:4px;" id="timerStateLabel">CUENTA ATRÁS</div>
+                <div id="timerMain" style="font-size:2.7rem; font-weight:900; letter-spacing:1px; color:var(--text-main); line-height:1; font-variant-numeric:tabular-nums;">00:05:00</div>
+                <div id="timerBarWrap" style="height:5px; background:rgba(148,163,184,0.18); border-radius:3px; margin-top:12px; overflow:hidden;">
+                    <div id="timerBar" style="height:100%; width:100%; background:linear-gradient(90deg,#34d399,#38bdf8); border-radius:3px; transition:width 0.3s linear;"></div>
+                </div>
+            </div>
+
+            <!-- Ajuste H : M : S -->
+            <div id="timerSetRow" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px;">
+                <div class="metric-box" style="padding:8px 4px;">
+                    <span class="metric-label" style="font-size:0.58rem;">HORAS</span>
+                    <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:2px;">
+                        <button class="tactical-btn" onclick="timerAdjust('h',-1)" style="padding:2px 9px; font-size:1rem;">−</button>
+                        <span id="timerSetH" style="font-size:1.25rem; font-weight:900; min-width:26px; font-variant-numeric:tabular-nums;">00</span>
+                        <button class="tactical-btn" onclick="timerAdjust('h',1)" style="padding:2px 9px; font-size:1rem;">+</button>
+                    </div>
+                </div>
+                <div class="metric-box" style="padding:8px 4px;">
+                    <span class="metric-label" style="font-size:0.58rem;">MINUTOS</span>
+                    <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:2px;">
+                        <button class="tactical-btn" onclick="timerAdjust('m',-1)" style="padding:2px 9px; font-size:1rem;">−</button>
+                        <span id="timerSetM" style="font-size:1.25rem; font-weight:900; min-width:26px; font-variant-numeric:tabular-nums;">05</span>
+                        <button class="tactical-btn" onclick="timerAdjust('m',1)" style="padding:2px 9px; font-size:1rem;">+</button>
+                    </div>
+                </div>
+                <div class="metric-box" style="padding:8px 4px;">
+                    <span class="metric-label" style="font-size:0.58rem;">SEGUNDOS</span>
+                    <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:2px;">
+                        <button class="tactical-btn" onclick="timerAdjust('s',-5)" style="padding:2px 9px; font-size:1rem;">−</button>
+                        <span id="timerSetS" style="font-size:1.25rem; font-weight:900; min-width:26px; font-variant-numeric:tabular-nums;">00</span>
+                        <button class="tactical-btn" onclick="timerAdjust('s',5)" style="padding:2px 9px; font-size:1rem;">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Presets rápidos -->
+            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">
+                <button class="tactical-btn" onclick="timerPreset(60)" style="flex:1; font-size:0.7rem; padding:7px 4px;">1 min</button>
+                <button class="tactical-btn" onclick="timerPreset(300)" style="flex:1; font-size:0.7rem; padding:7px 4px;">5 min</button>
+                <button class="tactical-btn" onclick="timerPreset(600)" style="flex:1; font-size:0.7rem; padding:7px 4px;">10 min</button>
+                <button class="tactical-btn" onclick="timerPreset(1800)" style="flex:1; font-size:0.7rem; padding:7px 4px;">30 min</button>
+                <button class="tactical-btn" onclick="timerPreset(3600)" style="flex:1; font-size:0.7rem; padding:7px 4px;">1 h</button>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-bottom:10px;">
+                <button class="tactical-btn primary" id="btnTimerStart" onclick="timerStartStop()" style="flex:1.4;">▶ Iniciar</button>
+                <button class="tactical-btn" id="btnTimerReset" onclick="timerReset()" style="flex:1;">↺ Reset</button>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--lcd-glass); border:1px solid var(--glass-border); border-radius:var(--radius-card); padding:9px 12px;">
+                <span style="font-size:0.7rem; font-weight:700; color:var(--text-muted);">🔁 Repetir al terminar</span>
+                <span class="badge-tag interactive" id="timerRepeatBadge" onclick="timerToggleRepeat()" style="cursor:pointer; color:var(--text-muted);">OFF</span>
+            </div>
+        </div>
+    </div>
+
     <!-- ALTÍMETRO & BARÓMETRO CON TELEMETRÍA L1/L5 DINÁMICA -->
     <div class="glass-panel">
         <div class="card-header">
@@ -405,7 +502,7 @@
                 <div class="compass-pivot"></div>
             </div>
             <div class="metric-grid-2x2">
-                <div class="metric-box"><span class="metric-label">Rumbo Actual</span><span class="metric-value text-green" id="headingVal">0<span class="unit">°</span></span><span class="metric-sub" id="headingCard">N</span></div>
+                <div class="metric-box"><span class="metric-label">Rumbo Actual</span><span class="metric-value text-green" id="headingVal">0<span class="unit">°</span></span><span class="metric-sub" id="headingCard">N</span><span class="metric-sub" id="headingSrcSub" style="color:var(--accent-orange); font-size:0.56rem;">ESPERANDO BRÚJULA</span></div>
                 <div class="metric-box"><span class="metric-label text-orange">Retorno (180°)</span><span class="metric-value text-orange" id="returnVal">180<span class="unit">°</span></span><span class="metric-sub">RUMBO INVERSO</span></div>
                 <div class="metric-box"><span class="metric-label">Declinación Magnética</span><span class="metric-value text-yellow" id="decVal">--<span class="unit">°</span></span><span class="metric-sub" id="decSource" style="color:var(--accent-orange);">CALCULANDO...</span></div>
                 <div class="metric-box"><span class="metric-label">Azimut Solar ☀️</span><span class="metric-value text-yellow" id="sunAzVal">--<span class="unit">°</span></span><span class="metric-sub">SOL REAL NOAA</span></div>
@@ -471,6 +568,12 @@
                 </div>
             </div>
             <input type="range" min="0" max="23.9" step="0.1" value="12.0" class="tactical-range" id="tideTimeSlider" oninput="updateTideSlider(this.value)">
+            <div style="margin-top:10px;">
+                <label style="font-size:0.62rem; font-weight:800; color:var(--text-muted); letter-spacing:0.5px; text-transform:uppercase; display:block; margin-bottom:5px;">Punto de referencia (tabla Casio)</label>
+                <select id="tidePortSelect" onchange="selectTidePort(this.value)"
+                        style="width:100%; background:var(--lcd-glass); color:var(--text-main); border:1px solid var(--glass-border); border-radius:10px; padding:9px 10px; font-size:0.78rem; font-weight:700; font-family:inherit; -webkit-appearance:none; appearance:none;">
+                </select>
+            </div>
         </div>
 
         <div class="tide-box-grid">
@@ -489,9 +592,32 @@
             <div class="tide-box-style"><span class="t-lbl" style="color:var(--text-muted);">Estado de Marea</span><span class="t-val text-cyan" id="tideStateDesc" style="font-size:1.05rem; text-align:center; white-space:pre-line;">Calculando...</span></div>
         </div>
 
+        <div class="tide-graph-container" style="margin-bottom:12px;">
+            <div class="tide-graph-header" style="margin-bottom:8px;">
+                <span>⌚ DATOS PARA EL RELOJ CASIO</span>
+            </div>
+            <select id="watchModelSelect" onchange="renderWatchExport()"
+                    style="width:100%; background:var(--lcd-glass); color:var(--text-main); border:1px solid var(--glass-border); border-radius:10px; padding:8px 10px; font-size:0.75rem; font-weight:700; font-family:inherit; margin-bottom:9px; -webkit-appearance:none; appearance:none;">
+                <optgroup label="CASIO">
+                    <option value="GBX-H5600-2">GBX-H5600-2 · G-LIDE (mareas)</option>
+                    <option value="G-7900-1ER">G-7900-1ER · G-LIDE (mareas)</option>
+                    <option value="GW-9400-1ER">GW-9400-1ER · Rangeman</option>
+                    <option value="PRG-340-3">PRG-340-3 · Pro Trek</option>
+                    <option value="DW-6900RL-1">DW-6900RL-1 · Básico</option>
+                </optgroup>
+                <optgroup label="SUUNTO">
+                    <option value="CORE-2">Core 2 · ABC sin GPS</option>
+                    <option value="NAUTIC-S">Nautic S · Buceo (autónomo)</option>
+                    <option value="VERTICAL-2">Vertical 2 · GPS (autónomo)</option>
+                </optgroup>
+            </select>
+            <div id="watchExportBody" style="font-size:0.72rem; line-height:1.7; color:var(--text-main);"></div>
+            <div id="watchExportNote" style="font-size:0.62rem; color:var(--text-muted); margin-top:6px; line-height:1.4;"></div>
+        </div>
+
         <div class="tide-graph-container">
             <div class="tide-graph-header"><span>GRÁFICO DE MAREA (24H)</span><span class="live-badge" id="tideLiveTimestamp">AHORA ⚡</span></div>
-            <canvas id="tideCanvas" style="width:100%; height:105px; display:block;"></canvas>
+            <canvas id="tideCanvas" style="width:100%; height:150px; display:block;"></canvas>
         </div>
     </div>
 
@@ -518,7 +644,7 @@
         <div class="metric-grid-2x2">
             <div class="metric-box"><span class="metric-label">Distancia Total</span><span class="metric-value text-cyan" id="trackDistVal">0.00 <span class="unit">km</span></span></div>
             <div class="metric-box"><span class="metric-label">Tiempo de Expedición</span><span class="metric-value text-green" id="trackTimerVal">00:00:00</span></div>
-            <div class="metric-box" style="grid-column: span 2;"><span class="metric-label">Waypoints Registrados</span><span class="metric-value" id="trackPointsVal">0 <span class="unit">pts</span></span></div>
+            <div class="metric-box" style="grid-column: span 2;"><span class="metric-label">Waypoints Registrados</span><span class="metric-value" id="trackPointsVal">0 <span class="unit">pts</span></span><span class="metric-sub" id="trackRejectSub" style="color:var(--accent-orange);"></span></div>
         </div>
         <div class="btn-action-row-3">
             <button class="tactical-btn primary" id="btnToggleTrack" onclick="toggleMissionTracking()">▶ Iniciar</button>
@@ -552,7 +678,7 @@
                     <div style="font-size:0.75rem; color:#64748b; font-weight:700; margin-top:3px;" id="vwRouteDate">Fecha: --</div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v4.8</span>
+                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v5.7</span>
                     <div style="font-size:0.62rem; color:#64748b; font-weight:700; margin-top:4px;">REF: WGS84-GEO</div>
                 </div>
             </div>
@@ -595,7 +721,7 @@
             </div>
 
             <div style="margin-top:14px; border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:#64748b;">
-                <span>Sistema ORION v4.8 • Navegación & Telemetría</span>
+                <span>Sistema ORION v5.7 • Navegación & Telemetría</span>
                 <span><strong>danielcdmo</strong></span>
             </div>
         </div>
@@ -604,9 +730,23 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
         let currentHeading = 0; let smoothedHeading = 0; let lockedBearing = null; let sunAzimuth = 180;
+        /* v5.7 - declinacion numerica y estado real de la brujula */
+        let magDeclination = 0;        // grados, positivo al Este
+        let magDecSource   = 'model';  // 'noaa' | 'model'
+        let compassLive    = false;    // hay lecturas reales del magnetometro
+        let compassSeen    = 0;
         let isTracking = false; let isReturning = false; let waypoints = []; let totalDistanceKm = 0; let lastGpsPos = null;
 
         let trackingSeconds = 0; let trackingTimerInterval = null;
+        /* v5.5 - control de calidad del track y proteccion de datos */
+        let trackAccumMs   = 0;      // tiempo acumulado en pausas anteriores
+        let trackResumeMs  = null;   // instante de la ultima reanudacion
+        let userMovedMap   = false;  // el usuario ha desplazado el mapa a mano
+        let rejectedFixes  = 0;      // fixes descartados por mala precision
+        const GPS_MAX_ACC  = 20;     // m - por encima, el fix no se graba
+        const GPS_MIN_STEP = 10;     // m - suelo minimo del umbral de avance
+        let smoothLat = null, smoothLon = null, lastAccM = null;
+        let lastAltValid   = null;   // ultima altitud GPS valida
         let currentLat = 41.6070; let currentLon = 2.1373; let currentAltitude = 212;
         let currentPressure = 993; let seaLevelPressure = 1016; let referencePressure = 993; let baroAltitude = 193;
 
@@ -700,7 +840,7 @@
                         for (let dy = -1; dy <= 1; dy++) {
                             const x = centerTileX + dx;
                             const y = centerTileY + dy;
-                            const sub = ['a', 'b', 'c'][(x + y) % 3];
+                            const sub = ['a', 'b', 'c'][((x + y) % 3 + 3) % 3];   // el % de JS puede dar negativo
                             const url = `https://${sub}.tile.openstreetmap.org/${z}/${x}/${y}.png`;
                             const match = await cache.match(url);
                             if (!match) {
@@ -710,7 +850,10 @@
                     }
                 }
                 if (badge) {
-                    badge.innerText = "MAP CACHE OK";
+                    /* v5.7 - Se cachean 3x3 teselas en 3 zooms: apenas unos
+                       cientos de metros. Decir solo "MAP CACHE OK" hacia creer
+                       que habia mapa offline de toda la zona. */
+                    badge.innerText = "CACHE ~500 m";
                     badge.style.color = "var(--accent-green)";
                     badge.style.borderColor = "rgba(52, 211, 153, 0.4)";
                 }
@@ -737,6 +880,7 @@
             document.getElementById('altBaroVal').innerHTML = `${baroAltitude} <span class="unit">m</span>`;
             document.getElementById('qfeVal').innerHTML = `${currentPressure} <span class="unit">hPa</span>`; 
             document.getElementById('qnhVal').innerHTML = `${seaLevelPressure} <span class="unit">hPa</span>`;
+            renderWatchExport();
         }
 
         function calcularDeclinacionMagneticaOffline(lat, lon) {
@@ -760,15 +904,18 @@
                     const data = await res.json();
                     if (data && data.result && data.result.length > 0) {
                         let decAPI = data.result[0].declination; let dirAPI = decAPI >= 0 ? 'E' : 'W';
+                        magDeclination = decAPI; magDecSource = 'noaa'; paintCompassSource();
                         document.getElementById('decVal').innerHTML = `${dirAPI} ${Math.abs(Math.round(decAPI))}<span class="unit">°</span>`;
-                        document.getElementById('decSource').innerText = "ONLINE NOAA"; 
+                        document.getElementById('decSource').innerText = "ONLINE NOAA · APLICADA"; 
                         document.getElementById('decSource').style.color = "var(--accent-green)"; 
                         return;
                     }
                 } catch (e) {}
             }
+            const mm = /([EW])\s*([\d.]+)/.exec(decMath);
+            if (mm) { magDeclination = (mm[1] === 'E' ? 1 : -1) * parseFloat(mm[2]); magDecSource = 'model'; paintCompassSource(); }
             document.getElementById('decVal').innerHTML = `${decMath}<span class="unit">°</span>`;
-            document.getElementById('decSource').innerText = "OFFLINE MODEL"; 
+            document.getElementById('decSource').innerText = "MODELO OFFLINE · APLICADA"; 
             document.getElementById('decSource').style.color = "var(--accent-orange)";
         }
 
@@ -788,6 +935,105 @@
             7. Amplitud sicigias-cuadraturas en el gráfico.
            ============================================================================ */
 
+        /* ================= ORION v5.1 · PUERTOS CASIO =================
+           Tabla oficial "Site/Lunitidal Interval Data List" de la guia de
+           operacion Casio (G-7900 y familia G-LIDE). El intervalo lunitidal
+           depende de la geometria y resonancia de la cuenca, asi que no
+           caduca: los valores de 2003 siguen siendo validos.
+           Se incluye la longitud usada por Casio (redondeada, como en su
+           tabla) para reproducir exactamente el transito lunar del reloj,
+           y la zona IANA para resolver el horario de verano automaticamente. */
+        const CASIO_PORTS = [
+            { n:'Anchorage',                 lon:-149, int:5.667,  tz:'America/Anchorage' },
+            { n:'Bahamas',                   lon:-77,  int:7.5,    tz:'America/Nassau' },
+            { n:'Baja California',           lon:-110, int:8.667,  tz:'America/Mazatlan' },
+            { n:'Bangkok',                   lon:101,  int:4.667,  tz:'Asia/Bangkok' },
+            { n:'Boston',                    lon:-71,  int:11.333, tz:'America/New_York' },
+            { n:'Buenos Aires',              lon:-58,  int:6.0,    tz:'America/Argentina/Buenos_Aires' },
+            { n:'Casablanca',                lon:-8,   int:1.5,    tz:'Africa/Casablanca' },
+            { n:'Christmas Island',          lon:-158, int:4.0,    tz:'Pacific/Kiritimati' },
+            { n:'Dakar',                     lon:-17,  int:7.667,  tz:'Africa/Dakar' },
+            { n:'Gold Coast',                lon:154,  int:8.5,    tz:'Australia/Brisbane' },
+            { n:'Great Barrier Reef, Cairns',lon:146,  int:9.667,  tz:'Australia/Brisbane' },
+            { n:'Guam',                      lon:145,  int:7.667,  tz:'Pacific/Guam' },
+            { n:'Hamburgo',                  lon:10,   int:4.833,  tz:'Europe/Berlin' },
+            { n:'Hong Kong',                 lon:114,  int:9.167,  tz:'Asia/Hong_Kong' },
+            { n:'Honolulu',                  lon:-158, int:3.667,  tz:'Pacific/Honolulu' },
+            { n:'Yakarta',                   lon:107,  int:0.0,    tz:'Asia/Jakarta' },
+            { n:'Jeddah',                    lon:39,   int:6.5,    tz:'Asia/Riyadh' },
+            { n:'Karachi',                   lon:67,   int:10.167, tz:'Asia/Karachi' },
+            { n:'Kona, Hawaii',              lon:-156, int:4.0,    tz:'Pacific/Honolulu' },
+            { n:'Lima',                      lon:-77,  int:5.333,  tz:'America/Lima' },
+            { n:'Lisboa',                    lon:-9,   int:2.0,    tz:'Europe/Lisbon' },
+            { n:'Londres',                   lon:0,    int:1.167,  tz:'Europe/London' },
+            { n:'Los Angeles',               lon:-118, int:9.333,  tz:'America/Los_Angeles' },
+            { n:'Maldivas',                  lon:74,   int:0.167,  tz:'Indian/Maldives' },
+            { n:'Manila',                    lon:121,  int:10.5,   tz:'Asia/Manila' },
+            { n:'Mauricio',                  lon:57,   int:0.833,  tz:'Indian/Mauritius' },
+            { n:'Melbourne',                 lon:145,  int:2.167,  tz:'Australia/Melbourne' },
+            { n:'Miami',                     lon:-80,  int:7.5,    tz:'America/New_York' },
+            { n:'Noumea',                    lon:166,  int:8.5,    tz:'Pacific/Noumea' },
+            { n:'Pago Pago',                 lon:-171, int:6.667,  tz:'Pacific/Pago_Pago' },
+            { n:'Palau',                     lon:135,  int:7.5,    tz:'Pacific/Palau' },
+            { n:'Ciudad de Panamá',          lon:-80,  int:3.0,    tz:'America/Panama' },
+            { n:'Papeete',                   lon:-150, int:0.167,  tz:'Pacific/Tahiti' },
+            { n:'Río de Janeiro',            lon:-43,  int:3.167,  tz:'America/Sao_Paulo' },
+            { n:'Seattle',                   lon:-122, int:4.333,  tz:'America/Los_Angeles' },
+            { n:'Shanghái',                  lon:121,  int:1.333,  tz:'Asia/Shanghai' },
+            { n:'Singapur',                  lon:104,  int:10.333, tz:'Asia/Singapore' },
+            { n:'Sídney',                    lon:151,  int:8.667,  tz:'Australia/Sydney' },
+            { n:'Tokio',                     lon:140,  int:5.333,  tz:'Asia/Tokyo' },
+            { n:'Vancouver',                 lon:-123, int:5.167,  tz:'America/Vancouver' },
+            { n:'Wellington',                lon:175,  int:4.833,  tz:'Pacific/Auckland' }
+        ];
+
+        let selectedPort = null;   // null = usar GPS / ubicacion actual
+
+        /* Desfase horario real de una zona IANA en una fecha dada (incluye DST) */
+        function tzOffsetHours(tz, date) {
+            try {
+                const dtf = new Intl.DateTimeFormat('en-US', { timeZone: tz, hour12: false,
+                    year:'numeric', month:'2-digit', day:'2-digit',
+                    hour:'2-digit', minute:'2-digit', second:'2-digit' });
+                const q = {};
+                for (const x of dtf.formatToParts(date)) q[x.type] = x.value;
+                const asUTC = Date.UTC(+q.year, +q.month - 1, +q.day, (+q.hour) % 24, +q.minute, +q.second);
+                return Math.round((asUTC - date.getTime()) / 60000) / 60;
+            } catch (e) { return -date.getTimezoneOffset() / 60; }
+        }
+
+        /* Inicio del dia natural del puerto, en milisegundos absolutos */
+        function portDayStartMs(date, tz) {
+            const off = tzOffsetHours(tz, date);
+            const local = new Date(date.getTime() + off * 3600000);
+            return Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate()) - off * 3600000;
+        }
+
+        function buildPortSelector() {
+            const sel = document.getElementById('tidePortSelect');
+            if (!sel) return;
+            let html = '<option value="">📍 Mi ubicación (GPS)</option>';
+            CASIO_PORTS.forEach((p, i) => {
+                const hh = String(Math.floor(p.int)).padStart(2, '0');
+                const mm = String(Math.round((p.int % 1) * 60)).padStart(2, '0');
+                html += `<option value="${i}">${p.n} — INT ${hh}:${mm}</option>`;
+            });
+            sel.innerHTML = html;
+            const saved = localStorage.getItem('orion_port_idx');
+            if (saved !== null && CASIO_PORTS[+saved]) { sel.value = saved; selectedPort = CASIO_PORTS[+saved]; }
+        }
+
+        function selectTidePort(val) {
+            if (val === '' || val === null) {
+                selectedPort = null;
+                localStorage.removeItem('orion_port_idx');
+            } else {
+                selectedPort = CASIO_PORTS[+val];
+                localStorage.setItem('orion_port_idx', val);
+            }
+            updateTidesHybrid(currentLat, currentLon, tideDayOffset);
+        }
+
         const TIDE_M2        = 12.4206012;  // periodo semidiurno lunar (h)
         const TIDE_LUNAR_DAY = 24.8412024;  // día lunar medio (h)
         const TIDE_CELL_DEG  = 0.5;         // resolución de caché de INT (~55 km)
@@ -797,6 +1043,10 @@
         let tideIntSource       = 'region';   // 'online' | 'cache' | 'manual' | 'region'
         let tideIntConfidence   = 'baja';
         let tideSeaPoint        = null;
+        let tideHeights         = { p1:null, b1:null, p2:null, b2:null };
+        let tideHeightsReal     = false;   // true = alturas medidas, false = estimadas
+        let tideMicro           = false;   // zona micromareal (Mediterraneo, Caribe...)
+        const TIDE_MIN_RANGE_INT = 0.15;   // m minimos para fiarse del INT derivado online
         let tideLastNote        = '';
 
         /* ---------- Regímenes regionales conocidos (fallback sin calibrar) ----------
@@ -1051,22 +1301,32 @@
         /* ------------------- Modelo offline tipo Casio (INT + tránsito) ------------ */
         function calculateTidesMathModelCasio(lat, lon, dayOffset = 0) {
             const noon = new Date(); noon.setDate(noon.getDate() + dayOffset); noon.setHours(12, 0, 0, 0);
-            const dayStart = new Date(noon); dayStart.setHours(0, 0, 0, 0);
-            const dayEnd = dayStart.getTime() + 86400000;
 
-            const transit = moonUpperTransit(noon, lon);
-            const hwBase = transit.getTime() + calculatedLunitidalHours * 3600000;
+            /* Si hay un puerto Casio seleccionado se usan SU longitud, SU intervalo
+               y SU huso horario: las horas mostradas son locales de ese puerto,
+               igual que haria el reloj. Si no, se usa la posicion GPS. */
+            const useLon = selectedPort ? selectedPort.lon : lon;
+            const useInt = selectedPort ? selectedPort.int : calculatedLunitidalHours;
+            const tz     = selectedPort ? selectedPort.tz : null;
+            const off    = tz ? tzOffsetHours(tz, noon) : (-noon.getTimezoneOffset() / 60);
+
+            const dayStartMs = tz ? portDayStartMs(noon, tz)
+                                  : (function () { const d = new Date(noon); d.setHours(0,0,0,0); return d.getTime(); })();
+            const dayEnd = dayStartMs + 86400000;
+
+            const transit = moonUpperTransit(noon, useLon);
+            const hwBase = transit.getTime() + useInt * 3600000;
 
             const cycle = (tideRegime === 'diurnal') ? TIDE_LUNAR_DAY : TIDE_M2;
             const highs = [], lows = [];
             for (let k = -3; k <= 3; k++) {
                 const hw = hwBase + k * cycle * 3600000;
                 const lw = hw + (cycle / 2) * 3600000;
-                if (hw >= dayStart.getTime() && hw < dayEnd) highs.push(hw);
-                if (lw >= dayStart.getTime() && lw < dayEnd) lows.push(lw);
+                if (hw >= dayStartMs && hw < dayEnd) highs.push(hw);
+                if (lw >= dayStartMs && lw < dayEnd) lows.push(lw);
             }
             highs.sort((a,b) => a - b); lows.sort((a,b) => a - b);
-            const H = ms => { const d = new Date(ms); return d.getHours() + d.getMinutes()/60 + d.getSeconds()/3600; };
+            const H = ms => (((ms / 3600000 + off) % 24) + 24) % 24;
 
             rawTideEvents = {
                 p1: highs[0] !== undefined ? H(highs[0]) : undefined,
@@ -1085,6 +1345,21 @@
 
             const region = tideRegionFor(lat, lon);
             const cell = loadTideCell(lat, lon);
+
+            /* Puerto Casio seleccionado: calculo puramente matematico con SU
+               intervalo. No se consulta la API: el objetivo es reproducir
+               exactamente lo que hara el reloj con ese punto. */
+            if (selectedPort) {
+                calculatedLunitidalHours = selectedPort.int;
+                tideRegime = 'semidiurnal';
+                tideIntSource = 'port';
+                tideAmplitudeFactor = springNeapFactor(targetDate);
+                calculateTidesMathModelCasio(lat, lon, dayOffset);
+                estimateTideHeights({ amp: 1.0 });
+                renderTideStatus(false);
+                updateTideUI();
+                return;
+            }
 
             // 1) Punto de partida del INT: manual > caché de zona > estimación regional
             if (cell && cell.int !== undefined) {
@@ -1119,18 +1394,46 @@
                             tideSeaPoint = series.sea;
                             tideAmplitudeFactor = springNeapFactor(targetDate);
 
+                            /* v4.9 - El INT derivado online SOLO es fiable si la zona
+                               tiene marea astronomica apreciable. En zonas micromareales
+                               (Mediterraneo: 5-20 cm) la senal del modelo es sobreelevacion
+                               meteorologica, no marea, y el INT que sale es ruido.
+                               Ademas, una calibracion MANUAL nunca se sobrescribe. */
+                            tideMicro = (series.range < TIDE_MIN_RANGE_INT);
+                            const manualLock = !!(cell && cell.manual);
                             const d = deriveLunitidal(ev.allHighs, lon);
-                            if (d && d.coherence > 0.55) {   // sólo si el INT es estable
+
+                            if (!manualLock && !tideMicro && d && d.coherence > 0.70) {
                                 calculatedLunitidalHours = d.int;
                                 tideIntSource = 'online';
                                 tideIntConfidence = d.coherence > 0.85 ? 'alta' : 'media';
-                                if (!(cell && cell.manual)) {
-                                    saveTideCell(lat, lon, {
-                                        int: d.int, regime: ev.regime, sea: series.sea,
-                                        coherence: +d.coherence.toFixed(2), range: +series.range.toFixed(2)
-                                    });
-                                }
+                                saveTideCell(lat, lon, {
+                                    int: d.int, regime: ev.regime, sea: series.sea,
+                                    coherence: +d.coherence.toFixed(2), range: +series.range.toFixed(2)
+                                });
                             }
+
+                            if (manualLock || tideMicro) {
+                                /* Se ignoran los picos del modelo y se usa el INT de
+                                   confianza (manual o memorizado) con el modelo Casio.
+                                   El regimen tambien se restaura: el detectado a partir
+                                   de ruido meteorologico no es fiable. */
+                                tideRegime = (cell && cell.regime) ? cell.regime : region.reg;
+                                calculateTidesMathModelCasio(lat, lon, dayOffset);
+                                estimateTideHeights(region);
+                                tideIntSource = manualLock ? 'manual' : tideIntSource;
+                                renderTideStatus(false);
+                                updateTideUI();
+                                return;
+                            }
+
+                            tideHeights = {
+                                p1: ev.highs[0] ? ev.highs[0].height : null,
+                                p2: ev.highs[1] ? ev.highs[1].height : null,
+                                b1: ev.lows[0]  ? ev.lows[0].height  : null,
+                                b2: ev.lows[1]  ? ev.lows[1].height  : null
+                            };
+                            tideHeightsReal = true;
                             tideLastNote = `mar ${series.sea[0].toFixed(2)}, ${series.sea[1].toFixed(2)}`;
                             ok = true;
                         }
@@ -1139,10 +1442,468 @@
             }
 
             // 3) Fallback: modelo Casio con el INT vigente
-            if (!ok) calculateTidesMathModelCasio(lat, lon, dayOffset);
+            if (!ok) { calculateTidesMathModelCasio(lat, lon, dayOffset); estimateTideHeights(region); }
 
             renderTideStatus(ok);
             updateTideUI();
+        }
+
+        /* Alturas estimadas cuando no hay datos medidos: amplitud regional
+           modulada por sicigias/cuadraturas. Se marcan con ~ en el grafico. */
+        function estimateTideHeights(region) {
+            const a = (region && region.amp ? region.amp : 1.0) * (tideAmplitudeFactor || 1.0) / 2.0;
+            tideHeights = { p1: a, p2: a * 0.92, b1: -a, b2: -a * 0.92 };
+            tideHeightsReal = false;
+        }
+
+        /* ================= ORION v5.6 · CRONÓMETRO Y TEMPORIZADOR =================
+           Ambos funcionan por marca de tiempo absoluta (Date.now), nunca contando
+           ticks: iOS estrangula setInterval en segundo plano y un contador por
+           incrementos se quedaria corto. El intervalo solo PINTA; el tiempo real
+           se calcula siempre por diferencia, asi que aunque la pantalla se apague
+           veinte minutos, al volver la cifra es exacta. */
+
+        let chronoRunning = false;
+        let chronoAccumMs = 0;      // tiempo acumulado en paradas previas
+        let chronoStartMs = null;   // instante del ultimo arranque
+        let chronoLaps = [];        // [{n, lapMs, totalMs}]
+        let chronoLastLapMs = 0;
+        let chronoPaint = null;
+
+        let timerRunning = false;
+        let timerSetSec = 300;      // ajuste elegido (5 min por defecto)
+        let timerEndMs = null;      // instante de fin
+        let timerRemainMs = 300000; // restante cuando esta pausado
+        let timerRepeat = false;
+        let timerPaint = null;
+        let timerRinging = false;
+
+        function fmtChrono(ms) {
+            const cs = Math.floor(ms / 10) % 100;
+            const t = Math.floor(ms / 1000);
+            const h = String(Math.floor(t / 3600)).padStart(2, '0');
+            const m = String(Math.floor((t % 3600) / 60)).padStart(2, '0');
+            const s = String(t % 60).padStart(2, '0');
+            return { hms: `${h}:${m}:${s}`, cs: String(cs).padStart(2, '0') };
+        }
+
+        function fmtHMS(sec) {
+            sec = Math.max(0, Math.ceil(sec));
+            const h = String(Math.floor(sec / 3600)).padStart(2, '0');
+            const m = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+            const s = String(sec % 60).padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        function switchChronoTab(which) {
+            const cp = document.getElementById('chronoPane');
+            const tp = document.getElementById('timerPane');
+            const tc = document.getElementById('tabChrono');
+            const tt = document.getElementById('tabTimer');
+            if (which === 'chrono') {
+                cp.style.display = ''; tp.style.display = 'none';
+                tc.className = 'tactical-btn primary'; tt.className = 'tactical-btn';
+            } else {
+                cp.style.display = 'none'; tp.style.display = '';
+                tc.className = 'tactical-btn'; tt.className = 'tactical-btn primary';
+            }
+            updateChronoBadge();
+        }
+
+        function updateChronoBadge() {
+            const b = document.getElementById('chronoModeBadge');
+            if (!b) return;
+            if (timerRinging)      { b.innerText = '⏰ ¡TIEMPO!'; b.style.color = '#f43f5e'; b.style.borderColor = 'rgba(244,63,94,0.5)'; }
+            else if (timerRunning) { b.innerText = 'TEMPORIZADOR'; b.style.color = 'var(--accent-amber)'; b.style.borderColor = 'rgba(251,191,36,0.45)'; }
+            else if (chronoRunning){ b.innerText = 'CRONÓMETRO'; b.style.color = 'var(--accent-green)'; b.style.borderColor = 'rgba(52,211,153,0.45)'; }
+            else                   { b.innerText = 'STANDBY'; b.style.color = 'var(--text-muted)'; b.style.borderColor = 'var(--glass-border)'; }
+        }
+
+        /* ---------------------------- CRONÓMETRO ---------------------------- */
+        function chronoElapsed() {
+            return chronoAccumMs + (chronoStartMs ? (Date.now() - chronoStartMs) : 0);
+        }
+
+        function chronoPaintNow() {
+            const total = chronoElapsed();
+            const f = fmtChrono(total);
+            const el = document.getElementById('chronoMain');
+            if (el) el.innerHTML = `${f.hms}<span style="font-size:1.3rem; color:var(--accent-cyan);">.${f.cs}</span>`;
+            const sp = fmtChrono(total - chronoLastLapMs);
+            const es = document.getElementById('chronoSplit');
+            if (es) es.innerHTML = `${sp.hms}<span style="font-size:0.85rem;">.${sp.cs}</span>`;
+        }
+
+        function chronoStartStop() {
+            const btn = document.getElementById('btnChronoStart');
+            if (!chronoRunning) {
+                chronoRunning = true;
+                chronoStartMs = Date.now();
+                if (!chronoPaint) chronoPaint = setInterval(chronoPaintNow, 41);   // ~24 fps
+                btn.innerText = '⏸ Parar'; btn.className = 'tactical-btn danger';
+                if (navigator.vibrate) navigator.vibrate(20);
+            } else {
+                chronoRunning = false;
+                chronoAccumMs = chronoElapsed();
+                chronoStartMs = null;
+                clearInterval(chronoPaint); chronoPaint = null;
+                chronoPaintNow();
+                btn.innerText = '▶ Continuar'; btn.className = 'tactical-btn primary';
+                if (navigator.vibrate) navigator.vibrate(20);
+            }
+            updateChronoBadge();
+        }
+
+        function chronoLap() {
+            if (!chronoRunning && chronoElapsed() === 0) return;
+            const total = chronoElapsed();
+            const lapMs = total - chronoLastLapMs;
+            chronoLastLapMs = total;
+            chronoLaps.unshift({ n: chronoLaps.length + 1, lapMs: lapMs, totalMs: total });
+            renderChronoLaps();
+            if (navigator.vibrate) navigator.vibrate([30, 40, 30]);
+        }
+
+        function renderChronoLaps() {
+            const list = document.getElementById('chronoLapList');
+            const cnt = document.getElementById('chronoLapCount');
+            if (!list) return;
+            if (cnt) cnt.innerText = chronoLaps.length;
+            if (!chronoLaps.length) {
+                list.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:12px 0; font-size:0.72rem;">Sin vueltas</div>';
+                return;
+            }
+            // Mejor y peor vuelta, como los Casio con memoria
+            let best = Infinity, worst = -Infinity;
+            chronoLaps.forEach(l => { if (l.lapMs < best) best = l.lapMs; if (l.lapMs > worst) worst = l.lapMs; });
+            list.innerHTML = chronoLaps.map(l => {
+                const fl = fmtChrono(l.lapMs), ft = fmtChrono(l.totalMs);
+                let col = 'var(--text-main)', tag = '';
+                if (chronoLaps.length > 1 && l.lapMs === best)  { col = '#34d399'; tag = ' ▲'; }
+                if (chronoLaps.length > 1 && l.lapMs === worst) { col = '#f43f5e'; tag = ' ▼'; }
+                return `<div style="display:flex; justify-content:space-between; align-items:baseline; padding:4px 0; border-bottom:1px solid rgba(148,163,184,0.10);">
+                    <span style="color:var(--text-muted); font-size:0.68rem; font-weight:800; min-width:34px;">L${String(l.n).padStart(2,'0')}</span>
+                    <span style="color:${col}; font-weight:800;">${fl.hms}.${fl.cs}${tag}</span>
+                    <span style="color:var(--text-muted); font-size:0.68rem;">${ft.hms}.${ft.cs}</span>
+                </div>`;
+            }).join('');
+        }
+
+        function chronoReset() {
+            if (chronoRunning) return;   // como en un Casio: primero se para
+            chronoAccumMs = 0; chronoStartMs = null; chronoLastLapMs = 0; chronoLaps = [];
+            chronoPaintNow(); renderChronoLaps();
+            const btn = document.getElementById('btnChronoStart');
+            if (btn) { btn.innerText = '▶ Iniciar'; btn.className = 'tactical-btn primary'; }
+            updateChronoBadge();
+        }
+
+        /* --------------------------- TEMPORIZADOR --------------------------- */
+        function timerAdjust(unit, delta) {
+            if (timerRunning) return;
+            let h = Math.floor(timerSetSec / 3600);
+            let m = Math.floor((timerSetSec % 3600) / 60);
+            let s = timerSetSec % 60;
+            if (unit === 'h') h = Math.min(23, Math.max(0, h + delta));
+            if (unit === 'm') m = Math.min(59, Math.max(0, m + delta));
+            if (unit === 's') s = Math.min(55, Math.max(0, s + delta));
+            timerSetSec = h * 3600 + m * 60 + s;
+            if (timerSetSec < 1) timerSetSec = 1;
+            timerRemainMs = timerSetSec * 1000;
+            try { localStorage.setItem('orion_timer_set', String(timerSetSec)); } catch (e) {}
+            paintTimerSet();
+        }
+
+        function timerPreset(sec) {
+            if (timerRunning) return;
+            timerSetSec = sec;
+            timerRemainMs = sec * 1000;
+            try { localStorage.setItem('orion_timer_set', String(timerSetSec)); } catch (e) {}
+            paintTimerSet();
+            if (navigator.vibrate) navigator.vibrate(20);
+        }
+
+        function paintTimerSet() {
+            const h = Math.floor(timerSetSec / 3600);
+            const m = Math.floor((timerSetSec % 3600) / 60);
+            const s = timerSetSec % 60;
+            const eh = document.getElementById('timerSetH'), em = document.getElementById('timerSetM'), es = document.getElementById('timerSetS');
+            if (eh) eh.innerText = String(h).padStart(2, '0');
+            if (em) em.innerText = String(m).padStart(2, '0');
+            if (es) es.innerText = String(s).padStart(2, '0');
+            paintTimerMain();
+        }
+
+        function timerRemaining() {
+            if (timerRunning && timerEndMs) return Math.max(0, timerEndMs - Date.now());
+            return timerRemainMs;
+        }
+
+        function paintTimerMain() {
+            const rem = timerRemaining();
+            const el = document.getElementById('timerMain');
+            if (el) el.innerText = fmtHMS(rem / 1000);
+            const bar = document.getElementById('timerBar');
+            if (bar) {
+                const pct = timerSetSec > 0 ? (rem / (timerSetSec * 1000)) * 100 : 0;
+                bar.style.width = Math.max(0, Math.min(100, pct)) + '%';
+                bar.style.background = pct < 10 ? '#f43f5e' : (pct < 25 ? 'linear-gradient(90deg,#fb923c,#f43f5e)' : 'linear-gradient(90deg,#34d399,#38bdf8)');
+            }
+        }
+
+        function timerTick() {
+            paintTimerMain();
+            if (timerRunning && timerRemaining() <= 0) timerFire();
+        }
+
+        function timerFire() {
+            timerRunning = false;
+            timerEndMs = null;
+            timerRemainMs = 0;
+            clearInterval(timerPaint); timerPaint = null;
+            paintTimerMain();
+            timerRinging = true;
+
+            const lbl = document.getElementById('timerStateLabel');
+            if (lbl) { lbl.innerText = '⏰ TIEMPO CUMPLIDO'; lbl.style.color = '#f43f5e'; }
+            const main = document.getElementById('timerMain');
+            if (main) main.style.color = '#f43f5e';
+            const btn = document.getElementById('btnTimerStart');
+            if (btn) { btn.innerText = '⏹ Silenciar'; btn.className = 'tactical-btn danger'; }
+            updateChronoBadge();
+
+            if (navigator.vibrate) navigator.vibrate([400, 200, 400, 200, 400, 200, 600]);
+            beepTimer();
+
+            if (timerRepeat) {
+                setTimeout(() => { if (timerRinging) { timerSilence(); timerStartStop(); } }, 3000);
+            }
+        }
+
+        /* Pitido sintetizado: no depende de ningun archivo de audio */
+        function beepTimer() {
+            try {
+                const Ctx = window.AudioContext || window.webkitAudioContext;
+                if (!Ctx) return;
+                const ctx = new Ctx();
+                for (let i = 0; i < 6; i++) {
+                    const o = ctx.createOscillator(), g = ctx.createGain();
+                    o.type = 'square'; o.frequency.value = 2093;    // Do7, tono Casio
+                    g.gain.value = 0.0001;
+                    o.connect(g); g.connect(ctx.destination);
+                    const t0 = ctx.currentTime + i * 0.28;
+                    g.gain.setValueAtTime(0.0001, t0);
+                    g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.01);
+                    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.16);
+                    o.start(t0); o.stop(t0 + 0.18);
+                }
+                setTimeout(() => { try { ctx.close(); } catch (e) {} }, 2500);
+            } catch (e) {}
+        }
+
+        function timerSilence() {
+            timerRinging = false;
+            const lbl = document.getElementById('timerStateLabel');
+            if (lbl) { lbl.innerText = 'CUENTA ATRÁS'; lbl.style.color = 'var(--text-muted)'; }
+            const main = document.getElementById('timerMain');
+            if (main) main.style.color = 'var(--text-main)';
+            timerRemainMs = timerSetSec * 1000;
+            paintTimerMain();
+            const btn = document.getElementById('btnTimerStart');
+            if (btn) { btn.innerText = '▶ Iniciar'; btn.className = 'tactical-btn primary'; }
+            updateChronoBadge();
+        }
+
+        function timerStartStop() {
+            const btn = document.getElementById('btnTimerStart');
+            if (timerRinging) { timerSilence(); return; }
+            if (!timerRunning) {
+                if (timerRemainMs <= 0) timerRemainMs = timerSetSec * 1000;
+                timerRunning = true;
+                timerEndMs = Date.now() + timerRemainMs;
+                if (!timerPaint) timerPaint = setInterval(timerTick, 200);
+                btn.innerText = '⏸ Pausar'; btn.className = 'tactical-btn danger';
+                const row = document.getElementById('timerSetRow');
+                if (row) row.style.opacity = '0.35';
+                if (navigator.vibrate) navigator.vibrate(20);
+            } else {
+                timerRemainMs = timerRemaining();
+                timerRunning = false; timerEndMs = null;
+                clearInterval(timerPaint); timerPaint = null;
+                paintTimerMain();
+                btn.innerText = '▶ Continuar'; btn.className = 'tactical-btn primary';
+                const row = document.getElementById('timerSetRow');
+                if (row) row.style.opacity = '1';
+            }
+            updateChronoBadge();
+        }
+
+        function timerReset() {
+            timerRunning = false; timerEndMs = null; timerRinging = false;
+            clearInterval(timerPaint); timerPaint = null;
+            timerRemainMs = timerSetSec * 1000;
+            const lbl = document.getElementById('timerStateLabel');
+            if (lbl) { lbl.innerText = 'CUENTA ATRÁS'; lbl.style.color = 'var(--text-muted)'; }
+            const main = document.getElementById('timerMain');
+            if (main) main.style.color = 'var(--text-main)';
+            const row = document.getElementById('timerSetRow');
+            if (row) row.style.opacity = '1';
+            const btn = document.getElementById('btnTimerStart');
+            if (btn) { btn.innerText = '▶ Iniciar'; btn.className = 'tactical-btn primary'; }
+            paintTimerMain();
+            updateChronoBadge();
+        }
+
+        function timerToggleRepeat() {
+            timerRepeat = !timerRepeat;
+            const b = document.getElementById('timerRepeatBadge');
+            if (b) {
+                b.innerText = timerRepeat ? 'ON' : 'OFF';
+                b.style.color = timerRepeat ? 'var(--accent-green)' : 'var(--text-muted)';
+                b.style.borderColor = timerRepeat ? 'rgba(52,211,153,0.45)' : 'var(--glass-border)';
+            }
+            try { localStorage.setItem('orion_timer_repeat', timerRepeat ? '1' : '0'); } catch (e) {}
+        }
+
+        /* Al volver del segundo plano se repinta de inmediato:
+           el tiempo se ha seguido calculando por marca absoluta. */
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState !== 'visible') return;
+            if (chronoRunning) chronoPaintNow();
+            if (timerRunning) { paintTimerMain(); if (timerRemaining() <= 0) timerFire(); }
+        });
+
+        function initChronoTimer() {
+            try {
+                const r = localStorage.getItem('orion_timer_repeat');
+                if (r === '1') { timerRepeat = false; timerToggleRepeat(); }
+                const sv = localStorage.getItem('orion_timer_set');
+                if (sv) { timerSetSec = Math.max(1, parseInt(sv, 10) || 300); timerRemainMs = timerSetSec * 1000; }
+            } catch (e) {}
+            paintTimerSet();
+            chronoPaintNow();
+            renderChronoLaps();
+        }
+
+        /* ================= ORION v5.2 · EXPORTACION AL RELOJ =================
+           El GBX-H5600 (modulo 3586) admite hasta 3 puntos personalizados
+           [USER] y pide cuatro datos: HIGH TIDE, LAT./LON., TIME DIFF y DST.
+           Al pedir tambien longitud y huso, el reloj calcula el transito lunar
+           por su cuenta: el valor HIGH TIDE cumple la funcion del intervalo
+           lunitidal, igual que en la tabla del G-7900.
+           NOTA: con un punto [USER] el reloj muestra solo el ciclo de marea
+           (L/M/S), no las alturas; esas solo salen con [APP] o [PRESET]. */
+
+        /* Relojes Casio de Daniel. Solo los G-LIDE llevan grafico de mareas;
+           el Rangeman y el Pro Trek son triple sensor (brujula, altimetro,
+           barometro, termometro) con orto y ocaso, sin mareas. */
+        const WATCH_MODELS = {
+            'GBX-H5600-2': { tide: true,  sensors: false, mod: 'módulo 3586' },
+            'G-7900-1ER':  { tide: true,  sensors: false, mod: 'G-LIDE' },
+            'GW-9400-1ER': { tide: false, sensors: true,  mod: 'Rangeman' },
+            'PRG-340-3':   { tide: false, sensors: true,  mod: 'Pro Trek' },
+            'DW-6900RL-1': { tide: false, sensors: false, mod: 'sin sensores' },
+            /* Suunto. El Core 2 es ABC sin GPS: necesita referencias manuales.
+               Nautic S y Vertical 2 llevan GPS y datos propios: autonomos. */
+            'CORE-2':      { tide: false, sensors: true,  mod: 'ABC sin GPS' },
+            'NAUTIC-S':    { tide: false, sensors: false, autonomous: true, mod: 'ordenador de buceo' },
+            'VERTICAL-2':  { tide: false, sensors: false, autonomous: true, mod: 'GPS multideporte' }
+        };
+
+        /* Huso estandar y estado de horario de verano de una zona */
+        function dstStatus(tz, date) {
+            const jan = tzOffsetHours(tz, new Date(date.getFullYear(), 0, 15));
+            const jul = tzOffsetHours(tz, new Date(date.getFullYear(), 6, 15));
+            const std = Math.min(jan, jul);
+            const now = tzOffsetHours(tz, date);
+            return { std: std, now: now, dst: (now > std) };
+        }
+
+        function renderWatchExport() {
+            const body = document.getElementById('watchExportBody');
+            const note = document.getElementById('watchExportNote');
+            const sel  = document.getElementById('watchModelSelect');
+            if (!body || !sel) return;
+
+            const model = sel.value;
+            try { localStorage.setItem('orion_watch_model', model); } catch (e) {}
+            const spec = WATCH_MODELS[model] || {};
+            const lat = selectedPort ? null : currentLat;
+            const lon = selectedPort ? selectedPort.lon : currentLon;
+            const tz  = selectedPort ? selectedPort.tz : (Intl.DateTimeFormat().resolvedOptions().timeZone || null);
+            const now = new Date();
+
+            let std, isDst;
+            if (tz) { const d = dstStatus(tz, now); std = d.std; isDst = d.dst; }
+            else { std = -now.getTimezoneOffset() / 60; isDst = false; }
+
+            const h = Math.floor(calculatedLunitidalHours);
+            const mm = Math.round((calculatedLunitidalHours - h) * 60);
+            const intStr = `${String(mm === 60 ? h + 1 : h).padStart(2,'0')}:${String(mm === 60 ? 0 : mm).padStart(2,'0')}`;
+
+            const fmtDeg = (v, pos, neg) => `${v >= 0 ? pos : neg} ${Math.abs(v).toFixed(1)}`;
+            const off = v => `${v >= 0 ? '+' : '-'}${String(Math.floor(Math.abs(v))).padStart(2,'0')}:${String(Math.round((Math.abs(v) % 1) * 60)).padStart(2,'0')}`;
+            const row = (k, v) => `<div style="display:flex; justify-content:space-between; gap:10px; align-items:baseline;"><span style="color:var(--text-muted);">${k}</span><span style="font-weight:800; letter-spacing:0.5px; text-align:right;">${v}</span></div>`;
+
+            const place = selectedPort ? selectedPort.n : 'Ubicación GPS';
+            const latLon = (lat !== null ? fmtDeg(lat, 'N', 'S') : '—') + '  /  ' + fmtDeg(lon, 'E', 'W');
+
+            if (model === 'GBX-H5600-2') {
+                body.innerHTML = row('Punto', place)
+                    + row('HIGH TIDE', intStr)
+                    + row('LAT./LON.', latLon)
+                    + row('TIME DIFF', off(std))
+                    + row('DST', isDst ? 'ON' : 'OFF');
+                note.innerText = 'TIDE GRAPH → mantén (C) 2 s → USER → CUSTOM. TIME DIFF es el huso '
+                    + 'estándar; el verano va aparte en DST. Con punto USER el reloj muestra el ciclo '
+                    + '(L/M/S), no las alturas. En ALMANAC puedes poner [SAME AS TIDE SETTINGS].';
+            } else if (model === 'G-7900-1ER') {
+                body.innerHTML = row('Punto', place)
+                    + row('Intervalo lunitidal', intStr)
+                    + row('Huso de referencia', off(std) + (isDst ? '  (+1 DST)' : ''));
+                note.innerText = 'Introduce el intervalo en el ajuste de mareas. El G-7900 toma la '
+                    + 'longitud y el huso de su ciudad local, así que compruébala antes.';
+            } else if (spec.autonomous) {
+                const isNautic = (model === 'NAUTIC-S');
+                body.innerHTML = row('Ubicación', place)
+                    + row('LAT./LON. (referencia)', latLon)
+                    + (isNautic ? row('ORION dice · 1ª Pleamar', rawTideEvents.p1 !== undefined
+                        ? `${String(Math.floor(rawTideEvents.p1)).padStart(2,'0')}:${String(Math.floor((rawTideEvents.p1 % 1) * 60)).padStart(2,'0')}`
+                        : '--:--') : '')
+                    + (isNautic ? row('ORION dice · 1ª Bajamar', rawTideEvents.b1 !== undefined
+                        ? `${String(Math.floor(rawTideEvents.b1)).padStart(2,'0')}:${String(Math.floor((rawTideEvents.b1 % 1) * 60)).padStart(2,'0')}`
+                        : '--:--') : '');
+                note.innerText = isNautic
+                    ? 'El Nautic S es autónomo: GPS, mapas offline y mareas propias desde los '
+                      + 'servidores de Suunto. No hay nada que introducirle. Úsalo como segunda '
+                      + 'opinión: compara su widget de mareas con estas horas para validar el INT de la zona.'
+                    : 'El Vertical 2 es autónomo: GPS de doble banda, mapas offline y altímetro '
+                      + 'con corrección por satélite. No necesita nada de ORION.';
+            } else if (spec.sensors) {
+                const decEl = document.getElementById('decVal');
+                const dec = decEl ? decEl.innerText.replace(/\s+/g, ' ').trim() : '—';
+                body.innerHTML = row('Ubicación', place)
+                    + row('LAT./LON. (orto y ocaso)', latLon)
+                    + row('Calibrar altímetro a', `${currentAltitude} m`)
+                    + row('Referencia QNH', `${seaLevelPressure} hPa`)
+                    + row('Declinación magnética', dec);
+                note.innerText = (model === 'GW-9400-1ER'
+                        ? 'Rangeman: sin gráfico de mareas. '
+                        : model === 'PRG-340-3'
+                        ? 'Pro Trek PRG-340: sin gráfico de mareas. '
+                        : 'Suunto Core 2: ABC sin GPS, el altímetro deriva ~10 m al día. ')
+                    + 'Calibra el altímetro con la altitud GPS antes de salir y ajusta la declinación '
+                    + 'en la brújula para que el rumbo sea geográfico y no magnético.'
+                    + (model === 'CORE-2'
+                        ? ' En ALTI/BARO → REFERENCE puedes meter la altitud o el QNH; con uno basta.'
+                        : '');
+            } else {
+                body.innerHTML = row('Ubicación', place)
+                    + row('Hora local', now.toTimeString().slice(0, 5))
+                    + row('Huso', off(std) + (isDst ? '  (+1 DST)' : ''));
+                note.innerText = 'El DW-6900RL no tiene sensores ni mareas: solo hora, alarmas y '
+                    + 'cronómetro. Aquí únicamente tienes la referencia horaria.';
+            }
         }
 
         /* ------------------------------ Estado / UI -------------------------------- */
@@ -1162,6 +1923,18 @@
             const regTxt = tideRegime === 'diurnal' ? 'DIURNA'
                          : tideRegime === 'mixed'   ? 'MIXTA' : 'SEMIDIURNA';
 
+            if (tideIntSource === 'port' && selectedPort) {
+                if (dot) dot.style.background = 'var(--accent-amber)';
+                if (mode) mode.innerText = `PUERTO CASIO`;
+                if (title) title.style.borderColor = 'rgba(251, 191, 36, 0.45)';
+                if (sub) {
+                    const o = tzOffsetHours(selectedPort.tz, new Date());
+                    sub.innerText = `${selectedPort.n} · hora local UTC${o >= 0 ? '+' : ''}${o}`;
+                    sub.style.color = 'var(--accent-amber)';
+                }
+                return;
+            }
+
             if (online) {
                 if (dot) dot.style.background = 'var(--accent-green)';
                 if (mode) mode.innerText = `ONLINE · ${regTxt}`;
@@ -1169,11 +1942,12 @@
                 if (sub) { sub.innerText = `INT ${intStr} CALIBRADO ONLINE`; sub.style.color = 'var(--accent-green)'; }
             } else if (tideIntSource === 'manual' || tideIntSource === 'cache') {
                 if (dot) dot.style.background = 'var(--accent-cyan)';
-                if (mode) mode.innerText = `OFFLINE · ${regTxt}`;
+                if (mode) mode.innerText = tideIntSource === 'manual'
+                    ? `MANUAL · ${regTxt}` : `MEMORIZADO · ${regTxt}`;
                 if (title) title.style.borderColor = 'rgba(56, 189, 248, 0.4)';
                 if (sub) {
                     sub.innerText = tideIntSource === 'manual'
-                        ? `INT ${intStr} CALIBRADO A MANO`
+                        ? `INT ${intStr} CALIBRADO A MANO${tideMicro ? ' · ZONA MICROMAREAL' : ''}`
                         : `INT ${intStr} MEMORIZADO (${tideLastNote})`;
                     sub.style.color = 'var(--accent-cyan)';
                 }
@@ -1191,11 +1965,20 @@
         function calibrateLunitidalManual() {
             const cur = document.getElementById('lunitidalVal').innerText;
             const msg = 'Calibrar Intervalo Lunitidal (INT) para esta zona.\n\n'
-                      + 'Es el retardo entre el paso de la Luna por tu meridiano y la pleamar.\n'
-                      + 'Se guarda sólo para esta zona (~55 km) y es el valor que debes\n'
-                      + 'introducir en el reloj Casio.\n\nFormato HH:MM o decimal:';
+                      + 'Es el retardo entre el paso de la Luna por tu meridiano y la\n'
+                      + 'pleamar. Se guarda solo para esta zona (~55 km) y es el valor\n'
+                      + 'que debes introducir en el reloj Casio.\n\n'
+                      + 'Formato HH:MM o decimal.\n'
+                      + 'Escribe AUTO para soltar la calibracion y dejar que el modo\n'
+                      + 'online la calcule solo (no recomendable en el Mediterraneo).';
             const input = prompt(msg, cur);
             if (!input) return;
+
+            if (input.trim().toUpperCase() === 'AUTO') {
+                resetLunitidalZone();
+                return;
+            }
+
             let hours;
             if (input.indexOf(':') >= 0) {
                 const p = input.split(':');
@@ -1225,6 +2008,16 @@
                 localStorage.setItem('orion_tide_cells', JSON.stringify(db));
             } catch (e) {}
             localStorage.removeItem('orion_cached_int');   // limpia caché global de v4.6
+            tideIntSource = 'region';
+            const reg = tideRegionFor(currentLat, currentLon);
+            if (reg.amp < 0.25) {
+                alert('Calibración liberada.\n\nAviso: ' + reg.n + ' es una zona micromareal '
+                    + '(carrera de marea muy pequeña). El modo online no puede deducir un INT '
+                    + 'fiable aquí porque la señal del modelo es meteorológica, no astronómica. '
+                    + 'Si las mareas dejan de cuadrar, vuelve a calibrar a mano.');
+            } else {
+                alert('Calibración liberada. El modo online recalculará el INT de esta zona.');
+            }
             updateTidesHybrid(currentLat, currentLon, tideDayOffset);
         }
 
@@ -1236,6 +2029,7 @@
             document.getElementById('tideB2').innerText = formatH(rawTideEvents.b2); 
             document.getElementById('tideP2').innerText = formatH(rawTideEvents.p2);
             updateTideSlider(document.getElementById('tideTimeSlider').value);
+            renderWatchExport();
         }
 
         function generateOfflineCurveData() {
@@ -1252,50 +2046,170 @@
             return events;
         }
 
-        function getOfflineTideY(hour, events, h) {
-            if (!events || events.length < 2) return h/2;
-            let e1, e2; 
-            for (let i=0; i<events.length-1; i++) { 
-                if (hour >= events[i].t && hour <= events[i+1].t) { 
-                    e1 = events[i]; e2 = events[i+1]; break; 
-                } 
+        /* Interpolacion cosenoidal entre eventos, en coordenadas de dibujo */
+        function getOfflineTideY(hour, events, midY, ampPx) {
+            if (!events || events.length < 2) return midY;
+            let e1, e2;
+            for (let i = 0; i < events.length - 1; i++) {
+                if (hour >= events[i].t && hour <= events[i+1].t) { e1 = events[i]; e2 = events[i+1]; break; }
             }
-            if (!e1 || !e2) return h/2; 
-            let pct = (hour - e1.t) / (e2.t - e1.t); 
-            let cosPct = (1 - Math.cos(pct * Math.PI)) / 2;
-            const amp = h * 0.28 * Math.max(0.35, Math.min(1.0, tideAmplitudeFactor || 1.0));
-            let y1 = e1.isHigh ? (h / 2) - amp : (h / 2) + amp; 
-            let y2 = e2.isHigh ? (h / 2) - amp : (h / 2) + amp; 
+            if (!e1 || !e2) return midY;
+            const pct = (hour - e1.t) / (e2.t - e1.t);
+            const cosPct = (1 - Math.cos(pct * Math.PI)) / 2;
+            const y1 = e1.isHigh ? midY - ampPx : midY + ampPx;
+            const y2 = e2.isHigh ? midY - ampPx : midY + ampPx;
             return y1 + (y2 - y1) * cosPct;
         }
 
+        /* Lee orto y ocaso ya calculados para sombrear dia y noche */
+        function _sunHoursFromUI() {
+            const parse = id => {
+                const el = document.getElementById(id);
+                if (!el) return null;
+                const m = /^(\d{1,2}):(\d{2})/.exec(el.innerText.trim());
+                return m ? (+m[1] + (+m[2]) / 60) : null;
+            };
+            const r = parse('sunriseVal'), s2 = parse('sunsetVal');
+            return (r !== null && s2 !== null && s2 > r) ? { rise: r, set: s2 } : null;
+        }
+
+        /* ================= ORION v4.9 · GRAFICO DE MAREA =================
+           Estilo tabla de mareas: franja dia/noche, marcadores de pleamar y
+           bajamar con hora y altura, y posicion en vivo con sentido de la
+           corriente (subiendo / bajando). */
         function drawTideCanvas() {
-            const cvs = document.getElementById('tideCanvas'); if(!cvs) return; const ctx = cvs.getContext('2d'); const rect = cvs.getBoundingClientRect(); const w = rect.width || 320; const h = rect.height || 105;
-            cvs.width = w * window.devicePixelRatio; cvs.height = h * window.devicePixelRatio; ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-            ctx.clearRect(0, 0, w, h); ctx.strokeStyle = 'rgba(251, 146, 60, 0.25)'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]); [0.25, 0.5, 0.75].forEach(pct => { ctx.beginPath(); ctx.moveTo(w*pct, 0); ctx.lineTo(w*pct, h); ctx.stroke(); }); ctx.setLineDash([]);
-            
-            const offlineEvents = generateOfflineCurveData();
+            const cvs = document.getElementById('tideCanvas'); if (!cvs) return;
+            const ctx = cvs.getContext('2d');
+            const rect = cvs.getBoundingClientRect();
+            const w = rect.width || 320, h = rect.height || 150;
+            const dpr = window.devicePixelRatio || 1;
+            cvs.width = w * dpr; cvs.height = h * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, w, h);
+
+            const padTop = 26, padBot = 30;
+            const midY = padTop + (h - padTop - padBot) / 2;
+            const ampPx = (h - padTop - padBot) * 0.30;
+            const X = hr => (hr / 24) * w;
+
+            // --- Franja diurna ---
+            const sun = _sunHoursFromUI();
+            if (sun) {
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.07)';
+                ctx.fillRect(X(sun.rise), padTop - 8, X(sun.set) - X(sun.rise), h - padTop - padBot + 16);
+                ctx.strokeStyle = 'rgba(250, 204, 21, 0.35)';
+                ctx.lineWidth = 1; ctx.setLineDash([2, 3]);
+                [sun.rise, sun.set].forEach(t => {
+                    ctx.beginPath(); ctx.moveTo(X(t), padTop - 8); ctx.lineTo(X(t), h - padBot + 8); ctx.stroke();
+                });
+                ctx.setLineDash([]);
+                ctx.font = '600 8px -apple-system, sans-serif';
+                ctx.fillStyle = 'rgba(250, 204, 21, 0.85)';
+                ctx.textAlign = 'center';
+                ctx.fillText('\u2600 ' + String(Math.floor(sun.rise)).padStart(2,'0') + ':' + String(Math.round((sun.rise%1)*60)).padStart(2,'0'), X(sun.rise), 9);
+                ctx.fillText('\u263e ' + String(Math.floor(sun.set)).padStart(2,'0') + ':' + String(Math.round((sun.set%1)*60)).padStart(2,'0'), X(sun.set), 9);
+            }
+
+            // --- Rejilla y eje horario ---
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.15)'; ctx.lineWidth = 1;
+            ctx.font = '600 8px -apple-system, sans-serif';
+            ctx.fillStyle = 'rgba(148, 163, 184, 0.75)'; ctx.textAlign = 'center';
+            for (let t = 0; t <= 24; t += 6) {
+                ctx.setLineDash([3, 4]); ctx.beginPath();
+                ctx.moveTo(X(t), padTop - 8); ctx.lineTo(X(t), h - padBot + 6); ctx.stroke(); ctx.setLineDash([]);
+                const lx = Math.min(w - 10, Math.max(10, X(t)));
+                ctx.fillText(`${String(t % 24).padStart(2,'0')}h`, lx, h - 3);
+            }
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+            ctx.beginPath(); ctx.moveTo(0, midY); ctx.lineTo(w, midY); ctx.stroke();
+
+            // --- Curva ---
+            const evs = generateOfflineCurveData();
+            const grad = ctx.createLinearGradient(0, padTop, 0, h - padBot);
+            grad.addColorStop(0, 'rgba(56, 189, 248, 0.30)');
+            grad.addColorStop(1, 'rgba(56, 189, 248, 0.02)');
+            ctx.beginPath(); ctx.moveTo(0, h - padBot);
+            for (let x = 0; x <= w; x++) ctx.lineTo(x, getOfflineTideY((x / w) * 24, evs, midY, ampPx));
+            ctx.lineTo(w, h - padBot); ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+
             ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.beginPath();
-            for (let x = 0; x <= w; x++) { let hour = (x / w) * 24.0; let y = getOfflineTideY(hour, offlineEvents, h); x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.stroke();
+            for (let x = 0; x <= w; x++) {
+                const y = getOfflineTideY((x / w) * 24, evs, midY, ampPx);
+                x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
 
-            const formatShortTime = (hVal) => `${String(Math.floor(hVal)).padStart(2,'0')}:${String(Math.floor((hVal - Math.floor(hVal))*60)).padStart(2,'0')}`;
-            const plotEvents = [];
-            if (rawTideEvents.p1 !== undefined) plotEvents.push({ type: 'plea', t: rawTideEvents.p1, label: formatShortTime(rawTideEvents.p1) });
-            if (rawTideEvents.b1 !== undefined) plotEvents.push({ type: 'baja', t: rawTideEvents.b1, label: formatShortTime(rawTideEvents.b1) });
-            if (rawTideEvents.p2 !== undefined) plotEvents.push({ type: 'plea', t: rawTideEvents.p2, label: formatShortTime(rawTideEvents.p2) });
-            if (rawTideEvents.b2 !== undefined) plotEvents.push({ type: 'baja', t: rawTideEvents.b2, label: formatShortTime(rawTideEvents.b2) });
-
-            ctx.font = 'bold 9px -apple-system, sans-serif'; ctx.textAlign = 'center';
-            plotEvents.forEach(ev => { 
-                const evX = (ev.t / 24.0) * w; const evY = (ev.type === 'plea' ? (h / 2) - (h * 0.28) : (h / 2) + (h * 0.28)); 
-                ctx.fillStyle = ev.type === 'plea' ? '#34d399' : '#f43f5e'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(evX, evY, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = ev.type === 'plea' ? '#34d399' : '#f43f5e'; ctx.fillText(ev.label, evX, ev.type === 'plea' ? evY - 8 : evY + 12); 
+            // --- Marcadores de pleamar y bajamar con hora y altura ---
+            const fmtT = v => `${String(Math.floor(v)).padStart(2,'0')}:${String(Math.floor((v - Math.floor(v)) * 60)).padStart(2,'0')}`;
+            const fmtH = v => (v === null || v === undefined || isNaN(v))
+                ? '' : `${tideHeightsReal ? '' : '~'}${v >= 0 ? '' : '-'}${Math.abs(v).toFixed(2).replace('.', ',')} m`;
+            const marks = [
+                { k:'p1', high:true  }, { k:'b1', high:false },
+                { k:'p2', high:true  }, { k:'b2', high:false }
+            ];
+            ctx.textAlign = 'center';
+            marks.forEach(m => {
+                const t = rawTideEvents[m.k];
+                if (t === undefined || t === null || isNaN(t)) return;
+                const x = Math.min(w - 22, Math.max(22, X(t)));
+                const y = m.high ? midY - ampPx : midY + ampPx;
+                const col = m.high ? '#34d399' : '#f43f5e';
+                ctx.fillStyle = col; ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(X(t), y, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = col;
+                ctx.font = 'bold 10px -apple-system, sans-serif';
+                ctx.fillText(fmtT(t), x, m.high ? y - 15 : y + 15);
+                const hv = tideHeights ? tideHeights[m.k] : null;
+                if (hv !== null && hv !== undefined) {
+                    ctx.font = '600 8px -apple-system, sans-serif';
+                    ctx.fillStyle = 'rgba(226, 232, 240, 0.7)';
+                    ctx.fillText(fmtH(hv), x, m.high ? y - 5 : y + 25);
+                }
             });
 
-            const now = new Date(); const curMinutes = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60.0; const liveX = (curMinutes / 1440.0) * w; const liveY = getOfflineTideY(curMinutes/60.0, offlineEvents, h);
-            ctx.strokeStyle = '#34d399'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(liveX, 0); ctx.lineTo(liveX, h); ctx.stroke(); ctx.fillStyle = '#34d399'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(liveX, liveY, 5.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#34d399'; ctx.font = 'bold 8px -apple-system, sans-serif'; ctx.fillText(`${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} (AHORA)`, liveX, h - 4); document.getElementById('tideLiveTimestamp').innerText = `AHORA ${now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} ⚡`;
-            
-            const realHour = curMinutes / 60.0;
-            if (Math.abs(sliderTideHour - realHour) > 0.2) { const inspX = (sliderTideHour / 24.0) * w; const inspY = getOfflineTideY(sliderTideHour, offlineEvents, h); ctx.strokeStyle = 'rgba(251, 146, 60, 0.8)'; ctx.setLineDash([3, 3]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(inspX, 0); ctx.lineTo(inspX, h); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = '#fb923c'; ctx.beginPath(); ctx.arc(inspX, inspY, 4, 0, Math.PI * 2); }
+            // --- Posicion en vivo y sentido de la corriente ---
+            const now = new Date();
+            const nowH = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
+            const lx = X(nowH);
+            const ly = getOfflineTideY(nowH, evs, midY, ampPx);
+            const lyPrev = getOfflineTideY(Math.max(0, nowH - 0.25), evs, midY, ampPx);
+            const rising = ly < lyPrev;      // en canvas, menos Y = mas altura
+
+            ctx.strokeStyle = 'rgba(52, 211, 153, 0.9)'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(lx, padTop - 8); ctx.lineTo(lx, h - padBot + 6); ctx.stroke();
+            ctx.fillStyle = '#34d399'; ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.arc(lx, ly, 6.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#0f172a'; ctx.font = 'bold 9px -apple-system, sans-serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(rising ? '\u25b2' : '\u25bc', lx, ly + 0.5);
+            ctx.textBaseline = 'alphabetic';
+
+            const tag = `${rising ? '\u25b2 SUBIENDO' : '\u25bc BAJANDO'} \u00b7 ${now.toTimeString().slice(0,5)}`;
+            ctx.font = 'bold 9px -apple-system, sans-serif';
+            const tw = ctx.measureText(tag).width + 12;
+            let bx = Math.min(w - tw / 2 - 2, Math.max(tw / 2 + 2, lx));
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+            ctx.strokeStyle = 'rgba(52, 211, 153, 0.55)'; ctx.lineWidth = 1;
+            ctx.beginPath();
+            if (ctx.roundRect) ctx.roundRect(bx - tw / 2, h - padBot + 9, tw, 15, 7);
+            else ctx.rect(bx - tw / 2, h - padBot + 9, tw, 15);
+            ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#34d399';
+            ctx.fillText(tag, bx, h - padBot + 20);
+
+            const ts = document.getElementById('tideLiveTimestamp');
+            if (ts) ts.innerText = `AHORA ${now.toTimeString().slice(0,5)} \u26a1`;
+
+            // --- Marcador del deslizador de inspeccion ---
+            if (Math.abs(sliderTideHour - nowH) > 0.2) {
+                const ix = X(sliderTideHour);
+                const iy = getOfflineTideY(sliderTideHour, evs, midY, ampPx);
+                ctx.strokeStyle = 'rgba(251, 146, 60, 0.85)'; ctx.setLineDash([3, 3]); ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.moveTo(ix, padTop - 8); ctx.lineTo(ix, h - padBot + 6); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#fb923c'; ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(ix, iy, 4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            }
         }
 
         function updateTideSlider(val) {
@@ -1333,10 +2247,22 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            initBezelSvg(); checkConnectivityStatus(); 
+            initBezelSvg(); buildPortSelector(); checkConnectivityStatus(); 
+            try {
+                const wm = localStorage.getItem('orion_watch_model');
+                const wsel = document.getElementById('watchModelSelect');
+                if (wm && wsel) wsel.value = wm;
+            } catch (e) {}
+            setTimeout(renderWatchExport, 400);
+            setInterval(renderWatchExport, 60000);
             window.addEventListener('online', checkConnectivityStatus); 
             window.addEventListener('offline', checkConnectivityStatus);
             initLiveMap(); initMasterClockAndWeather(); recalcularPresionesYAltitud();
+            if (typeof map !== 'undefined' && map) {
+                map.on('dragstart', () => { userMovedMap = true; });
+            }
+            setTimeout(recoverTrackIfAny, 1200);
+            initChronoTimer();
             updateMoonTopocentric(currentLat, currentLon, tideDayOffset); 
             updateTidesHybrid(currentLat, currentLon, tideDayOffset);
             updateSolarHybrid(currentLat, currentLon); updateCompassDisplay(0); checkStormDropAuto(false);
@@ -1429,7 +2355,8 @@
             userMarker = L.circleMarker([currentLat, currentLon], { radius: 7, color: '#fff', fillColor: '#38bdf8', fillOpacity: 1 }).addTo(map);
         }
 
-        function recenterMap() { if (map && userMarker) map.setView([currentLat, currentLon], 16, { animate: true }); }
+        function recenterMap() {
+            userMovedMap = false; if (map && userMarker) map.setView([currentLat, currentLon], 16, { animate: true }); }
         
         function resetNorthOrientation() { 
             isMapCompassMode = false;
@@ -1450,6 +2377,14 @@
                 if (mapEl) mapEl.style.transform = 'none';
             } else {
                 startMapRenderLoop();
+                /* v5.7 - El giro se hace con transform CSS sobre el contenedor,
+                   pero Leaflet no transforma las coordenadas del dedo: al
+                   arrastrar con el mapa girado, se mueve en direccion falseada.
+                   Se avisa una sola vez en lugar de dejar que sorprenda en campo. */
+                if (!localStorage.getItem('orion_rotwarn')) {
+                    try { localStorage.setItem('orion_rotwarn', '1'); } catch (e) {}
+                    setTimeout(() => alert('Mapa orientado al rumbo.\n\nAviso: con el mapa girado, arrastrarlo con el dedo se desplaza en dirección girada. Para moverlo con precisión, desactiva este modo antes.'), 350);
+                }
             }
         }
 
@@ -1546,7 +2481,7 @@
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(pos => {
                     gpsActive = true; currentLat = pos.coords.latitude; currentLon = pos.coords.longitude; 
-                    let rawAlt = pos.coords.altitude; currentAltitude = (rawAlt !== null && rawAlt > -100 && rawAlt < 9000) ? Math.round(rawAlt) : 212;
+                    let rawAlt = pos.coords.altitude; if (rawAlt !== null && rawAlt > -100 && rawAlt < 9000) { currentAltitude = Math.round(rawAlt); lastAltValid = currentAltitude; } else if (lastAltValid !== null) { currentAltitude = lastAltValid; }
                     let acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : 5;
                     
                     hudGpsPill.className = 'hud-pill ok';
@@ -1582,7 +2517,7 @@
                     updateTidesHybrid(currentLat, currentLon, tideDayOffset); 
                     updateSolarHybrid(currentLat, currentLon);
                     prefetchLocalTiles(currentLat, currentLon);
-                    if (isTracking) recordWaypoint(currentLat, currentLon, currentAltitude);
+                    if (isTracking) recordWaypoint(currentLat, currentLon, currentAltitude, acc);
                 }, err => { 
                     hudGpsPill.className = 'hud-pill err';
                     hudGpsDot.style.background = 'var(--accent-red)';
@@ -1594,7 +2529,7 @@
                 
                 navigator.geolocation.watchPosition(pos => {
                     currentLat = pos.coords.latitude; currentLon = pos.coords.longitude; 
-                    let rawAlt = pos.coords.altitude; currentAltitude = (rawAlt !== null && rawAlt > -100 && rawAlt < 9000) ? Math.round(rawAlt) : 212; 
+                    let rawAlt = pos.coords.altitude; if (rawAlt !== null && rawAlt > -100 && rawAlt < 9000) { currentAltitude = Math.round(rawAlt); lastAltValid = currentAltitude; } else if (lastAltValid !== null) { currentAltitude = lastAltValid; } 
                     let acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : 5;
                     
                     const satSub = document.getElementById('satFixSub');
@@ -1620,7 +2555,7 @@
 
                     recalcularPresionesYAltitud();
                     userMarker.setLatLng([currentLat, currentLon]); ring100.setLatLng([currentLat, currentLon]); ring500.setLatLng([currentLat, currentLon]); ring1000.setLatLng([currentLat, currentLon]);
-                    if (isTracking) recordWaypoint(currentLat, currentLon, currentAltitude);
+                    if (isTracking) recordWaypoint(currentLat, currentLon, currentAltitude, acc);
                 }, null, { enableHighAccuracy: true, maximumAge: 4000 });
             }
 
@@ -1645,17 +2580,52 @@
             }
         }
 
+        /* v5.7 - TRES CORRECCIONES EN LA BRUJULA:
+           1) `webkitCompassHeading || (360 - alpha)` fallaba justo apuntando al
+              NORTE: un rumbo de 0 grados es falsy en JS, asi que saltaba al
+              calculo alternativo y el rumbo pegaba un salto. Ahora se comprueba
+              el tipo, no la veracidad.
+           2) Sin magnetometro, `360 - null` daba 360 y pasaba el isNaN: la app
+              mostraba rumbo 0 como si fuera bueno. Ahora se detecta y se avisa.
+           3) La declinacion se mostraba pero NO se aplicaba: el rumbo era
+              magnetico mientras el usuario lo leia como geografico. Al comparar
+              con un mapa de papel, ese es justo el error que importa. */
         function handleOrientation(e) {
-            let h = e.webkitCompassHeading || (360 - e.alpha);
-            if (h !== null && !isNaN(h)) { 
-                let diff = h - smoothedHeading; 
-                while (diff < -180) diff += 360; 
-                while (diff > 180) diff -= 360; 
-                smoothedHeading = (smoothedHeading + diff * 0.16 + 360) % 360; 
-                currentHeading = smoothedHeading; 
-                updateCompassDisplay(currentHeading); 
-                targetMapAngle = -currentHeading;
+            let mag = null;
+            if (typeof e.webkitCompassHeading === 'number' && !isNaN(e.webkitCompassHeading)) {
+                mag = e.webkitCompassHeading;                 // iOS: 0 es un valor valido
+            } else if (typeof e.alpha === 'number' && !isNaN(e.alpha)) {
+                mag = (360 - e.alpha) % 360;
             }
+            if (mag === null) return;                          // sin brujula: no inventar
+
+            compassSeen++;
+            if (!compassLive && compassSeen > 3) { compassLive = true; paintCompassSource(); }
+
+            // Rumbo geografico = magnetico + declinacion (Este positivo)
+            let h = (mag + magDeclination + 360) % 360;
+
+            let diff = h - smoothedHeading; 
+            while (diff < -180) diff += 360; 
+            while (diff > 180) diff -= 360; 
+            smoothedHeading = (smoothedHeading + diff * 0.16 + 360) % 360; 
+            currentHeading = smoothedHeading; 
+            updateCompassDisplay(currentHeading); 
+            targetMapAngle = -currentHeading;
+        }
+
+        function paintCompassSource() {
+            const el = document.getElementById('headingSrcSub');
+            if (!el) return;
+            if (!compassLive) {
+                el.innerText = 'SIN MAGNETÓMETRO';
+                el.style.color = 'var(--accent-red)';
+                return;
+            }
+            const d = Math.abs(magDeclination) < 0.05 ? '0' :
+                `${magDeclination > 0 ? 'E' : 'W'} ${Math.abs(magDeclination).toFixed(1)}`;
+            el.innerText = `RUMBO GEOGRÁFICO · DEC ${d}° ${magDecSource === 'noaa' ? '(NOAA)' : '(modelo)'}`;
+            el.style.color = magDecSource === 'noaa' ? 'var(--accent-green)' : 'var(--accent-cyan)';
         }
 
         function updateCompassDisplay(heading) {
@@ -1916,23 +2886,79 @@
             }
         }
 
+        /* v5.5 - AUTOGUARDADO.
+           Los waypoints solo vivian en memoria. Si iOS mataba la PWA (y la mata
+           en cuanto bloqueas la pantalla un rato), la ruta entera desaparecia
+           sin aviso. Ahora se vuelca a localStorage y se ofrece recuperarla. */
+        let _autosaveT = 0;
+        function autosaveTrack() {
+            const now = Date.now();
+            if (now - _autosaveT < 10000) return;   // como mucho cada 10 s
+            _autosaveT = now;
+            try {
+                localStorage.setItem('orion_track_live', JSON.stringify({
+                    ts: now, waypoints: waypoints, dist: totalDistanceKm,
+                    elapsed: elapsedMs(), isReturning: isReturning
+                }));
+            } catch (e) { /* cuota llena: se ignora, no bloquea el tracking */ }
+        }
+
+        function clearAutosave() {
+            try { localStorage.removeItem('orion_track_live'); } catch (e) {}
+        }
+
+        function recoverTrackIfAny() {
+            let d = null;
+            try { d = JSON.parse(localStorage.getItem('orion_track_live') || 'null'); } catch (e) { return; }
+            if (!d || !d.waypoints || !d.waypoints.length) return;
+            const mins = Math.round((Date.now() - d.ts) / 60000);
+            const km = (d.dist || 0).toFixed(2);
+            if (!confirm(`Se encontró una ruta sin finalizar:\n\n${d.waypoints.length} puntos · ${km} km\nInterrumpida hace ${mins} min.\n\n¿Recuperarla?`)) {
+                clearAutosave();
+                return;
+            }
+            waypoints = d.waypoints;
+            totalDistanceKm = d.dist || 0;
+            isReturning = !!d.isReturning;
+            trackAccumMs = d.elapsed || 0;
+            lastGpsPos = waypoints[waypoints.length - 1] || null;
+            document.getElementById('trackDistVal').innerHTML = `${totalDistanceKm.toFixed(2)} <span class="unit">km</span>`;
+            document.getElementById('trackPointsVal').innerHTML = `${waypoints.length} <span class="unit">pts</span>`;
+            paintElapsed();
+            if (livePolylineGreen) livePolylineGreen.setLatLngs(waypoints.filter(p => !p.isReturn).map(p => [p.lat, p.lon]));
+            if (livePolylineRed)   livePolylineRed.setLatLngs(waypoints.filter(p => p.isReturn).map(p => [p.lat, p.lon]));
+            const badge = document.getElementById('trackStatusBadge');
+            if (badge) { badge.innerText = 'RECUPERADO'; badge.className = 'badge-tag orange'; }
+        }
+
+        /* v5.5 - CRONOMETRO POR MARCA DE TIEMPO.
+           setInterval se estrangula cuando iOS pasa la app a segundo plano, asi
+           que el contador se quedaba corto. Ahora se calcula por diferencia de
+           instantes y solo se pinta con el intervalo. */
+        function elapsedMs() {
+            return trackAccumMs + (trackResumeMs ? (Date.now() - trackResumeMs) : 0);
+        }
+        function paintElapsed() {
+            const t = Math.floor(elapsedMs() / 1000);
+            const h = String(Math.floor(t / 3600)).padStart(2, '0');
+            const m = String(Math.floor((t % 3600) / 60)).padStart(2, '0');
+            const sec = String(t % 60).padStart(2, '0');
+            const el = document.getElementById('trackTimerVal');
+            if (el) el.innerText = `${h}:${m}:${sec}`;
+        }
+
         function toggleMissionTracking() {
             if (!gpsActive) { alert("PULSA EL BOTÓN '⚡ SYNC HARDWARE' ARRIBA PRIMERO."); return; } 
             isTracking = !isTracking; const btn = document.getElementById('btnToggleTrack'); const badge = document.getElementById('trackStatusBadge');
             if (isTracking) { 
                 btn.innerText = '⏸ Pausar'; btn.className = 'tactical-btn danger'; badge.innerText = 'REC TRACKING'; badge.className = 'badge-tag orange'; 
-                if (!trackingTimerInterval) { 
-                    trackingTimerInterval = setInterval(() => { 
-                        trackingSeconds++; 
-                        const h = String(Math.floor(trackingSeconds / 3600)).padStart(2, '0'); 
-                        const m = String(Math.floor((trackingSeconds % 3600) / 60)).padStart(2, '0'); 
-                        const s = String(trackingSeconds % 60).padStart(2, '0'); 
-                        document.getElementById('trackTimerVal').innerText = `${h}:${m}:${s}`; 
-                    }, 1000); 
-                } 
+                trackResumeMs = Date.now();
+                if (!trackingTimerInterval) trackingTimerInterval = setInterval(paintElapsed, 1000); 
             } else { 
                 btn.innerText = '▶ Reanudar'; btn.className = 'tactical-btn primary'; badge.innerText = 'PAUSADO'; badge.className = 'badge-tag'; 
+                if (trackResumeMs) { trackAccumMs += Date.now() - trackResumeMs; trackResumeMs = null; }
                 clearInterval(trackingTimerInterval); trackingTimerInterval = null; 
+                paintElapsed(); autosaveTrack();
             }
         }
 
@@ -1957,17 +2983,48 @@
             } 
         }
 
-        function recordWaypoint(lat, lon, alt) { 
-            const newPt = { lat, lon, alt, isReturn: isReturning, isManual: false, time: new Date().toLocaleTimeString() }; 
-            if (lastGpsPos) totalDistanceKm += calcHaversine(lastGpsPos.lat, lastGpsPos.lon, lat, lon); 
-            lastGpsPos = newPt; waypoints.push(newPt); 
+        /* v5.5 - FILTRO DE CALIDAD.
+           Antes se grababa CADA fix del GPS sin comprobar nada. Con el movil
+           quieto bajo arbolado, el ruido del GPS (+/-20-30 m) se sumaba como
+           distancia real: una espera de dos horas en un puesto podia inventar
+           varios kilometros. Ahora se descartan los fixes imprecisos y los
+           desplazamientos por debajo del umbral de ruido. */
+        function recordWaypoint(lat, lon, alt, acc) {
+            const a = (acc === undefined || acc === null) ? 10 : acc;
+
+            // 1) Descartar fixes claramente malos
+            if (a > GPS_MAX_ACC) {
+                rejectedFixes++;
+                const rj = document.getElementById('trackRejectSub');
+                if (rj) rj.innerText = `${rejectedFixes} fix descartados (±${Math.round(a)} m)`;
+                return;
+            }
+
+            // 2) Suavizado exponencial: cuanto peor el fix, mas peso al historico
+            const alpha = Math.min(0.7, Math.max(0.12, 12 / a));
+            if (smoothLat === null) { smoothLat = lat; smoothLon = lon; }
+            else { smoothLat += alpha * (lat - smoothLat); smoothLon += alpha * (lon - smoothLon); }
+            const sLat = smoothLat, sLon = smoothLon;
+
+            // 3) Umbral de avance adaptado a la incertidumbre de los dos fixes
+            let stepM = 0;
+            if (lastGpsPos) {
+                stepM = calcHaversine(lastGpsPos.lat, lastGpsPos.lon, sLat, sLon) * 1000;
+                const umbral = Math.max(GPS_MIN_STEP, (a + (lastAccM || a)) * 0.75);
+                if (stepM < umbral) return;         // por debajo del ruido: no acumula
+            }
+
+            const newPt = { lat: sLat, lon: sLon, alt: alt, acc: Math.round(a), isReturn: isReturning, isManual: false, time: new Date().toLocaleTimeString() }; 
+            if (lastGpsPos) totalDistanceKm += stepM / 1000; 
+            lastGpsPos = newPt; lastAccM = a; waypoints.push(newPt); 
+            autosaveTrack();
             document.getElementById('trackDistVal').innerHTML = `${totalDistanceKm.toFixed(2)} <span class="unit">km</span>`; 
             document.getElementById('trackPointsVal').innerHTML = `${waypoints.length} <span class="unit">pts</span>`; 
             const greenPts = waypoints.filter(p => !p.isReturn).map(p => [p.lat, p.lon]); 
             const redPts = waypoints.filter(p => p.isReturn).map(p => [p.lat, p.lon]); 
             livePolylineGreen.setLatLngs(greenPts); livePolylineRed.setLatLngs(redPts); 
             userMarker.setLatLng([lat, lon]); ring100.setLatLng([lat, lon]); ring500.setLatLng([lat, lon]); ring1000.setLatLng([lat, lon]); 
-            map.panTo([lat, lon]); 
+            if (!userMovedMap) map.panTo([lat, lon]);   // no secuestrar el mapa si lo estás mirando
         }
 
         function calcHaversine(lat1, lon1, lat2, lon2) { 
@@ -1979,8 +3036,19 @@
         function finishAndSaveMission() {
             if (waypoints.length === 0 && totalDistanceKm === 0) { alert("No hay datos grabados en esta sesión."); return; } 
             if (trackingTimerInterval) { clearInterval(trackingTimerInterval); trackingTimerInterval = null; }
+            paintElapsed();
             const timeStr = document.getElementById('trackTimerVal').innerText; 
             const routeTitle = prompt("Expedición finalizada. Nombre de la misión para guardar:", `Ruta ${new Date().toLocaleDateString('es-ES')} (${timeStr})`);
+
+            /* v5.5 - Antes, si cancelabas este cuadro, la ruta NO se guardaba
+               pero el codigo seguia y borraba waypoints, distancia y tiempo:
+               perdias la expedicion entera por pulsar Cancelar. */
+            if (!routeTitle) {
+                if (trackResumeMs) { trackAccumMs += Date.now() - trackResumeMs; trackResumeMs = null; }
+                alert('Guardado cancelado. La ruta sigue en memoria: pulsa Finalizar otra vez cuando quieras guardarla.');
+                return;
+            }
+
             if (routeTitle) { 
                 const missionData = { 
                     id: Date.now(), 
@@ -1998,11 +3066,40 @@
                     qnh: seaLevelPressure, 
                     temp: document.getElementById('masterTempVal').innerText 
                 }; 
-                let saved = JSON.parse(localStorage.getItem('orion_missions') || '[]'); 
-                saved.unshift(missionData); 
-                localStorage.setItem('orion_missions', JSON.stringify(saved)); 
+                /* v5.5 - Antes se hacia setItem sin proteccion: al llenarse la
+                   cuota de Safari (~5 MB) saltaba QuotaExceededError sin capturar
+                   y la mision se perdia en silencio. Ahora se avisa y se poda. */
+                let ok = false;
+                try {
+                    let saved = JSON.parse(localStorage.getItem('orion_missions') || '[]');
+                    saved.unshift(missionData);
+                    try {
+                        localStorage.setItem('orion_missions', JSON.stringify(saved));
+                        ok = true;
+                    } catch (e1) {
+                        // Segundo intento: simplificar los puntos de las rutas antiguas
+                        for (let i = 1; i < saved.length && !ok; i++) {
+                            if (saved[i].points && saved[i].points.length > 200) {
+                                const step = Math.ceil(saved[i].points.length / 200);
+                                saved[i].points = saved[i].points.filter((_, k) => k % step === 0);
+                                saved[i].simplified = true;
+                            }
+                            try { localStorage.setItem('orion_missions', JSON.stringify(saved)); ok = true; } catch (e2) {}
+                        }
+                    }
+                } catch (e) {}
+                if (!ok) {
+                    alert('MEMORIA LLENA: no se ha podido guardar la ruta.\n\n'
+                        + 'Borra alguna expedición antigua desde el historial y vuelve a pulsar Finalizar. '
+                        + 'La ruta sigue en memoria mientras no cierres la app.');
+                    return;
+                }
+                clearAutosave();
             }
             isTracking = false; isReturning = false; trackingSeconds = 0; totalDistanceKm = 0; lastGpsPos = null; waypoints = [];
+            trackAccumMs = 0; trackResumeMs = null; rejectedFixes = 0; userMovedMap = false;
+            smoothLat = null; smoothLon = null; lastAccM = null;
+            const rjEl = document.getElementById('trackRejectSub'); if (rjEl) rjEl.innerText = '';
             if (livePolylineGreen) livePolylineGreen.setLatLngs([]); 
             if (livePolylineRed) livePolylineRed.setLatLngs([]); 
             if (manualWpLayerGroup) manualWpLayerGroup.clearLayers();
@@ -2073,13 +3170,9 @@
             document.getElementById('vwRouteCoords').innerText = `${Math.abs(lat).toFixed(3)}° ${lat>=0?'N':'S'}, ${Math.abs(lon).toFixed(3)}° ${lon>=0?'E':'W'}`;
             document.getElementById('vwRouteBaro').innerText = `QNH ${m.qnh || 1013} | QFE ${m.qfe || '--'}`;
 
-            let maxAlt = m.alt || 0, minAlt = m.alt || 0; 
-            if (pts.length > 0) { 
-                const alts = pts.map(p => p.alt || 0); 
-                maxAlt = Math.max(...alts); 
-                minAlt = Math.min(...alts); 
-            } 
-            document.getElementById('vwRouteAlts').innerText = `▲ ${maxAlt}m / ▼ ${minAlt}m`;
+            /* v5.7 - las cotas y el desnivel los calcula ya el perfil, que
+               descarta altitudes ausentes en vez de tratarlas como 0 m. */
+            document.getElementById('vwRouteAlts').innerText = 'calculando…';
 
             const tbody = document.getElementById('viewerWpTableBody');
             tbody.innerHTML = '';
@@ -2130,55 +3223,133 @@
             }, 250);
         }
 
+        /* v5.7 - PERFIL DE ELEVACION REESCRITO
+           Tres problemas de la version anterior:
+           1) `p.alt || 0` convertia una altitud ausente (o el nivel del mar) en
+              cero, asi que una ruta sin datos de altura salia como una linea
+              plana a 0 m, y una ruta con huecos dibujaba precipicios falsos.
+           2) La altitud GPS es muy ruidosa (+/-10-20 m): el perfil crudo salia
+              como una sierra que no se parece al terreno.
+           3) No habia desnivel acumulado, que en montana es EL dato: importa
+              mucho mas que la cota maxima. */
+
+        /* Media movil ponderada, resistente al ruido del GPS */
+        function smoothAltitudes(arr, win) {
+            if (arr.length < 3) return arr.slice();
+            const out = [];
+            for (let i = 0; i < arr.length; i++) {
+                let sum = 0, wsum = 0;
+                for (let k = -win; k <= win; k++) {
+                    const j = i + k;
+                    if (j < 0 || j >= arr.length) continue;
+                    const wgt = (win + 1 - Math.abs(k));
+                    sum += arr[j] * wgt; wsum += wgt;
+                }
+                out.push(sum / wsum);
+            }
+            return out;
+        }
+
+        /* Desnivel acumulado con umbral: sin el, el ruido suma cientos de metros
+           falsos. 5 m es el umbral habitual en altimetros barometricos. */
+        function computeGainLoss(alts, thresh) {
+            let gain = 0, loss = 0, ref = alts[0];
+            for (let i = 1; i < alts.length; i++) {
+                const d = alts[i] - ref;
+                if (d >= thresh)      { gain += d; ref = alts[i]; }
+                else if (d <= -thresh){ loss += -d; ref = alts[i]; }
+            }
+            return { gain: Math.round(gain), loss: Math.round(loss) };
+        }
+
         function drawViewerElevationProfile(pts) {
             const cvs = document.getElementById('viewerElevationCanvas');
             if (!cvs) return;
             const ctx = cvs.getContext('2d');
             const rect = cvs.getBoundingClientRect();
             const w = rect.width || 560; const h = rect.height || 80;
-            cvs.width = w * window.devicePixelRatio; cvs.height = h * window.devicePixelRatio;
-            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            const dpr = window.devicePixelRatio || 1;
+            cvs.width = w * dpr; cvs.height = h * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             ctx.clearRect(0, 0, w, h);
 
-            if (!pts || pts.length < 2) {
+            const msg = (t) => {
                 ctx.font = 'bold 10px -apple-system, sans-serif';
-                ctx.fillStyle = '#64748b';
-                ctx.textAlign = 'center';
-                ctx.fillText('Perfil plano o sin suficientes puntos de relieve', w/2, h/2);
-                return;
+                ctx.fillStyle = '#64748b'; ctx.textAlign = 'center';
+                ctx.fillText(t, w / 2, h / 2);
+                const el = document.getElementById('vwRouteAlts');
+                if (el) el.innerText = 'sin datos de altitud';
+            };
+
+            if (!pts || pts.length < 2) { msg('Ruta demasiado corta para trazar perfil'); return; }
+
+            // Solo puntos con altitud REAL; null/undefined ya no se cuelan como 0
+            const raw = pts.map(p => (typeof p.alt === 'number' && isFinite(p.alt)) ? p.alt : null);
+            const validCount = raw.filter(v => v !== null).length;
+            if (validCount < 2) { msg('El GPS no registró altitud en esta ruta'); return; }
+
+            // Rellenar huecos por interpolación lineal entre valores buenos
+            const alts = raw.slice();
+            for (let i = 0; i < alts.length; i++) {
+                if (alts[i] !== null) continue;
+                let a = i - 1; while (a >= 0 && alts[a] === null) a--;
+                let b = i + 1; while (b < alts.length && raw[b] === null) b++;
+                if (a < 0 && b >= alts.length) { alts[i] = 0; }
+                else if (a < 0)                { alts[i] = raw[b]; }
+                else if (b >= alts.length)     { alts[i] = alts[a]; }
+                else { const t = (i - a) / (b - a); alts[i] = alts[a] + (raw[b] - alts[a]) * t; }
             }
 
-            const alts = pts.map(p => p.alt || 0);
-            const minA = Math.min(...alts);
-            const maxA = Math.max(...alts);
-            const diffA = Math.max(10, maxA - minA);
+            const win = Math.max(1, Math.min(6, Math.floor(alts.length / 25)));
+            const sm = smoothAltitudes(alts, win);
+            const gl = computeGainLoss(sm, 5);
 
+            const minA = Math.min(...sm), maxA = Math.max(...sm);
+            const diffA = Math.max(10, maxA - minA);
             const padTop = 18, padBottom = 22;
             const usableH = h - padTop - padBottom;
+            const Y = v => h - padBottom - ((v - minA) / diffA) * usableH;
+            const X = i => (i / (sm.length - 1)) * w;
 
-            ctx.strokeStyle = '#0284c7';
-            ctx.lineWidth = 2.5;
-            ctx.fillStyle = 'rgba(2, 132, 199, 0.15)';
-            ctx.beginPath();
-            ctx.moveTo(0, h - padBottom - ((alts[0] - minA) / diffA) * usableH);
-            for (let i = 1; i < alts.length; i++) {
-                const x = (i / (alts.length - 1)) * w;
-                const y = h - padBottom - ((alts[i] - minA) / diffA) * usableH;
-                ctx.lineTo(x, y);
-            }
+            // Relleno degradado
+            const grad = ctx.createLinearGradient(0, padTop, 0, h - padBottom);
+            grad.addColorStop(0, 'rgba(2, 132, 199, 0.35)');
+            grad.addColorStop(1, 'rgba(2, 132, 199, 0.04)');
+            ctx.beginPath(); ctx.moveTo(0, h - padBottom);
+            for (let i = 0; i < sm.length; i++) ctx.lineTo(X(i), Y(sm[i]));
+            ctx.lineTo(w, h - padBottom); ctx.closePath();
+            ctx.fillStyle = grad; ctx.fill();
+
+            // Trazo del perfil
+            ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 2.2; ctx.lineJoin = 'round';
+            ctx.beginPath(); ctx.moveTo(0, Y(sm[0]));
+            for (let i = 1; i < sm.length; i++) ctx.lineTo(X(i), Y(sm[i]));
             ctx.stroke();
-            ctx.lineTo(w, h);
-            ctx.lineTo(0, h);
-            ctx.closePath();
-            ctx.fill();
+
+            // Cotas extremas marcadas
+            const iMax = sm.indexOf(maxA), iMin = sm.indexOf(minA);
+            [[iMax, maxA, '#059669'], [iMin, minA, '#e11d48']].forEach(([i, v, c]) => {
+                ctx.fillStyle = c; ctx.beginPath(); ctx.arc(X(i), Y(v), 3.5, 0, Math.PI * 2); ctx.fill();
+            });
 
             ctx.font = 'bold 9px -apple-system, sans-serif';
-            ctx.fillStyle = '#0f172a';
-            ctx.textAlign = 'left';
-            ctx.fillText(`MÁX: ${maxA}m`, 10, 14);
+            ctx.fillStyle = '#0f172a'; ctx.textAlign = 'left';
+            ctx.fillText(`MÁX ${Math.round(maxA)} m`, 10, 13);
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#059669';
+            ctx.fillText(`▲ ${gl.gain} m desnivel positivo`, w / 2, 13);
+            ctx.fillStyle = '#e11d48';
+            ctx.fillText(`▼ ${gl.loss} m negativo`, w / 2, h - 7);
+            ctx.fillStyle = '#0f172a'; ctx.textAlign = 'right';
+            ctx.fillText(`MÍN ${Math.round(minA)} m`, w - 12, h - 7);
 
-            ctx.textAlign = 'right';
-            ctx.fillText(`MÍN: ${minA}m`, w - 12, h - 8);
+            if (validCount < pts.length) {
+                ctx.textAlign = 'left'; ctx.fillStyle = '#94a3b8'; ctx.font = '8px -apple-system, sans-serif';
+                ctx.fillText(`${pts.length - validCount} puntos sin altitud interpolados`, 10, h - 7);
+            }
+
+            const el = document.getElementById('vwRouteAlts');
+            if (el) el.innerText = `▲${Math.round(maxA)} / ▼${Math.round(minA)} m · D+ ${gl.gain} m`;
         }
 
         function closeRouteViewer() { 
