@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION - Field Navigator v4.6</title>
+    <title>ORION - Field Navigator v4.7</title>
     <meta name="author" content="danielcdmo">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -267,7 +267,7 @@
         </div>
 
         <div class="topbar-controls-row">
-            <span class="version-tag">v4.6</span>
+            <span class="version-tag">v4.7</span>
             
             <button class="btn-sync-master" id="btnMasterSync" onclick="startTacticalSystems()">
                 ⚡ SYNC HARDWARE
@@ -552,7 +552,7 @@
                     <div style="font-size:0.75rem; color:#64748b; font-weight:700; margin-top:3px;" id="vwRouteDate">Fecha: --</div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v4.6</span>
+                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v4.7</span>
                     <div style="font-size:0.62rem; color:#64748b; font-weight:700; margin-top:4px;">REF: WGS84-GEO</div>
                 </div>
             </div>
@@ -595,7 +595,7 @@
             </div>
 
             <div style="margin-top:14px; border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:#64748b;">
-                <span>Sistema ORION v4.6 • Navegación & Telemetría</span>
+                <span>Sistema ORION v4.7 • Navegación & Telemetría</span>
                 <span><strong>danielcdmo</strong></span>
             </div>
         </div>
@@ -773,174 +773,461 @@
         }
 
         // MAPEO DE COORDENADAS COSTERAS PARA API MARINA (Evita error 400 fuera de grilla en el interior)
-        function getMarineCoastalCoords(lat, lon) {
-            if (lat >= 41.1 && lat <= 41.8 && lon >= 1.8 && lon <= 2.6) {
-                return { lat: 41.380, lon: 2.180 }; // Puerto de Barcelona para peticiones marítimas
+        /* ============================================================================
+           ORION v4.7 · MOTOR DE MAREAS MUNDIAL
+           ----------------------------------------------------------------------------
+           Cambios frente a v4.6:
+            1. API corregida: sea_level_height_msl (antes sea_level -> HTTP 400 siempre).
+            2. Tránsito lunar astronómico real (Meeus) en vez de aproximación por edad
+               de la luna. v4.6 mezclaba hora UTC con hora local: error fijo de 1-2 h.
+            3. INT (intervalo lunitidal) cacheado POR CELDA GEOGRÁFICA (~55 km), no
+               global. Al viajar a otra zona el INT se recalcula/aprende solo.
+            4. Búsqueda automática del punto de mar más cercano (antes: Barcelona fija).
+            5. Espaciado semidiurno correcto M2 = 12h25m (antes: constantes ad-hoc).
+            6. Detección de régimen de marea (semidiurno / diurno / mixto).
+            7. Amplitud sicigias-cuadraturas en el gráfico.
+           ============================================================================ */
+
+        const TIDE_M2        = 12.4206012;  // periodo semidiurno lunar (h)
+        const TIDE_LUNAR_DAY = 24.8412024;  // día lunar medio (h)
+        const TIDE_CELL_DEG  = 0.5;         // resolución de caché de INT (~55 km)
+
+        let tideRegime          = 'semidiurnal';
+        let tideAmplitudeFactor = 1.0;
+        let tideIntSource       = 'region';   // 'online' | 'cache' | 'manual' | 'region'
+        let tideIntConfidence   = 'baja';
+        let tideSeaPoint        = null;
+        let tideLastNote        = '';
+
+        /* ---------- Regímenes regionales conocidos (fallback sin calibrar) ----------
+           El TIPO de régimen es fiable; el INT es sólo una estimación gruesa de
+           partida. Se sobrescribe en cuanto haya una lectura online o calibración. */
+        const TIDE_REGIONS = [
+            { n:'Mediterráneo occidental', lat:[35,45],  lon:[-6,16],    int:2.45, reg:'semidiurnal', amp:0.15 },
+            { n:'Mediterráneo oriental',   lat:[30,42],  lon:[16,37],    int:3.10, reg:'semidiurnal', amp:0.12 },
+            { n:'Atlántico ibérico',       lat:[36,44],  lon:[-10,-6],   int:2.20, reg:'semidiurnal', amp:1.00 },
+            { n:'Golfo de Vizcaya / Canal',lat:[43,52],  lon:[-10,3],    int:4.30, reg:'semidiurnal', amp:1.00 },
+            { n:'Mar del Norte',           lat:[51,62],  lon:[-4,10],    int:5.50, reg:'semidiurnal', amp:1.00 },
+            { n:'Canarias / NO África',    lat:[20,36],  lon:[-20,-8],   int:1.90, reg:'semidiurnal', amp:1.00 },
+            { n:'Costa Este EE.UU.',       lat:[25,45],  lon:[-82,-65],  int:8.20, reg:'semidiurnal', amp:1.00 },
+            { n:'Golfo de México',         lat:[18,31],  lon:[-98,-81],  int:5.00, reg:'diurnal',     amp:0.50 },
+            { n:'Caribe',                  lat:[8,25],   lon:[-88,-59],  int:5.00, reg:'mixed',       amp:0.30 },
+            { n:'Costa Oeste EE.UU.',      lat:[30,50],  lon:[-128,-116],int:9.00, reg:'mixed',       amp:1.00 },
+            { n:'Japón / Pacífico NO',     lat:[24,46],  lon:[122,148],  int:5.20, reg:'mixed',       amp:1.00 },
+            { n:'Golfo de Tailandia / SE', lat:[0,18],   lon:[97,112],   int:6.00, reg:'diurnal',     amp:0.80 },
+            { n:'Australia norte',         lat:[-25,-8], lon:[112,155],  int:6.00, reg:'mixed',       amp:1.00 },
+            { n:'Australia sur / NZ',      lat:[-48,-25],lon:[112,180],  int:4.50, reg:'semidiurnal', amp:1.00 },
+            { n:'Índico occidental',       lat:[-35,25], lon:[30,80],    int:4.00, reg:'semidiurnal', amp:1.00 },
+            { n:'Sudamérica atlántica',    lat:[-56,5],  lon:[-70,-34],  int:4.00, reg:'semidiurnal', amp:1.00 }
+        ];
+
+        function tideRegionFor(lat, lon) {
+            for (const r of TIDE_REGIONS) {
+                if (lat >= r.lat[0] && lat <= r.lat[1] && lon >= r.lon[0] && lon <= r.lon[1]) return r;
             }
-            return { lat, lon };
+            return { n:'Global (sin referencia)', int:4.00, reg:'semidiurnal', amp:1.00 };
         }
 
-        /* SISTEMA REAL DE MAREAS Y CÁLCULO MUNDIAL DEL INTERVALO LUNITIDAL (INT) */
+        /* ------------------------- Astronomía lunar (Meeus) ------------------------ */
+        function _tideJD(d) { return d.getTime() / 86400000.0 + 2440587.5; }
+
+        function moonEquatorial(jd) {
+            const rad = Math.PI / 180, T = (jd - 2451545.0) / 36525.0;
+            const Lp = 218.3164477 + 481267.88123421 * T;
+            const D  = 297.8501921 + 445267.1114034  * T;
+            const M  = 357.5291092 +  35999.0502909  * T;
+            const Mp = 134.9633964 + 477198.8675055  * T;
+            const F  =  93.2720950 + 483202.0175233  * T;
+
+            const lon = Lp
+                + 6.288774 * Math.sin(Mp * rad)
+                + 1.274027 * Math.sin((2*D - Mp) * rad)
+                + 0.658314 * Math.sin(2*D * rad)
+                + 0.213618 * Math.sin(2*Mp * rad)
+                - 0.185116 * Math.sin(M * rad)
+                - 0.114332 * Math.sin(2*F * rad)
+                + 0.058793 * Math.sin((2*D - 2*Mp) * rad)
+                + 0.057066 * Math.sin((2*D - M - Mp) * rad)
+                + 0.053322 * Math.sin((2*D + Mp) * rad)
+                + 0.045758 * Math.sin((2*D - M) * rad)
+                - 0.040923 * Math.sin((M - Mp) * rad)
+                - 0.034720 * Math.sin(D * rad)
+                - 0.030383 * Math.sin((M + Mp) * rad);
+
+            const lat = 5.128122 * Math.sin(F * rad)
+                + 0.280602 * Math.sin((Mp + F) * rad)
+                + 0.277693 * Math.sin((Mp - F) * rad)
+                + 0.173237 * Math.sin((2*D - F) * rad)
+                + 0.055413 * Math.sin((2*D - Mp + F) * rad)
+                + 0.046271 * Math.sin((2*D - Mp - F) * rad);
+
+            const eps = (23.439291 - 0.0130042 * T) * rad;
+            const l = lon * rad, b = lat * rad;
+            let ra = Math.atan2(Math.sin(l) * Math.cos(eps) - Math.tan(b) * Math.sin(eps), Math.cos(l)) / rad;
+            const dec = Math.asin(Math.sin(b) * Math.cos(eps) + Math.cos(b) * Math.sin(eps) * Math.sin(l)) / rad;
+            return { ra: ((ra / 15) % 24 + 24) % 24, dec: dec };
+        }
+
+        function tideGmstHours(jd) {
+            const T = (jd - 2451545.0) / 36525.0;
+            let g = 280.46061837 + 360.98564736629 * (jd - 2451545.0)
+                    + 0.000387933 * T * T - T * T * T / 38710000.0;
+            return (((g % 360) + 360) % 360) / 15.0;
+        }
+
+        /* Devuelve el instante (Date) del paso superior de la Luna por el meridiano
+           del observador, más próximo a la fecha de referencia. */
+        function moonUpperTransit(refDate, lonDeg) {
+            let jd = _tideJD(refDate);
+            for (let i = 0; i < 6; i++) {
+                const ra  = moonEquatorial(jd).ra;
+                const lst = ((tideGmstHours(jd) + lonDeg / 15.0) % 24 + 24) % 24;
+                let dh = ra - lst;
+                while (dh >  12) dh -= 24;
+                while (dh < -12) dh += 24;
+                jd += (dh / 0.9661) / 24.0;   // la Luna retrasa ~3.4% respecto al Sol
+            }
+            return new Date((jd - 2440587.5) * 86400000.0);
+        }
+
+        /* Factor sicigias / cuadraturas (1.0 = marea viva, ~0.55 = marea muerta) */
+        function springNeapFactor(d) {
+            const T = (_tideJD(d) - 2451545.0) / 36525.0;
+            const D = ((297.8501921 + 445267.1114034 * T) % 360 + 360) % 360;
+            return 0.55 + 0.45 * Math.abs(Math.cos(D * Math.PI / 180.0));
+        }
+
+        /* ------------------------- Caché de INT por celda -------------------------- */
+        function _tideCellKey(lat, lon) {
+            const q = v => (Math.round(v / TIDE_CELL_DEG) * TIDE_CELL_DEG).toFixed(1);
+            return `${q(lat)}_${q(lon)}`;
+        }
+        function _tideDistKm(la1, lo1, la2, lo2) {
+            const R = 6371, r = Math.PI / 180;
+            const dLat = (la2 - la1) * r, dLon = (lo2 - lo1) * r;
+            const a = Math.sin(dLat/2)**2 + Math.cos(la1*r) * Math.cos(la2*r) * Math.sin(dLon/2)**2;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        }
+        function _tideDB() {
+            try { return JSON.parse(localStorage.getItem('orion_tide_cells') || '{}'); }
+            catch (e) { return {}; }
+        }
+        function loadTideCell(lat, lon) {
+            const db = _tideDB();
+            const exact = db[_tideCellKey(lat, lon)];
+            if (exact) return Object.assign({}, exact, { distKm: 0 });
+            let best = null, bestD = Infinity;
+            for (const k in db) {
+                const p = k.split('_').map(Number);
+                if (p.length !== 2 || isNaN(p[0])) continue;
+                const d = _tideDistKm(lat, lon, p[0], p[1]);
+                if (d < bestD) { bestD = d; best = db[k]; }
+            }
+            if (best && bestD < 300) return Object.assign({}, best, { distKm: Math.round(bestD) });
+            return null;
+        }
+        function saveTideCell(lat, lon, obj) {
+            try {
+                const db = _tideDB();
+                db[_tideCellKey(lat, lon)] = Object.assign({}, obj, { ts: Date.now() });
+                const keys = Object.keys(db);
+                if (keys.length > 120) {   // poda: conserva las 120 más recientes
+                    keys.sort((a,b) => (db[b].ts||0) - (db[a].ts||0)).slice(120).forEach(k => delete db[k]);
+                }
+                localStorage.setItem('orion_tide_cells', JSON.stringify(db));
+            } catch (e) {}
+        }
+
+        /* --------------------- Descarga de la serie de nivel del mar --------------- */
+        async function fetchTideSeries(lat, lon, targetDate) {
+            const cached = loadTideCell(lat, lon);
+            const cands = [];
+            if (cached && cached.sea) cands.push({ lat: cached.sea[0], lon: cached.sea[1] });
+            cands.push({ lat: lat, lon: lon });
+            const cosL = Math.max(0.2, Math.cos(lat * Math.PI / 180));
+            for (const r of [0.4, 1.0, 2.0]) {
+                for (let a = 0; a < 360; a += 45) {
+                    const t = a * Math.PI / 180;
+                    cands.push({ lat: lat + r * Math.cos(t), lon: lon + (r * Math.sin(t)) / cosL });
+                }
+            }
+            const prev = new Date(targetDate); prev.setDate(prev.getDate() - 1);
+            const next = new Date(targetDate); next.setDate(next.getDate() + 1);
+            const s = prev.toISOString().split('T')[0];
+            const e = next.toISOString().split('T')[0];
+
+            for (const c of cands.slice(0, 16)) {
+                if (Math.abs(c.lat) > 89) continue;
+                let lonN = ((c.lon + 180) % 360 + 360) % 360 - 180;
+                try {
+                    const ctrl = new AbortController();
+                    const to = setTimeout(() => ctrl.abort(), 7000);
+                    const url = 'https://marine-api.open-meteo.com/v1/marine'
+                        + `?latitude=${c.lat.toFixed(3)}&longitude=${lonN.toFixed(3)}`
+                        + '&hourly=sea_level_height_msl'
+                        + `&start_date=${s}&end_date=${e}&timezone=auto`;
+                    const res = await fetch(url, { signal: ctrl.signal });
+                    clearTimeout(to);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    const arr = data && data.hourly && data.hourly.sea_level_height_msl;
+                    if (!arr) continue;
+                    const valid = arr.filter(v => v !== null && v !== undefined && !isNaN(v));
+                    if (valid.length < 30) continue;
+                    const range = Math.max.apply(null, valid) - Math.min.apply(null, valid);
+                    if (range < 0.03) continue;          // celda sin señal de marea útil
+                    return { times: data.hourly.time, levels: arr, sea: [c.lat, lonN], range: range };
+                } catch (err) { /* siguiente candidato */ }
+            }
+            return null;
+        }
+
+        /* --------- Extracción de pleamares/bajamares con refinado parabólico ------- */
+        function _parseNaive(s) {
+            const m = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(s || '');
+            return m ? { y:+m[1], mo:+m[2], d:+m[3], h:+m[4], mi:+m[5] } : null;
+        }
+
+        function extractTideEvents(series, targetDate) {
+            const lv = series.levels, tm = series.times;
+            const ty = targetDate.getFullYear(), tmo = targetDate.getMonth() + 1, td = targetDate.getDate();
+            const highs = [], lows = [], allHighs = [];
+
+            for (let i = 1; i < lv.length - 1; i++) {
+                const y1 = lv[i-1], y2 = lv[i], y3 = lv[i+1];
+                if (y1 == null || y2 == null || y3 == null) continue;
+                const isH = (y2 > y1 && y2 >= y3), isL = (y2 < y1 && y2 <= y3);
+                if (!isH && !isL) continue;
+
+                const den = y1 - 2 * y2 + y3;
+                let delta = Math.abs(den) > 1e-9 ? 0.5 * (y1 - y3) / den : 0;
+                if (!isFinite(delta) || Math.abs(delta) > 1) delta = 0;
+
+                const p = _parseNaive(tm[i]); if (!p) continue;
+                let hour = p.h + p.mi / 60.0 + delta;
+                let dy = p.y, dmo = p.mo, dd = p.d, roll = 0;
+                if (hour < 0)   { hour += 24; roll = -1; }
+                if (hour >= 24) { hour -= 24; roll =  1; }
+                if (roll !== 0) {
+                    const nd = new Date(dy, dmo - 1, dd + roll);
+                    dy = nd.getFullYear(); dmo = nd.getMonth() + 1; dd = nd.getDate();
+                }
+                const height = y2 - 0.25 * (y1 - y3) * delta;
+                const abs = new Date(dy, dmo - 1, dd, 0, 0, 0).getTime() + hour * 3600000;
+                if (isH) allHighs.push({ hour: hour, abs: abs });
+                if (dy === ty && dmo === tmo && dd === td) {
+                    (isH ? highs : lows).push({ hour: hour, height: height, abs: abs });
+                }
+            }
+            highs.sort((a,b) => a.hour - b.hour);
+            lows.sort((a,b) => a.hour - b.hour);
+
+            // Régimen: nº medio de pleamares por día en la ventana de 3 días
+            const perDay = allHighs.length / 3.0;
+            let regime = 'semidiurnal';
+            if (perDay < 1.4) regime = 'diurnal';
+            else if (perDay < 1.75) regime = 'mixed';
+
+            return { highs: highs, lows: lows, allHighs: allHighs, regime: regime };
+        }
+
+        /* Media circular del INT (módulo M2) a partir de las pleamares reales */
+        function deriveLunitidal(allHighs, lon) {
+            let sx = 0, sy = 0, n = 0;
+            for (const h of allHighs) {
+                const tr = moonUpperTransit(new Date(h.abs), lon);
+                let d = (h.abs - tr.getTime()) / 3600000.0;
+                d = ((d % TIDE_M2) + TIDE_M2) % TIDE_M2;
+                const a = (d / TIDE_M2) * 2 * Math.PI;
+                sx += Math.cos(a); sy += Math.sin(a); n++;
+            }
+            if (!n) return null;
+            let a = Math.atan2(sy / n, sx / n);
+            if (a < 0) a += 2 * Math.PI;
+            const R = Math.sqrt((sx/n)**2 + (sy/n)**2);   // 1 = coherente, 0 = disperso
+            return { int: (a / (2 * Math.PI)) * TIDE_M2, coherence: R };
+        }
+
+        /* ------------------- Modelo offline tipo Casio (INT + tránsito) ------------ */
+        function calculateTidesMathModelCasio(lat, lon, dayOffset = 0) {
+            const noon = new Date(); noon.setDate(noon.getDate() + dayOffset); noon.setHours(12, 0, 0, 0);
+            const dayStart = new Date(noon); dayStart.setHours(0, 0, 0, 0);
+            const dayEnd = dayStart.getTime() + 86400000;
+
+            const transit = moonUpperTransit(noon, lon);
+            const hwBase = transit.getTime() + calculatedLunitidalHours * 3600000;
+
+            const cycle = (tideRegime === 'diurnal') ? TIDE_LUNAR_DAY : TIDE_M2;
+            const highs = [], lows = [];
+            for (let k = -3; k <= 3; k++) {
+                const hw = hwBase + k * cycle * 3600000;
+                const lw = hw + (cycle / 2) * 3600000;
+                if (hw >= dayStart.getTime() && hw < dayEnd) highs.push(hw);
+                if (lw >= dayStart.getTime() && lw < dayEnd) lows.push(lw);
+            }
+            highs.sort((a,b) => a - b); lows.sort((a,b) => a - b);
+            const H = ms => { const d = new Date(ms); return d.getHours() + d.getMinutes()/60 + d.getSeconds()/3600; };
+
+            rawTideEvents = {
+                p1: highs[0] !== undefined ? H(highs[0]) : undefined,
+                p2: highs[1] !== undefined ? H(highs[1]) : undefined,
+                b1: lows[0]  !== undefined ? H(lows[0])  : undefined,
+                b2: lows[1]  !== undefined ? H(lows[1])  : undefined
+            };
+            tideAmplitudeFactor = springNeapFactor(noon);
+        }
+
+        /* ------------------------------ Orquestador -------------------------------- */
         async function updateTidesHybrid(lat, lon, dayOffset = 0) {
-            let onlineWorked = false;
             const targetDate = new Date();
             targetDate.setDate(targetDate.getDate() + dayOffset);
+            targetDate.setHours(12, 0, 0, 0);
 
-            const coastalPos = getMarineCoastalCoords(lat, lon);
+            const region = tideRegionFor(lat, lon);
+            const cell = loadTideCell(lat, lon);
 
-            // Hora del Tránsito Lunar para el cálculo astronómico del INT
-            const JD = (targetDate.getTime() / 86400000.0) + 2440587.5;
-            const T = (JD - 2451545.0) / 36525.0;
-            const D = ((297.8501921 + 445267.1114034 * T) % 360 + 360) % 360;
-            const ageInDays = (D / 360.0) * 29.53058867;
-            const moonTransit = (12.0 + (ageInDays * 0.8415) - (lon * 24.0 / 360.0) + 24) % 24;
-
-            // INT por defecto según ubicación (Barcelona / Med = ~02:27 / 2.45h)
-            let savedInt = localStorage.getItem('orion_cached_int');
-            if (savedInt) {
-                calculatedLunitidalHours = parseFloat(savedInt);
-            } else if (lat >= 35 && lat <= 44 && lon >= -5 && lon <= 5) {
-                calculatedLunitidalHours = 2.45; // Barcelona ~ 02:27
+            // 1) Punto de partida del INT: manual > caché de zona > estimación regional
+            if (cell && cell.int !== undefined) {
+                calculatedLunitidalHours = cell.int;
+                tideRegime = cell.regime || region.reg;
+                tideIntSource = cell.manual ? 'manual' : 'cache';
+                tideIntConfidence = cell.distKm === 0 ? 'alta' : 'media';
+                tideLastNote = cell.distKm > 0 ? `zona a ${cell.distKm} km` : (cell.place || region.n);
             } else {
-                calculatedLunitidalHours = 3.25;
+                calculatedLunitidalHours = region.int;
+                tideRegime = region.reg;
+                tideIntSource = 'region';
+                tideIntConfidence = 'baja';
+                tideLastNote = region.n;
             }
 
+            // 2) Intento online (sólo si hay red real)
+            let ok = false;
             if (navigator.onLine) {
                 try {
-                    const prevDate = new Date(targetDate); prevDate.setDate(prevDate.getDate() - 1);
-                    const nextDate = new Date(targetDate); nextDate.setDate(nextDate.getDate() + 1);
-                    const startDateStr = prevDate.toISOString().split('T')[0];
-                    const endDateStr = nextDate.toISOString().split('T')[0];
+                    const series = await fetchTideSeries(lat, lon, targetDate);
+                    if (series) {
+                        const ev = extractTideEvents(series, targetDate);
+                        if (ev.highs.length || ev.lows.length) {
+                            rawTideEvents = {
+                                p1: ev.highs[0] ? ev.highs[0].hour : undefined,
+                                p2: ev.highs[1] ? ev.highs[1].hour : undefined,
+                                b1: ev.lows[0]  ? ev.lows[0].hour  : undefined,
+                                b2: ev.lows[1]  ? ev.lows[1].hour  : undefined
+                            };
+                            tideRegime = ev.regime;
+                            tideSeaPoint = series.sea;
+                            tideAmplitudeFactor = springNeapFactor(targetDate);
 
-                    const res = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${coastalPos.lat}&longitude=${coastalPos.lon}&hourly=sea_level&start_date=${startDateStr}&end_date=${endDateStr}&timezone=auto`);
-                    
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data && data.hourly && data.hourly.sea_level && data.hourly.sea_level.length > 0) {
-                            const times = data.hourly.time;
-                            const levels = data.hourly.sea_level;
-
-                            let peaks = [];
-                            let troughs = [];
-
-                            for (let i = 1; i < levels.length - 1; i++) {
-                                const y1 = levels[i-1], y2 = levels[i], y3 = levels[i+1];
-                                if (y2 !== null && y1 !== null && y3 !== null) {
-                                    const denom = (y1 - 2*y2 + y3);
-                                    let delta = 0;
-                                    if (Math.abs(denom) > 0.0001) {
-                                        delta = (y1 - y3) / (2 * denom);
-                                        if (Math.abs(delta) > 1) delta = 0;
-                                    }
-
-                                    const eventTimeStr = times[i];
-                                    const eventDate = new Date(eventTimeStr);
-                                    const exactTime = new Date(eventDate.getTime() + delta * 3600000);
-                                    const localHour = exactTime.getHours() + exactTime.getMinutes() / 60.0 + exactTime.getSeconds() / 3600.0;
-                                    const isTargetDay = exactTime.toDateString() === targetDate.toDateString();
-
-                                    if (y2 > y1 && y2 > y3) {
-                                        peaks.push({ date: exactTime, hour: localHour, height: y2, isTargetDay });
-                                    } else if (y2 < y1 && y2 < y3) {
-                                        troughs.push({ date: exactTime, hour: localHour, height: y2, isTargetDay });
-                                    }
+                            const d = deriveLunitidal(ev.allHighs, lon);
+                            if (d && d.coherence > 0.55) {   // sólo si el INT es estable
+                                calculatedLunitidalHours = d.int;
+                                tideIntSource = 'online';
+                                tideIntConfidence = d.coherence > 0.85 ? 'alta' : 'media';
+                                if (!(cell && cell.manual)) {
+                                    saveTideCell(lat, lon, {
+                                        int: d.int, regime: ev.regime, sea: series.sea,
+                                        coherence: +d.coherence.toFixed(2), range: +series.range.toFixed(2)
+                                    });
                                 }
                             }
-
-                            let targetPeaks = peaks.filter(p => p.isTargetDay).sort((a,b) => a.hour - b.hour);
-                            let targetTroughs = troughs.filter(t => t.isTargetDay).sort((a,b) => a.hour - b.hour);
-
-                            if (targetPeaks.length > 0 || targetTroughs.length > 0) {
-                                let p1 = targetPeaks[0] ? targetPeaks[0].hour : undefined;
-                                let p2 = targetPeaks[1] ? targetPeaks[1].hour : undefined;
-                                let b1 = targetTroughs[0] ? targetTroughs[0].hour : undefined;
-                                let b2 = targetTroughs[1] ? targetTroughs[1].hour : undefined;
-
-                                if (p1 === undefined && peaks.length > 0) p1 = peaks[0].hour;
-                                if (b1 === undefined && troughs.length > 0) b1 = troughs[0].hour;
-
-                                rawTideEvents = { p1, b1, p2, b2 };
-
-                                if (p1 !== undefined) {
-                                    let diff = (p1 - moonTransit + 24.84) % 12.42;
-                                    if (diff < 0) diff += 12.42;
-                                    calculatedLunitidalHours = diff;
-                                    localStorage.setItem('orion_cached_int', calculatedLunitidalHours.toFixed(2));
-                                }
-
-                                const intH = String(Math.floor(calculatedLunitidalHours)).padStart(2, '0');
-                                const intM = String(Math.floor((calculatedLunitidalHours - Math.floor(calculatedLunitidalHours)) * 60)).padStart(2, '0');
-                                document.getElementById('lunitidalVal').innerText = `${intH}:${intM}`;
-                                document.getElementById('lunitidalSub').innerText = "ONLINE CALIBRADO (BCN PORT)";
-                                document.getElementById('lunitidalSub').style.color = "var(--accent-green)";
-
-                                document.getElementById('tideDotStatus').style.background = 'var(--accent-green)';
-                                document.getElementById('tideModeText').innerText = 'ONLINE (GPS/NOAA)';
-                                document.getElementById('tideRegionTitle').style.borderColor = 'rgba(52, 211, 153, 0.4)';
-                                onlineWorked = true;
-                            }
+                            tideLastNote = `mar ${series.sea[0].toFixed(2)}, ${series.sea[1].toFixed(2)}`;
+                            ok = true;
                         }
                     }
-                } catch(e) {}
+                } catch (e) {}
             }
-            
-            if (!onlineWorked) {
-                document.getElementById('tideDotStatus').style.background = 'var(--accent-orange)';
-                document.getElementById('tideModeText').innerText = 'OFFLINE (CASIO)';
-                document.getElementById('tideRegionTitle').style.borderColor = 'rgba(251, 146, 60, 0.4)';
 
-                const intH = String(Math.floor(calculatedLunitidalHours)).padStart(2, '0');
-                const intM = String(Math.floor((calculatedLunitidalHours - Math.floor(calculatedLunitidalHours)) * 60)).padStart(2, '0');
-                document.getElementById('lunitidalVal').innerText = `${intH}:${intM}`;
-                document.getElementById('lunitidalSub').innerText = `MODELO CASIO (INT ${intH}:${intM})`;
-                document.getElementById('lunitidalSub').style.color = "var(--accent-orange)";
+            // 3) Fallback: modelo Casio con el INT vigente
+            if (!ok) calculateTidesMathModelCasio(lat, lon, dayOffset);
 
-                calculateTidesMathModelCasio(lat, lon, dayOffset);
-            }
-            
+            renderTideStatus(ok);
             updateTideUI();
         }
 
-        function calculateTidesMathModelCasio(lat, lon, dayOffset = 0) {
-            const targetDate = new Date(); targetDate.setDate(targetDate.getDate() + dayOffset);
-            const JD = (targetDate.getTime() / 86400000.0) + 2440587.5;
-            const T = (JD - 2451545.0) / 36525.0;
-            const D = ((297.8501921 + 445267.1114034 * T) % 360 + 360) % 360;
-            const ageInDays = (D / 360.0) * 29.53058867;
-            
-            const transitTime = (12.0 + (ageInDays * 0.8415) - (lon * 24.0 / 360.0) + 24) % 24;
+        /* ------------------------------ Estado / UI -------------------------------- */
+        function renderTideStatus(online) {
+            const fmt = h => {
+                const hh = Math.floor(h), mm = Math.round((h - hh) * 60);
+                return `${String(mm === 60 ? hh + 1 : hh).padStart(2,'0')}:${String(mm === 60 ? 0 : mm).padStart(2,'0')}`;
+            };
+            const intStr = fmt(calculatedLunitidalHours);
+            const dot   = document.getElementById('tideDotStatus');
+            const mode  = document.getElementById('tideModeText');
+            const title = document.getElementById('tideRegionTitle');
+            const val   = document.getElementById('lunitidalVal');
+            const sub   = document.getElementById('lunitidalSub');
+            if (val) val.innerText = intStr;
 
-            // Corrección armónica sol-luna (variación S2/M2)
-            const solarShift = -0.42 * Math.sin(2 * D * Math.PI / 180.0);
+            const regTxt = tideRegime === 'diurnal' ? 'DIURNA'
+                         : tideRegime === 'mixed'   ? 'MIXTA' : 'SEMIDIURNA';
 
-            // Mareas para el Mediterráneo occidental (INT ~02:27 / 2.45h)
-            let p1 = (transitTime + calculatedLunitidalHours + solarShift + 24) % 24;
-            let b1 = (p1 + 5.67 + 24) % 24; // ~5h 40m tras pleamar (08:10)
-            let p2 = (p1 + 12.95 + 24) % 24; // Pleamar 2 (~15:27)
-            let b2 = (p2 + 4.68 + 24) % 24;  // Bajamar 2 (~20:08)
-
-            rawTideEvents = { p1, b1, p2, b2 };
-        }
-
-        function calibrateLunitidalManual() {
-            const currentStr = document.getElementById('lunitidalVal').innerText;
-            const input = prompt("Calibrar Intervalo Lunitidal (INT) para tu playa/zona (ej. Barcelona: 02:27 u 02:30, en formato HH:MM o decimal):", currentStr);
-            if (input) {
-                let hours = 2.45;
-                if (input.includes(':')) {
-                    const parts = input.split(':');
-                    hours = parseFloat(parts[0]) + (parseFloat(parts[1]) / 60.0);
-                } else {
-                    hours = parseFloat(input);
+            if (online) {
+                if (dot) dot.style.background = 'var(--accent-green)';
+                if (mode) mode.innerText = `ONLINE · ${regTxt}`;
+                if (title) title.style.borderColor = 'rgba(52, 211, 153, 0.4)';
+                if (sub) { sub.innerText = `INT ${intStr} CALIBRADO ONLINE`; sub.style.color = 'var(--accent-green)'; }
+            } else if (tideIntSource === 'manual' || tideIntSource === 'cache') {
+                if (dot) dot.style.background = 'var(--accent-cyan)';
+                if (mode) mode.innerText = `OFFLINE · ${regTxt}`;
+                if (title) title.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+                if (sub) {
+                    sub.innerText = tideIntSource === 'manual'
+                        ? `INT ${intStr} CALIBRADO A MANO`
+                        : `INT ${intStr} MEMORIZADO (${tideLastNote})`;
+                    sub.style.color = 'var(--accent-cyan)';
                 }
-                if (!isNaN(hours) && hours >= 0 && hours <= 12) {
-                    calculatedLunitidalHours = hours;
-                    localStorage.setItem('orion_cached_int', hours.toFixed(2));
-                    updateTidesHybrid(currentLat, currentLon, tideDayOffset);
-                    alert(`Intervalo Lunitidal re-calibrado a ${input} (${hours.toFixed(2)}h).`);
+            } else {
+                if (dot) dot.style.background = 'var(--accent-orange)';
+                if (mode) mode.innerText = `OFFLINE · SIN CALIBRAR`;
+                if (title) title.style.borderColor = 'rgba(251, 146, 60, 0.4)';
+                if (sub) {
+                    sub.innerText = `INT ${intStr} ESTIMADO · ${tideLastNote} · pulsa para calibrar`;
+                    sub.style.color = 'var(--accent-orange)';
                 }
             }
         }
+
+        function calibrateLunitidalManual() {
+            const cur = document.getElementById('lunitidalVal').innerText;
+            const msg = 'Calibrar Intervalo Lunitidal (INT) para esta zona.\n\n'
+                      + 'Es el retardo entre el paso de la Luna por tu meridiano y la pleamar.\n'
+                      + 'Se guarda sólo para esta zona (~55 km) y es el valor que debes\n'
+                      + 'introducir en el reloj Casio.\n\nFormato HH:MM o decimal:';
+            const input = prompt(msg, cur);
+            if (!input) return;
+            let hours;
+            if (input.indexOf(':') >= 0) {
+                const p = input.split(':');
+                hours = parseFloat(p[0]) + parseFloat(p[1]) / 60.0;
+            } else {
+                hours = parseFloat(input.replace(',', '.'));
+            }
+            if (isNaN(hours) || hours < 0 || hours >= TIDE_M2) {
+                alert(`Valor no válido. El INT va de 00:00 a ${Math.floor(TIDE_M2)}:${Math.round((TIDE_M2%1)*60)}.`);
+                return;
+            }
+            calculatedLunitidalHours = hours;
+            tideIntSource = 'manual';
+            saveTideCell(currentLat, currentLon, {
+                int: hours, regime: tideRegime, manual: true, sea: tideSeaPoint
+            });
+            calculateTidesMathModelCasio(currentLat, currentLon, tideDayOffset);
+            renderTideStatus(false);
+            updateTideUI();
+        }
+
+        /* Borra el INT memorizado de la zona actual y vuelve a estimar */
+        function resetLunitidalZone() {
+            try {
+                const db = _tideDB();
+                delete db[_tideCellKey(currentLat, currentLon)];
+                localStorage.setItem('orion_tide_cells', JSON.stringify(db));
+            } catch (e) {}
+            localStorage.removeItem('orion_cached_int');   // limpia caché global de v4.6
+            updateTidesHybrid(currentLat, currentLon, tideDayOffset);
+        }
+
 
         function updateTideUI() {
             const formatH = val => (val === undefined || val === null || isNaN(val)) ? '--:--' : `${String(Math.floor(val)).padStart(2,'0')}:${String(Math.floor((val - Math.floor(val))*60)).padStart(2,'0')}`;
@@ -976,8 +1263,9 @@
             if (!e1 || !e2) return h/2; 
             let pct = (hour - e1.t) / (e2.t - e1.t); 
             let cosPct = (1 - Math.cos(pct * Math.PI)) / 2;
-            let y1 = e1.isHigh ? (h / 2) - (h * 0.28) : (h / 2) + (h * 0.28); 
-            let y2 = e2.isHigh ? (h / 2) - (h * 0.28) : (h / 2) + (h * 0.28); 
+            const amp = h * 0.28 * Math.max(0.35, Math.min(1.0, tideAmplitudeFactor || 1.0));
+            let y1 = e1.isHigh ? (h / 2) - amp : (h / 2) + amp; 
+            let y2 = e2.isHigh ? (h / 2) - amp : (h / 2) + amp; 
             return y1 + (y2 - y1) * cosPct;
         }
 
@@ -1055,6 +1343,7 @@
             setTimeout(() => { initBarometerDetailedChart(); updateMagneticDeclination(currentLat, currentLon); prefetchLocalTiles(currentLat, currentLon); }, 100);
             window.addEventListener('resize', () => { initBarometerDetailedChart(); drawTideCanvas(); });
             setInterval(() => checkStormDropAuto(true), 30000); 
+            setInterval(checkConnectivityStatus, 90000);
             setInterval(() => updateSolarHybrid(currentLat, currentLon), 60000); 
             setInterval(() => { updateMoonTopocentric(currentLat, currentLon, tideDayOffset); drawTideCanvas(); }, 60000);
         });
@@ -1169,25 +1458,61 @@
             animFrameId = requestAnimationFrame(render);
         }
 
-        function checkConnectivityStatus() {
+        let _netProbeBusy = false;
+        let _netLastState = null;
+
+        async function probeInternet() {
+            if (!navigator.onLine) return false;
+            try {
+                const ctrl = new AbortController();
+                const to = setTimeout(() => ctrl.abort(), 5000);
+                const r = await fetch('https://marine-api.open-meteo.com/v1/marine'
+                    + '?latitude=0&longitude=0&hourly=wave_height&forecast_days=1',
+                    { signal: ctrl.signal, cache: 'no-store' });
+                clearTimeout(to);
+                return r.ok;
+            } catch (e) { return false; }
+        }
+
+        /* Sonda real: navigator.onLine sólo dice si hay interfaz de red levantada,
+           no si hay salida a Internet (wifi de hotel, portal cautivo, monte sin datos). */
+        async function checkConnectivityStatus() {
+            if (_netProbeBusy) return;
+            _netProbeBusy = true;
+            try {
+                const live = await probeInternet();
+                const changed = (_netLastState !== live);
+                _netLastState = live;
+                _applyConnectivity(live, changed);
+            } finally { _netProbeBusy = false; }
+        }
+
+        function _applyConnectivity(live, changed) {
             const hudNetPill = document.getElementById('hudNetPill');
             const hudNetDot = document.getElementById('hudNetDot');
             const hudNetText = document.getElementById('hudNetText');
-            if (navigator.onLine) { 
+            if (live) { 
                 hudNetPill.className = 'hud-pill ok';
                 hudNetDot.style.background = 'var(--accent-green)'; 
                 hudNetText.innerText = 'ONLINE'; 
-                if (gpsActive) {
-                    updateMagneticDeclination(currentLat, currentLon);
+                // Sólo recalcular al RECUPERAR la conexión, no en cada sondeo
+                if (changed) {
                     updateTidesHybrid(currentLat, currentLon, tideDayOffset);
-                    prefetchLocalTiles(currentLat, currentLon);
+                    if (gpsActive) {
+                        updateMagneticDeclination(currentLat, currentLon);
+                        prefetchLocalTiles(currentLat, currentLon);
+                    }
                 }
             } else { 
                 hudNetPill.className = 'hud-pill warn';
                 hudNetDot.style.background = 'var(--accent-orange)'; 
                 hudNetText.innerText = 'OFFLINE'; 
-                document.getElementById('tideDotStatus').style.background = 'var(--accent-orange)';
-                document.getElementById('tideModeText').innerText = 'OFFLINE (CASIO)';
+                // Al perder red, recalcular con el modelo Casio y el INT de la zona
+                if (changed) {
+                    calculateTidesMathModelCasio(currentLat, currentLon, tideDayOffset);
+                    updateTideUI();
+                }
+                renderTideStatus(false);
             }
         }
 
