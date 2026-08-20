@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ORION - Field Navigator v4.7</title>
+    <title>ORION - Field Navigator v4.8</title>
     <meta name="author" content="danielcdmo">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -267,7 +267,7 @@
         </div>
 
         <div class="topbar-controls-row">
-            <span class="version-tag">v4.7</span>
+            <span class="version-tag">v4.8</span>
             
             <button class="btn-sync-master" id="btnMasterSync" onclick="startTacticalSystems()">
                 ⚡ SYNC HARDWARE
@@ -374,12 +374,12 @@
             <div class="metric-box">
                 <span class="metric-label">Altitud Barométrica</span>
                 <span class="metric-value text-yellow" id="altBaroVal">-- <span class="unit">m</span></span>
-                <span class="metric-sub">SENSOR CASIO CORREGIDO</span>
+                <span class="metric-sub" style="color:var(--text-muted);">DERIVADA GPS+QNH · SIN SENSOR</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Presión Absoluta (QFE)</span>
                 <span class="metric-value text-green" id="qfeVal">-- <span class="unit">hPa</span></span>
-                <span class="metric-sub">SENSOR LOCAL</span>
+                <span class="metric-sub" style="color:var(--text-muted);">CALCULADA · iOS NO EXPONE BARÓMETRO</span>
             </div>
             <div class="metric-box">
                 <span class="metric-label">Presión Nivel Mar (QNH)</span>
@@ -447,8 +447,8 @@
             </div>
         </div>
         <div class="metric-grid-2x2">
-            <div class="metric-box"><span class="metric-label">Salida de Luna (Orto)</span><span class="metric-value text-yellow" id="moonRiseVal">--:--</span><span class="metric-sub">TRÁNSITO LOCAL TOPOCÉNTRICO</span></div>
-            <div class="metric-box"><span class="metric-label">Puesta de Luna (Ocaso)</span><span class="metric-value" id="moonSetVal">--:--</span><span class="metric-sub">TRÁNSITO LOCAL TOPOCÉNTRICO</span></div>
+            <div class="metric-box"><span class="metric-label">Salida de Luna (Orto)</span><span class="metric-value text-yellow" id="moonRiseVal">--:--</span><span class="metric-sub" id="moonRiseSub">ORTO REAL</span></div>
+            <div class="metric-box"><span class="metric-label">Puesta de Luna (Ocaso)</span><span class="metric-value" id="moonSetVal">--:--</span><span class="metric-sub" id="moonSetSub">OCASO REAL</span></div>
             <div class="metric-box"><span class="metric-label">Edad Lunar</span><span class="metric-value text-green" id="moonAgeDetailVal">-- <span class="unit">días</span></span><span class="metric-sub">CICLO SINÓDICO</span></div>
             <div class="metric-box"><span class="metric-label">Próxima Luna Llena</span><span class="metric-value text-yellow" id="moonNextFullVal">-- <span class="unit">días</span></span><span class="metric-sub">PLENILUNIO</span></div>
         </div>
@@ -552,7 +552,7 @@
                     <div style="font-size:0.75rem; color:#64748b; font-weight:700; margin-top:3px;" id="vwRouteDate">Fecha: --</div>
                 </div>
                 <div style="text-align:right;">
-                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v4.7</span>
+                    <span style="font-size:0.72rem; font-weight:800; background:#0f172a; color:#fff; padding:4px 9px; border-radius:6px;">v4.8</span>
                     <div style="font-size:0.62rem; color:#64748b; font-weight:700; margin-top:4px;">REF: WGS84-GEO</div>
                 </div>
             </div>
@@ -595,7 +595,7 @@
             </div>
 
             <div style="margin-top:14px; border-top:1px dashed #cbd5e1; padding-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:#64748b;">
-                <span>Sistema ORION v4.7 • Navegación & Telemetría</span>
+                <span>Sistema ORION v4.8 • Navegación & Telemetría</span>
                 <span><strong>danielcdmo</strong></span>
             </div>
         </div>
@@ -1370,7 +1370,7 @@
             }
             async function fetchLiveWeather() {
                 try { 
-                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${currentLat}&longitude=${currentLon}&current=temperature_2m,pressure_msl`); 
+                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${currentLat}&longitude=${currentLon}&current=temperature_2m,pressure_msl&hourly=pressure_msl&forecast_days=2&timezone=auto`); 
                     const data = await res.json(); 
                     if (data && data.current) { 
                         document.getElementById('masterTempVal').innerText = `${Math.round(data.current.temperature_2m)}°C`; 
@@ -1378,8 +1378,21 @@
                             seaLevelPressure = Math.round(data.current.pressure_msl); 
                             document.getElementById('qnhSourceTag').innerText = "QNH ONLINE (API)"; 
                             document.getElementById('qnhSourceTag').style.color = "var(--accent-green)"; 
+                            pushQnhSample(data.current.pressure_msl);
                             recalcularPresionesYAltitud(); 
                         } 
+                    }
+                    // Prevision de caida de presion para las proximas 12 h (cacheada)
+                    if (data && data.hourly && data.hourly.pressure_msl) {
+                        const arr = data.hourly.pressure_msl, tms = data.hourly.time;
+                        const nowIso = new Date().toISOString().slice(0, 13);
+                        let i0 = tms.findIndex(x => x.slice(0, 13) >= nowIso);
+                        if (i0 < 0) i0 = 0;
+                        const win = arr.slice(i0, i0 + 13).filter(v => v != null);
+                        if (win.length > 3) {
+                            const drop = win[0] - Math.min.apply(null, win);
+                            try { localStorage.setItem('orion_qnh_fc', JSON.stringify({ ts: Date.now(), drop: +drop.toFixed(1) })); } catch (e) {}
+                        }
                     }
                 } 
                 catch (e) {}
@@ -1768,16 +1781,72 @@
             document.getElementById('sunAzVal').innerHTML = `${sunAzimuth}<span class="unit">°</span>`;
         }
 
+        /* ============ ORION v4.8 · ORTO Y OCASO LUNAR REALES ============
+           v4.7 y anteriores estimaban el orto/ocaso con la edad de la Luna
+           (12 + edad*0.842) y un semiarco fijo. Al no usar la posición real,
+           fallaba +/-30-60 min segun el punto de la orbita.
+           Ahora se calcula la altura topocentrica real cada 10 min y se buscan
+           los cruces por el horizonte aparente lunar (h0 = +0.125 grados, que
+           combina paralaje, refraccion y semidiametro). */
+
+        function moonAltitudeDeg(jd, lat, lon) {
+            const eq = moonEquatorial(jd);
+            const lst = ((tideGmstHours(jd) + lon / 15.0) % 24 + 24) % 24;
+            const H = (lst - eq.ra) * 15.0 * Math.PI / 180.0;
+            const la = lat * Math.PI / 180.0, de = eq.dec * Math.PI / 180.0;
+            const sinAlt = Math.sin(la) * Math.sin(de) + Math.cos(la) * Math.cos(de) * Math.cos(H);
+            return Math.asin(Math.max(-1, Math.min(1, sinAlt))) * 180.0 / Math.PI;
+        }
+
+        function moonRiseSet(refDate, lat, lon) {
+            const start = new Date(refDate); start.setHours(0, 0, 0, 0);
+            const h0 = 0.125, step = 10;
+            let rise = null, set = null;
+            let prev = moonAltitudeDeg(_tideJD(start), lat, lon) - h0;
+            for (let m = step; m <= 1440; m += step) {
+                const d = new Date(start.getTime() + m * 60000);
+                const cur = moonAltitudeDeg(_tideJD(d), lat, lon) - h0;
+                if (prev < 0 && cur >= 0 && rise === null) {
+                    const f = prev / (prev - cur);
+                    rise = new Date(start.getTime() + ((m - step) + f * step) * 60000);
+                }
+                if (prev >= 0 && cur < 0 && set === null) {
+                    const f = prev / (prev - cur);
+                    set = new Date(start.getTime() + ((m - step) + f * step) * 60000);
+                }
+                prev = cur;
+            }
+            // Si el orto o el ocaso caen fuera del dia natural (normal: la Luna se
+            // desplaza ~50 min/dia), buscar en el dia siguiente y marcarlo con (+1d).
+            let riseNext = false, setNext = false;
+            if (!rise || !set) {
+                const d2 = new Date(start.getTime() + 86400000);
+                let p2 = moonAltitudeDeg(_tideJD(d2), lat, lon) - h0;
+                for (let m = step; m <= 1440; m += step) {
+                    const d = new Date(d2.getTime() + m * 60000);
+                    const c2 = moonAltitudeDeg(_tideJD(d), lat, lon) - h0;
+                    if (!rise && p2 < 0 && c2 >= 0) {
+                        const f = p2 / (p2 - c2);
+                        rise = new Date(d2.getTime() + ((m - step) + f * step) * 60000); riseNext = true;
+                    }
+                    if (!set && p2 >= 0 && c2 < 0) {
+                        const f = p2 / (p2 - c2);
+                        set = new Date(d2.getTime() + ((m - step) + f * step) * 60000); setNext = true;
+                    }
+                    p2 = c2;
+                    if (rise && set) break;
+                }
+            }
+            return { rise: rise, set: set, riseNext: riseNext, setNext: setNext };
+        }
+
         function updateMoonTopocentric(lat, lon, dayOffset = 0) {
+            // El calculo lunar es 100% local (Meeus): no depende de la red.
             const badge = document.getElementById('moonSourceTag');
-            if (navigator.onLine) {
-                badge.innerText = "ONLINE (MEEUS)";
-                badge.style.color = "var(--accent-green)";
-                badge.style.borderColor = "rgba(52, 211, 153, 0.4)";
-            } else {
-                badge.innerText = "OFFLINE (MEEUS)";
-                badge.style.color = "var(--accent-orange)";
-                badge.style.borderColor = "rgba(251, 146, 60, 0.4)";
+            if (badge) {
+                badge.innerText = "MEEUS · LOCAL";
+                badge.style.color = "var(--accent-cyan)";
+                badge.style.borderColor = "rgba(56, 189, 248, 0.4)";
             }
 
             const targetDate = new Date(); targetDate.setDate(targetDate.getDate() + dayOffset); 
@@ -1811,22 +1880,27 @@
             document.getElementById('moonDistVal').innerText = `${moonDistKm.toLocaleString('es-ES')} km`; 
             document.getElementById('moonNextFullVal').innerHTML = `${daysToFull.toFixed(1)} <span class="unit">días</span>`; 
 
-            const timezoneOffsetHours = -targetDate.getTimezoneOffset() / 60.0;
-            let transitSolarHours = 12.0 + (ageInDays * 0.842) - (lon * 24.0 / 360.0);
-            let semidiurnalHours = 5.25 - (lat * 0.015);
+            const rs = moonRiseSet(targetDate, lat, lon);
+            const fmtM = (d, next) => d
+                ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}${next ? ' +1d' : ''}`
+                : '--:--';
 
-            let mRise = (transitSolarHours - semidiurnalHours + timezoneOffsetHours + 24) % 24;
-            let mSet = (transitSolarHours + semidiurnalHours + timezoneOffsetHours + 24) % 24;
+            document.getElementById('moonRiseVal').innerText = fmtM(rs.rise, rs.riseNext); 
+            document.getElementById('moonSetVal').innerText = fmtM(rs.set, rs.setNext); 
 
-            const fmtM = val => {
-                let h = Math.floor(val) % 24;
-                let m = Math.floor((val - Math.floor(val)) * 60);
-                if (h < 0) h += 24;
-                return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-            };
-
-            document.getElementById('moonRiseVal').innerText = fmtM(mRise); 
-            document.getElementById('moonSetVal').innerText = fmtM(mSet); 
+            // Altura actual de la Luna sobre el horizonte (util para caza y foto nocturna)
+            const altNow = moonAltitudeDeg(_tideJD(new Date()), lat, lon);
+            const tr = moonUpperTransit(targetDate, lon);
+            const trStr = `${String(tr.getHours()).padStart(2,'0')}:${String(tr.getMinutes()).padStart(2,'0')}`;
+            const rSub = document.getElementById('moonRiseSub');
+            const sSub = document.getElementById('moonSetSub');
+            if (rSub) rSub.innerText = `ORTO REAL · TRÁNSITO ${trStr}`;
+            if (sSub) {
+                sSub.innerText = altNow >= 0
+                    ? `OCASO REAL · AHORA ${altNow.toFixed(0)}\u00b0 SOBRE HORIZONTE`
+                    : `OCASO REAL · AHORA BAJO EL HORIZONTE`;
+                sSub.style.color = altNow >= 0 ? 'var(--accent-green)' : 'var(--text-muted)';
+            }
 
             const disc = document.getElementById('moonDiscVisual'); 
             if (disc) { 
@@ -2112,6 +2186,54 @@
             openHistoryModal();
         }
 
+        /* ============ ORION v4.8 · ALARMA DE TORMENTA REAL ============
+           v4.7 comparaba referencePressure con currentPressure, pero
+           currentPressure se derivaba de la altitud GPS y del QNH, asi que
+           sin cambiar de altitud NUNCA variaba: la alarma no podia dispararse.
+           Ahora se registra el historial real de QNH (presion a nivel del mar,
+           de la API) y se evalua la caida en 3 h, que es el criterio
+           meteorologico estandar. Ademas se guarda la tendencia prevista para
+           que siga avisando aunque te quedes sin cobertura. */
+
+        function pushQnhSample(hPa) {
+            try {
+                const h = JSON.parse(localStorage.getItem('orion_qnh_hist') || '[]');
+                const now = Date.now();
+                if (!h.length || (now - h[h.length - 1].t) > 15 * 60000) {
+                    h.push({ t: now, p: hPa });
+                    const keep = h.filter(x => now - x.t < 30 * 3600000);
+                    localStorage.setItem('orion_qnh_hist', JSON.stringify(keep));
+                }
+            } catch (e) {}
+        }
+
+        function qnhTrend() {
+            try {
+                const h = JSON.parse(localStorage.getItem('orion_qnh_hist') || '[]');
+                if (h.length < 2) return null;
+                const now = Date.now(), cur = h[h.length - 1];
+                if (now - cur.t > 6 * 3600000) return null;       // datos rancios
+                let ref = null, best = Infinity;
+                for (const x of h) {
+                    const d = Math.abs((cur.t - x.t) - 3 * 3600000);
+                    if (d < best) { best = d; ref = x; }
+                }
+                if (!ref) return null;
+                const hours = (cur.t - ref.t) / 3600000;
+                if (hours < 1) return null;                        // historial insuficiente
+                return { drop: ref.p - cur.p, hours: hours, cur: cur.p };
+            } catch (e) { return null; }
+        }
+
+        /* Caida prevista en las proximas 12 h, cacheada para uso offline */
+        function forecastDrop() {
+            try {
+                const f = JSON.parse(localStorage.getItem('orion_qnh_fc') || 'null');
+                if (!f || Date.now() - f.ts > 12 * 3600000) return null;
+                return f;
+            } catch (e) { return null; }
+        }
+
         function checkStormDropAuto(allowAudio = true) {
             const banner = document.getElementById('stormBanner'); const indicator = document.getElementById('stormAlarmIndicator');
             if (!isStormAlarmEnabled) { 
@@ -2120,7 +2242,22 @@
                 indicator.innerHTML = '<span class="status-dot-mini" style="background:#64748b;"></span> BARO OFF'; 
                 return; 
             }
-            if (referencePressure - currentPressure >= 3) { 
+            const t = qnhTrend();
+            const fc = forecastDrop();
+            const observed = t ? (t.drop / t.hours) * 3 : 0;      // hPa equivalentes en 3 h
+            const predicted = fc ? fc.drop : 0;
+            const alert = (observed >= 3) || (predicted >= 4);
+
+            const trendEl = document.getElementById('trendState');
+            if (trendEl && t) {
+                const arrow = observed >= 1.5 ? '\u2198' : (observed <= -1.5 ? '\u2197' : '\u2794');
+                const word  = observed >= 1.5 ? 'Bajando' : (observed <= -1.5 ? 'Subiendo' : 'Estable');
+                trendEl.innerText = `${arrow} ${word} (${observed >= 0 ? '-' : '+'}${Math.abs(observed).toFixed(1)} hPa/3h)`;
+            } else if (trendEl) {
+                trendEl.innerText = '\u2794 Sin historial';
+            }
+
+            if (alert) { 
                 banner.style.display = 'flex'; 
                 indicator.className = 'badge-tag baro-alert interactive'; 
                 indicator.innerHTML = '<span class="status-dot-mini" style="background:#f43f5e;"></span> BARO [STORM]'; 
