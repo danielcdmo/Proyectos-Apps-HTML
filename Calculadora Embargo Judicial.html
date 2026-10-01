@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calculadora de embargo de salario — art. 607 LEC</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,13 +25,14 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
+html{background:var(--paper);min-height:100%}
 body{
   background:var(--paper);
   color:var(--ink);
   font-family:'IBM Plex Sans',system-ui,sans-serif;
   font-size:15px;line-height:1.5;
   -webkit-font-smoothing:antialiased;
-  padding:20px 16px 56px;
+  padding:max(20px, env(safe-area-inset-top)) 16px max(56px, env(safe-area-inset-bottom));
 }
 .wrap{max-width:760px;margin:0 auto}
 
@@ -294,194 +295,7 @@ footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid 
 
 <script>
 /* ===== Mini generador de PDF (sin librerías, sin window.print) ===== */
-var MiniPDF = (function () {
-  var W = 595.28, H = 841.89, M = 48;
-  var HW = [278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584];
-  var BW = [278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584];
-
-  // Unicode -> byte WinAnsi (lo que Helvetica estándar sí dibuja)
-  function byteOf(c) {
-    if (c === 9 || c === 10 || c === 13) return 32;
-    if (c < 32) return -1;
-    if (c < 127) return c;
-    if (c >= 160 && c <= 255) return c;
-    switch (c) {
-      case 0x20AC: return 0x80; case 0x2026: return 0x85; case 0x2018: return 0x91;
-      case 0x2019: return 0x92; case 0x201C: return 0x93; case 0x201D: return 0x94;
-      case 0x2022: return 0x95; case 0x2013: return 0x96; case 0x2014: return 0x97;
-      case 0x2212: return 0x2D;
-    }
-    return -1; // emojis, símbolos: se omiten
-  }
-  function enc(s) {
-    s = String(s == null ? '' : s);
-    var o = '';
-    for (var i = 0; i < s.length; i++) { var b = byteOf(s.charCodeAt(i)); if (b >= 0) o += String.fromCharCode(b); }
-    return o;
-  }
-  function charW(b, bold) {
-    var t = bold ? BW : HW;
-    if (b >= 32 && b <= 126) return t[b - 32];
-    if (b === 0x80) return 556;
-    if (b === 0x95) return 350;
-    if (b === 0x96 || b === 0x97) return b === 0x96 ? 556 : 1000;
-    if (b >= 160) {
-      var base = String.fromCharCode(b).normalize ? String.fromCharCode(b).normalize('NFD').charCodeAt(0) : 0;
-      if (base >= 32 && base <= 126) return t[base - 32];
-    }
-    return 556;
-  }
-  function width(s, size, bold) {
-    var e = enc(s), w = 0;
-    for (var i = 0; i < e.length; i++) w += charW(e.charCodeAt(i), bold);
-    return w * size / 1000;
-  }
-  function esc(e) { return e.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)'); }
-  function f2(n) { return (Math.round(n * 100) / 100).toFixed(2); }
-  function col(c) { return f2(c[0]) + ' ' + f2(c[1]) + ' ' + f2(c[2]); }
-
-  var INK = [0.09, 0.1, 0.12], GREY = [0.42, 0.44, 0.48], LINE = [0.82, 0.83, 0.85], ACC = [0.04, 0.38, 0.8], BOX = [0.94, 0.95, 0.97];
-
-  function Doc(opts) {
-    opts = opts || {};
-    this.title = opts.title || 'Documento';
-    this.footer = opts.footer || '';
-    this.pages = []; this.newPage();
-  }
-  var P = Doc.prototype;
-  P.newPage = function () { this.cur = []; this.pages.push(this.cur); this.y = M; };
-  P.ensure = function (h) { if (this.y + h > H - M - 14) this.newPage(); };
-  P.text = function (x, y, s, size, bold, color) {
-    this.cur.push('BT /' + (bold ? 'F2' : 'F1') + ' ' + f2(size) + ' Tf ' + col(color || INK) + ' rg ' + f2(x) + ' ' + f2(H - y) + ' Td (' + esc(enc(s)) + ') Tj ET');
-  };
-  P.textR = function (xr, y, s, size, bold, color) { this.text(xr - width(s, size, bold), y, s, size, bold, color); };
-  P.hline = function (y, color, w, x1, x2) {
-    this.cur.push(col(color || LINE) + ' RG ' + f2(w || 0.6) + ' w ' + f2(x1 == null ? M : x1) + ' ' + f2(H - y) + ' m ' + f2(x2 == null ? W - M : x2) + ' ' + f2(H - y) + ' l S');
-  };
-  P.rect = function (x, y, w, h, color) { this.cur.push(col(color) + ' rg ' + f2(x) + ' ' + f2(H - y - h) + ' ' + f2(w) + ' ' + f2(h) + ' re f'); };
-  P.space = function (h) { this.y += h; return this; };
-  P.fit = function (s, size, bold, maxW) {
-    s = String(s == null ? '' : s);
-    if (width(s, size, bold) <= maxW) return s;
-    while (s.length > 1 && width(s + '…', size, bold) > maxW) s = s.slice(0, -1);
-    return s + '…';
-  };
-  P.heading = function (t, sub) {
-    this.ensure(46);
-    this.rect(M, this.y, 4, 22, ACC);
-    this.text(M + 12, this.y + 17, t, 19, true, INK);
-    this.y += 30;
-    if (sub) { this.text(M, this.y + 8, sub, 9.5, false, GREY); this.y += 14; }
-    this.hline(this.y + 4, INK, 1.2); this.y += 16;
-    return this;
-  };
-  P.section = function (t) {
-    this.ensure(34); this.y += 8;
-    this.text(M, this.y + 10, t.toUpperCase(), 9.5, true, ACC);
-    this.y += 15; this.hline(this.y, LINE, 0.6); this.y += 6;
-    return this;
-  };
-  P.kv = function (k, v, o) {
-    o = o || {}; this.ensure(19);
-    this.text(M + 2, this.y + 13, k, 10.5, false, o.dim ? GREY : INK);
-    this.textR(W - M - 2, this.y + 13, v, 10.5, !!o.bold, o.color || INK);
-    this.y += 19; this.hline(this.y, LINE, 0.4);
-    return this;
-  };
-  P.big = function (label, value) {
-    this.ensure(54); this.y += 6;
-    this.rect(M, this.y, W - 2 * M, 44, BOX);
-    this.text(M + 12, this.y + 17, label.toUpperCase(), 8.5, true, GREY);
-    this.textR(W - M - 12, this.y + 33, value, 20, true, INK);
-    this.y += 52;
-    return this;
-  };
-  P.para = function (s, size, color) {
-    size = size || 9.5; var maxW = W - 2 * M, words = String(s).split(/\s+/), line = '', self = this;
-    function flush() { if (line) { self.ensure(size * 1.45); self.text(M, self.y + size, line, size, false, color || GREY); self.y += size * 1.45; line = ''; } }
-    words.forEach(function (w) {
-      var t = line ? line + ' ' + w : w;
-      if (width(t, size, false) > maxW) { flush(); line = w; } else line = t;
-    });
-    flush(); return this;
-  };
-  // cols: [{h:'Concepto', w:0.5, a:'l'|'r'}] ; rows: [{c:[..], bold, sep, dim}]
-  P.table = function (cols, rows) {
-    var self = this, tw = W - 2 * M, xs = [], x = M;
-    cols.forEach(function (c) { xs.push(x); x += c.w * tw; });
-    function cell(i, s, y, size, bold, color) {
-      var c = cols[i], mw = c.w * tw - 8; s = self.fit(s, size, bold, mw);
-      if (c.a === 'r') self.textR(xs[i] + c.w * tw - 4, y, s, size, bold, color);
-      else self.text(xs[i] + 4, y, s, size, bold, color);
-    }
-    function head() {
-      self.ensure(40);
-      cols.forEach(function (c, i) { cell(i, c.h.toUpperCase(), self.y + 12, 8, true, GREY); });
-      self.y += 17; self.hline(self.y, INK, 0.9); self.y += 2;
-    }
-    head();
-    rows.forEach(function (r) {
-      if (self.y + 19 > H - M - 14) { self.newPage(); head(); }
-      if (r.sep) { self.hline(self.y + 1, INK, 0.9); self.y += 2; }
-      r.c.forEach(function (s, i) { cell(i, s, self.y + 13, 9.5, !!r.bold, r.dim ? GREY : INK); });
-      self.y += 19; self.hline(self.y, LINE, 0.4);
-    });
-    return this;
-  };
-  P.build = function () {
-    var n = this.pages.length, self = this, now = new Date();
-    var stamp = ('0' + now.getDate()).slice(-2) + '/' + ('0' + (now.getMonth() + 1)).slice(-2) + '/' + now.getFullYear();
-    var objs = [];
-    var kids = []; for (var k = 0; k < n; k++) kids.push((5 + 2 * k) + ' 0 R');
-    objs[0] = '<< /Type /Catalog /Pages 2 0 R >>';
-    objs[1] = '<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + n + ' >>';
-    objs[2] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
-    objs[3] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
-    this.pages.forEach(function (ops, i) {
-      self.cur = ops;
-      self.hline(H - 34, LINE, 0.5);
-      self.text(M, H - 22, (self.footer ? self.footer + ' · ' : '') + 'Generado el ' + stamp, 7.5, false, GREY);
-      self.textR(W - M, H - 22, 'Página ' + (i + 1) + ' de ' + n, 7.5, false, GREY);
-      var content = ops.join('\n');
-      objs[4 + 2 * i] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + f2(W) + ' ' + f2(H) + '] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ' + (6 + 2 * i) + ' 0 R >>';
-      objs[5 + 2 * i] = '<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream';
-    });
-    objs.push('<< /Title (' + esc(enc(this.title)) + ') /Producer (CDMO) >>');
-    var out = '%PDF-1.4\n%\u00E2\u00E3\u00CF\u00D3\n', offs = [];
-    objs.forEach(function (o, i) { offs.push(out.length); out += (i + 1) + ' 0 obj\n' + o + '\nendobj\n'; });
-    var xref = out.length;
-    out += 'xref\n0 ' + (objs.length + 1) + '\n0000000000 65535 f \n';
-    offs.forEach(function (o) { out += ('0000000000' + o).slice(-10) + ' 00000 n \n'; });
-    out += 'trailer\n<< /Size ' + (objs.length + 1) + ' /Root 1 0 R /Info ' + objs.length + ' 0 R >>\nstartxref\n' + xref + '\n%%EOF';
-    var u8 = new Uint8Array(out.length);
-    for (var j = 0; j < out.length; j++) u8[j] = out.charCodeAt(j) & 255;
-    return new Blob([u8], { type: 'application/pdf' });
-  };
-
-  // Entrega en iOS: hoja de compartir (Guardar en Archivos, Imprimir, AirDrop...) o descarga
-  function standalone() { return !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches)); }
-  function deliver(blob, filename, mime, shareOnlyStandalone) {
-    mime = mime || 'application/pdf';
-    var file = null;
-    try { file = new File([blob], filename, { type: mime }); } catch (e) {}
-    var canShare = file && navigator.canShare && navigator.canShare({ files: [file] });
-    if (canShare && (!shareOnlyStandalone || standalone())) {
-      return navigator.share({ files: [file], title: filename }).catch(function (e) {
-        if (e && e.name === 'AbortError') return;
-        return download(blob, filename);
-      });
-    }
-    return Promise.resolve(download(blob, filename));
-  }
-  function download(blob, filename) {
-    var url = URL.createObjectURL(blob), a = document.createElement('a');
-    a.href = url; a.download = filename; a.rel = 'noopener'; a.style.display = 'none';
-    document.body.appendChild(a); a.click();
-    setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 60000);
-  }
-  return { Doc: Doc, deliver: deliver, width: width };
-})();
-
+var MiniPDF=function(){var t=595.28,e=841.89,n=48,i=[278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584],r=[278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584];function o(t){if(9===t||10===t||13===t)return 32;if(t<32)return-1;if(t<127)return t;if(t>=160&&t<=255)return t;switch(t){case 8364:return 128;case 8230:return 133;case 8216:return 145;case 8217:return 146;case 8220:return 147;case 8221:return 148;case 8226:return 149;case 8211:return 150;case 8212:return 151;case 8722:return 45}return-1}function s(t){t=String(null==t?"":t);for(var e="",n=0;n<t.length;n++){var i=o(t.charCodeAt(n));i>=0&&(e+=String.fromCharCode(i))}return e}function a(t,e){var n=e?r:i;if(t>=32&&t<=126)return n[t-32];if(128===t)return 556;if(149===t)return 350;if(150===t||151===t)return 150===t?556:1e3;if(t>=160){var o=String.fromCharCode(t).normalize?String.fromCharCode(t).normalize("NFD").charCodeAt(0):0;if(o>=32&&o<=126)return n[o-32]}return 556}function h(t,e,n){for(var i=s(t),r=0,o=0;o<i.length;o++)r+=a(i.charCodeAt(o),n);return r*e/1e3}function u(t){return t.replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)")}function c(t){return(Math.round(100*t)/100).toFixed(2)}function f(t){return c(t[0])+" "+c(t[1])+" "+c(t[2])}var l=[.09,.1,.12],d=[.42,.44,.48],y=[.82,.83,.85],g=[.04,.38,.8],p=[.94,.95,.97];function m(t){t=t||{},this.title=t.title||"Documento",this.footer=t.footer||"",this.pages=[],this.newPage()}var v=m.prototype;function w(t,e){var n=URL.createObjectURL(t),i=document.createElement("a");i.href=n,i.download=e,i.rel="noopener",i.style.display="none",document.body.appendChild(i),i.click(),setTimeout(function(){document.body.removeChild(i),URL.revokeObjectURL(n)},6e4)}function E(){try{document.activeElement&&document.activeElement.blur&&document.activeElement.blur()}catch(t){}[120,450,900].forEach(function(t){setTimeout(function(){var t=document.documentElement,e=Math.max(0,window.pageYOffset||0);t.style.minHeight="0",t.offsetHeight,t.style.minHeight="",window.scrollTo(0,e)},t)})}return v.newPage=function(){this.cur=[],this.pages.push(this.cur),this.y=n},v.ensure=function(t){this.y+t>779.89&&this.newPage()},v.text=function(t,n,i,r,o,a){this.cur.push("BT /"+(o?"F2":"F1")+" "+c(r)+" Tf "+f(a||l)+" rg "+c(t)+" "+c(e-n)+" Td ("+u(s(i))+") Tj ET")},v.textR=function(t,e,n,i,r,o){this.text(t-h(n,i,r),e,n,i,r,o)},v.hline=function(i,r,o,s,a){this.cur.push(f(r||y)+" RG "+c(o||.6)+" w "+c(null==s?n:s)+" "+c(e-i)+" m "+c(null==a?t-n:a)+" "+c(e-i)+" l S")},v.rect=function(t,n,i,r,o){this.cur.push(f(o)+" rg "+c(t)+" "+c(e-n-r)+" "+c(i)+" "+c(r)+" re f")},v.space=function(t){return this.y+=t,this},v.fit=function(t,e,n,i){if(h(t=String(null==t?"":t),e,n)<=i)return t;for(;t.length>1&&h(t+"…",e,n)>i;)t=t.slice(0,-1);return t+"…"},v.heading=function(t,e){return this.ensure(46),this.rect(n,this.y,4,22,g),this.text(60,this.y+17,t,19,!0,l),this.y+=30,e&&(this.text(n,this.y+8,e,9.5,!1,d),this.y+=14),this.hline(this.y+4,l,1.2),this.y+=16,this},v.section=function(t){return this.ensure(34),this.y+=8,this.text(n,this.y+10,t.toUpperCase(),9.5,!0,g),this.y+=15,this.hline(this.y,y,.6),this.y+=6,this},v.kv=function(e,i,r){return r=r||{},this.ensure(19),this.text(50,this.y+13,e,10.5,!1,r.dim?d:l),this.textR(t-n-2,this.y+13,i,10.5,!!r.bold,r.color||l),this.y+=19,this.hline(this.y,y,.4),this},v.big=function(e,i){return this.ensure(54),this.y+=6,this.rect(n,this.y,t-96,44,p),this.text(60,this.y+17,e.toUpperCase(),8.5,!0,d),this.textR(535.28,this.y+33,i,20,!0,l),this.y+=52,this},v.para=function(t,e,i){e=e||9.5;var r=String(t).split(/\s+/),o="",s=this;function a(){o&&(s.ensure(1.45*e),s.text(n,s.y+e,o,e,!1,i||d),s.y+=1.45*e,o="")}return r.forEach(function(t){var n=o?o+" "+t:t;h(n,e,!1)>499.28?(a(),o=t):o=n}),a(),this},v.table=function(e,i){var r=this,o=t-96,s=[],a=n;function h(t,n,i,a,h,u){var c=e[t],f=c.w*o-8;n=r.fit(n,a,h,f),"r"===c.a?r.textR(s[t]+c.w*o-4,i,n,a,h,u):r.text(s[t]+4,i,n,a,h,u)}function u(){r.ensure(40),e.forEach(function(t,e){h(e,t.h.toUpperCase(),r.y+12,8,!0,d)}),r.y+=17,r.hline(r.y,l,.9),r.y+=2}return e.forEach(function(t){s.push(a),a+=t.w*o}),u(),i.forEach(function(t){r.y+19>779.89&&(r.newPage(),u()),t.sep&&(r.hline(r.y+1,l,.9),r.y+=2),t.c.forEach(function(e,n){h(n,e,r.y+13,9.5,!!t.bold,t.dim?d:l)}),r.y+=19,r.hline(r.y,y,.4)}),this},v.build=function(){for(var i=this.pages.length,r=this,o=new Date,a=("0"+o.getDate()).slice(-2)+"/"+("0"+(o.getMonth()+1)).slice(-2)+"/"+o.getFullYear(),h=[],f=[],l=0;l<i;l++)f.push(5+2*l+" 0 R");h[0]="<< /Type /Catalog /Pages 2 0 R >>",h[1]="<< /Type /Pages /Kids ["+f.join(" ")+"] /Count "+i+" >>",h[2]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>",h[3]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>",this.pages.forEach(function(o,s){r.cur=o,r.hline(e-34,y,.5),r.text(n,e-22,(r.footer?r.footer+" · ":"")+"Generado el "+a,7.5,!1,d),r.textR(t-n,e-22,"Página "+(s+1)+" de "+i,7.5,!1,d);var u=o.join("\n");h[4+2*s]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+c(t)+" "+c(e)+"] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents "+(6+2*s)+" 0 R >>",h[5+2*s]="<< /Length "+u.length+" >>\nstream\n"+u+"\nendstream"}),h.push("<< /Title ("+u(s(this.title))+") /Producer (CDMO) >>");var g="%PDF-1.4\n%âãÏÓ\n",p=[];h.forEach(function(t,e){p.push(g.length),g+=e+1+" 0 obj\n"+t+"\nendobj\n"});var m=g.length;g+="xref\n0 "+(h.length+1)+"\n0000000000 65535 f \n",p.forEach(function(t){g+=("0000000000"+t).slice(-10)+" 00000 n \n"}),g+="trailer\n<< /Size "+(h.length+1)+" /Root 1 0 R /Info "+h.length+" 0 R >>\nstartxref\n"+m+"\n%%EOF";for(var v=new Uint8Array(g.length),w=0;w<g.length;w++)v[w]=255&g.charCodeAt(w);return new Blob([v],{type:"application/pdf"})},"undefined"!=typeof document&&(document.addEventListener("visibilitychange",function(){document.hidden||E()}),window.addEventListener("pageshow",E)),{Doc:m,deliver:function(t,e,n,i){n=n||"application/pdf";var r=null;try{r=new File([t],e,{type:n})}catch(t){}return r&&navigator.canShare&&navigator.canShare({files:[r]})&&(!i||navigator.standalone||window.matchMedia&&matchMedia("(display-mode: standalone)").matches)?navigator.share({files:[r],title:e}).catch(function(n){if(!n||"AbortError"!==n.name)return w(t,e)}).then(function(){E()}):Promise.resolve(w(t,e)).then(function(){E()})},width:h,settle:E}}();
 </script>
 <script>
 (function(){
@@ -518,7 +332,7 @@ var MiniPDF = (function () {
       var desde = i * smi;
       var hasta = (i === 5) ? Infinity : (i + 1) * smi;
       var base  = Math.max(0, Math.min(L, hasta) - desde);
-      // La rebaja del art. 607.6 solo alcanza a los tramos 1.º a 4.º
+      // La rebaja del art. 607.4 solo alcanza a los tramos 1.º a 4.º
       var pct   = (i >= 1 && i <= 4) ? PCT[i] * (1 - reb) : PCT[i];
       var ret   = base * pct;
       total += ret;
@@ -630,7 +444,7 @@ var MiniPDF = (function () {
       btn.textContent = 'Copiado';
       btn.classList.add('done');
       setTimeout(function(){
-        btn.textContent = 'Copiar el desglose para enviarlo a la empresa';
+        btn.textContent = 'Copiar el desglose';
         btn.classList.remove('done');
       }, 1800);
     };
