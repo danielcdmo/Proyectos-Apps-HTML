@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Calculadora Laboral CDMO</title>
+    <style>
+        * { box-sizing: border-box; }
+        :root { --bg-grad: linear-gradient(180deg, #000000 0%, #0f172a 100%); --card-bg: rgba(30, 41, 59, 0.65); --card-border: rgba(255, 255, 255, 0.12); --card-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.5); --text-main: #ffffff; --text-sub: #94a3b8; --accent-green: #30d158; --accent-green-glow: rgba(48, 209, 88, 0.2); --accent-blue: #0a84ff; --accent-purple: #bf5af2; --accent-orange: #ff9f0a; --neutral-bg: rgba(255, 255, 255, 0.08); --input-bg: rgba(15, 23, 42, 0.8); }
+        [data-theme="light"] { --bg-grad: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%); --card-bg: rgba(255, 255, 255, 0.8); --card-border: rgba(255, 255, 255, 0.9); --card-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.06); --text-main: #0f172a; --text-sub: #64748b; --accent-green: #059669; --accent-green-glow: rgba(5, 150, 105, 0.18); --accent-blue: #0284c7; --accent-purple: #7c3aed; --accent-orange: #d97706; --neutral-bg: rgba(0, 0, 0, 0.04); --input-bg: rgba(255, 255, 255, 0.95); }
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; background: var(--bg-grad); color: var(--text-main); margin: 0; padding: 16px; min-height: 100vh; display: flex; justify-content: center; transition: background 0.4s ease, color 0.4s ease; }
+        .container { max-width: 440px; width: 100%; display: flex; flex-direction: column; gap: 16px; padding-bottom: 30px; }
+        .top-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .header-title { font-size: 1.25rem; font-weight: 800; margin: 0; background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
+        .bar-actions { display: flex; gap: 6px; }
+        .theme-toggle, .notif-btn { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 50px; padding: 6px 12px; cursor: pointer; backdrop-filter: blur(20px); box-shadow: var(--card-shadow); font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+        .tab-nav { display: flex; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 4px; gap: 4px; backdrop-filter: blur(20px); }
+        .tab-btn { flex: 1; padding: 10px 4px; border: none; background: transparent; color: var(--text-sub); font-weight: 700; font-size: 0.78rem; border-radius: 14px; cursor: pointer; transition: all 0.25s ease; text-align: center; }
+        .tab-btn.active { background: var(--accent-blue); color: #ffffff; box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3); }
+        .glass-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 16px; backdrop-filter: blur(25px); box-shadow: var(--card-shadow); width: 100%; margin-bottom: 14px; }
+        .card-title { font-size: 0.88rem; font-weight: 800; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; min-width: 0; }
+        .form-label { font-size: 0.78rem; font-weight: 700; color: var(--text-sub); }
+        .input-text, .select-custom { width: 100%; background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 12px; padding: 10px 8px; font-size: 16px; font-weight: 700; outline: none; }
+        input[type="date"] { font-size: 16px; padding: 8px 4px; min-height: 42px; }
+        .hint { font-size: 0.72rem; color: var(--text-sub); line-height: 1.4; margin: 4px 0 0; }
+        .form-row { display: flex; gap: 10px; width: 100%; }
+        .form-row .form-group { flex: 1; min-width: 0; }
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .res-bubble { background: var(--neutral-bg); border-radius: 16px; padding: 10px; text-align: center; border: 1px solid var(--card-border); }
+        .res-bubble.full { grid-column: span 2; background: var(--accent-green-glow); border-color: var(--accent-green); }
+        .res-label { font-size: 0.68rem; color: var(--text-sub); text-transform: uppercase; font-weight: 700; }
+        .res-val { font-size: 1.3rem; font-weight: 800; margin-top: 2px; }
+        .res-val.green { color: var(--accent-green); font-size: 1.7rem; }
+        .breakdown-list { margin-top: 10px; font-size: 0.82rem; }
+        .breakdown-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--card-border); }
+        .history-card { border-bottom: 1px solid var(--card-border); padding: 10px 0; }
+        .history-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 6px 0; }
+        .history-header .arrow { font-size: 0.7rem; color: var(--text-sub); transition: transform 0.2s ease; margin-left: 6px; }
+        .history-details { display: none; background: var(--neutral-bg); border-radius: 12px; padding: 12px; margin-top: 8px; border: 1px solid var(--card-border); }
+        .history-card.expanded .history-details { display: block; }
+        .history-card.expanded .arrow { transform: rotate(180deg); }
+        .actions { display: flex; gap: 8px; margin-top: 8px; }
+        .btn-action { flex: 1; padding: 12px 8px; border-radius: 16px; border: 1px solid var(--card-border); font-weight: 800; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: var(--card-shadow); }
+        .btn-whatsapp { background: #25D366; color: #000; }
+        .btn-save { background: var(--accent-blue); color: #fff; }
+        .btn-pdf { background: var(--accent-purple); color: #fff; }
+        .tab-content { display: none; flex-direction: column; }
+        .tab-content.active { display: flex; }
+        
+        /* Modal iOS */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 24px; width: 100%; max-width: 340px; }
+
+        @media print {
+            body { background: #ffffff !important; color: #000000 !important; }
+            .top-bar, .tab-nav, .actions, .modal-overlay { display: none !important; }
+            .tab-content { display: none; }
+            .tab-content.active { display: block; }
+            .glass-card { background: none !important; border: 1px solid #ccc !important; box-shadow: none !important; color: #000000 !important; break-inside: avoid; margin-bottom: 10px !important; padding: 15px !important; }
+            .form-row { display: flex !important; flex-direction: row !important; gap: 15px !important; flex-wrap: nowrap !important; }
+            .input-text, .select-custom, input[type="date"] { background: transparent !important; color: #000 !important; border: none !important; border-bottom: 1px dashed #999 !important; padding: 4px 0 !important; height: auto !important; -webkit-appearance: none !important; }
+            .res-bubble { background: #f4f4f5 !important; border: 1px solid #ddd !important; }
+            .res-val.green, #finIndemnizacionVal, .card-title { color: #000 !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-bar">
+        <h1 class="header-title">💼 Laboral CDMO 2026</h1>
+        <div class="bar-actions">
+            <button class="notif-btn" onclick="openConfig()" id="notifBtn">⚙️ Avisos</button>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+        </div>
+    </div>
+
+    <div class="tab-nav">
+        <button class="tab-btn active" id="btn_tabNomina" onclick="setTab('tabNomina')">📄 Nómina</button>
+        <button class="tab-btn" id="btn_tabEmbargo" onclick="setTab('tabEmbargo')">⚖️ Embargo</button>
+        <button class="tab-btn" id="btn_tabFiniquito" onclick="setTab('tabFiniquito')">💼 Finiquito</button>
+        <button class="tab-btn" id="btn_tabHistorial" onclick="setTab('tabHistorial')">📁 Historial</button>
+    </div>
+
+    <!-- Pestañas ... (Nómina, Embargo, Finiquito, Historial) -->
+    <div class="tab-content active" id="tabNomina">
+        <div class="glass-card">
+            <div class="card-title">🔍 Verificador de Nómina</div>
+            <div class="form-group"><label class="form-label">Bruto Mensual (€)</label><input type="number" id="nomBruto" class="input-text" inputmode="decimal" value="2000" step="50" oninput="calcNomina()"></div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">Nº Pagas</label><select id="nomPagas" class="select-custom" onchange="calcNomina()"><option value="12">12</option><option value="14" selected>14</option></select></div>
+                <div class="form-group"><label class="form-label">% IRPF</label><input type="number" id="nomIrpf" class="input-text" inputmode="decimal" value="12.0" step="0.5" oninput="calcNomina()"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Contrato</label><select id="nomContrato" class="select-custom" onchange="calcNomina()"><option value="0.0155">Indefinido (1.55%)</option><option value="0.0160">Temporal (1.60%)</option></select></div>
+        </div>
+        <div class="glass-card">
+            <div class="card-title">📊 Deducciones SS</div>
+            <div class="breakdown-list">
+                <div class="breakdown-item" style="color:var(--text-sub);"><span>Base de cotización:</span><strong id="nomBaseVal">0,00 €</strong></div>
+                <div class="breakdown-item"><span>C. Comunes (4.70%):</span><strong id="nomCcVal">0,00 €</strong></div>
+                <div class="breakdown-item"><span>Desempleo:</span><strong id="nomDesempleoVal">0,00 €</strong></div>
+                <div class="breakdown-item"><span>Formación (0.10%):</span><strong id="nomFpVal">0,00 €</strong></div>
+                <div class="breakdown-item"><span>MEI 2026 (0.15%):</span><strong id="nomMeiVal">0,00 €</strong></div>
+                <div class="breakdown-item" style="color:var(--accent-orange); font-weight:800;"><span>Total SS:</span><strong id="nomTotalSsVal">0,00 €</strong></div>
+                <div class="breakdown-item" style="color:var(--accent-purple); font-weight:800;"><span>Retención IRPF:</span><strong id="nomTotalIrpfVal">0,00 €</strong></div>
+            </div>
+            <div class="res-grid"><div class="res-bubble full"><div class="res-label">Neto / Líquido</div><div class="res-val green" id="nomNetoVal">0,00 €</div></div></div>
+            <div class="actions"><button class="btn-action btn-pdf" onclick="exportPDF('nomina')">📄 PDF</button><button class="btn-action btn-save" onclick="saveNomina()">💾 Guardar</button></div>
+        </div>
+    </div>
+
+    <!-- Pestaña Embargo -->
+    <div class="tab-content" id="tabEmbargo">
+        <div class="glass-card">
+            <div class="card-title">⚖️ Embargo (Art. 607)</div>
+            <div class="form-group"><label class="form-label">Neto Mensual (€)</label><input type="number" id="embNeto" class="input-text" inputmode="decimal" value="1800" oninput="calcEmbargo()"></div>
+            <div class="form-row">
+                <div class="form-group"><label class="form-label">SMI</label><select id="embSmiTipo" class="select-custom" onchange="calcEmbargo()"><option value="1221">14 pagas (1.221 €)</option><option value="1424.5">12 pagas prorrat. (1.424,50 €)</option></select></div>
+                <div class="form-group"><label class="form-label">Cargas familiares</label><select id="embCargas" class="select-custom" onchange="calcEmbargo()"><option value="0">Sin rebaja</option><option value="0.10">Rebaja 10 %</option><option value="0.125">Rebaja 12,5 %</option><option value="0.15">Rebaja 15 %</option></select></div>
+            </div>
+            <p class="hint">«Neto» = líquido tras IRPF y Seguridad Social (art. 607.5). Si tu nómina lleva las extras prorrateadas, elige 12 pagas. La rebaja por cargas (art. 607.4) la concede el LAJ entre un 10 y un 15 % y solo afecta a los tramos 1.º a 4.º.</p>
+        </div>
+        <div class="glass-card">
+            <div class="card-title">📐 Tramos</div>
+            <div class="breakdown-list" id="embTramosList"></div>
+            <div class="res-grid">
+                <div class="res-bubble"><div class="res-label">Embargable</div><div class="res-val" style="color:#ef4444;" id="embRetencionVal">0,00 €</div></div>
+                <div class="res-bubble"><div class="res-label">Libre</div><div class="res-val green" id="embLimpioVal">0,00 €</div></div>
+            </div>
+            <div class="actions"><button class="btn-action btn-pdf" onclick="exportPDF('embargo')">📄 PDF</button></div>
+        </div>
+    </div>
+
+    <!-- Pestaña Finiquito -->
+    <div class="tab-content" id="tabFiniquito">
+        <div class="glass-card">
+            <div class="card-title">💼 Finiquito</div>
+            <div class="form-row"><div class="form-group"><label class="form-label">Bruto Mes</label><input type="number" id="finBruto" class="input-text" inputmode="decimal" value="2000" oninput="calcFiniquito()"></div><div class="form-group"><label class="form-label">Pagas</label><select id="finPagas" class="select-custom" onchange="calcFiniquito()"><option value="12">12</option><option value="14" selected>14</option></select></div></div>
+            <div class="form-row"><div class="form-group"><label class="form-label">Inicio</label><input type="date" id="finInicio" class="input-text" value="2023-01-01" onchange="calcFiniquito()"></div><div class="form-group"><label class="form-label">Fin</label><input type="date" id="finFin" class="input-text" value="2026-08-31" onchange="calcFiniquito()"></div></div>
+            <div class="form-group"><label class="form-label">Causa</label><select id="finCausa" class="select-custom" onchange="calcFiniquito()"><option value="33">Improcedente (33d)</option><option value="20">Objetivo (20d)</option><option value="12">Temporal (12d)</option><option value="0">Baja Voluntaria</option></select></div>
+            <div class="form-row"><div class="form-group"><label class="form-label">Días trabajados mes</label><input type="number" id="finDiasMes" class="input-text" inputmode="numeric" value="30" max="31" oninput="calcFiniquito()"></div><div class="form-group"><label class="form-label">Vacaciones (días)</label><input type="number" id="finVacaciones" class="input-text" inputmode="decimal" value="5" oninput="calcFiniquito()"></div></div>
+            <div class="form-group"><label class="form-label">Extras prorrateadas pendientes (€)</label><input type="number" id="finExtras" class="input-text" inputmode="decimal" value="0" oninput="calcFiniquito()"><p class="hint">Si cobras 14 pagas, suma aquí la parte proporcional de las pagas extra aún no cobradas hasta la fecha de fin.</p></div>
+        </div>
+        <div class="glass-card">
+            <div class="card-title">💵 A Recibir (bruto)</div>
+            <div class="breakdown-list">
+                <div class="breakdown-item"><span>Antigüedad:</span><strong id="finTiempoVal">0 años</strong></div>
+                <div class="breakdown-item"><span>Salario Diario:</span><strong id="finDiarioVal">0,00 €</strong></div>
+                <div class="breakdown-item"><span>Indemnización:</span><strong id="finIndemnizacionVal" style="color:var(--accent-blue);">0,00 €</strong></div>
+                <div class="breakdown-item"><span>Días + Vacaciones:</span><strong id="finLiquidacionVal">0,00 €</strong></div>
+            </div>
+            <div class="res-grid"><div class="res-bubble full"><div class="res-label">Total bruto a recibir</div><div class="res-val green" id="finTotalVal">0,00 €</div></div></div>
+            <p class="hint">Importes brutos. Tras el cálculo se descuentan SS e IRPF del finiquito; la indemnización por despido improcedente u objetivo está exenta de IRPF hasta la cuantía legal (art. 7.e LIRPF, tope 180.000 €). Antigüedad por meses completos; la fracción de mes cuenta como mes. Contratos anteriores al 12/02/2012: el tramo previo se paga a 45 días por año (no incluido).</p>
+            <div class="actions"><button class="btn-action btn-pdf" onclick="exportPDF('finiquito')">📄 PDF</button></div>
+        </div>
+    </div>
+
+    <!-- Pestaña Historial -->
+    <div class="tab-content" id="tabHistorial">
+        <div class="glass-card">
+            <div class="card-title"><span>📁 Nóminas</span><button style="background:none; border:none; color:#ef4444; font-weight:800; cursor:pointer;" onclick="clearHistorial()">Borrar</button></div>
+            <div class="breakdown-list" id="historialList"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="configModal">
+    <div class="modal-content">
+        <h3 style="margin-top:0; color:var(--accent-blue); font-weight:800;">⚙️ Configurar Aviso</h3>
+        <p style="font-size:0.8rem; color:var(--text-sub);">Aviso nativo mensual en Calendario iOS.</p>
+        <div class="form-group"><label class="form-label">Día del mes:</label><input type="number" id="cfgDay" class="input-text" min="1" max="31" value="25"></div>
+        <div class="form-group"><label class="form-label">Hora:</label><input type="time" id="cfgTime" class="input-text" value="20:00"></div>
+        <div class="actions" style="margin-top:20px;">
+            <button class="btn-action btn-save" onclick="generateICS()">🗓️ Crear en iOS</button>
+            <button class="btn-action" style="background:var(--neutral-bg); color:var(--text-main);" onclick="closeConfig()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ===== Mini generador de PDF (sin librerías, sin window.print) ===== */
+var MiniPDF = (function () {
+  var W = 595.28, H = 841.89, M = 48;
+  var HW = [278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584];
+  var BW = [278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584];
+
+  // Unicode -> byte WinAnsi (lo que Helvetica estándar sí dibuja)
+  function byteOf(c) {
+    if (c === 9 || c === 10 || c === 13) return 32;
+    if (c < 32) return -1;
+    if (c < 127) return c;
+    if (c >= 160 && c <= 255) return c;
+    switch (c) {
+      case 0x20AC: return 0x80; case 0x2026: return 0x85; case 0x2018: return 0x91;
+      case 0x2019: return 0x92; case 0x201C: return 0x93; case 0x201D: return 0x94;
+      case 0x2022: return 0x95; case 0x2013: return 0x96; case 0x2014: return 0x97;
+      case 0x2212: return 0x2D;
+    }
+    return -1; // emojis, símbolos: se omiten
+  }
+  function enc(s) {
+    s = String(s == null ? '' : s);
+    var o = '';
+    for (var i = 0; i < s.length; i++) { var b = byteOf(s.charCodeAt(i)); if (b >= 0) o += String.fromCharCode(b); }
+    return o;
+  }
+  function charW(b, bold) {
+    var t = bold ? BW : HW;
+    if (b >= 32 && b <= 126) return t[b - 32];
+    if (b === 0x80) return 556;
+    if (b === 0x95) return 350;
+    if (b === 0x96 || b === 0x97) return b === 0x96 ? 556 : 1000;
+    if (b >= 160) {
+      var base = String.fromCharCode(b).normalize ? String.fromCharCode(b).normalize('NFD').charCodeAt(0) : 0;
+      if (base >= 32 && base <= 126) return t[base - 32];
+    }
+    return 556;
+  }
+  function width(s, size, bold) {
+    var e = enc(s), w = 0;
+    for (var i = 0; i < e.length; i++) w += charW(e.charCodeAt(i), bold);
+    return w * size / 1000;
+  }
+  function esc(e) { return e.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)'); }
+  function f2(n) { return (Math.round(n * 100) / 100).toFixed(2); }
+  function col(c) { return f2(c[0]) + ' ' + f2(c[1]) + ' ' + f2(c[2]); }
+
+  var INK = [0.09, 0.1, 0.12], GREY = [0.42, 0.44, 0.48], LINE = [0.82, 0.83, 0.85], ACC = [0.04, 0.38, 0.8], BOX = [0.94, 0.95, 0.97];
+
+  function Doc(opts) {
+    opts = opts || {};
+    this.title = opts.title || 'Documento';
+    this.footer = opts.footer || '';
+    this.pages = []; this.newPage();
+  }
+  var P = Doc.prototype;
+  P.newPage = function () { this.cur = []; this.pages.push(this.cur); this.y = M; };
+  P.ensure = function (h) { if (this.y + h > H - M - 14) this.newPage(); };
+  P.text = function (x, y, s, size, bold, color) {
+    this.cur.push('BT /' + (bold ? 'F2' : 'F1') + ' ' + f2(size) + ' Tf ' + col(color || INK) + ' rg ' + f2(x) + ' ' + f2(H - y) + ' Td (' + esc(enc(s)) + ') Tj ET');
+  };
+  P.textR = function (xr, y, s, size, bold, color) { this.text(xr - width(s, size, bold), y, s, size, bold, color); };
+  P.hline = function (y, color, w, x1, x2) {
+    this.cur.push(col(color || LINE) + ' RG ' + f2(w || 0.6) + ' w ' + f2(x1 == null ? M : x1) + ' ' + f2(H - y) + ' m ' + f2(x2 == null ? W - M : x2) + ' ' + f2(H - y) + ' l S');
+  };
+  P.rect = function (x, y, w, h, color) { this.cur.push(col(color) + ' rg ' + f2(x) + ' ' + f2(H - y - h) + ' ' + f2(w) + ' ' + f2(h) + ' re f'); };
+  P.space = function (h) { this.y += h; return this; };
+  P.fit = function (s, size, bold, maxW) {
+    s = String(s == null ? '' : s);
+    if (width(s, size, bold) <= maxW) return s;
+    while (s.length > 1 && width(s + '…', size, bold) > maxW) s = s.slice(0, -1);
+    return s + '…';
+  };
+  P.heading = function (t, sub) {
+    this.ensure(46);
+    this.rect(M, this.y, 4, 22, ACC);
+    this.text(M + 12, this.y + 17, t, 19, true, INK);
+    this.y += 30;
+    if (sub) { this.text(M, this.y + 8, sub, 9.5, false, GREY); this.y += 14; }
+    this.hline(this.y + 4, INK, 1.2); this.y += 16;
+    return this;
+  };
+  P.section = function (t) {
+    this.ensure(34); this.y += 8;
+    this.text(M, this.y + 10, t.toUpperCase(), 9.5, true, ACC);
+    this.y += 15; this.hline(this.y, LINE, 0.6); this.y += 6;
+    return this;
+  };
+  P.kv = function (k, v, o) {
+    o = o || {}; this.ensure(19);
+    this.text(M + 2, this.y + 13, k, 10.5, false, o.dim ? GREY : INK);
+    this.textR(W - M - 2, this.y + 13, v, 10.5, !!o.bold, o.color || INK);
+    this.y += 19; this.hline(this.y, LINE, 0.4);
+    return this;
+  };
+  P.big = function (label, value) {
+    this.ensure(54); this.y += 6;
+    this.rect(M, this.y, W - 2 * M, 44, BOX);
+    this.text(M + 12, this.y + 17, label.toUpperCase(), 8.5, true, GREY);
+    this.textR(W - M - 12, this.y + 33, value, 20, true, INK);
+    this.y += 52;
+    return this;
+  };
+  P.para = function (s, size, color) {
+    size = size || 9.5; var maxW = W - 2 * M, words = String(s).split(/\s+/), line = '', self = this;
+    function flush() { if (line) { self.ensure(size * 1.45); self.text(M, self.y + size, line, size, false, color || GREY); self.y += size * 1.45; line = ''; } }
+    words.forEach(function (w) {
+      var t = line ? line + ' ' + w : w;
+      if (width(t, size, false) > maxW) { flush(); line = w; } else line = t;
+    });
+    flush(); return this;
+  };
+  // cols: [{h:'Concepto', w:0.5, a:'l'|'r'}] ; rows: [{c:[..], bold, sep, dim}]
+  P.table = function (cols, rows) {
+    var self = this, tw = W - 2 * M, xs = [], x = M;
+    cols.forEach(function (c) { xs.push(x); x += c.w * tw; });
+    function cell(i, s, y, size, bold, color) {
+      var c = cols[i], mw = c.w * tw - 8; s = self.fit(s, size, bold, mw);
+      if (c.a === 'r') self.textR(xs[i] + c.w * tw - 4, y, s, size, bold, color);
+      else self.text(xs[i] + 4, y, s, size, bold, color);
+    }
+    function head() {
+      self.ensure(40);
+      cols.forEach(function (c, i) { cell(i, c.h.toUpperCase(), self.y + 12, 8, true, GREY); });
+      self.y += 17; self.hline(self.y, INK, 0.9); self.y += 2;
+    }
+    head();
+    rows.forEach(function (r) {
+      if (self.y + 19 > H - M - 14) { self.newPage(); head(); }
+      if (r.sep) { self.hline(self.y + 1, INK, 0.9); self.y += 2; }
+      r.c.forEach(function (s, i) { cell(i, s, self.y + 13, 9.5, !!r.bold, r.dim ? GREY : INK); });
+      self.y += 19; self.hline(self.y, LINE, 0.4);
+    });
+    return this;
+  };
+  P.build = function () {
+    var n = this.pages.length, self = this, now = new Date();
+    var stamp = ('0' + now.getDate()).slice(-2) + '/' + ('0' + (now.getMonth() + 1)).slice(-2) + '/' + now.getFullYear();
+    var objs = [];
+    var kids = []; for (var k = 0; k < n; k++) kids.push((5 + 2 * k) + ' 0 R');
+    objs[0] = '<< /Type /Catalog /Pages 2 0 R >>';
+    objs[1] = '<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + n + ' >>';
+    objs[2] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+    objs[3] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+    this.pages.forEach(function (ops, i) {
+      self.cur = ops;
+      self.hline(H - 34, LINE, 0.5);
+      self.text(M, H - 22, (self.footer ? self.footer + ' · ' : '') + 'Generado el ' + stamp, 7.5, false, GREY);
+      self.textR(W - M, H - 22, 'Página ' + (i + 1) + ' de ' + n, 7.5, false, GREY);
+      var content = ops.join('\n');
+      objs[4 + 2 * i] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + f2(W) + ' ' + f2(H) + '] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ' + (6 + 2 * i) + ' 0 R >>';
+      objs[5 + 2 * i] = '<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream';
+    });
+    objs.push('<< /Title (' + esc(enc(this.title)) + ') /Producer (CDMO) >>');
+    var out = '%PDF-1.4\n%\u00E2\u00E3\u00CF\u00D3\n', offs = [];
+    objs.forEach(function (o, i) { offs.push(out.length); out += (i + 1) + ' 0 obj\n' + o + '\nendobj\n'; });
+    var xref = out.length;
+    out += 'xref\n0 ' + (objs.length + 1) + '\n0000000000 65535 f \n';
+    offs.forEach(function (o) { out += ('0000000000' + o).slice(-10) + ' 00000 n \n'; });
+    out += 'trailer\n<< /Size ' + (objs.length + 1) + ' /Root 1 0 R /Info ' + objs.length + ' 0 R >>\nstartxref\n' + xref + '\n%%EOF';
+    var u8 = new Uint8Array(out.length);
+    for (var j = 0; j < out.length; j++) u8[j] = out.charCodeAt(j) & 255;
+    return new Blob([u8], { type: 'application/pdf' });
+  };
+
+  // Entrega en iOS: hoja de compartir (Guardar en Archivos, Imprimir, AirDrop...) o descarga
+  function standalone() { return !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches)); }
+  function deliver(blob, filename, mime, shareOnlyStandalone) {
+    mime = mime || 'application/pdf';
+    var file = null;
+    try { file = new File([blob], filename, { type: mime }); } catch (e) {}
+    var canShare = file && navigator.canShare && navigator.canShare({ files: [file] });
+    if (canShare && (!shareOnlyStandalone || standalone())) {
+      return navigator.share({ files: [file], title: filename }).catch(function (e) {
+        if (e && e.name === 'AbortError') return;
+        return download(blob, filename);
+      });
+    }
+    return Promise.resolve(download(blob, filename));
+  }
+  function download(blob, filename) {
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = filename; a.rel = 'noopener'; a.style.display = 'none';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 60000);
+  }
+  return { Doc: Doc, deliver: deliver, width: width };
+})();
+
+</script>
+<script>
+    /* ===== Utilidades ===== */
+    const $ = id => document.getElementById(id);
+    const fmt = n => { n = isFinite(n) ? n : 0; const p = Math.abs(n).toFixed(2).split('.'); return (n < 0 && +p.join('') ? '-' : '') + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + p[1] + ' €'; };
+    const numOf = id => { const v = parseFloat($(id).value); return isFinite(v) ? v : 0; };
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } };
+    const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+    const R = { nomina: null, embargo: null, finiquito: null };   // últimos resultados (para PDF)
+
+    /* ===== Navegación / tema ===== */
+    function setTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
+        $(tabId).classList.add('active'); $('btn_' + tabId).classList.add('active');
+        if (tabId === 'tabHistorial') renderHistorial();
+    }
+    function initTheme() { const t = lsGet('theme_preference', 'dark'); document.documentElement.setAttribute('data-theme', t); $('themeBtn').textContent = t === 'dark' ? '🌙' : '☀️'; }
+    function toggleTheme() { const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); lsSet('theme_preference', t); $('themeBtn').textContent = t === 'dark' ? '🌙' : '☀️'; }
+
+    /* ===== Aviso en calendario (.ics) ===== */
+    function openConfig() { $('configModal').classList.add('active'); const d = lsGet('lab_alert_day', ''), t = lsGet('lab_alert_time', ''); if (d) $('cfgDay').value = d; if (t) $('cfgTime').value = t; }
+    function closeConfig() { $('configModal').classList.remove('active'); }
+    function generateICS() {
+        let day = parseInt($('cfgDay').value, 10); const time = $('cfgTime').value || '20:00';
+        if (!(day >= 1)) day = 25; if (day > 28) day = 28;          // 29-31 se saltarían meses cortos
+        lsSet('lab_alert_day', day); lsSet('lab_alert_time', time);
+        $('notifBtn').textContent = '⚙️ Día ' + day; $('notifBtn').style.color = 'var(--accent-green)';
+        const pad = n => String(n).padStart(2, '0'), hm = time.split(':');
+        const now = new Date(); let y = now.getFullYear(), mo = now.getMonth() + 1;
+        if (now.getDate() > day) { mo++; if (mo > 12) { mo = 1; y++; } }
+        const dtstart = `${y}${pad(mo)}${pad(day)}T${hm[0]}${hm[1]}00`;
+        const dtstamp = now.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//CDMO//Laboral//ES', 'CALSCALE:GREGORIAN', 'BEGIN:VEVENT',
+            'UID:' + Date.now() + '@cdmo.app', 'DTSTAMP:' + dtstamp, 'SUMMARY:💼 Revisar nómina CDMO', 'DESCRIPTION:Revisar nómina mensual.',
+            'RRULE:FREQ=MONTHLY;BYMONTHDAY=' + day, 'DTSTART:' + dtstart, 'DURATION:PT1H',
+            'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:Aviso nómina', 'TRIGGER:-PT0M', 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n') + '\r\n';
+        MiniPDF.deliver(new Blob([ics], { type: 'text/calendar;charset=utf-8' }), 'nomina.ics', 'text/calendar', true);
+        closeConfig();
+    }
+    function checkConfigStatus() { const d = lsGet('lab_alert_day', ''); if (d) { $('notifBtn').textContent = '⚙️ Día ' + d; $('notifBtn').style.color = 'var(--accent-green)'; } }
+
+    /* ===== NÓMINA (tipos 2026, trabajador: CC 4,70 · MEI 0,15 · FP 0,10 · desempleo 1,55/1,60) ===== */
+    const TOPE_MAX_COT = 5101.20;   // base máxima de cotización 2026 (€/mes)
+    function calcNomina() {
+        const b = numOf('nomBruto'), p = parseInt($('nomPagas').value, 10), i = numOf('nomIrpf'), d = parseFloat($('nomContrato').value);
+        let bc = p === 14 ? b * (14 / 12) : b;               // con 14 pagas se prorratean las extras en la base
+        const topada = bc > TOPE_MAX_COT; if (topada) bc = TOPE_MAX_COT;
+        const cc = bc * 0.0470, des = bc * d, fp = bc * 0.0010, mei = bc * 0.0015;
+        const tSs = cc + des + fp + mei, tIr = b * (i / 100), net = b - tSs - tIr;
+        $('nomBaseVal').textContent = fmt(bc) + (topada ? ' (tope)' : '');
+        $('nomCcVal').textContent = fmt(cc); $('nomDesempleoVal').textContent = fmt(des); $('nomFpVal').textContent = fmt(fp);
+        $('nomMeiVal').textContent = fmt(mei); $('nomTotalSsVal').textContent = fmt(tSs); $('nomTotalIrpfVal').textContent = fmt(tIr); $('nomNetoVal').textContent = fmt(net);
+        R.nomina = { b, p, i, d, bc, topada, cc, des, fp, mei, tSs, tIr, net };
+    }
+    function loadHist() { try { return JSON.parse(lsGet('laboral_cdmo_history', '[]')) || []; } catch (e) { return []; } }
+    function saveNomina() {
+        const n = R.nomina; if (!n) return;
+        const h = loadHist();
+        h.unshift({ id: Date.now(), date: new Date().toLocaleDateString('es-ES', { month: 'short', year: 'numeric' }), bruto: fmt(n.b), neto: fmt(n.net),
+            details: { pagas: n.p, irpfPct: n.i, cc: fmt(n.cc), des: fmt(n.des), fp: fmt(n.fp), mei: fmt(n.mei), totalSs: fmt(n.tSs), totalIrpf: fmt(n.tIr) } });
+        lsSet('laboral_cdmo_history', JSON.stringify(h)); alert('Guardado en Historial');
+    }
+    function toggleHistory(id) { const el = $('hist_' + id); if (el) el.classList.toggle('expanded'); }
+    function renderHistorial() {
+        const h = loadHist(), c = $('historialList');
+        if (!h.length) { c.innerHTML = '<div style="text-align:center; padding:10px;">Vacío.</div>'; return; }
+        c.innerHTML = h.map(i => { const d = i.details || {}; return `<div class="history-card" id="hist_${esc(i.id)}"><div class="history-header" onclick="toggleHistory('${esc(i.id)}')"><span><strong>${esc(i.date)}</strong> - ${esc(i.bruto)}</span><span><strong style="color:var(--accent-green);">${esc(i.neto)}</strong> <span class="arrow">▼</span></span></div><div class="history-details"><div class="breakdown-item"><span>Pagas:</span><strong>${esc(d.pagas || '-')}</strong></div><div class="breakdown-item"><span>IRPF (${esc(d.irpfPct || '-')}%):</span><strong>${esc(d.totalIrpf || '-')}</strong></div><div class="breakdown-item"><span>C. comunes:</span><strong>${esc(d.cc || '-')}</strong></div><div class="breakdown-item"><span>Desempleo:</span><strong>${esc(d.des || '-')}</strong></div><div class="breakdown-item"><span>Formación:</span><strong>${esc(d.fp || '-')}</strong></div><div class="breakdown-item"><span>MEI:</span><strong>${esc(d.mei || '-')}</strong></div><div class="breakdown-item"><span>Total SS:</span><strong>${esc(d.totalSs || '-')}</strong></div></div></div>`; }).join('');
+    }
+    function clearHistorial() { if (confirm('¿Borrar?')) { try { localStorage.removeItem('laboral_cdmo_history'); } catch (e) {} renderHistorial(); } }
+
+    /* ===== EMBARGO (art. 607 LEC) ===== */
+    const PCT_EMB = [0, 0.30, 0.50, 0.60, 0.75, 0.90];
+    function calcEmbargo() {
+        const n = numOf('embNeto'), s = parseFloat($('embSmiTipo').value), reb = parseFloat($('embCargas').value) || 0, ct = $('embTramosList');
+        let tot = 0, totSin = 0, html = '';
+        const tramos = [];
+        for (let i = 0; i <= 5; i++) {
+            const desde = i * s, hasta = i === 5 ? Infinity : (i + 1) * s;
+            const base = Math.max(0, Math.min(n, hasta) - desde);
+            const pBase = PCT_EMB[i], pct = (i >= 1 && i <= 4) ? pBase * (1 - reb) : pBase;   // la rebaja solo afecta a los tramos 1.º-4.º
+            const ret = base * pct; tot += ret; totSin += base * pBase;
+            tramos.push({ i, desde, hasta, base, pct, ret });
+        }
+        tramos.forEach(t => {
+            if (t.i === 0) html += `<div class="breakdown-item"><span>Hasta ${fmt(s)} (inembargable):</span><strong>0,00 €</strong></div>`;
+            else if (t.base > 0) html += `<div class="breakdown-item"><span>Tramo ${t.i} · ${(t.pct * 100).toFixed(t.pct * 100 % 1 ? 1 : 0).replace('.', ',')} % de ${fmt(t.base)}:</span><strong>${fmt(t.ret)}</strong></div>`;
+        });
+        if (n <= s) html = `<div class="breakdown-item"><span>Inferior o igual al SMI:</span><strong>0,00 €</strong></div>`;
+        if (reb > 0 && tot < totSin) html += `<div class="breakdown-item" style="color:var(--accent-green);"><span>Rebaja por cargas (tramos 1-4):</span><strong>-${fmt(totSin - tot)}</strong></div>`;
+        tot = Math.round(tot * 100) / 100;
+        ct.innerHTML = html;
+        $('embRetencionVal').textContent = fmt(tot); $('embLimpioVal').textContent = fmt(n - tot);
+        R.embargo = { n, s, reb, tramos, tot, libre: n - tot, prorr: s !== 1221 };
+    }
+
+    /* ===== FINIQUITO ===== */
+    function daysIn(y, m) { return new Date(Date.UTC(y, m, 0)).getUTCDate(); }
+    function addMonths(d, k) { const t = d.getUTCFullYear() * 12 + d.getUTCMonth() + k, y = Math.floor(t / 12), m = t % 12; return new Date(Date.UTC(y, m, Math.min(d.getUTCDate(), daysIn(y, m + 1)))); }
+    function antiguedad(ini, fin) {                       // fin inclusive
+        const s = new Date(ini + 'T00:00:00Z'), f = new Date(fin + 'T00:00:00Z'); f.setUTCDate(f.getUTCDate() + 1);
+        let m = (f.getUTCFullYear() - s.getUTCFullYear()) * 12 + (f.getUTCMonth() - s.getUTCMonth());
+        if (addMonths(s, m) > f) m--;
+        const dias = Math.round((f - addMonths(s, m)) / 86400000);
+        return { meses: m, dias };
+    }
+    function calcFiniquito() {
+        const b = numOf('finBruto'), p = parseInt($('finPagas').value, 10) || 12, ini = $('finInicio').value, fin = $('finFin').value;
+        const dC = parseInt($('finCausa').value, 10), dM = numOf('finDiasMes'), dV = numOf('finVacaciones'), ext = numOf('finExtras');
+        if (!ini || !fin || fin < ini) {
+            ['finTotalVal', 'finIndemnizacionVal', 'finLiquidacionVal', 'finDiarioVal'].forEach(id => $(id).textContent = '0,00 €'); $('finTiempoVal').textContent = '—'; R.finiquito = null; return;
+        }
+        const a = antiguedad(ini, fin), mesesInd = a.meses + (a.dias > 0 ? 1 : 0), anios = mesesInd / 12;
+        const sD = (b * p) / 365, mensualidad = (b * p) / 12;
+        let ind = anios * dC * sD, tope = null;
+        if (dC === 33) { tope = mensualidad * 24; } else if (dC === 20) { tope = mensualidad * 12; }
+        const topada = tope != null && ind > tope; if (topada) ind = tope;
+        const liq = (b / 30) * dM + sD * dV + ext, tot = ind + liq;
+        const yy = Math.floor(a.meses / 12), mm = a.meses % 12;
+        $('finTiempoVal').textContent = `${yy} a, ${mm} m, ${a.dias} d`;
+        $('finDiarioVal').textContent = fmt(sD) + '/día';
+        $('finIndemnizacionVal').textContent = fmt(ind) + (topada ? ' (tope)' : '');
+        $('finLiquidacionVal').textContent = fmt(liq); $('finTotalVal').textContent = fmt(tot);
+        R.finiquito = { b, p, ini, fin, dC, dM, dV, ext, a, anios, sD, ind, topada, tope, liq, tot, causa: $('finCausa').selectedOptions[0].textContent };
+    }
+
+    /* ===== PDF (sin window.print: funciona también en la app de la pantalla de inicio de iOS) ===== */
+    function dEs(iso) { const t = iso.split('-'); return t[2] + '/' + t[1] + '/' + t[0]; }
+    function pdfNomina() {
+        const n = R.nomina; if (!n) throw new Error('Sin datos');
+        const d = new MiniPDF.Doc({ title: 'Verificador de nómina 2026', footer: 'Calculadora Laboral CDMO' });
+        d.heading('Verificador de nómina 2026', 'Cálculo orientativo · cotizaciones del trabajador 2026');
+        d.section('Datos');
+        d.kv('Bruto mensual', fmt(n.b)); d.kv('Número de pagas', String(n.p)); d.kv('Retención IRPF', String(n.i).replace('.', ',') + ' %');
+        d.kv('Contrato', n.d > 0.0155 ? 'Temporal (desempleo 1,60 %)' : 'Indefinido (desempleo 1,55 %)');
+        d.kv('Base de cotización', fmt(n.bc) + (n.topada ? ' (limitada al tope 5.101,20 €)' : ''));
+        d.section('Seguridad Social (trabajador)');
+        d.kv('Contingencias comunes (4,70 %)', fmt(n.cc)); d.kv('Desempleo', fmt(n.des)); d.kv('Formación profesional (0,10 %)', fmt(n.fp)); d.kv('MEI 2026 (0,15 %)', fmt(n.mei));
+        d.kv('Total Seguridad Social', fmt(n.tSs), { bold: true });
+        d.section('Retención'); d.kv('IRPF', fmt(n.tIr), { bold: true });
+        d.big('Neto / líquido', fmt(n.net)); d.space(8);
+        d.para('Cálculo orientativo: no incluye horas extra, retribución en especie, IT, cotización adicional por AT/EP ni tramos de IRPF personalizados. El % de IRPF debe ser el que figure en tu nómina.');
+        return { blob: d.build(), name: 'nomina-verificada.pdf' };
+    }
+    function pdfEmbargo() {
+        const e = R.embargo; if (!e) throw new Error('Sin datos');
+        const d = new MiniPDF.Doc({ title: 'Cálculo de embargo art. 607 LEC', footer: 'Calculadora Laboral CDMO · Embargo' });
+        d.heading('Cálculo de embargo de salario', 'Ley de Enjuiciamiento Civil · art. 607 · cálculo orientativo');
+        d.section('Datos de partida');
+        d.kv('Líquido mensual (tras IRPF y SS)', fmt(e.n));
+        d.kv('Mínimo inembargable (SMI 2026)', fmt(e.s) + (e.prorr ? ' · 12 pagas prorrateadas' : ' · 14 pagas'));
+        d.kv('Rebaja por cargas familiares (art. 607.4)', e.reb ? String(e.reb * 100).replace('.', ',') + ' %' : 'No aplicada');
+        d.big('Retención mensual', fmt(e.tot)); d.kv('Líquido a percibir tras el embargo', fmt(e.libre), { bold: true });
+        d.section('Desglose por tramos');
+        const rows = e.tramos.filter(t => t.base > 0).map(t => ({ c: [(t.i === 0 ? 'Inembargable' : 'Tramo ' + t.i) + ' (' + (t.i === 0 ? 'hasta ' + fmt(e.s) : t.i === 5 ? 'más de ' + fmt(5 * e.s) : fmt(t.desde) + ' a ' + fmt(t.hasta)) + ')', fmt(t.base), (t.pct * 100).toFixed(t.pct * 100 % 1 ? 1 : 0).replace('.', ',') + ' %', fmt(t.ret)] }));
+        rows.push({ c: ['Total', fmt(e.n), '', fmt(e.tot)], bold: true, sep: true });
+        d.table([{ h: 'Tramo', w: .46 }, { h: 'Importe', w: .20, a: 'r' }, { h: '%', w: .10, a: 'r' }, { h: 'Retención', w: .24, a: 'r' }], rows);
+        d.space(10);
+        d.para('La escala se aplica sobre el líquido percibido (art. 607.5), por tramos y nunca sobre el total. La rebaja por cargas la concede el Letrado de la Administración de Justicia y solo afecta a los tramos 1.º a 4.º. Si concurren varios embargos, el mínimo inembargable se descuenta una sola vez (art. 607.3). Cálculo orientativo: manda el oficio del juzgado.');
+        return { blob: d.build(), name: 'calculo-embargo.pdf' };
+    }
+    function pdfFiniquito() {
+        const f = R.finiquito; if (!f) throw new Error('Revisa las fechas');
+        const d = new MiniPDF.Doc({ title: 'Cálculo de finiquito', footer: 'Calculadora Laboral CDMO · Finiquito' });
+        d.heading('Cálculo de finiquito e indemnización', 'Importes brutos · cálculo orientativo');
+        d.section('Datos');
+        d.kv('Salario bruto mensual', fmt(f.b)); d.kv('Número de pagas', String(f.p)); d.kv('Fecha de inicio', dEs(f.ini)); d.kv('Fecha de fin', dEs(f.fin));
+        d.kv('Antigüedad', f.a.meses + ' meses y ' + f.a.dias + ' días'); d.kv('Causa', f.causa);
+        d.section('Cálculo');
+        d.kv('Salario diario (bruto anual / 365)', fmt(f.sD));
+        d.kv('Años computados (fracción de mes = mes)', f.anios.toFixed(3).replace('.', ','));
+        d.kv('Indemnización' + (f.topada ? ' (limitada al tope)' : ''), fmt(f.ind), { bold: true });
+        d.kv('Días del mes trabajados (' + f.dM + ')', fmt((f.b / 30) * f.dM));
+        d.kv('Vacaciones no disfrutadas (' + String(f.dV).replace('.', ',') + ' días)', fmt(f.sD * f.dV));
+        d.kv('Extras prorrateadas pendientes', fmt(f.ext));
+        d.kv('Liquidación (días + vacaciones + extras)', fmt(f.liq), { bold: true });
+        d.big('Total bruto a recibir', fmt(f.tot)); d.space(8);
+        d.para('Importes brutos: del finiquito se descuentan Seguridad Social e IRPF. La indemnización por despido improcedente u objetivo está exenta de IRPF hasta la cuantía legal (art. 7.e LIRPF, máximo 180.000 €). Improcedente: 33 días por año con tope de 24 mensualidades; objetivo: 20 días por año con tope de 12 mensualidades; fin de contrato temporal: 12 días por año. Contratos anteriores al 12/02/2012: el tramo previo se calcula a 45 días por año y no está incluido aquí. Revisa convenio y contrato: pueden mejorar estas cuantías.');
+        return { blob: d.build(), name: 'calculo-finiquito.pdf' };
+    }
+    function exportPDF(kind) {
+        try {
+            const doc = ({ nomina: pdfNomina, embargo: pdfEmbargo, finiquito: pdfFiniquito })[kind]();
+            MiniPDF.deliver(doc.blob, doc.name);
+        } catch (e) {
+            if (confirm('No se pudo generar el PDF (' + (e && e.message ? e.message : e) + '). ¿Probar con la impresión del sistema?')) window.print();
+        }
+    }
+
+    initTheme(); checkConfigStatus(); calcNomina(); calcEmbargo(); calcFiniquito();
+
+</script>
+<script> if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('./sw.js').catch(function(){}); } </script>
+</body>
+</html>
