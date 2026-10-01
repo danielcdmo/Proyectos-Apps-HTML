@@ -2,7 +2,8 @@
 <html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Economía CDMO</title>
@@ -39,15 +40,20 @@
         .checkbox-custom { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--card-border); background: var(--neutral-bg); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; flex-shrink: 0; }
         .checkbox-custom.checked { background: var(--accent-green); border-color: var(--accent-green); color: #fff; }
         .item-label { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .item-amount-input { width: 75px; background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 10px; padding: 6px 6px; text-align: right; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; }
+        .item-amount-input { width: 96px; background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 10px; padding: 6px 6px; text-align: right; font-weight: 700; font-size: 16px; flex-shrink: 0; }
         .add-extra-form { display: flex; gap: 6px; margin-top: 10px; width: 100%; }
-        .input-extra { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 12px; padding: 8px; font-size: 0.82rem; font-weight: 600; min-width: 0; width: 100%; }
+        .input-extra { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 12px; padding: 8px; font-size: 16px; font-weight: 600; min-width: 0; width: 100%; }
         .btn-add { background: var(--accent-blue); color: #fff; border: none; border-radius: 12px; padding: 0 12px; font-weight: 800; cursor: pointer; flex-shrink: 0; }
         .actions { display: flex; gap: 8px; flex-wrap: wrap; }
         .btn-action { flex: 1; padding: 14px; border-radius: 20px; border: 1px solid var(--card-border); font-weight: 800; font-size: 0.88rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: var(--card-shadow); }
         .btn-whatsapp { background: #25D366; color: #000; min-width: 45%; }
         .btn-pdf { background: var(--accent-purple); color: #fff; min-width: 45%; }
         .btn-reset { background: var(--neutral-bg); color: var(--text-sub); width: 100%; }
+
+        .card-title { font-size: 0.85rem; font-weight: 800; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .breakdown-item { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--card-border); font-size: 0.85rem; }
+        .breakdown-item:last-child { border-bottom: none; }
+        .hint { font-size: 0.72rem; color: var(--text-sub); margin: 0 0 12px; }
 
         /* Vistas Panel */
         .panel-view { display: none; flex-direction: column; gap: 16px; }
@@ -113,7 +119,7 @@
             <div class="category-title">➕ Añadir Concepto Extra</div>
             <div class="add-extra-form">
                 <input type="text" id="extraName" class="input-extra name" placeholder="Ej: Farmacia, Regalo...">
-                <input type="number" id="extraAmount" class="input-extra amount" placeholder="0.00" step="0.01">
+                <input type="number" id="extraAmount" class="input-extra amount" inputmode="decimal" placeholder="0.00" step="0.01">
                 <button class="btn-add" onclick="addExtraItem()">OK</button>
             </div>
         </div>
@@ -121,7 +127,7 @@
         <div id="categoriesContainer"></div>
 
         <div class="actions">
-            <button class="btn-action btn-pdf" onclick="window.print()">📄 PDF</button>
+            <button class="btn-action btn-pdf" onclick="exportPDF('month')">📄 PDF</button>
             <button class="btn-action btn-whatsapp" onclick="sendWhatsApp()">💬 Desglose</button>
             <button class="btn-action btn-reset" onclick="resetMonth()">🔄 Limpiar</button>
         </div>
@@ -151,7 +157,7 @@
         </div>
 
         <div class="actions">
-            <button class="btn-action btn-pdf" onclick="window.print()">📄 PDF Anual</button>
+            <button class="btn-action btn-pdf" onclick="exportPDF('year')">📄 PDF Anual</button>
             <button class="btn-action btn-whatsapp" onclick="sendYearWhatsApp()">💬 Resumen Anual</button>
         </div>
     </div>
@@ -161,7 +167,7 @@
     <div class="modal-content">
         <h3 style="margin-top:0; color:var(--accent-blue); font-weight:800;">⚙️ Configurar Aviso</h3>
         <p style="font-size:0.8rem; color:var(--text-sub); margin-bottom: 16px;">Aviso calendario nativo (Mensual).</p>
-        <div class="form-group"><label class="form-label">Día del mes:</label><input type="number" id="cfgDay" class="input-extra" min="1" max="31" value="28"></div>
+        <div class="form-group"><label class="form-label">Día del mes:</label><input type="number" id="cfgDay" class="input-extra" inputmode="numeric" min="1" max="28" value="28"><p class="hint" style="margin-top:6px;">Máximo día 28 para que el aviso salte todos los meses.</p></div>
         <div class="form-group"><label class="form-label">Hora:</label><input type="time" id="cfgTime" class="input-extra" value="22:00"></div>
         <div class="actions" style="margin-top:20px;">
             <button class="btn-action" style="background:var(--accent-blue); color:#fff;" onclick="generateICS()">🗓️ Crear en iOS</button>
@@ -171,7 +177,207 @@
 </div>
 
 <script>
-    let currentDate = new Date();
+/* ===== Mini generador de PDF (sin librerías, sin window.print) ===== */
+var MiniPDF = (function () {
+  var W = 595.28, H = 841.89, M = 48;
+  var HW = [278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584];
+  var BW = [278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584];
+
+  // Unicode -> byte WinAnsi (lo que Helvetica estándar sí dibuja)
+  function byteOf(c) {
+    if (c === 9 || c === 10 || c === 13) return 32;
+    if (c < 32) return -1;
+    if (c < 127) return c;
+    if (c >= 160 && c <= 255) return c;
+    switch (c) {
+      case 0x20AC: return 0x80; case 0x2026: return 0x85; case 0x2018: return 0x91;
+      case 0x2019: return 0x92; case 0x201C: return 0x93; case 0x201D: return 0x94;
+      case 0x2022: return 0x95; case 0x2013: return 0x96; case 0x2014: return 0x97;
+      case 0x2212: return 0x2D;
+    }
+    return -1; // emojis, símbolos: se omiten
+  }
+  function enc(s) {
+    s = String(s == null ? '' : s);
+    var o = '';
+    for (var i = 0; i < s.length; i++) { var b = byteOf(s.charCodeAt(i)); if (b >= 0) o += String.fromCharCode(b); }
+    return o;
+  }
+  function charW(b, bold) {
+    var t = bold ? BW : HW;
+    if (b >= 32 && b <= 126) return t[b - 32];
+    if (b === 0x80) return 556;
+    if (b === 0x95) return 350;
+    if (b === 0x96 || b === 0x97) return b === 0x96 ? 556 : 1000;
+    if (b >= 160) {
+      var base = String.fromCharCode(b).normalize ? String.fromCharCode(b).normalize('NFD').charCodeAt(0) : 0;
+      if (base >= 32 && base <= 126) return t[base - 32];
+    }
+    return 556;
+  }
+  function width(s, size, bold) {
+    var e = enc(s), w = 0;
+    for (var i = 0; i < e.length; i++) w += charW(e.charCodeAt(i), bold);
+    return w * size / 1000;
+  }
+  function esc(e) { return e.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)'); }
+  function f2(n) { return (Math.round(n * 100) / 100).toFixed(2); }
+  function col(c) { return f2(c[0]) + ' ' + f2(c[1]) + ' ' + f2(c[2]); }
+
+  var INK = [0.09, 0.1, 0.12], GREY = [0.42, 0.44, 0.48], LINE = [0.82, 0.83, 0.85], ACC = [0.04, 0.38, 0.8], BOX = [0.94, 0.95, 0.97];
+
+  function Doc(opts) {
+    opts = opts || {};
+    this.title = opts.title || 'Documento';
+    this.footer = opts.footer || '';
+    this.pages = []; this.newPage();
+  }
+  var P = Doc.prototype;
+  P.newPage = function () { this.cur = []; this.pages.push(this.cur); this.y = M; };
+  P.ensure = function (h) { if (this.y + h > H - M - 14) this.newPage(); };
+  P.text = function (x, y, s, size, bold, color) {
+    this.cur.push('BT /' + (bold ? 'F2' : 'F1') + ' ' + f2(size) + ' Tf ' + col(color || INK) + ' rg ' + f2(x) + ' ' + f2(H - y) + ' Td (' + esc(enc(s)) + ') Tj ET');
+  };
+  P.textR = function (xr, y, s, size, bold, color) { this.text(xr - width(s, size, bold), y, s, size, bold, color); };
+  P.hline = function (y, color, w, x1, x2) {
+    this.cur.push(col(color || LINE) + ' RG ' + f2(w || 0.6) + ' w ' + f2(x1 == null ? M : x1) + ' ' + f2(H - y) + ' m ' + f2(x2 == null ? W - M : x2) + ' ' + f2(H - y) + ' l S');
+  };
+  P.rect = function (x, y, w, h, color) { this.cur.push(col(color) + ' rg ' + f2(x) + ' ' + f2(H - y - h) + ' ' + f2(w) + ' ' + f2(h) + ' re f'); };
+  P.space = function (h) { this.y += h; return this; };
+  P.fit = function (s, size, bold, maxW) {
+    s = String(s == null ? '' : s);
+    if (width(s, size, bold) <= maxW) return s;
+    while (s.length > 1 && width(s + '…', size, bold) > maxW) s = s.slice(0, -1);
+    return s + '…';
+  };
+  P.heading = function (t, sub) {
+    this.ensure(46);
+    this.rect(M, this.y, 4, 22, ACC);
+    this.text(M + 12, this.y + 17, t, 19, true, INK);
+    this.y += 30;
+    if (sub) { this.text(M, this.y + 8, sub, 9.5, false, GREY); this.y += 14; }
+    this.hline(this.y + 4, INK, 1.2); this.y += 16;
+    return this;
+  };
+  P.section = function (t) {
+    this.ensure(34); this.y += 8;
+    this.text(M, this.y + 10, t.toUpperCase(), 9.5, true, ACC);
+    this.y += 15; this.hline(this.y, LINE, 0.6); this.y += 6;
+    return this;
+  };
+  P.kv = function (k, v, o) {
+    o = o || {}; this.ensure(19);
+    this.text(M + 2, this.y + 13, k, 10.5, false, o.dim ? GREY : INK);
+    this.textR(W - M - 2, this.y + 13, v, 10.5, !!o.bold, o.color || INK);
+    this.y += 19; this.hline(this.y, LINE, 0.4);
+    return this;
+  };
+  P.big = function (label, value) {
+    this.ensure(54); this.y += 6;
+    this.rect(M, this.y, W - 2 * M, 44, BOX);
+    this.text(M + 12, this.y + 17, label.toUpperCase(), 8.5, true, GREY);
+    this.textR(W - M - 12, this.y + 33, value, 20, true, INK);
+    this.y += 52;
+    return this;
+  };
+  P.para = function (s, size, color) {
+    size = size || 9.5; var maxW = W - 2 * M, words = String(s).split(/\s+/), line = '', self = this;
+    function flush() { if (line) { self.ensure(size * 1.45); self.text(M, self.y + size, line, size, false, color || GREY); self.y += size * 1.45; line = ''; } }
+    words.forEach(function (w) {
+      var t = line ? line + ' ' + w : w;
+      if (width(t, size, false) > maxW) { flush(); line = w; } else line = t;
+    });
+    flush(); return this;
+  };
+  // cols: [{h:'Concepto', w:0.5, a:'l'|'r'}] ; rows: [{c:[..], bold, sep, dim}]
+  P.table = function (cols, rows) {
+    var self = this, tw = W - 2 * M, xs = [], x = M;
+    cols.forEach(function (c) { xs.push(x); x += c.w * tw; });
+    function cell(i, s, y, size, bold, color) {
+      var c = cols[i], mw = c.w * tw - 8; s = self.fit(s, size, bold, mw);
+      if (c.a === 'r') self.textR(xs[i] + c.w * tw - 4, y, s, size, bold, color);
+      else self.text(xs[i] + 4, y, s, size, bold, color);
+    }
+    function head() {
+      self.ensure(40);
+      cols.forEach(function (c, i) { cell(i, c.h.toUpperCase(), self.y + 12, 8, true, GREY); });
+      self.y += 17; self.hline(self.y, INK, 0.9); self.y += 2;
+    }
+    head();
+    rows.forEach(function (r) {
+      if (self.y + 19 > H - M - 14) { self.newPage(); head(); }
+      if (r.sep) { self.hline(self.y + 1, INK, 0.9); self.y += 2; }
+      r.c.forEach(function (s, i) { cell(i, s, self.y + 13, 9.5, !!r.bold, r.dim ? GREY : INK); });
+      self.y += 19; self.hline(self.y, LINE, 0.4);
+    });
+    return this;
+  };
+  P.build = function () {
+    var n = this.pages.length, self = this, now = new Date();
+    var stamp = ('0' + now.getDate()).slice(-2) + '/' + ('0' + (now.getMonth() + 1)).slice(-2) + '/' + now.getFullYear();
+    var objs = [];
+    var kids = []; for (var k = 0; k < n; k++) kids.push((5 + 2 * k) + ' 0 R');
+    objs[0] = '<< /Type /Catalog /Pages 2 0 R >>';
+    objs[1] = '<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + n + ' >>';
+    objs[2] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+    objs[3] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+    this.pages.forEach(function (ops, i) {
+      self.cur = ops;
+      self.hline(H - 34, LINE, 0.5);
+      self.text(M, H - 22, (self.footer ? self.footer + ' · ' : '') + 'Generado el ' + stamp, 7.5, false, GREY);
+      self.textR(W - M, H - 22, 'Página ' + (i + 1) + ' de ' + n, 7.5, false, GREY);
+      var content = ops.join('\n');
+      objs[4 + 2 * i] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + f2(W) + ' ' + f2(H) + '] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ' + (6 + 2 * i) + ' 0 R >>';
+      objs[5 + 2 * i] = '<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream';
+    });
+    objs.push('<< /Title (' + esc(enc(this.title)) + ') /Producer (CDMO) >>');
+    var out = '%PDF-1.4\n%\u00E2\u00E3\u00CF\u00D3\n', offs = [];
+    objs.forEach(function (o, i) { offs.push(out.length); out += (i + 1) + ' 0 obj\n' + o + '\nendobj\n'; });
+    var xref = out.length;
+    out += 'xref\n0 ' + (objs.length + 1) + '\n0000000000 65535 f \n';
+    offs.forEach(function (o) { out += ('0000000000' + o).slice(-10) + ' 00000 n \n'; });
+    out += 'trailer\n<< /Size ' + (objs.length + 1) + ' /Root 1 0 R /Info ' + objs.length + ' 0 R >>\nstartxref\n' + xref + '\n%%EOF';
+    var u8 = new Uint8Array(out.length);
+    for (var j = 0; j < out.length; j++) u8[j] = out.charCodeAt(j) & 255;
+    return new Blob([u8], { type: 'application/pdf' });
+  };
+
+  // Entrega en iOS: hoja de compartir (Guardar en Archivos, Imprimir, AirDrop...) o descarga
+  function standalone() { return !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches)); }
+  function deliver(blob, filename, mime, shareOnlyStandalone) {
+    mime = mime || 'application/pdf';
+    var file = null;
+    try { file = new File([blob], filename, { type: mime }); } catch (e) {}
+    var canShare = file && navigator.canShare && navigator.canShare({ files: [file] });
+    if (canShare && (!shareOnlyStandalone || standalone())) {
+      return navigator.share({ files: [file], title: filename }).catch(function (e) {
+        if (e && e.name === 'AbortError') return;
+        return download(blob, filename);
+      });
+    }
+    return Promise.resolve(download(blob, filename));
+  }
+  function download(blob, filename) {
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = filename; a.rel = 'noopener'; a.style.display = 'none';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 60000);
+  }
+  return { Doc: Doc, deliver: deliver, width: width };
+})();
+
+</script>
+<script>
+    /* ===== Utilidades ===== */
+    const $ = id => document.getElementById(id);
+    const fmt = n => { n = isFinite(n) ? n : 0; const p = Math.abs(n).toFixed(2).split('.'); return (n < 0 && +p.join('') ? '-' : '') + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + p[1] + ' €'; };
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } };
+    const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+    const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+    // Día 1 siempre: evita que "mes siguiente" salte un mes cuando hoy es 29, 30 o 31
+    let currentDate = (() => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), 1); })();
     let currentYear = new Date().getFullYear();
     let currentView = 'month';
 
@@ -186,175 +392,167 @@
         { id: 's_seguros', cat: '🛡️ Seguros y Gastos Fijos', label: 'Seguros', amount: 0.00, isClaudia: true }
     ];
 
-    let db = {}; try { db = JSON.parse(localStorage.getItem('economia_cdmo_db')) || {}; } catch(e) { db = {}; }
+    let db = {}; try { db = JSON.parse(localStorage.getItem('economia_cdmo_db')) || {}; } catch (e) { db = {}; }
+    function saveDB() { lsSet('economia_cdmo_db', JSON.stringify(db)); }
 
-    function initTheme() {
-        const savedTheme = localStorage.getItem('theme_preference') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
-    }
-    function toggleTheme() {
-        const curr = document.documentElement.getAttribute('data-theme'); const next = curr === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next); localStorage.setItem('theme_preference', next);
-        document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
-    }
-
+    /* ===== Tema / vistas ===== */
+    function initTheme() { const t = lsGet('theme_preference', 'dark'); document.documentElement.setAttribute('data-theme', t); $('themeBtn').textContent = t === 'dark' ? '🌙' : '☀️'; }
+    function toggleTheme() { const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); lsSet('theme_preference', t); $('themeBtn').textContent = t === 'dark' ? '🌙' : '☀️'; }
     function switchView(view) {
         currentView = view;
-        document.getElementById('viewMonth').classList.toggle('active', view === 'month');
-        document.getElementById('viewYear').classList.toggle('active', view === 'year');
-        document.getElementById('btn_viewMonth').classList.toggle('active', view === 'month');
-        document.getElementById('btn_viewYear').classList.toggle('active', view === 'year');
-        if (view === 'year') renderYear();
-        else renderMonth();
+        $('viewMonth').classList.toggle('active', view === 'month'); $('viewYear').classList.toggle('active', view === 'year');
+        $('btn_viewMonth').classList.toggle('active', view === 'month'); $('btn_viewYear').classList.toggle('active', view === 'year');
+        if (view === 'year') renderYear(); else renderMonth();
     }
 
-    /* Modal Configuración Avisos */
-    function openConfig() {
-        document.getElementById('configModal').classList.add('active');
-        const sd = localStorage.getItem('eco_alert_day'), st = localStorage.getItem('eco_alert_time');
-        if(sd) document.getElementById('cfgDay').value = sd;
-        if(st) document.getElementById('cfgTime').value = st;
-    }
-    function closeConfig() { document.getElementById('configModal').classList.remove('active'); }
-
+    /* ===== Aviso en calendario (.ics) ===== */
+    function openConfig() { $('configModal').classList.add('active'); const d = lsGet('eco_alert_day', ''), t = lsGet('eco_alert_time', ''); if (d) $('cfgDay').value = d; if (t) $('cfgTime').value = t; }
+    function closeConfig() { $('configModal').classList.remove('active'); }
     function generateICS() {
-        const day = document.getElementById('cfgDay').value, time = document.getElementById('cfgTime').value;
-        localStorage.setItem('eco_alert_day', day); localStorage.setItem('eco_alert_time', time);
-        
-        const btn = document.getElementById('notifBtn');
-        btn.textContent = '⚙️ Día ' + day; btn.style.color = 'var(--accent-green)';
-        
-        const [hour, minute] = time.split(':');
-        let now = new Date(), year = now.getFullYear(), month = now.getMonth() + 1;
-        if (now.getDate() > day) { month++; if (month > 12) { month = 1; year++; } }
-        
-        const mStr = String(month).padStart(2, '0'), dStr = String(day).padStart(2, '0');
-        const dtstart = `${year}${mStr}${dStr}T${hour}${minute}00`;
-        const dtstamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + "Z";
-        const uid = Date.now() + "@cdmo.app";
-
-        const icsData = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//CDMO//Economia//ES\nBEGIN:VEVENT\nUID:${uid}\nDTSTAMP:${dtstamp}\nSUMMARY:📊 Revisión de Economía CDMO\nDESCRIPTION:CHECKLIST MENSUAL ECONOMÍA FAMILIAR CASA DE CDMO.\nRRULE:FREQ=MONTHLY;BYMONTHDAY=${day}\nDTSTART;TZID=Europe/Madrid:${dtstart}\nDURATION:PT1H\nBEGIN:VALARM\nACTION:DISPLAY\nDESCRIPTION:Checklist Mensual\nTRIGGER:-PT0M\nEND:VALARM\nEND:VEVENT\nEND:VCALENDAR`;
-
-        const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
-        const link = document.createElement('a'); link.href = URL.createObjectURL(blob);
-        link.setAttribute('download', 'economia_aviso.ics');
-        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        let day = parseInt($('cfgDay').value, 10); const time = $('cfgTime').value || '22:00';
+        if (!(day >= 1)) day = 28; if (day > 28) day = 28;          // 29-31 se saltarían meses cortos
+        lsSet('eco_alert_day', day); lsSet('eco_alert_time', time);
+        $('notifBtn').textContent = '⚙️ Día ' + day; $('notifBtn').style.color = 'var(--accent-green)';
+        const pad = n => String(n).padStart(2, '0'), hm = time.split(':');
+        const now = new Date(); let y = now.getFullYear(), mo = now.getMonth() + 1;
+        if (now.getDate() > day) { mo++; if (mo > 12) { mo = 1; y++; } }
+        const dtstart = `${y}${pad(mo)}${pad(day)}T${hm[0]}${hm[1]}00`;
+        const dtstamp = now.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//CDMO//Economia//ES', 'CALSCALE:GREGORIAN', 'BEGIN:VEVENT',
+            'UID:' + Date.now() + '@cdmo.app', 'DTSTAMP:' + dtstamp, 'SUMMARY:📊 Revisión de Economía CDMO', 'DESCRIPTION:Checklist mensual economía familiar CDMO.',
+            'RRULE:FREQ=MONTHLY;BYMONTHDAY=' + day, 'DTSTART:' + dtstart, 'DURATION:PT1H',
+            'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:Checklist mensual', 'TRIGGER:-PT0M', 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n') + '\r\n';
+        MiniPDF.deliver(new Blob([ics], { type: 'text/calendar;charset=utf-8' }), 'economia_aviso.ics', 'text/calendar', true);
         closeConfig();
     }
-    function checkConfigStatus() {
-        const sd = localStorage.getItem('eco_alert_day');
-        if(sd) { const btn = document.getElementById('notifBtn'); btn.textContent = '⚙️ Día ' + sd; btn.style.color = 'var(--accent-green)'; }
-    }
+    function checkConfigStatus() { const d = lsGet('eco_alert_day', ''); if (d) { $('notifBtn').textContent = '⚙️ Día ' + d; $('notifBtn').style.color = 'var(--accent-green)'; } }
 
-    /* VISTA MENSUAL */
-    function getMonthKey() { return `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`; }
+    /* ===== Vista mensual ===== */
+    function getMonthKey(d) { d = d || currentDate; return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; }
+    function monthLabel(d) { d = d || currentDate; return MESES[d.getMonth()] + ' ' + d.getFullYear(); }
     function initMonthData() {
         const key = getMonthKey();
-        if (!db[key] || !Array.isArray(db[key].items)) { db[key] = { items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)), checked: {} }; }
+        if (!db[key] || !Array.isArray(db[key].items)) db[key] = { items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)), checked: {} };
         if (!db[key].checked) db[key].checked = {};
         saveDB();
     }
-    function saveDB() { localStorage.setItem('economia_cdmo_db', JSON.stringify(db)); }
-
+    function groupByCat(items) { const c = {}; (items || []).forEach(it => { (c[it.cat] = c[it.cat] || []).push(it); }); return c; }
+    function monthTotals(md) {
+        let total = 0, pagado = 0, claudia = 0;
+        (md.items || []).forEach(it => { const a = parseFloat(it.amount) || 0; total += a; if (md.checked && md.checked[it.id]) pagado += a; if (it.isClaudia) claudia += a / 2; });
+        return { total, pagado, claudia };
+    }
     function renderMonth() {
-        initMonthData(); const key = getMonthKey(); const monthData = db[key];
-        const monthStr = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-        document.getElementById('monthTitle').textContent = monthStr;
-        document.getElementById('printTitle').textContent = 'Economía Familiar CDMO - ' + monthStr;
-
-        const container = document.getElementById('categoriesContainer'); container.innerHTML = '';
-        const categories = {};
-        if (Array.isArray(monthData.items)) {
-            monthData.items.forEach(item => { if (!categories[item.cat]) categories[item.cat] = []; categories[item.cat].push(item); });
-        }
-
-        let grandTotal = 0, totalPagado = 0, parteClaudiaTotal = 0;
-        for (const [catName, items] of Object.entries(categories)) {
+        initMonthData(); const key = getMonthKey(), md = db[key];
+        $('monthTitle').textContent = monthLabel();
+        $('printTitle').textContent = 'Economía Familiar CDMO - ' + monthLabel();
+        const container = $('categoriesContainer'); container.innerHTML = '';
+        for (const [catName, items] of Object.entries(groupByCat(md.items))) {
             const card = document.createElement('div'); card.className = 'glass-card'; card.style.marginBottom = '16px';
-            let html = `<div class="category-title">${catName}</div>`;
+            let html = `<div class="category-title">${esc(catName)}</div>`;
             items.forEach(item => {
-                const isChecked = !!(monthData.checked && monthData.checked[item.id]); const amount = parseFloat(item.amount) || 0;
-                grandTotal += amount; if (isChecked) totalPagado += amount; if (item.isClaudia) parteClaudiaTotal += (amount / 2);
-                html += `<div class="item-row"><div class="item-left"><div class="checkbox-custom ${isChecked ? 'checked' : ''}" onclick="toggleCheck('${item.id}')">${isChecked ? '✓' : ''}</div><span class="item-label">${item.label}</span></div><input type="number" class="item-amount-input" value="${item.amount || ''}" placeholder="0.00" step="0.01" onchange="updateAmount('${item.id}', this.value)"></div>`;
+                const isChecked = !!(md.checked && md.checked[item.id]), amount = parseFloat(item.amount) || 0;
+                html += `<div class="item-row"><div class="item-left"><div class="checkbox-custom ${isChecked ? 'checked' : ''}" onclick="toggleCheck('${esc(item.id)}')">${isChecked ? '✓' : ''}</div><span class="item-label">${esc(item.label)}</span></div><input type="number" inputmode="decimal" class="item-amount-input" value="${amount || ''}" placeholder="0.00" step="0.01" onchange="updateAmount('${esc(item.id)}', this.value)"></div>`;
             });
             card.innerHTML = html; container.appendChild(card);
         }
-        document.getElementById('totalGastos').textContent = `${grandTotal.toFixed(2).replace('.', ',')} €`;
-        document.getElementById('totalPagados').textContent = `${totalPagado.toFixed(2).replace('.', ',')} €`;
-        document.getElementById('parteClaudia').textContent = `${parteClaudiaTotal.toFixed(2).replace('.', ',')} €`;
+        const t = monthTotals(md);
+        $('totalGastos').textContent = fmt(t.total); $('totalPagados').textContent = fmt(t.pagado); $('parteClaudia').textContent = fmt(t.claudia);
     }
-
     function toggleCheck(id) { const key = getMonthKey(); if (!db[key].checked) db[key].checked = {}; db[key].checked[id] = !db[key].checked[id]; saveDB(); renderMonth(); }
     function updateAmount(id, val) { const item = db[getMonthKey()].items.find(i => i.id === id); if (item) { item.amount = parseFloat(val) || 0; saveDB(); renderMonth(); } }
     function addExtraItem() {
-        const n = document.getElementById('extraName').value.trim(), a = parseFloat(document.getElementById('extraAmount').value) || 0; if (!n) return;
+        const n = $('extraName').value.trim(), a = parseFloat($('extraAmount').value) || 0; if (!n) return;
+        initMonthData();
         db[getMonthKey()].items.push({ id: 'extra_' + Date.now(), cat: '⚡ Extras y Varios', label: n, amount: a, isClaudia: true });
-        document.getElementById('extraName').value = ''; document.getElementById('extraAmount').value = ''; saveDB(); renderMonth();
+        $('extraName').value = ''; $('extraAmount').value = ''; saveDB(); renderMonth();
     }
-    function changeMonth(offset) { currentDate.setMonth(currentDate.getMonth() + offset); renderMonth(); }
-    function resetMonth() {
-        if (confirm('¿Borrar y reiniciar los datos de este mes?')) {
-            db[getMonthKey()] = { items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)), checked: {} }; saveDB(); renderMonth();
-        }
-    }
+    function changeMonth(offset) { currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1); renderMonth(); }
+    function resetMonth() { if (confirm('¿Borrar y reiniciar los datos de este mes?')) { db[getMonthKey()] = { items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)), checked: {} }; saveDB(); renderMonth(); } }
 
-    /* VISTA ANUAL */
+    /* ===== Vista anual ===== */
+    function yearData(year) {
+        const months = Array(12).fill(null).map(() => ({ total: 0, claudia: 0 })), cats = {}; let total = 0, claudia = 0;
+        for (const [key, data] of Object.entries(db)) {
+            if (!key.startsWith(year + '-') || !data || !Array.isArray(data.items)) continue;
+            const mi = parseInt(key.slice(5, 7), 10) - 1; if (!(mi >= 0 && mi < 12)) continue;
+            data.items.forEach(it => {
+                const a = parseFloat(it.amount) || 0; total += a; months[mi].total += a;
+                if (it.isClaudia) { claudia += a / 2; months[mi].claudia += a / 2; }
+                cats[it.cat] = (cats[it.cat] || 0) + a;
+            });
+        }
+        return { total, claudia, cats, months };
+    }
     function changeYear(offset) { currentYear += offset; renderYear(); }
     function renderYear() {
-        document.getElementById('yearTitle').textContent = 'Año ' + currentYear;
-        document.getElementById('printTitle').textContent = 'Balance Anual Economía CDMO - ' + currentYear;
-
-        let yearTotal = 0, yearClaudia = 0;
-        const catTotals = {};
-
-        // Recorrer todos los meses guardados en el LocalStorage que coincidan con el año
-        for (const [key, data] of Object.entries(db)) {
-            if (key.startsWith(String(currentYear)) && data && Array.isArray(data.items)) {
-                data.items.forEach(item => {
-                    const amt = parseFloat(item.amount) || 0;
-                    yearTotal += amt;
-                    if (item.isClaudia) yearClaudia += (amt / 2);
-
-                    if (!catTotals[item.cat]) catTotals[item.cat] = 0;
-                    catTotals[item.cat] += amt;
-                });
-            }
-        }
-
-        document.getElementById('yearTotalGastos').textContent = `${yearTotal.toFixed(2).replace('.', ',')} €`;
-        document.getElementById('yearTotalClaudia').textContent = `${yearClaudia.toFixed(2).replace('.', ',')} €`;
-
-        const listEl = document.getElementById('yearCategoriesList');
-        if (Object.keys(catTotals).length === 0) {
-            listEl.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:10px;">No hay registros para este año.</div>';
-            return;
-        }
-
-        let html = '';
-        for (const [cat, sum] of Object.entries(catTotals)) {
-            html += `<div class="breakdown-item"><span>${cat}:</span><strong style="color:var(--accent-blue);">${sum.toFixed(2).replace('.', ',')} €</strong></div>`;
-        }
-        listEl.innerHTML = html;
+        $('yearTitle').textContent = 'Año ' + currentYear;
+        $('printTitle').textContent = 'Balance Anual Economía CDMO - ' + currentYear;
+        const y = yearData(currentYear);
+        $('yearTotalGastos').textContent = fmt(y.total); $('yearTotalClaudia').textContent = fmt(y.claudia);
+        const listEl = $('yearCategoriesList');
+        if (!Object.keys(y.cats).length) { listEl.innerHTML = '<div style="text-align:center; color:var(--text-sub); padding:10px;">No hay registros para este año.</div>'; return; }
+        listEl.innerHTML = Object.entries(y.cats).map(([c, s]) => `<div class="breakdown-item"><span>${esc(c)}:</span><strong style="color:var(--accent-blue);">${fmt(s)}</strong></div>`).join('');
     }
 
+    /* ===== WhatsApp ===== */
+    function openWA(text) { window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank'); }
     function sendWhatsApp() {
-        const monthName = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-        const key = getMonthKey(); let text = `📊 *Resumen Gastos CDMO - ${monthName}*\n\n`;
-        (db[key].items || []).forEach(i => { if (i.amount > 0) { text += `${db[key].checked && db[key].checked[i.id] ? '✅' : '⏳'} ${i.label}: *${i.amount.toFixed(2)} €*\n`; } });
-        text += `\n💰 *Total:* ${document.getElementById('totalGastos').textContent}\n👧 *Claudia (50%):* ${document.getElementById('parteClaudia').textContent}`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        initMonthData(); const md = db[getMonthKey()], t = monthTotals(md);
+        let text = `📊 *Resumen Gastos CDMO - ${monthLabel()}*\n\n`;
+        (md.items || []).forEach(i => { const a = parseFloat(i.amount) || 0; if (a > 0) text += `${md.checked && md.checked[i.id] ? '✅' : '⏳'} ${i.label}: *${fmt(a)}*\n`; });
+        text += `\n💰 *Total:* ${fmt(t.total)}\n👧 *Claudia (50%):* ${fmt(t.claudia)}`;
+        openWA(text);
+    }
+    function sendYearWhatsApp() {
+        const y = yearData(currentYear);
+        openWA(`📈 *Balance Anual Economía CDMO - ${currentYear}*\n\n💰 *Total Gastos del Año:* ${fmt(y.total)}\n👧 *Acumulado Claudia (50%):* ${fmt(y.claudia)}`);
     }
 
-    function sendYearWhatsApp() {
-        let text = `📈 *Balance Anual Economía CDMO - ${currentYear}*\n\n` +
-                   `💰 *Total Gastos del Año:* ${document.getElementById('yearTotalGastos').textContent}\n` +
-                   `👧 *Acumulado Claudia (50%):* ${document.getElementById('yearTotalClaudia').textContent}`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    /* ===== PDF (sin window.print: funciona también en la app de la pantalla de inicio de iOS) ===== */
+    function pdfMonth() {
+        initMonthData(); const md = db[getMonthKey()], t = monthTotals(md);
+        const d = new MiniPDF.Doc({ title: 'Economía familiar CDMO - ' + monthLabel(), footer: 'Economía CDMO · ' + monthLabel() });
+        d.heading('Economía familiar CDMO', monthLabel());
+        d.kv('Total gastos', fmt(t.total), { bold: true }); d.kv('Pagados / listos', fmt(t.pagado)); d.kv('Pendiente de pagar', fmt(t.total - t.pagado));
+        d.big('Parte Claudia (50 %)', fmt(t.claudia));
+        for (const [cat, items] of Object.entries(groupByCat(md.items))) {
+            d.section(cat);
+            let sub = 0;
+            const rows = items.map(it => { const a = parseFloat(it.amount) || 0; sub += a; return { c: [it.label, md.checked && md.checked[it.id] ? 'Pagado' : 'Pendiente', fmt(a)], dim: a === 0 }; });
+            rows.push({ c: ['Subtotal', '', fmt(sub)], bold: true, sep: true });
+            d.table([{ h: 'Concepto', w: .56 }, { h: 'Estado', w: .2 }, { h: 'Importe', w: .24, a: 'r' }], rows);
+        }
+        return { blob: d.build(), name: 'economia-' + getMonthKey() + '.pdf' };
+    }
+    function pdfYear() {
+        const y = yearData(currentYear);
+        const d = new MiniPDF.Doc({ title: 'Balance anual economía CDMO ' + currentYear, footer: 'Economía CDMO · Balance ' + currentYear });
+        d.heading('Balance anual · Economía CDMO', 'Año ' + currentYear);
+        d.kv('Total gastos del año', fmt(y.total), { bold: true });
+        d.big('Acumulado parte Claudia (50 %)', fmt(y.claudia));
+        d.section('Desglose por categorías');
+        const crow = Object.entries(y.cats).map(([c, s]) => ({ c: [c, fmt(s)] }));
+        if (!crow.length) crow.push({ c: ['Sin registros este año', ''], dim: true }); else crow.push({ c: ['Total', fmt(y.total)], bold: true, sep: true });
+        d.table([{ h: 'Categoría', w: .7 }, { h: 'Importe', w: .3, a: 'r' }], crow);
+        d.section('Evolución por meses');
+        const mrow = y.months.map((m, i) => ({ c: [MESES[i], fmt(m.total), fmt(m.claudia)], dim: m.total === 0 }));
+        mrow.push({ c: ['Total', fmt(y.total), fmt(y.claudia)], bold: true, sep: true });
+        d.table([{ h: 'Mes', w: .4 }, { h: 'Gastos', w: .3, a: 'r' }, { h: 'Parte Claudia', w: .3, a: 'r' }], mrow);
+        return { blob: d.build(), name: 'economia-balance-' + currentYear + '.pdf' };
+    }
+    function exportPDF(kind) {
+        try {
+            const doc = kind === 'year' ? pdfYear() : pdfMonth();
+            MiniPDF.deliver(doc.blob, doc.name);
+        } catch (e) {
+            if (confirm('No se pudo generar el PDF (' + (e && e.message ? e.message : e) + '). ¿Probar con la impresión del sistema?')) window.print();
+        }
     }
 
     initTheme(); checkConfigStatus(); renderMonth();
+
 </script>
-<script> if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); } </script>
+<script> if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('./sw.js').catch(function(){}); } </script>
 </body>
 </html>
