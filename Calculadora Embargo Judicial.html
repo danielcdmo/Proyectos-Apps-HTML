@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Calculadora de embargo de salario — art. 607 LEC</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -89,7 +89,7 @@ input:focus-visible,select:focus-visible,button:focus-visible{
 .check input{margin-top:3px;width:16px;height:16px;accent-color:var(--safe);flex:none}
 .check label{margin:0;font-weight:500}
 select{
-  margin-top:8px;padding:7px 9px;border:1px solid var(--line);border-radius:2px;
+  width:100%;margin-top:8px;padding:7px 9px;border:1px solid var(--line);border-radius:2px;
   font-family:'IBM Plex Mono',monospace;font-size:13px;background:#FCFCFA;color:var(--ink)
 }
 
@@ -151,6 +151,12 @@ button.copy{
   font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer
 }
 button.copy:hover{background:#2A2D36}
+button.pdf{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
+button.pdf:hover{background:#F1F0EB}
+.btnrow{display:grid;gap:10px}
+@media(min-width:620px){.btnrow{grid-template-columns:1fr 1fr}}
+.errmsg{font-size:12px;color:#9C3A2C;margin-top:8px;display:none}
+select{font-size:16px}
 button.copy.done{background:var(--safe)}
 
 footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid var(--line);padding-top:14px}
@@ -179,7 +185,7 @@ footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid 
       <label for="liq">Líquido percibido al mes</label>
       <input type="number" id="liq" value="1644.79" min="0" step="0.01" inputmode="decimal">
       <span class="eur">€</span>
-      <p class="hint">Lo que realmente cobras, después de IRPF y Seguridad Social (art. 607.4 LEC).</p>
+      <p class="hint">Lo que realmente cobras, después de IRPF y Seguridad Social (art. 607.5 LEC).</p>
     </div>
   </div>
 
@@ -200,20 +206,30 @@ footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid 
   </div>
 
   <div class="field" style="margin-top:14px">
-    <label for="smi">SMI mensual de referencia</label>
+    <label for="smi">SMI mensual (14 pagas)</label>
     <input type="number" id="smi" value="1221" min="1" step="0.01" inputmode="decimal">
     <span class="eur">€</span>
-    <p class="hint">SMI 2026: 1.221,00 € (RD 126/2026). Esta cantidad es inembargable siempre.</p>
+    <p class="hint">SMI 2026: 1.221,00 € al mes en 14 pagas (RD 126/2026).</p>
+  </div>
+
+  <div style="margin-top:14px">
+    <label for="pagas">¿Cómo cobras las pagas extra?</label>
+    <select id="pagas">
+      <option value="14">En 14 pagas (extras aparte, no prorrateadas)</option>
+      <option value="12">Prorrateadas en 12 pagas</option>
+    </select>
+    <p class="hint">Si tu nómina incluye la parte proporcional de las extras, el mínimo inembargable es el SMI anual entre 12 (1.221 × 14 / 12 = 1.424,50 €), no 1.221 €. Es el criterio que aplica la Agencia Tributaria (TEAC). El mes en que cobras una paga extra aparte no está cubierto: manda el oficio.</p>
   </div>
 
   <div class="check">
     <input type="checkbox" id="cargas">
     <div>
-      <label for="cargas">Rebaja por cargas familiares (art. 607.6)</label>
-      <p class="hint">Solo si el juzgado la ha acordado expresamente. No se aplica sola.</p>
+      <label for="cargas">Rebaja por cargas familiares (art. 607.4)</label>
+      <p class="hint">La concede el Letrado de la Administración de Justicia, entre un 10 y un 15 %. No se aplica sola: hay que pedirla y acreditarla.</p>
       <select id="rebaja" disabled>
-        <option value="0.10">Rebaja del 10%</option>
-        <option value="0.15">Rebaja del 15%</option>
+        <option value="0.10">Rebaja del 10 %</option>
+        <option value="0.125">Rebaja del 12,5 %</option>
+        <option value="0.15">Rebaja del 15 %</option>
       </select>
     </div>
   </div>
@@ -263,15 +279,210 @@ footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid 
 </div>
 
 <div class="card" style="padding:14px">
-  <button class="copy" id="copy">Copiar el desglose para enviarlo a la empresa</button>
+  <div class="btnrow">
+    <button class="copy" id="copy">Copiar el desglose</button>
+    <button class="copy pdf" id="pdf">Descargar / compartir PDF</button>
+  </div>
+  <p class="errmsg" id="pdfErr"></p>
 </div>
 
 <footer>
-  Cálculo orientativo conforme a la escala del art. 607 LEC. No sustituye a la resolución judicial: si el oficio del juzgado fija una cantidad concreta, manda el oficio. Los porcentajes se aplican por tramos, nunca sobre el total.
+  Cálculo orientativo conforme a la escala del art. 607 LEC. No sustituye a la resolución judicial: si el oficio del juzgado fija una cantidad concreta, manda el oficio. Los porcentajes se aplican por tramos, nunca sobre el total. La rebaja por cargas se aplica aquí como reducción relativa del porcentaje (30 % con rebaja del 10 % = 27 %); si el decreto la expresa en puntos, manda el decreto. Las deudas por alimentos (art. 608 LEC) no siguen esta escala.
 </footer>
 
 </div>
 
+<script>
+/* ===== Mini generador de PDF (sin librerías, sin window.print) ===== */
+var MiniPDF = (function () {
+  var W = 595.28, H = 841.89, M = 48;
+  var HW = [278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584];
+  var BW = [278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584];
+
+  // Unicode -> byte WinAnsi (lo que Helvetica estándar sí dibuja)
+  function byteOf(c) {
+    if (c === 9 || c === 10 || c === 13) return 32;
+    if (c < 32) return -1;
+    if (c < 127) return c;
+    if (c >= 160 && c <= 255) return c;
+    switch (c) {
+      case 0x20AC: return 0x80; case 0x2026: return 0x85; case 0x2018: return 0x91;
+      case 0x2019: return 0x92; case 0x201C: return 0x93; case 0x201D: return 0x94;
+      case 0x2022: return 0x95; case 0x2013: return 0x96; case 0x2014: return 0x97;
+      case 0x2212: return 0x2D;
+    }
+    return -1; // emojis, símbolos: se omiten
+  }
+  function enc(s) {
+    s = String(s == null ? '' : s);
+    var o = '';
+    for (var i = 0; i < s.length; i++) { var b = byteOf(s.charCodeAt(i)); if (b >= 0) o += String.fromCharCode(b); }
+    return o;
+  }
+  function charW(b, bold) {
+    var t = bold ? BW : HW;
+    if (b >= 32 && b <= 126) return t[b - 32];
+    if (b === 0x80) return 556;
+    if (b === 0x95) return 350;
+    if (b === 0x96 || b === 0x97) return b === 0x96 ? 556 : 1000;
+    if (b >= 160) {
+      var base = String.fromCharCode(b).normalize ? String.fromCharCode(b).normalize('NFD').charCodeAt(0) : 0;
+      if (base >= 32 && base <= 126) return t[base - 32];
+    }
+    return 556;
+  }
+  function width(s, size, bold) {
+    var e = enc(s), w = 0;
+    for (var i = 0; i < e.length; i++) w += charW(e.charCodeAt(i), bold);
+    return w * size / 1000;
+  }
+  function esc(e) { return e.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)'); }
+  function f2(n) { return (Math.round(n * 100) / 100).toFixed(2); }
+  function col(c) { return f2(c[0]) + ' ' + f2(c[1]) + ' ' + f2(c[2]); }
+
+  var INK = [0.09, 0.1, 0.12], GREY = [0.42, 0.44, 0.48], LINE = [0.82, 0.83, 0.85], ACC = [0.04, 0.38, 0.8], BOX = [0.94, 0.95, 0.97];
+
+  function Doc(opts) {
+    opts = opts || {};
+    this.title = opts.title || 'Documento';
+    this.footer = opts.footer || '';
+    this.pages = []; this.newPage();
+  }
+  var P = Doc.prototype;
+  P.newPage = function () { this.cur = []; this.pages.push(this.cur); this.y = M; };
+  P.ensure = function (h) { if (this.y + h > H - M - 14) this.newPage(); };
+  P.text = function (x, y, s, size, bold, color) {
+    this.cur.push('BT /' + (bold ? 'F2' : 'F1') + ' ' + f2(size) + ' Tf ' + col(color || INK) + ' rg ' + f2(x) + ' ' + f2(H - y) + ' Td (' + esc(enc(s)) + ') Tj ET');
+  };
+  P.textR = function (xr, y, s, size, bold, color) { this.text(xr - width(s, size, bold), y, s, size, bold, color); };
+  P.hline = function (y, color, w, x1, x2) {
+    this.cur.push(col(color || LINE) + ' RG ' + f2(w || 0.6) + ' w ' + f2(x1 == null ? M : x1) + ' ' + f2(H - y) + ' m ' + f2(x2 == null ? W - M : x2) + ' ' + f2(H - y) + ' l S');
+  };
+  P.rect = function (x, y, w, h, color) { this.cur.push(col(color) + ' rg ' + f2(x) + ' ' + f2(H - y - h) + ' ' + f2(w) + ' ' + f2(h) + ' re f'); };
+  P.space = function (h) { this.y += h; return this; };
+  P.fit = function (s, size, bold, maxW) {
+    s = String(s == null ? '' : s);
+    if (width(s, size, bold) <= maxW) return s;
+    while (s.length > 1 && width(s + '…', size, bold) > maxW) s = s.slice(0, -1);
+    return s + '…';
+  };
+  P.heading = function (t, sub) {
+    this.ensure(46);
+    this.rect(M, this.y, 4, 22, ACC);
+    this.text(M + 12, this.y + 17, t, 19, true, INK);
+    this.y += 30;
+    if (sub) { this.text(M, this.y + 8, sub, 9.5, false, GREY); this.y += 14; }
+    this.hline(this.y + 4, INK, 1.2); this.y += 16;
+    return this;
+  };
+  P.section = function (t) {
+    this.ensure(34); this.y += 8;
+    this.text(M, this.y + 10, t.toUpperCase(), 9.5, true, ACC);
+    this.y += 15; this.hline(this.y, LINE, 0.6); this.y += 6;
+    return this;
+  };
+  P.kv = function (k, v, o) {
+    o = o || {}; this.ensure(19);
+    this.text(M + 2, this.y + 13, k, 10.5, false, o.dim ? GREY : INK);
+    this.textR(W - M - 2, this.y + 13, v, 10.5, !!o.bold, o.color || INK);
+    this.y += 19; this.hline(this.y, LINE, 0.4);
+    return this;
+  };
+  P.big = function (label, value) {
+    this.ensure(54); this.y += 6;
+    this.rect(M, this.y, W - 2 * M, 44, BOX);
+    this.text(M + 12, this.y + 17, label.toUpperCase(), 8.5, true, GREY);
+    this.textR(W - M - 12, this.y + 33, value, 20, true, INK);
+    this.y += 52;
+    return this;
+  };
+  P.para = function (s, size, color) {
+    size = size || 9.5; var maxW = W - 2 * M, words = String(s).split(/\s+/), line = '', self = this;
+    function flush() { if (line) { self.ensure(size * 1.45); self.text(M, self.y + size, line, size, false, color || GREY); self.y += size * 1.45; line = ''; } }
+    words.forEach(function (w) {
+      var t = line ? line + ' ' + w : w;
+      if (width(t, size, false) > maxW) { flush(); line = w; } else line = t;
+    });
+    flush(); return this;
+  };
+  // cols: [{h:'Concepto', w:0.5, a:'l'|'r'}] ; rows: [{c:[..], bold, sep, dim}]
+  P.table = function (cols, rows) {
+    var self = this, tw = W - 2 * M, xs = [], x = M;
+    cols.forEach(function (c) { xs.push(x); x += c.w * tw; });
+    function cell(i, s, y, size, bold, color) {
+      var c = cols[i], mw = c.w * tw - 8; s = self.fit(s, size, bold, mw);
+      if (c.a === 'r') self.textR(xs[i] + c.w * tw - 4, y, s, size, bold, color);
+      else self.text(xs[i] + 4, y, s, size, bold, color);
+    }
+    function head() {
+      self.ensure(40);
+      cols.forEach(function (c, i) { cell(i, c.h.toUpperCase(), self.y + 12, 8, true, GREY); });
+      self.y += 17; self.hline(self.y, INK, 0.9); self.y += 2;
+    }
+    head();
+    rows.forEach(function (r) {
+      if (self.y + 19 > H - M - 14) { self.newPage(); head(); }
+      if (r.sep) { self.hline(self.y + 1, INK, 0.9); self.y += 2; }
+      r.c.forEach(function (s, i) { cell(i, s, self.y + 13, 9.5, !!r.bold, r.dim ? GREY : INK); });
+      self.y += 19; self.hline(self.y, LINE, 0.4);
+    });
+    return this;
+  };
+  P.build = function () {
+    var n = this.pages.length, self = this, now = new Date();
+    var stamp = ('0' + now.getDate()).slice(-2) + '/' + ('0' + (now.getMonth() + 1)).slice(-2) + '/' + now.getFullYear();
+    var objs = [];
+    var kids = []; for (var k = 0; k < n; k++) kids.push((5 + 2 * k) + ' 0 R');
+    objs[0] = '<< /Type /Catalog /Pages 2 0 R >>';
+    objs[1] = '<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + n + ' >>';
+    objs[2] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+    objs[3] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+    this.pages.forEach(function (ops, i) {
+      self.cur = ops;
+      self.hline(H - 34, LINE, 0.5);
+      self.text(M, H - 22, (self.footer ? self.footer + ' · ' : '') + 'Generado el ' + stamp, 7.5, false, GREY);
+      self.textR(W - M, H - 22, 'Página ' + (i + 1) + ' de ' + n, 7.5, false, GREY);
+      var content = ops.join('\n');
+      objs[4 + 2 * i] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + f2(W) + ' ' + f2(H) + '] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ' + (6 + 2 * i) + ' 0 R >>';
+      objs[5 + 2 * i] = '<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream';
+    });
+    objs.push('<< /Title (' + esc(enc(this.title)) + ') /Producer (CDMO) >>');
+    var out = '%PDF-1.4\n%\u00E2\u00E3\u00CF\u00D3\n', offs = [];
+    objs.forEach(function (o, i) { offs.push(out.length); out += (i + 1) + ' 0 obj\n' + o + '\nendobj\n'; });
+    var xref = out.length;
+    out += 'xref\n0 ' + (objs.length + 1) + '\n0000000000 65535 f \n';
+    offs.forEach(function (o) { out += ('0000000000' + o).slice(-10) + ' 00000 n \n'; });
+    out += 'trailer\n<< /Size ' + (objs.length + 1) + ' /Root 1 0 R /Info ' + objs.length + ' 0 R >>\nstartxref\n' + xref + '\n%%EOF';
+    var u8 = new Uint8Array(out.length);
+    for (var j = 0; j < out.length; j++) u8[j] = out.charCodeAt(j) & 255;
+    return new Blob([u8], { type: 'application/pdf' });
+  };
+
+  // Entrega en iOS: hoja de compartir (Guardar en Archivos, Imprimir, AirDrop...) o descarga
+  function standalone() { return !!(navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches)); }
+  function deliver(blob, filename, mime, shareOnlyStandalone) {
+    mime = mime || 'application/pdf';
+    var file = null;
+    try { file = new File([blob], filename, { type: mime }); } catch (e) {}
+    var canShare = file && navigator.canShare && navigator.canShare({ files: [file] });
+    if (canShare && (!shareOnlyStandalone || standalone())) {
+      return navigator.share({ files: [file], title: filename }).catch(function (e) {
+        if (e && e.name === 'AbortError') return;
+        return download(blob, filename);
+      });
+    }
+    return Promise.resolve(download(blob, filename));
+  }
+  function download(blob, filename) {
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = filename; a.rel = 'noopener'; a.style.display = 'none';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 60000);
+  }
+  return { Doc: Doc, deliver: deliver, width: width };
+})();
+
+</script>
 <script>
 (function(){
   var PCT = [0, .30, .50, .60, .75, .90];
@@ -282,7 +493,8 @@ footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid 
   var last = null;
 
   function eur(n){
-    return n.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €';
+    var p = Math.abs(n).toFixed(2).split('.');
+    return (n < 0 && +p.join('') ? '-' : '') + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + p[1] + ' €';
   }
   function num(el){
     var v = parseFloat(el.value);
@@ -296,7 +508,9 @@ footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid 
 
   function calc(){
     var L = liquido();
-    var smi = num($('smi')) || 1;
+    var smi14 = num($('smi')) || 1;
+    var prorr = $('pagas').value === '12';
+    var smi = prorr ? smi14 * 14 / 12 : smi14;   // SMI aplicable (inembargable y ancho de tramo)
     var reb = $('cargas').checked ? parseFloat($('rebaja').value) : 0;
 
     var tramos = [], total = 0;
@@ -358,7 +572,7 @@ footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid 
     tr.innerHTML = '<td>Total a retener</td><td class="num">' + eur(L) + '</td><td></td><td class="num">' + eur(total) + '</td>';
     tb.appendChild(tr);
 
-    last = { L:L, smi:smi, total:total, queda:queda, tramos:tramos, reb:reb };
+    last = { L:L, smi:smi, smi14:smi14, prorr:prorr, total:total, queda:queda, tramos:tramos, reb:reb };
   }
 
   function texto(){
@@ -367,8 +581,8 @@ footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid 
     l.push('CÁLCULO DE LA RETENCIÓN — ART. 607 LEC');
     l.push('');
     l.push('Líquido percibido: ' + eur(last.L));
-    l.push('SMI de referencia (inembargable): ' + eur(last.smi));
-    if (last.reb) l.push('Rebaja por cargas familiares acordada: ' + (last.reb * 100) + '%');
+    l.push('SMI de referencia (inembargable): ' + eur(last.smi) + (last.prorr ? ' (SMI 14 pagas prorrateado en 12)' : ' (14 pagas)'));
+    if (last.reb) l.push('Rebaja por cargas familiares acordada (art. 607.4): ' + String(last.reb * 100).replace('.', ',') + '%');
     l.push('');
     l.push('Desglose por tramos:');
     last.tramos.forEach(function(t){
@@ -380,11 +594,12 @@ footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid 
     l.push('RETENCIÓN MENSUAL: ' + eur(last.total));
     l.push('LÍQUIDO A PERCIBIR: ' + eur(last.queda));
     l.push('');
-    l.push('La escala del art. 607 LEC se aplica sobre el líquido percibido tras descontar IRPF y Seguridad Social (art. 607.4), no sobre el total devengado ni sobre la base de cotización.');
+    l.push('La escala del art. 607 LEC se aplica sobre el líquido percibido tras descontar IRPF y Seguridad Social (art. 607.5), no sobre el total devengado ni sobre la base de cotización.');
     return l.join('\n');
   }
 
   // eventos
+  $('pagas').addEventListener('change', calc);
   ['liq','bruto','ded','smi'].forEach(function(id){
     $(id).addEventListener('input', calc);
   });
@@ -423,6 +638,44 @@ footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid 
       navigator.clipboard.writeText(t).then(ok, function(){ fallback(t, ok); });
     } catch(e){ fallback(t, ok); }
   });
+
+
+  function pdfEur(n){ return eur(n); }
+  function pdf(){
+    if (!last) return;
+    var err = $('pdfErr'); err.style.display = 'none';
+    try {
+      var d = new MiniPDF.Doc({ title: 'Cálculo de embargo de salario - art. 607 LEC', footer: 'Embargo de salario · art. 607 LEC' });
+      d.heading('Cálculo de embargo de salario', 'Ley de Enjuiciamiento Civil · art. 607 · cálculo orientativo');
+      d.section('Datos de partida');
+      d.kv('Líquido percibido al mes', eur(last.L));
+      d.kv('SMI mensual (14 pagas)', eur(last.smi14));
+      d.kv('Mínimo inembargable aplicado', eur(last.smi) + (last.prorr ? '  (extras prorrateadas)' : '  (14 pagas)'));
+      d.kv('Rebaja por cargas familiares (art. 607.4)', last.reb ? String(last.reb * 100).replace('.', ',') + ' %' : 'No aplicada');
+      d.big('Retención mensual', eur(last.total));
+      d.kv('Líquido a percibir tras el embargo', eur(last.queda), { bold: true });
+      d.section('Desglose por tramos');
+      var rows = [];
+      last.tramos.forEach(function(t){
+        if (t.base <= 0) return;
+        var rango = t.i === 0 ? 'hasta ' + eur(last.smi) : (t.i === 5 ? 'más de ' + eur(5 * last.smi) : eur(t.desde) + ' a ' + eur(t.hasta));
+        rows.push({ c: [(t.i === 0 ? 'Inembargable' : 'Tramo ' + t.i) + ' (' + rango + ')', eur(t.base), (t.pct * 100).toFixed(t.pct * 100 % 1 ? 1 : 0).replace('.', ',') + ' %', eur(t.ret)] });
+      });
+      rows.push({ c: ['Total', eur(last.L), '', eur(last.total)], bold: true, sep: true });
+      d.table([{ h: 'Tramo', w: .46 }, { h: 'Importe', w: .20, a: 'r' }, { h: '%', w: .10, a: 'r' }, { h: 'Retención', w: .24, a: 'r' }], rows);
+      d.space(10);
+      d.para('La escala del art. 607 LEC se aplica sobre el líquido percibido, una vez descontados IRPF y Seguridad Social (art. 607.5), no sobre el total devengado ni sobre la base de cotización. Los porcentajes se aplican por tramos, nunca sobre el total.');
+      d.space(4);
+      d.para('Si concurren varios embargos sobre la misma nómina (art. 607.3), el mínimo inembargable se descuenta una sola vez y lo retenido se reparte entre los órganos por orden de antigüedad.');
+      d.space(4);
+      d.para('Cálculo orientativo. No sustituye a la resolución judicial: si el oficio fija una cantidad concreta, manda el oficio.');
+      MiniPDF.deliver(d.build(), 'calculo-embargo-art607.pdf');
+    } catch (e) {
+      err.textContent = 'No se pudo generar el PDF (' + (e && e.message ? e.message : e) + '). Usa «Copiar el desglose».';
+      err.style.display = 'block';
+    }
+  }
+  $('pdf').addEventListener('click', pdf);
 
   function fallback(t, ok){
     var ta = document.createElement('textarea');
