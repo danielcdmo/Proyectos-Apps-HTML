@@ -160,6 +160,7 @@ button.pdf:hover{background:#F1F0EB}
 select{font-size:16px}
 button.copy.done{background:var(--safe)}
 
+.ver{margin:0 0 10px;border:1px solid var(--line);background:#fff;color:var(--ink-2);border-radius:999px;padding:3px 11px;font-size:11px;font-weight:600;cursor:pointer;font-family:'IBM Plex Mono',monospace}
 footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid var(--line);padding-top:14px}
 @media(prefers-reduced-motion:reduce){.seg{transition:none}}
 </style>
@@ -169,6 +170,7 @@ footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid 
 
 <header>
   <p class="eyebrow">Ley de Enjuiciamiento Civil · Artículo 607</p>
+  <button class="ver" id="verBtn" onclick="checkUpdate()"></button>
   <h1>¿Cuánto pueden retenerte<br>de la nómina?</h1>
   <p class="sub">La escala se aplica sobre el <strong>líquido percibido</strong>, no sobre el bruto ni sobre la base de cotización. Es el error más común de las empresas.</p>
 </header>
@@ -504,6 +506,29 @@ var MiniPDF=function(){var t=595.28,e=841.89,n=48,i=[278,278,355,556,556,889,667
 
   calc();
 })();
+</script>
+<script>
+const APP_VERSION = 'v4 · 03/10/2026';
+
+async function forceUpdate() {
+    if (!confirm('Voy a recargar la app para coger la última versión. Tus datos no se borran. ¿Seguir?')) return;
+    try {
+        if ('serviceWorker' in navigator) { const rs = await navigator.serviceWorker.getRegistrations(); await Promise.all(rs.map(r => r.unregister())); }
+        if (window.caches) { const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); }
+    } catch (e) {}
+    const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString());
+}
+async function checkUpdate() {
+    try {
+        const r = await fetch(location.pathname + '?c=' + Date.now(), { cache: 'no-store' }), t = await r.text();
+        const m = t.match(/APP_VERSION\s*=\s*'([^']+)'/), remote = m ? m[1] : null;
+        if (!remote) { alert('No he podido leer la versión del servidor. Pulsa «Actualizar» si quieres forzar la recarga.'); return; }
+        if (remote === APP_VERSION) { if (confirm('Estás en la última versión (' + APP_VERSION + ').\n\n¿Recargar igualmente?')) forceUpdate(); }
+        else if (confirm('Hay una versión más nueva: ' + remote + '.\nTú tienes ' + APP_VERSION + '.\n\n¿Actualizar ahora? Tus datos no se borran.')) forceUpdate();
+    } catch (e) { alert('No se pudo comprobar (¿sin conexión?). La versión instalada es ' + APP_VERSION + '.'); }
+}
+
+document.getElementById('verBtn').textContent = APP_VERSION + ' · toca para comprobar actualización';
 </script>
 </body>
 </html>

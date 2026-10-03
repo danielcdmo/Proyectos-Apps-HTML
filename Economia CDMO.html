@@ -47,6 +47,7 @@ body{margin:0;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF 
 .top{display:flex;align-items:center;justify-content:space-between;margin:4px 2px 14px}
 .top h1{margin:0;font-size:1.9rem;font-weight:800;letter-spacing:-.02em;line-height:1.05}
 .top p{margin:3px 0 0;font-size:.8rem;color:var(--sub);font-weight:500}
+.ver{margin-top:7px;border:1px solid var(--stroke);background:var(--glass);color:var(--sub);border-radius:999px;padding:4px 11px;font-size:.68rem;font-weight:700;cursor:pointer;font-family:inherit}
 .round{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.05rem;cursor:pointer;color:var(--txt);border:1px solid var(--stroke);background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:var(--shadow),inset 0 1px 0 var(--hi)}
 .panel{display:none;flex-direction:column;gap:14px}
 .panel.active{display:flex}
@@ -189,7 +190,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
 <div class="bg"><i class="a"></i><i class="b"></i><i class="c"></i></div>
 <div class="wrap">
   <div class="top">
-    <div><h1>Economía</h1><p>CDMO · gastos a medias con Claudia</p></div>
+    <div><h1>Economía</h1><p>CDMO · gastos a medias con Claudia</p><button class="ver" id="verBtn" onclick="checkUpdate()"></button></div>
     <button class="round" onclick="toggleTheme()" id="themeBtn" aria-label="Cambiar tema">🌙</button>
   </div>
 
@@ -759,6 +760,29 @@ function exportPDF(kind) {
 
 initTheme(); renderMes();
 
+</script>
+<script>
+const APP_VERSION = 'v9 · 03/10/2026';
+
+async function forceUpdate() {
+    if (!confirm('Voy a recargar la app para coger la última versión. Tus datos no se borran. ¿Seguir?')) return;
+    try {
+        if ('serviceWorker' in navigator) { const rs = await navigator.serviceWorker.getRegistrations(); await Promise.all(rs.map(r => r.unregister())); }
+        if (window.caches) { const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); }
+    } catch (e) {}
+    const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString());
+}
+async function checkUpdate() {
+    try {
+        const r = await fetch(location.pathname + '?c=' + Date.now(), { cache: 'no-store' }), t = await r.text();
+        const m = t.match(/APP_VERSION\s*=\s*'([^']+)'/), remote = m ? m[1] : null;
+        if (!remote) { alert('No he podido leer la versión del servidor. Pulsa «Actualizar» si quieres forzar la recarga.'); return; }
+        if (remote === APP_VERSION) { if (confirm('Estás en la última versión (' + APP_VERSION + ').\n\n¿Recargar igualmente?')) forceUpdate(); }
+        else if (confirm('Hay una versión más nueva: ' + remote + '.\nTú tienes ' + APP_VERSION + '.\n\n¿Actualizar ahora? Tus datos no se borran.')) forceUpdate();
+    } catch (e) { alert('No se pudo comprobar (¿sin conexión?). La versión instalada es ' + APP_VERSION + '.'); }
+}
+
+document.getElementById('verBtn').textContent = APP_VERSION + ' · toca para comprobar actualización';
 </script>
 <script> if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('./sw.js').catch(function(){}); } </script>
 </body>

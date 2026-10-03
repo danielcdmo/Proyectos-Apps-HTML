@@ -16,6 +16,7 @@
         .container { max-width: 440px; width: 100%; display: flex; flex-direction: column; gap: 16px; padding-bottom: 30px; }
         .top-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
         .header-title { font-size: 1.25rem; font-weight: 800; margin: 0; background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
+        .ver { margin-top: 4px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-sub); border-radius: 999px; padding: 3px 10px; font-size: 0.66rem; font-weight: 700; cursor: pointer; }
         .bar-actions { display: flex; gap: 6px; }
         .theme-toggle, .notif-btn { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 50px; padding: 6px 12px; cursor: pointer; backdrop-filter: blur(20px); box-shadow: var(--card-shadow); font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
         .tab-nav { display: flex; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 4px; gap: 4px; backdrop-filter: blur(20px); }
@@ -74,7 +75,7 @@
 
 <div class="container">
     <div class="top-bar">
-        <h1 class="header-title">💼 Laboral CDMO 2026</h1>
+        <div><h1 class="header-title">💼 Laboral CDMO 2026</h1><button class="ver" id="verBtn" onclick="checkUpdate()"></button></div>
         <div class="bar-actions">
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         </div>
@@ -345,5 +346,28 @@ var MiniPDF=function(){var t=595.28,e=841.89,n=48,i=[278,278,355,556,556,889,667
 
 </script>
 <script> if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('./sw.js').catch(function(){}); } </script>
+<script>
+const APP_VERSION = 'v4 · 03/10/2026';
+
+async function forceUpdate() {
+    if (!confirm('Voy a recargar la app para coger la última versión. Tus datos no se borran. ¿Seguir?')) return;
+    try {
+        if ('serviceWorker' in navigator) { const rs = await navigator.serviceWorker.getRegistrations(); await Promise.all(rs.map(r => r.unregister())); }
+        if (window.caches) { const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); }
+    } catch (e) {}
+    const u = new URL(location.href); u.searchParams.set('v', Date.now()); location.replace(u.toString());
+}
+async function checkUpdate() {
+    try {
+        const r = await fetch(location.pathname + '?c=' + Date.now(), { cache: 'no-store' }), t = await r.text();
+        const m = t.match(/APP_VERSION\s*=\s*'([^']+)'/), remote = m ? m[1] : null;
+        if (!remote) { alert('No he podido leer la versión del servidor. Pulsa «Actualizar» si quieres forzar la recarga.'); return; }
+        if (remote === APP_VERSION) { if (confirm('Estás en la última versión (' + APP_VERSION + ').\n\n¿Recargar igualmente?')) forceUpdate(); }
+        else if (confirm('Hay una versión más nueva: ' + remote + '.\nTú tienes ' + APP_VERSION + '.\n\n¿Actualizar ahora? Tus datos no se borran.')) forceUpdate();
+    } catch (e) { alert('No se pudo comprobar (¿sin conexión?). La versión instalada es ' + APP_VERSION + '.'); }
+}
+
+document.getElementById('verBtn').textContent = APP_VERSION + ' · toca para comprobar actualización';
+</script>
 </body>
 </html>
