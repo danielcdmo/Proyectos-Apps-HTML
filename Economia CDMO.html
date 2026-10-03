@@ -43,7 +43,7 @@ body{margin:0;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF 
 .bg .a{width:420px;height:420px;left:-140px;top:-80px;background:radial-gradient(circle,var(--o1),transparent 68%)}
 .bg .b{width:380px;height:380px;right:-160px;top:34%;background:radial-gradient(circle,var(--o2),transparent 68%)}
 .bg .c{width:420px;height:420px;left:-100px;bottom:-120px;background:radial-gradient(circle,var(--o3),transparent 68%)}
-.wrap{max-width:440px;margin:0 auto;padding-bottom:120px}
+.wrap{max-width:440px;margin:0 auto;padding-bottom:104px}
 
 /* ---- cristal ---- */
 .glass{position:relative;background:var(--glass);-webkit-backdrop-filter:blur(30px) saturate(190%);backdrop-filter:blur(30px) saturate(190%);
@@ -201,12 +201,49 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
 .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .legend{font-size:.7rem;color:var(--sub);margin-top:8px}
 
-/* ---- barra inferior ---- */
-.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:max(14px,env(safe-area-inset-bottom));width:min(400px,calc(100% - 28px));display:flex;gap:4px;padding:6px;border-radius:999px;z-index:50;
-  background:var(--glass);-webkit-backdrop-filter:blur(34px) saturate(200%);backdrop-filter:blur(34px) saturate(200%);border:1px solid var(--stroke);box-shadow:0 16px 50px rgba(0,0,0,.4),inset 0 1px 0 var(--hi)}
-.dock button{flex:1;border:none;background:transparent;color:var(--sub);border-radius:999px;padding:8px 0 7px;font-size:.66rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
-.dock button.on{background:var(--glass2);color:var(--blue);box-shadow:inset 0 1px 0 var(--hi),0 2px 10px rgba(0,0,0,.18)}
-.dock svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* ---- barra inferior (cristal líquido, como ORION) ---- */
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:max(18px,env(safe-area-inset-bottom));width:min(318px,calc(100% - 40px));display:flex;gap:2px;padding:4px 5px;border-radius:26px;z-index:50;
+  background:rgba(19,28,45,.16);-webkit-backdrop-filter:blur(62px) saturate(280%) brightness(1.1);backdrop-filter:blur(62px) saturate(280%) brightness(1.1);
+  border:1px solid rgba(255,255,255,.16);box-shadow:0 14px 44px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.30)}
+[data-theme="light"] .dock{background:rgba(255,255,255,.58);border-color:rgba(255,255,255,.8);box-shadow:0 14px 40px rgba(60,70,120,.18),inset 0 1px 0 rgba(255,255,255,.9)}
+.dock button{flex:1 1 0;min-width:0;border:none;background:transparent;color:var(--sub);border-radius:20px;padding:5px 0 4px;font-size:.62rem;font-weight:600;letter-spacing:-.1px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;font-family:inherit;
+  transition:background .28s cubic-bezier(.4,0,.2,1),color .22s,transform .18s}
+.dock button:active{transform:scale(.88)}
+.dock button.on{background:rgba(10,132,255,.22);color:var(--blue);font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.28)}
+[data-theme="light"] .dock button.on{background:rgba(0,122,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.9)}
+.dock svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;opacity:.74;transition:opacity .22s,transform .22s}
+.dock button.on svg{opacity:1;filter:drop-shadow(0 0 5px currentColor)}
+.dock button.rebote svg{animation:icoRebote .52s cubic-bezier(.28,1.6,.4,1)}
+.dock.rebote{animation:barRebote .46s cubic-bezier(.3,1.5,.4,1)}
+@keyframes icoRebote{0%{transform:scale(1)}35%{transform:scale(1.34) translateY(-3px)}65%{transform:scale(.94) translateY(1px)}100%{transform:scale(1)}}
+@keyframes barRebote{0%{transform:translateX(-50%) translateY(0) scale(1)}40%{transform:translateX(-50%) translateY(-4px) scale(1.02)}100%{transform:translateX(-50%) translateY(0) scale(1)}}
+@media (prefers-reduced-motion:reduce){.dock.rebote,.dock button.rebote svg{animation:none}}
+
+/* ---- ajustes (estilo ORION) ---- */
+.brand{display:flex;align-items:center;gap:14px;padding:16px}
+.brand img{width:54px;height:54px;border-radius:15px;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.brand .bt{font-size:1.15rem;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.brand .bs{font-size:.74rem;color:var(--sub);font-weight:500;margin-top:3px}
+.shead{font-size:.72rem;font-weight:600;color:var(--sub);margin:6px 6px -4px;letter-spacing:.01em}
+.sgroup{padding:2px 14px}
+.srow2{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--stroke);cursor:pointer;transition:opacity .15s}
+.srow2:last-child{border-bottom:none}
+.srow2:active{opacity:.55}
+.srow2 .tx{flex:1;min-width:0}
+.srow2 .nm{font-size:.95rem;font-weight:600}
+.srow2 .sb{font-size:.76rem;color:var(--sub);margin-top:2px;line-height:1.35;font-weight:500}
+.sico{position:relative;width:32px;height:32px;border-radius:10px;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+.sico svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.sico.blue{background:rgba(10,132,255,.18);color:var(--blue)}
+.sico.green{background:rgba(48,209,88,.18);color:var(--green)}
+.sico.purple{background:rgba(191,90,242,.18);color:var(--purple)}
+.sico.orange{background:rgba(255,159,10,.18);color:var(--orange)}
+.sico.teal{background:rgba(100,210,255,.18);color:var(--teal)}
+.sico .cdot{right:-2px;top:-2px}
+.seg{display:flex;gap:4px;padding:4px;border-radius:16px;background:rgba(120,135,160,.14);margin:12px 0}
+.seg button{flex:1;border:none;background:transparent;color:var(--sub);border-radius:12px;padding:10px 0;font-size:.82rem;font-weight:600;font-family:inherit;cursor:pointer;transition:background .25s,color .25s}
+.seg button.on{background:rgba(10,132,255,.22);color:var(--blue);font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.sfoot{text-align:center;font-size:.66rem;color:var(--faint);margin:6px 0 4px}
 
 /* ---- editor ---- */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center;z-index:100}
@@ -232,8 +269,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
 <div class="bg"><i class="a"></i><i class="b"></i><i class="c"></i></div>
 <div class="wrap">
   <div class="top">
-    <div><h1>ECONOMÍA CDMO</h1><p>CDMO · gastos a medias con Claudia</p><button class="ver" id="verBtn" onclick="checkUpdate()"></button></div>
-    <div style="display:flex;gap:8px"><button class="round" id="cloudBtn" onclick="openCloud()" aria-label="Copia en la nube">☁️<span class="cdot"></span></button><button class="round" onclick="toggleTheme()" id="themeBtn" aria-label="Cambiar tema">🌙</button></div>
+    <div><h1>ECONOMÍA CDMO</h1><p>CDMO · gastos a medias con Claudia</p></div>
   </div>
 
   <!-- ===== MES ===== -->
@@ -290,19 +326,50 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     <div class="stats" id="fStats"></div>
     <div class="glass hero" style="padding:16px" id="fHero"></div>
     <div class="glass list" id="fList"></div>
-    <div class="glass pad">
-      <div class="eyebrow" style="text-align:left;margin-bottom:4px">Seguridad y copias</div>
-      <div class="srow" onclick="openCloud()"><div><div class="nm">☁️ Copia en la nube</div><div class="sb" id="cloudInfo">Sin configurar</div></div><span class="chev">›</span></div>
-      <div class="srow" onclick="openPin()"><div><div class="nm">🔒 Código de bloqueo</div><div class="sb" id="pinInfo">Desactivado</div></div><span class="chev">›</span></div>
-    </div>
     <button class="btn blue" style="width:100%" onclick="openEditor('')">➕ Añadir gasto fijo</button>
     <div class="actions">
-      <button class="btn purple" onclick="exportPDF('fijos')">📄 PDF de fijos</button>
-      <button class="btn soft" onclick="exportBackup()">💾 Copia de seguridad</button>
-      <button class="btn soft" onclick="$('impFile').click()">📥 Restaurar copia</button>
+      <button class="btn purple" style="min-width:100%" onclick="exportPDF('fijos')">📄 PDF de fijos</button>
     </div>
-    <div class="legend" id="bkInfo" style="text-align:center;margin-top:-4px"></div>
+  </div>
+
+  <!-- ===== AJUSTES ===== -->
+  <div class="panel" id="pAjustes">
+    <div class="glass brand"><img src="icon-economia-180.png" alt="" onerror="this.style.display='none'"><div><div class="bt">Ajustes</div><div class="bs">Apariencia, seguridad y copias</div></div></div>
+
+    <div class="shead">Apariencia</div>
+    <div class="glass pad" style="padding-top:12px;padding-bottom:4px">
+      <div class="nm" style="font-size:.95rem;font-weight:600">Tema</div>
+      <div class="seg" id="themeSeg">
+        <button id="sg_dark" onclick="setThemePref('dark')">Oscuro</button>
+        <button id="sg_light" onclick="setThemePref('light')">Claro</button>
+        <button id="sg_auto" onclick="setThemePref('auto')">Automático</button>
+      </div>
+    </div>
+
+    <div class="shead">Seguridad</div>
+    <div class="glass sgroup">
+      <div class="srow2" onclick="openPin()"><div class="sico orange"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9.5" rx="2.4"/><path d="M8.2 11V8a3.8 3.8 0 0 1 7.6 0v3"/></svg></div><div class="tx"><div class="nm">Código de bloqueo</div><div class="sb" id="pinInfo">Desactivado</div></div><span class="chev">›</span></div>
+    </div>
+
+    <div class="shead">Copias de seguridad</div>
+    <div class="glass sgroup">
+      <div class="srow2" onclick="openCloud()"><div class="sico blue" id="cloudBtn"><svg viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.6 1.2A3.4 3.4 0 0 0 7 18Z"/></svg><span class="cdot"></span></div><div class="tx"><div class="nm">Copia en la nube</div><div class="sb" id="cloudInfo">Sin configurar</div></div><span class="chev">›</span></div>
+      <div class="srow2" onclick="exportBackup()"><div class="sico green"><svg viewBox="0 0 24 24"><path d="M12 3.6v11M7.6 10.4 12 14.8l4.4-4.4M4.4 19.4h15.2"/></svg></div><div class="tx"><div class="nm">Hacer copia ahora</div><div class="sb" id="bkInfo">Guarda un archivo con todos tus datos</div></div><span class="chev">›</span></div>
+      <div class="srow2" onclick="$('impFile').click()"><div class="sico purple"><svg viewBox="0 0 24 24"><path d="M12 20.4v-11M7.6 13.6 12 9.2l4.4 4.4M4.4 4.6h15.2"/></svg></div><div class="tx"><div class="nm">Restaurar copia</div><div class="sb">Recupera los datos desde un archivo</div></div><span class="chev">›</span></div>
+    </div>
     <input type="file" id="impFile" accept=".json,application/json" style="display:none" onchange="importBackup(this)">
+
+    <div class="shead">Exportar</div>
+    <div class="glass sgroup">
+      <div class="srow2" onclick="exportPDF('fijos')"><div class="sico purple"><svg viewBox="0 0 24 24"><path d="M6 3.4h8l4.4 4.4V19a1.6 1.6 0 0 1-1.6 1.6H6A1.6 1.6 0 0 1 4.4 19V5A1.6 1.6 0 0 1 6 3.4Z"/><path d="M13.6 3.6v4.4h4.4M8 13h8M8 16.4h5"/></svg></div><div class="tx"><div class="nm">PDF de gastos fijos</div><div class="sb">Lista completa con importes y repartos</div></div><span class="chev">›</span></div>
+      <div class="srow2" onclick="exportCSV()"><div class="sico teal"><svg viewBox="0 0 24 24"><path d="M5 20v-6M12 20V5M19 20V10"/></svg></div><div class="tx"><div class="nm">Año a Excel (CSV)</div><div class="sb">Todos los meses del año que estás viendo</div></div><span class="chev">›</span></div>
+    </div>
+
+    <div class="shead">Acerca de</div>
+    <div class="glass sgroup">
+      <div class="srow2" onclick="checkUpdate()"><div class="sico blue"><svg viewBox="0 0 24 24"><path d="M20.6 11.4A8.6 8.6 0 0 0 6.2 6.2L3.4 8.8"/><path d="M3.4 4.4v4.4h4.4"/><path d="M3.4 12.6a8.6 8.6 0 0 0 14.4 5.2l2.8-2.6"/><path d="M20.6 19.6v-4.4h-4.4"/></svg></div><div class="tx"><div class="nm">Buscar actualización</div><div class="sb" id="verBtn"></div></div><span class="chev">›</span></div>
+    </div>
+    <div class="sfoot">Economía CDMO · tus datos se guardan solo en este iPhone</div>
   </div>
 
   <!-- ===== BALANCE ===== -->
@@ -330,6 +397,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
   <button class="on" id="t_pMes" onclick="goTab('pMes')"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="4"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Mes</button>
   <button id="t_pFijos" onclick="goTab('pFijos')"><svg viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>Fijos</button>
   <button id="t_pBal" onclick="goTab('pBal')"><svg viewBox="0 0 24 24"><path d="M5 20v-6M12 20V5M19 20V10"/></svg>Balance</button>
+  <button id="t_pAjustes" onclick="goTab('pAjustes')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.6 14.4a1.6 1.6 0 0 0 .4 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1v.3a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-2.8-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H3.4a2 2 0 0 1 0-4h.2a1.6 1.6 0 0 0 1.1-2.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.4h.1A1.6 1.6 0 0 0 10.4 3v-.2a2 2 0 0 1 4 0V3a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7h.3a2 2 0 0 1 0 4h-.2a1.6 1.6 0 0 0-1.5 1.1Z"/></svg>Ajustes</button>
 </nav>
 
 <!-- ===== editor ===== -->
@@ -590,11 +658,20 @@ function goTab(id) {
     document.querySelectorAll('.panel').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.dock button').forEach(e => e.classList.remove('on'));
     $(id).classList.add('active'); $('t_' + id).classList.add('on');
-    if (id === 'pMes') renderMes(); if (id === 'pFijos') renderFijos(); if (id === 'pBal') renderBal();
+    if (id === 'pMes') renderMes(); if (id === 'pFijos') renderFijos(); if (id === 'pBal') renderBal(); if (id === 'pAjustes') paintBk();
     window.scrollTo(0, 0);
+    const dk = document.querySelector('.dock'), bt = $('t_' + id);
+    [dk, bt].forEach(el => { el.classList.remove('rebote'); void el.offsetWidth; el.classList.add('rebote'); });
 }
-function initTheme() { const t = lsGet('theme_preference', 'dark'); document.documentElement.setAttribute('data-theme', t); $('themeBtn').textContent = t === 'dark' ? '🌙' : '☀️'; }
-function toggleTheme() { const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); lsSet('theme_preference', t); $('themeBtn').textContent = t === 'dark' ? '🌙' : '☀️'; }
+function themePref() { const t = lsGet('theme_preference', 'dark'); return (t === 'light' || t === 'auto') ? t : 'dark'; }
+function applyTheme() {
+    const p = themePref(), eff = p === 'auto' ? ((window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark') : p;
+    document.documentElement.setAttribute('data-theme', eff);
+    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', eff === 'light' ? '#f1f3fa' : '#05060a');
+    ['dark', 'light', 'auto'].forEach(k => { const b = $('sg_' + k); if (b) b.classList.toggle('on', k === p); });
+}
+function setThemePref(p) { lsSet('theme_preference', p); applyTheme(); }
+function initTheme() { applyTheme(); if (window.matchMedia) { const q = matchMedia('(prefers-color-scheme: light)'); const f = () => { if (themePref() === 'auto') applyTheme(); }; q.addEventListener ? q.addEventListener('change', f) : q.addListener && q.addListener(f); } }
 
 /* ===================== MES ===================== */
 const isClosed = key => !!(S.months[key] && S.months[key].snap);
@@ -747,8 +824,13 @@ function toggleSettled() { const md = touch(curKey()); md.settled = !md.settled;
 function resetMonth() { if (guardClosed()) return; if (confirm('¿Borrar importes, marcas y gastos puntuales de este mes?')) { pushUndo('Mes limpiado'); delete S.months[curKey()]; save(); renderMes(); } }
 
 /* ===================== FIJOS ===================== */
+function paintBk() {
+    const e = $('bkInfo'); if (!e) return;
+    const d = S.lastBackup ? Math.floor((Date.now() - S.lastBackup) / 86400000) : null;
+    e.textContent = d == null ? 'Aún no has hecho ninguna copia' : d === 0 ? 'Última copia: hoy' : 'Última copia: hace ' + d + (d === 1 ? ' día' : ' días');
+}
 function renderFijos() {
-    $('bkInfo').textContent = S.lastBackup ? 'Última copia de seguridad: hace ' + Math.floor((Date.now() - S.lastBackup) / 86400000) + ' días' : 'Aún no has hecho ninguna copia de seguridad';
+    paintBk();
     let annual = 0, netAnnual = 0;
     S.plan.forEach(it => { const p = priceAt(it, TODAY_KEY), cp = claudiaPart(it, p), x = it.payer === 'D' ? cp : p - cp, n = it.months.length; annual += p * n; netAnnual += (it.payer === 'D' ? x : -x) * n; });
     $('fStats').innerHTML = `<div class="glass tile"><div class="k">Al año</div><div class="v">${fmt(annual)}</div></div><div class="glass tile"><div class="k">Media al mes</div><div class="v" style="color:var(--blue)">${fmt(annual / 12)}</div></div><div class="glass tile"><div class="k">Gastos</div><div class="v">${S.plan.length}</div></div>`;
@@ -810,7 +892,7 @@ function exportCSV() {
     const csv = '\ufeff' + rows.map(r => r.map(q).join(';')).join('\r\n');
     MiniPDF.deliver(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'economia-' + yr + '.csv', 'text/csv');
 }
-function exportBackup() { S.lastBackup = Date.now(); save(); MiniPDF.deliver(new Blob([JSON.stringify(S)], { type: 'application/json' }), 'economia-cdmo-copia.json', 'application/json'); }
+function exportBackup() { S.lastBackup = Date.now(); save(); paintBk(); MiniPDF.deliver(new Blob([JSON.stringify(S)], { type: 'application/json' }), 'economia-cdmo-copia.json', 'application/json'); }
 function importBackup(inp) {
     const f = inp.files && inp.files[0]; if (!f) return;
     const r = new FileReader();
@@ -999,7 +1081,7 @@ function ghErr(r) { return r.status === 401 ? 'Token no válido o caducado' : r.
 function ago(t) { if (!t) return 'nunca'; const m = Math.floor((Date.now() - t) / 60000); return m < 1 ? 'ahora mismo' : m < 60 ? 'hace ' + m + ' min' : m < 1440 ? 'hace ' + Math.floor(m / 60) + ' h' : 'hace ' + Math.floor(m / 1440) + ' días'; }
 function cloudUI() {
     const b = $('cloudBtn'); if (!b) return;
-    b.className = 'round cs-' + (cloud ? cloudState : 'off');
+    b.className = 'sico blue cs-' + (cloud ? cloudState : 'off');
     const txt = !cloud ? 'Sin configurar · toca para activarla' : cloudState === 'syncing' ? 'Guardando…' : cloudState === 'pending' ? 'Cambios pendientes de guardar' : (cloudState === 'error' || cloudState === 'conflict') ? '⚠️ ' + cloudMsg : '✓ Guardada ' + ago(cloud.last);
     $('cloudInfo').textContent = txt; if ($('cloudStatus')) $('cloudStatus').textContent = txt;
     $('cloudOff').hidden = !!cloud; $('cloudOn').hidden = !cloud;
@@ -1129,7 +1211,7 @@ initTheme(); renderMes(); if (pinCfg()) showLock();
 })();
 </script>
 <script>
-const APP_VERSION = 'v13 · 03/10/2026';
+const APP_VERSION = 'v14 · 03/10/2026';
 
 async function forceUpdate() {
     if (!confirm('Voy a recargar la app para coger la última versión. Tus datos no se borran. ¿Seguir?')) return;
@@ -1149,7 +1231,7 @@ async function checkUpdate() {
     } catch (e) { alert('No se pudo comprobar (¿sin conexión?). La versión instalada es ' + APP_VERSION + '.'); }
 }
 
-document.getElementById('verBtn').textContent = APP_VERSION + ' · toca para comprobar actualización';
+document.getElementById('verBtn').textContent = 'Versión ' + APP_VERSION;
 </script>
 <script> if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) { navigator.serviceWorker.register('./sw.js').catch(function(){}); } </script>
 </body>
