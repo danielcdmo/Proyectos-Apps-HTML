@@ -67,6 +67,7 @@ body{margin:0;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF 
 .crow b{color:var(--txt);font-size:.98rem;white-space:nowrap}
 .crow.tot{border-bottom:none;color:var(--txt);font-weight:800;font-size:.86rem}
 .crow.tot b{font-size:1.08rem}
+.recv{display:flex;align-items:center;gap:6px;color:var(--sub);font-weight:700}
 .now{margin-top:12px;font-size:.8rem;color:var(--sub);line-height:1.4}
 .now b{color:var(--txt)}
 .sharebar{flex-basis:100%;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 0 0 38px;margin-top:-4px}
@@ -231,6 +232,15 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     <div class="stats" id="fStats"></div>
     <div class="glass hero" style="padding:16px" id="fHero"></div>
     <div class="glass list" id="fList"></div>
+    <div class="glass pad">
+      <div class="eyebrow" style="text-align:left">Punto de partida del saldo</div>
+      <p class="legend" style="margin:6px 0 10px">Desde qué mes llevas la cuenta con Claudia y cuánto os debíais ese día. Después el saldo se arrastra solo de un mes a otro.</p>
+      <div class="fr">
+        <div class="fg"><label class="lab">Empezar a contar en</label><input type="month" id="sStart" class="inp" onchange="setStart()"></div>
+        <div class="fg"><label class="lab">Saldo inicial (€)</label><input type="number" id="sOpen" class="inp" inputmode="decimal" step="0.01" placeholder="0,00" onchange="setStart()"></div>
+      </div>
+      <div class="legend">Positivo: Claudia te debía ese día. Negativo: le debías tú.</div>
+    </div>
     <button class="btn blue" style="width:100%" onclick="openEditor('')">➕ Añadir gasto fijo</button>
     <div class="actions">
       <button class="btn purple" onclick="exportPDF('fijos')">📄 PDF de fijos</button>
@@ -357,6 +367,7 @@ function load() {
         if (r) {
             const o = JSON.parse(r);
             if (o && Array.isArray(o.plan) && o.months) {
+                if (!o.p7) { if (!o.start) o.start = TODAY_KEY; if (o.opening == null) o.opening = 0; o.p7 = 1; lsSet(KEY, JSON.stringify(o)); }
                 if (!o.p6) {
                     o.plan.forEach(i => { if (i.id === 'kia' || i.id === 'judo') { i.to = ''; i.note = 'Sale de la cuenta de Claudia. Tú le das la mitad; pon 0 en el mes que no se lo des.'; } });
                     o.p6 = 1; lsSet(KEY, JSON.stringify(o));
@@ -377,7 +388,7 @@ function load() {
             }
         }
     } catch (e) {}
-    const s = { v: 2, p2: 1, p3: 1, p4: 1, p5: 1, p6: 1, plan: defaultPlan(), months: {} };
+    const s = { v: 2, p2: 1, p3: 1, p4: 1, p5: 1, p6: 1, p7: 1, start: TODAY_KEY, opening: 0, plan: defaultPlan(), months: {} };
     try { // migración de la versión anterior: sus gastos pasan a "puntuales"
         const old = JSON.parse(lsGet('economia_cdmo_db', 'null'));
         if (old && typeof old === 'object') Object.keys(old).forEach(k => {
@@ -429,14 +440,25 @@ function totalsOf(lines) {
     t.net = t.fromD - t.fromC; return t;
 }
 const hasData = key => key >= TODAY_KEY || !!(S.months[key] && S.months[key].touched);
+function balanceBefore(key) {
+    const start = S.start || TODAY_KEY; if (key < start) return 0;
+    let b = num(S.opening), y = +start.slice(0, 4), m = +start.slice(5, 7), guard = 0;
+    while (keyOf(y, m) < key && guard++ < 600) {
+        const k = keyOf(y, m), md = S.months[k];
+        if (k <= TODAY_KEY || (md && md.touched)) b += totalsOf(linesOf(k)).net - num(md && md.recv);
+        m++; if (m > 12) { m = 1; y++; }
+    }
+    return b;
+}
+function balanceAfter(key) { const md = S.months[key]; return balanceBefore(key) + totalsOf(linesOf(key)).net - num(md && md.recv); }
 function yearInfo(y) {
-    const tot = [], net = [], has = [], settled = [], items = {};
+    const tot = [], net = [], has = [], settled = [], recv = [], items = {};
     for (let m = 1; m <= 12; m++) {
         const key = keyOf(y, m), h = hasData(key), lines = h ? linesOf(key) : [], t = totalsOf(lines);
-        tot.push(t.total); net.push(t.net); has.push(h); settled.push(!!(S.months[key] && S.months[key].settled));
+        tot.push(t.total); net.push(t.net); has.push(h); settled.push(!!(S.months[key] && S.months[key].settled)); recv.push(num(S.months[key] && S.months[key].recv));
         lines.forEach(l => { const n = l.kind === 'fix' ? l.name : 'Gastos puntuales'; items[n] = (items[n] || 0) + l.amount; });
     }
-    return { tot, net, has, settled, items, sum: tot.reduce((a, b) => a + b, 0), netSum: net.reduce((a, b) => a + b, 0) };
+    return { tot, net, has, settled, recv, items, sum: tot.reduce((a, b) => a + b, 0), netSum: net.reduce((a, b) => a + b, 0) };
 }
 
 /* ===================== Navegación / tema ===================== */
@@ -460,20 +482,19 @@ function renderMes() {
     const cLines = lines.filter(l => l.payer === 'C'), hasC = cLines.length > 0, skippedC = cLines.reduce((a, l) => a + l.xferDef, 0);
     const cNames = cLines.map(l => l.name.replace(/^Renting /, '').split(' ')[0]).join(' y ');
     const sg = v => (v < 0 ? '−' : '') + fmt(Math.abs(v));
+    const before = balanceBefore(key), recv = num(md.recv), after = before + net - recv, sg2 = v => (v < 0 ? '−' : '+') + fmt(Math.abs(v));
     $('mHero').innerHTML =
-        `<div class="eyebrow">Cuenta de ${esc(mName.toLowerCase())} · mes completo</div>
-         <div class="hero-label">${owe ? 'Claudia te tiene que dar' : 'Tú le tienes que dar a Claudia'}</div>
-         <div class="hero-num ${owe ? '' : 'neg'}">${fmt(Math.abs(net))}</div>
+        `<div class="eyebrow">Cuenta con Claudia · ${esc(mName.toLowerCase())}</div>
+         <div class="hero-label">${after >= 0 ? 'Claudia te debe ahora' : 'Tú le debes ahora a Claudia'}</div>
+         <div class="hero-num ${after >= 0 ? '' : 'neg'}">${fmt(Math.abs(after))}</div>
          <div class="calc">
-           <div class="crow"><span><span class="tag up">Ella te da</span> la suma de lo que pones en cada gasto</span><b>+${fmt(t.fromD)}</b></div>
-           ${hasC ? `<div class="crow"><span><span class="tag down">Tú le das</span> lo de su cuenta</span><b>−${fmt(t.fromC)}</b></div><div class="crow tot"><span>Resultado del mes</span><b>${sg(net)}</b></div>` : ''}
+           <div class="crow"><span><span class="tag up">Ella te da</span> por los gastos de tu cuenta</span><b>+${fmt(t.fromD)}</b></div>
+           ${hasC ? `<div class="crow"><span><span class="tag down">Tú le das</span> por lo de su cuenta</span><b>−${fmt(t.fromC)}</b></div>` : ''}
+           <div class="crow tot"><span>Resultado de este mes</span><b>${sg2(net)}</b></div>
+           <div class="crow"><span>Saldo de meses anteriores</span><b>${sg2(before)}</b></div>
+           <div class="crow"><span>Ya me ha pasado este mes</span><span class="recv"><input type="number" inputmode="decimal" step="0.01" class="xin" value="${recv || ''}" placeholder="0,00" onchange="setRecv(this.value)"><span>€</span></span></div>
          </div>
-         ${hasC ? `<button class="pill ${md.skipC ? 'warn' : ''}" style="margin-top:10px" onclick="toggleSkipC()">${md.skipC ? '⏸ Este mes NO le doy lo de ' + cNames + ' · tocar para incluirlo' : 'Este mes le doy lo de ' + cNames + ' · tocar si no se lo doy'}</button>` : ''}
-         ${md.skipC && skippedC > 0 ? `<div class="now">Queda sin darle a Claudia este mes: <b>${fmt(skippedC)}</b></div>` : ''}
-         <div class="now">De momento, con lo que has marcado como <b>pagado</b>: ${t.netPaid >= 0 ? 'Claudia te debe' : 'tú le debes'} <b>${fmt(Math.abs(t.netPaid))}</b></div>
-         <div class="progress"><i style="width:${pct.toFixed(1)}%"></i></div>
-         <div class="prog-row"><span>Pagado ${fmt(t.paid)}</span><span>de ${fmt(t.total)}</span></div>
-         <button class="pill ${settled ? 'ok' : ''}" onclick="toggleSettled()">${settled ? '✓ Liquidado con Claudia · deshacer' : 'Marcar como liquidado con Claudia'}</button>`;
+         <div class="legend" style="margin-top:10px">Saldo = anterior + este mes − lo que ya te ha pasado. Si ella te pasa de menos, la diferencia sigue en el mes siguiente.</div>`;
     $('mStats').innerHTML =
         `<div class="glass tile"><div class="k">Total</div><div class="v">${fmt(t.total)}</div></div>
          <div class="glass tile"><div class="k">Pagado</div><div class="v" style="color:var(--green)">${fmt(t.paid)}</div></div>
@@ -543,11 +564,13 @@ function addExtra() {
 }
 function skipLine(id) { const md = touch(curKey()); if (md.over[id] === 0) delete md.over[id]; else { md.over[id] = 0; delete md.tr[id]; } save(); renderMes(); }
 function delExtra(id) { const md = touch(curKey()); md.extras = md.extras.filter(e => e.id !== id); save(); renderMes(); }
+function setRecv(v) { const md = touch(curKey()); md.recv = String(v).trim() === '' ? 0 : Math.max(0, num(v)); save(); renderMes(); }
 function toggleSettled() { const md = touch(curKey()); md.settled = !md.settled; save(); renderMes(); }
 function resetMonth() { if (confirm('¿Borrar importes, marcas y gastos puntuales de este mes?')) { delete S.months[curKey()]; save(); renderMes(); } }
 
 /* ===================== FIJOS ===================== */
 function renderFijos() {
+    $('sStart').value = S.start || TODAY_KEY; $('sOpen').value = S.opening || '';
     let annual = 0, netAnnual = 0;
     S.plan.forEach(it => { const p = priceAt(it, TODAY_KEY), cp = claudiaPart(it, p), x = it.payer === 'D' ? cp : p - cp, n = it.months.length; annual += p * n; netAnnual += (it.payer === 'D' ? x : -x) * n; });
     $('fStats').innerHTML = `<div class="glass tile"><div class="k">Al año</div><div class="v">${fmt(annual)}</div></div><div class="glass tile"><div class="k">Media al mes</div><div class="v" style="color:var(--blue)">${fmt(annual / 12)}</div></div><div class="glass tile"><div class="k">Gastos</div><div class="v">${S.plan.length}</div></div>`;
@@ -597,6 +620,7 @@ function deleteFixed() {
     if (!confirm('¿Eliminar este gasto fijo? Desaparece también de los meses anteriores. Si solo quieres dejar de pagarlo, mejor ponle «Hasta».')) return;
     S.plan = S.plan.filter(i => i.id !== editId); save(); closeEditor(); renderFijos(); renderMes();
 }
+function setStart() { S.start = $('sStart').value || TODAY_KEY; S.opening = num($('sOpen').value); save(); renderFijos(); }
 function exportBackup() { MiniPDF.deliver(new Blob([JSON.stringify(S)], { type: 'application/json' }), 'economia-cdmo-copia.json', 'application/json'); }
 function importBackup(inp) {
     const f = inp.files && inp.files[0]; if (!f) return;
@@ -624,12 +648,12 @@ function barSvg(vals, solid) {
 function renderBal() {
     const Y = yearInfo(yr); $('yTitle').textContent = 'Año ' + yr;
     const act = Y.tot.filter(v => v > 0), avg = act.length ? Y.sum / act.length : 0;
-    let pend = 0; for (let m = 1; m <= 12; m++) { const k = keyOf(yr, m); if (Y.has[m - 1] && k <= TODAY_KEY && !Y.settled[m - 1]) pend += Y.net[m - 1]; }
+    const pend = balanceAfter(TODAY_KEY);
     $('yKpis').innerHTML =
         `<div class="glass tile"><div class="k">Total del año</div><div class="v">${fmt(Y.sum)}</div></div>
          <div class="glass tile"><div class="k">Media al mes</div><div class="v" style="color:var(--blue)">${fmt(avg)}</div></div>
          <div class="glass tile"><div class="k">Claudia en el año</div><div class="v" style="color:var(--purple)">${fmt(Y.netSum)}</div></div>
-         <div class="glass tile"><div class="k">Pendiente de liquidar</div><div class="v" style="color:var(--orange)">${fmt(pend)}</div></div>`;
+         <div class="glass tile"><div class="k">${pend >= 0 ? 'Claudia te debe ahora' : 'Le debes ahora'}</div><div class="v" style="color:var(--orange)">${fmt(Math.abs(pend))}</div></div>`;
     const solid = Y.has.map((h, i) => h && keyOf(yr, i + 1) <= TODAY_KEY);
     $('yChart').innerHTML = act.length ? barSvg(Y.tot, solid) : '<div class="legend" style="text-align:center">Aún no hay datos de este año.</div>';
     // tendencia
@@ -653,8 +677,12 @@ function sendWA() {
     const key = curKey(), lines = linesOf(key), t = totalsOf(lines);
     let s = `📊 *Gastos CDMO · ${MES[ck.m - 1]} ${ck.y}*\n\n`;
     lines.forEach(l => { if (l.amount > 0) s += `${l.paid ? '✅' : '⏳'} ${l.name}: ${fmt(l.amount)}${l.est ? ' (aprox.)' : ''}\n`; });
-    s += `\n💰 *Total:* ${fmt(t.total)}\n`;
-    s += t.net >= 0 ? `👉 *Me tienes que dar:* ${fmt(t.net)}` : `👉 *Te debo:* ${fmt(-t.net)}`;
+    const before = balanceBefore(key), recv = num((S.months[key] || {}).recv), after = before + t.net - recv;
+    s += `\n💰 *Total gastos:* ${fmt(t.total)}\n`;
+    s += `➕ Este mes: ${t.net >= 0 ? 'me das ' : 'te doy '}${fmt(Math.abs(t.net))}\n`;
+    if (Math.abs(before) > 0.004) s += `↩️ Saldo anterior: ${before >= 0 ? 'me debes ' : 'te debo '}${fmt(Math.abs(before))}\n`;
+    if (recv > 0) s += `✅ Ya me has pasado: ${fmt(recv)}\n`;
+    s += after >= 0 ? `👉 *Me debes ahora:* ${fmt(after)}` : `👉 *Te debo ahora:* ${fmt(-after)}`;
     openWA(s);
 }
 function sendYearWA() {
@@ -681,10 +709,12 @@ function pdfMes() {
     const d = new MiniPDF.Doc({ title: 'Gastos CDMO - ' + lab, footer: 'Economía CDMO · ' + lab });
     d.heading('Gastos fijos y compartidos', lab);
     d.kv('Total gastos del mes', fmt(t.total), { bold: true }); d.kv('Pagados', fmt(t.paid)); d.kv('Pendientes de pagar', fmt(t.total - t.paid));
-    d.kv('Ella te da (su parte de lo que sale de tu cuenta)', '+' + fmt(t.fromD)); d.kv('Tú le das (tu parte de lo que sale de la suya)', '-' + fmt(t.fromC)); if (S.months[key] && S.months[key].skipC) d.kv('Este mes NO le das lo de su cuenta (queda sin dar)', fmt(lines.filter(l => l.payer === 'C').reduce((a, l) => a + l.xferDef, 0)));
-    d.kv('Con lo ya pagado, de momento', (t.netPaid >= 0 ? 'Claudia te debe ' : 'Tú le debes ') + fmt(Math.abs(t.netPaid)));
-    d.big(t.net >= 0 ? 'Claudia te tiene que dar' : 'Tú le tienes que dar a Claudia', fmt(Math.abs(t.net)));
-    if (S.months[key] && S.months[key].settled) d.kv('Estado', 'Liquidado', { bold: true });
+    d.kv('Ella te da (por los gastos de tu cuenta)', '+' + fmt(t.fromD));
+    if (lines.some(l => l.payer === 'C')) d.kv('Tú le das (por lo de su cuenta)', '-' + fmt(t.fromC));
+    d.kv('Resultado de este mes', sgn(t.net), { bold: true });
+    const before = balanceBefore(key), recv = num((S.months[key] || {}).recv), after = before + t.net - recv;
+    d.kv('Saldo de meses anteriores', sgn(before)); d.kv('Ya me ha pasado este mes', fmt(recv));
+    d.big(after >= 0 ? 'Claudia te debe ahora' : 'Tú le debes ahora a Claudia', fmt(Math.abs(after)));
     d.section('Detalle');
     const rows = lines.map(l => ({ c: [l.name, METHOD_SHORT[l.method], l.paid ? 'Pagado' : (l.est ? 'Estimado' : 'Pendiente'), fmt(l.amount), sgn(dueOf(l))], dim: l.amount === 0 }));
     rows.push({ c: ['Total', '', '', fmt(t.total), sgn(t.net)], bold: true, sep: true });
@@ -700,9 +730,9 @@ function pdfAnio() {
     d.big('Parte de Claudia en el año', fmt(Y.netSum));
     d.section('Gasto por mes (azul claro = previsión)');
     pdfBars(d, Y.tot, Y.has.map((h, i) => h && keyOf(yr, i + 1) <= TODAY_KEY));
-    const mrows = Y.tot.map((v, i) => ({ c: [MES[i], fmt(v), sgn(Y.net[i]), !Y.has[i] ? '—' : (keyOf(yr, i + 1) > TODAY_KEY ? 'Previsión' : (Y.settled[i] ? 'Liquidado' : 'Pendiente'))], dim: v === 0 }));
+    const mrows = Y.tot.map((v, i) => ({ c: [MES[i], fmt(v), sgn(Y.net[i]), !Y.has[i] ? '—' : (keyOf(yr, i + 1) > TODAY_KEY ? 'Previsión' : 'Pasó ' + fmt(Y.recv[i]))], dim: v === 0 }));
     mrows.push({ c: ['Total', fmt(Y.sum), sgn(Y.netSum), ''], bold: true, sep: true });
-    d.table([{ h: 'Mes', w: .3 }, { h: 'Gastos', w: .24, a: 'r' }, { h: 'Claudia te da', w: .26, a: 'r' }, { h: 'Estado', w: .2, a: 'r' }], mrows);
+    d.table([{ h: 'Mes', w: .3 }, { h: 'Gastos', w: .24, a: 'r' }, { h: 'Claudia te da', w: .26, a: 'r' }, { h: 'Me ha pasado', w: .2, a: 'r' }], mrows);
     d.section('Coste de cada gasto en el año');
     const er = Object.keys(Y.items).map(k => [k, Y.items[k]]).filter(e => e[1] > 0).sort((a, b) => b[1] - a[1]).map(e => ({ c: [e[0], fmt(e[1]), (Y.sum ? (e[1] / Y.sum * 100).toFixed(1).replace('.', ',') : '0') + ' %'] }));
     d.table([{ h: 'Gasto', w: .6 }, { h: 'Importe', w: .24, a: 'r' }, { h: '% del total', w: .16, a: 'r' }], er.length ? er : [{ c: ['Sin datos', '', ''], dim: true }]);
