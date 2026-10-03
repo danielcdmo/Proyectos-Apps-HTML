@@ -5,6 +5,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icon-economia-180.png">
+<link rel="icon" type="image/png" href="icon-economia-180.png">
+<meta name="apple-mobile-web-app-title" content="Economía">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#05060a">
@@ -126,6 +129,10 @@ body{margin:0;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF 
 .amt.est{border-color:var(--orange)}
 .mini{width:30px;height:30px;border-radius:50%;border:1px solid var(--stroke);background:var(--glass);color:var(--sub);cursor:pointer;flex-shrink:0;font-size:.85rem;padding:0}
 .mini.del{color:var(--red)}
+.toast{position:fixed;left:50%;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 76px);transform:translate(-50%,16px);opacity:0;pointer-events:none;z-index:150;display:flex;align-items:center;gap:16px;padding:12px 18px;border-radius:999px;background:var(--bg2);border:1px solid var(--stroke);box-shadow:0 10px 30px rgba(0,0,0,.4),inset 0 1px 0 var(--hi);font-size:.85rem;font-weight:700;color:var(--txt);white-space:nowrap;transition:opacity .25s,transform .25s;max-width:calc(100% - 28px)}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{border:none;background:none;color:var(--blue);font-weight:800;font-family:inherit;font-size:.88rem;cursor:pointer;padding:0}
+.alert.ok{color:var(--green);border-color:rgba(48,209,88,.5);background:rgba(48,209,88,.10)}
 .cdot{position:absolute;right:7px;top:7px;width:9px;height:9px;border-radius:50%;background:var(--faint);border:1px solid var(--stroke)}
 .round{position:relative}
 .cs-ok .cdot{background:var(--green)}.cs-syncing .cdot{background:var(--blue)}.cs-pending .cdot{background:var(--orange)}.cs-error .cdot,.cs-conflict .cdot{background:var(--red)}
@@ -232,8 +239,10 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
   <!-- ===== MES ===== -->
   <div class="panel active" id="pMes">
     <div class="glass pick"><button onclick="changeMonth(-1)" aria-label="Mes anterior">‹</button><div id="mTitle">--</div><button onclick="changeMonth(1)" aria-label="Mes siguiente">›</button></div>
+    <button class="chip" id="mToday" onclick="goToday()" hidden style="align-self:center"></button>
     <div class="glass hero" id="mHero"></div>
     <div class="stats" id="mStats"></div>
+    <div id="mBanner"></div>
     <div id="mAlerts" style="display:flex;flex-direction:column;gap:10px"></div>
     <div class="hintline">Toca el nombre de un gasto para editarlo · <b>⊘</b> pone 0 € solo este mes</div>
     <div id="mLines" style="display:flex;flex-direction:column;gap:14px"></div>
@@ -270,6 +279,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     <div class="actions">
       <button class="btn purple" onclick="exportPDF('mes')">📄 PDF</button>
       <button class="btn wa" onclick="sendWA()">💬 Enviar a Claudia</button>
+      <button class="btn" id="closeBtn" style="min-width:100%" onclick="toggleClose()">🔒 Cerrar este mes</button>
       <button class="btn soft" style="min-width:100%" onclick="resetMonth()">Limpiar este mes</button>
     </div>
   </div>
@@ -298,6 +308,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
   <!-- ===== BALANCE ===== -->
   <div class="panel" id="pBal">
     <div class="glass pick"><button onclick="changeYear(-1)" aria-label="Año anterior">‹</button><div id="yTitle">----</div><button onclick="changeYear(1)" aria-label="Año siguiente">›</button></div>
+    <button class="chip" id="yToday" onclick="goThisYear()" hidden style="align-self:center"></button>
     <div class="kpis" id="yKpis"></div>
     <div class="glass pad">
       <div class="eyebrow" style="text-align:left;margin-bottom:8px">Gasto por mes</div>
@@ -404,6 +415,8 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     <p class="cmsg" id="pinMsg"></p>
   </div>
 </div>
+
+<div class="toast" id="toast"><span id="toastTxt"></span><button id="toastBtn" onclick="undo()">Deshacer</button></div>
 
 <div class="lock" id="lock">
   <div class="lockbox">
@@ -540,6 +553,7 @@ function lastOver(id, key) {
 }
 function linesOf(key) {
     const md = S.months[key] || {}, out = [], m = +key.slice(5, 7);
+    if (md.snap) return md.snap.map(l => Object.assign({}, l, { paid: l.kind === 'fix' ? !!(md.paid && md.paid[l.id]) : !!((md.extras || []).find(e => e.id === l.id) || {}).paid }));
     S.plan.forEach(it => {
         if (!it.months.includes(m)) return;
         if (it.from && key < it.from) return; if (it.to && key > it.to) return;
@@ -583,11 +597,28 @@ function initTheme() { const t = lsGet('theme_preference', 'dark'); document.doc
 function toggleTheme() { const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); lsSet('theme_preference', t); $('themeBtn').textContent = t === 'dark' ? '🌙' : '☀️'; }
 
 /* ===================== MES ===================== */
+const isClosed = key => !!(S.months[key] && S.months[key].snap);
+function guardClosed() { if (isClosed(curKey())) { toast('Mes cerrado 🔒 · reábrelo para cambiar importes', false); return true; } return false; }
+function toggleClose() {
+    const key = curKey(), md0 = S.months[key];
+    if (md0 && md0.snap) {
+        if (!confirm('¿Reabrir ' + MES[ck.m - 1] + '?\n\nMientras esté abierto se vuelve a calcular con tus gastos fijos de ahora.')) return;
+        pushUndo('Mes reabierto'); delete md0.snap; md0.closed = null; save(); renderMes(); return;
+    }
+    if (key > TODAY_KEY) { alert('Este mes todavía no ha empezado: no se puede cerrar.'); return; }
+    if (!confirm('Cerrar ' + MES[ck.m - 1] + ' ' + ck.y + '?\n\nSus números se congelan: no cambiarán aunque luego modifiques tus gastos fijos. Podrás reabrirlo cuando quieras.')) return;
+    pushUndo('Mes cerrado 🔒');
+    const lines = linesOf(key), md = touch(key); md.snap = JSON.parse(JSON.stringify(lines)); md.closed = Date.now(); save(); renderMes();
+}
+function goToday() { ck = { y: NOW.getFullYear(), m: NOW.getMonth() + 1 }; renderMes(); window.scrollTo(0, 0); }
+function goThisYear() { yr = NOW.getFullYear(); renderBal(); }
 function changeMonth(o) { const d = new Date(ck.y, ck.m - 1 + o, 1); ck = { y: d.getFullYear(), m: d.getMonth() + 1 }; renderMes(); }
 let openShare = '';
 function renderMes() {
     const key = curKey(), md = S.months[key] || {}, lines = linesOf(key), t = totalsOf(lines), settled = !!md.settled, net = t.net, mName = MES[ck.m - 1];
-    $('mTitle').textContent = mName + ' ' + ck.y;
+    const closed = !!md.snap;
+    $('mToday').hidden = key === TODAY_KEY; $('mToday').textContent = '↩ Volver a ' + MES[NOW.getMonth()].toLowerCase() + ' (mes actual)';
+    $('mTitle').textContent = mName + ' ' + ck.y + (closed ? ' 🔒' : '');
     const owe = net >= 0, pct = t.total > 0 ? Math.min(100, t.paid / t.total * 100) : 0;
     const cLines = lines.filter(l => l.payer === 'C'), hasC = cLines.length > 0, skippedC = cLines.reduce((a, l) => a + l.xferDef, 0);
     const cNames = cLines.map(l => l.name.replace(/^Renting /, '').split(' ')[0]).join(' y ');
@@ -641,6 +672,9 @@ function renderMes() {
     });
     if (!lines.length) html = '<div class="glass pad hintline">No hay cargos este mes.</div>';
     $('mLines').innerHTML = html;
+    if (closed) { document.querySelectorAll('#mLines .amt, #mLines .xin').forEach(e => e.readOnly = true); document.querySelectorAll('#mLines .mini').forEach(e => e.hidden = true); }
+    $('closeBtn').textContent = closed ? '🔓 Reabrir este mes' : '🔒 Cerrar este mes';
+    $('mBanner').innerHTML = closed ? `<div class="glass alert ok">🔒 Mes cerrado el ${new Date(md.closed).toLocaleDateString('es-ES')}. Sus números ya no cambian aunque modifiques tus gastos fijos.</div>` : (key < TODAY_KEY && md.touched ? `<div class="glass alert">📌 Este mes ya pasó. Ciérralo para congelar sus números y que no cambien si tocas tus gastos fijos.<br><button class="chip" style="margin-top:8px" onclick="toggleClose()">Cerrar este mes</button></div>` : '');
     const nd = new Date(ck.y, ck.m, 1), nk = keyOf(nd.getFullYear(), nd.getMonth() + 1), nl = linesOf(nk).filter(l => l.kind === 'fix');
     $('nxName').textContent = MES[nd.getMonth()];
     let ah = '';
@@ -653,9 +687,10 @@ function renderMes() {
     renderCompare(key, lines);
     $('mNext').innerHTML = nl.length ? nl.map(l => `<div><span>${esc(l.icon)} ${esc(l.name)}</span><span>${l.est && !l.amount ? 'variable' : (l.est ? '≈ ' : '') + fmt(l.amount)}</span></div>`).join('') + `<div><span>Total previsto</span><span>${fmt(nl.reduce((a, l) => a + l.amount, 0))}</span></div>` : '<span class="legend">Sin cargos fijos el mes que viene.</span>';
 }
-function toggleSkipC() { const md = touch(curKey()); md.skipC = !md.skipC; save(); renderMes(); }
+function toggleSkipC() { if (guardClosed()) return; const md = touch(curKey()); md.skipC = !md.skipC; save(); renderMes(); }
 function toggleShare(id) { openShare = openShare === id ? '' : id; renderMes(); }
 function setTransfer(id, kind, val) {
+    if (guardClosed()) return;
     const md = touch(curKey());
     if (String(val).trim() === '') return resetTransfer(id, kind);
     const v = Math.max(0, num(val));
@@ -663,6 +698,7 @@ function setTransfer(id, kind, val) {
     save(); renderMes();
 }
 function resetTransfer(id, kind) {
+    if (guardClosed()) return;
     const md = touch(curKey());
     if (kind === 'extra') { const x = md.extras.find(e => e.id === id); if (x) delete x.tr; } else delete md.tr[id];
     save(); renderMes();
@@ -691,22 +727,24 @@ function toggleLine(id, kind) {
     save(); renderMes();
 }
 function setAmount(id, kind, val) {
+    if (guardClosed()) return;
     const md = touch(curKey());
     if (kind === 'fix') { if (String(val).trim() === '') delete md.over[id]; else md.over[id] = num(val); delete md.tr[id]; }
     else { const x = md.extras.find(e => e.id === id); if (x) { x.amount = num(val); delete x.tr; } }
     save(); renderMes();
 }
 function addExtra() {
+    if (guardClosed()) return;
     const n = $('xName').value.trim(), a = num($('xAmount').value); if (!n) return;
     const other = String($('xOther').value).trim(), md = touch(curKey());
     md.extras.push({ id: 'x' + Date.now(), label: n, amount: a, payer: $('xPayer').value, share: 50, paid: false, tr: other === '' ? undefined : Math.max(0, num(other)) });
     $('xName').value = ''; $('xAmount').value = ''; $('xOther').value = ''; save(); renderMes();
 }
-function skipLine(id) { const md = touch(curKey()); if (md.over[id] === 0) delete md.over[id]; else { md.over[id] = 0; delete md.tr[id]; } save(); renderMes(); }
-function delExtra(id) { const md = touch(curKey()); md.extras = md.extras.filter(e => e.id !== id); save(); renderMes(); }
+function skipLine(id) { if (guardClosed()) return; const md = touch(curKey()); if (md.over[id] === 0) delete md.over[id]; else { md.over[id] = 0; delete md.tr[id]; } save(); renderMes(); }
+function delExtra(id) { if (guardClosed()) return; pushUndo('Gasto puntual borrado'); const md = touch(curKey()); md.extras = md.extras.filter(e => e.id !== id); save(); renderMes(); }
 function setRecv(v) { const md = touch(curKey()); md.recv = String(v).trim() === '' ? 0 : Math.max(0, num(v)); save(); renderMes(); }
 function toggleSettled() { const md = touch(curKey()); md.settled = !md.settled; save(); renderMes(); }
-function resetMonth() { if (confirm('¿Borrar importes, marcas y gastos puntuales de este mes?')) { delete S.months[curKey()]; save(); renderMes(); } }
+function resetMonth() { if (guardClosed()) return; if (confirm('¿Borrar importes, marcas y gastos puntuales de este mes?')) { pushUndo('Mes limpiado'); delete S.months[curKey()]; save(); renderMes(); } }
 
 /* ===================== FIJOS ===================== */
 function renderFijos() {
@@ -757,17 +795,17 @@ function saveEditor() {
     save(); closeEditor(); renderFijos(); renderMes();
 }
 function deleteFixed() {
-    if (!confirm('¿Eliminar este gasto fijo? Desaparece también de los meses anteriores. Si solo quieres dejar de pagarlo, mejor ponle «Hasta».')) return;
-    S.plan = S.plan.filter(i => i.id !== editId); save(); closeEditor(); renderFijos(); renderMes();
+    if (!confirm('¿Eliminar este gasto fijo? Desaparece también de los meses anteriores que no estén cerrados. Si solo quieres dejar de pagarlo, mejor ponle «Hasta».')) return;
+    pushUndo('Gasto fijo eliminado'); S.plan = S.plan.filter(i => i.id !== editId); save(); closeEditor(); renderFijos(); renderMes();
 }
 function exportCSV() {
     const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"', n = v => (Math.round(v * 100) / 100).toFixed(2).replace('.', ',');
-    const rows = [['Año', 'Mes', 'Concepto', 'Tipo', 'Se cobra en', 'Importe (€)', 'Claudia me da (+) / yo le doy (−) (€)', 'Pagado', 'Me ha pasado Claudia (€)', 'Nota']];
+    const rows = [['Año', 'Mes', 'Concepto', 'Tipo', 'Se cobra en', 'Importe (€)', 'Claudia me da (+) / yo le doy (−) (€)', 'Pagado', 'Me ha pasado Claudia (€)', 'Nota', 'Estado del mes']];
     for (let m = 1; m <= 12; m++) {
         const k = keyOf(yr, m); if (!hasData(k)) continue;
         const lines = linesOf(k), t = totalsOf(lines), md = S.months[k] || {};
-        lines.forEach(l => rows.push([yr, MES[m - 1], l.name, l.kind === 'fix' ? 'Fijo' : 'Puntual', METHODS[l.method] || '', n(l.amount), n(dueOf(l)), l.paid ? 'Sí' : 'No', '', '']));
-        rows.push([yr, MES[m - 1], 'TOTAL DEL MES', '', '', n(t.total), n(t.net), '', n(num(md.recv)), md.note || '']);
+        lines.forEach(l => rows.push([yr, MES[m - 1], l.name, l.kind === 'fix' ? 'Fijo' : 'Puntual', METHODS[l.method] || '', n(l.amount), n(dueOf(l)), l.paid ? 'Sí' : 'No', '', '', '']));
+        rows.push([yr, MES[m - 1], 'TOTAL DEL MES', '', '', n(t.total), n(t.net), '', n(num(md.recv)), md.note || '', md.snap ? 'Cerrado' : 'Abierto']);
     }
     const csv = '\ufeff' + rows.map(r => r.map(q).join(';')).join('\r\n');
     MiniPDF.deliver(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'economia-' + yr + '.csv', 'text/csv');
@@ -776,7 +814,7 @@ function exportBackup() { S.lastBackup = Date.now(); save(); MiniPDF.deliver(new
 function importBackup(inp) {
     const f = inp.files && inp.files[0]; if (!f) return;
     const r = new FileReader();
-    r.onload = () => { try { const o = JSON.parse(r.result); if (!o || !Array.isArray(o.plan) || !o.months) throw 0; if (confirm('Esto reemplaza todos tus datos actuales por los de la copia. ¿Seguir?')) { S = o; save(); renderFijos(); renderMes(); alert('Copia restaurada'); } } catch (e) { alert('El archivo no es una copia válida'); } inp.value = ''; };
+    r.onload = () => { try { const o = JSON.parse(r.result); if (!o || !Array.isArray(o.plan) || !o.months) throw 0; if (confirm('Esto reemplaza todos tus datos actuales por los de la copia. ¿Seguir?')) { pushUndo('Copia restaurada'); S = o; save(); renderFijos(); renderMes(); } } catch (e) { alert('El archivo no es una copia válida'); } inp.value = ''; };
     r.readAsText(f);
 }
 
@@ -797,6 +835,7 @@ function barSvg(vals, solid) {
     return s + '</svg>';
 }
 function renderBal() {
+    $('yToday').hidden = yr === NOW.getFullYear(); $('yToday').textContent = '↩ Volver a ' + NOW.getFullYear();
     const Y = yearInfo(yr); $('yTitle').textContent = 'Año ' + yr;
     const act = Y.tot.filter(v => v > 0), avg = act.length ? Y.sum / act.length : 0;
     const recvYear = r2(Y.recv.reduce((a, b) => a + b, 0));
@@ -870,6 +909,7 @@ function pdfMes() {
     d.kv('Ya me ha pasado este mes', fmt(recv));
     d.big(after >= 0 ? 'Claudia te debe' : 'Tú le debes a Claudia', fmt(Math.abs(after)));
     { const pk = prevKey(key, 1), lk = prevKey(key, 12); if (hasData(pk)) d.kv('Frente a ' + monthName(pk), sgn(t.total - totalsOf(linesOf(pk)).total)); if (hasData(lk)) d.kv('Frente a ' + monthName(lk) + ' ' + lk.slice(0, 4), sgn(t.total - totalsOf(linesOf(lk)).total)); }
+    if (isClosed(key)) d.kv('Estado del mes', 'Cerrado el ' + new Date(S.months[key].closed).toLocaleDateString('es-ES'));
     d.section('Detalle');
     const rows = lines.map(l => ({ c: [l.name, METHOD_SHORT[l.method], l.paid ? 'Pagado' : (l.est ? 'Estimado' : 'Pendiente'), fmt(l.amount), sgn(dueOf(l))], dim: l.amount === 0 }));
     rows.push({ c: ['Total', '', '', fmt(t.total), sgn(t.net)], bold: true, sep: true });
@@ -913,6 +953,37 @@ function exportPDF(kind) {
     catch (e) { alert('No se pudo generar el PDF: ' + (e && e.message ? e.message : e)); }
 }
 
+
+/* ===================== Deshacer ===================== */
+let undoSnap = null, undoTimer = null;
+function toast(txt, undoable) {
+    $('toastTxt').textContent = txt; $('toastBtn').hidden = !undoable; $('toast').classList.add('on');
+    clearTimeout(undoTimer); undoTimer = setTimeout(() => { $('toast').classList.remove('on'); undoSnap = null; }, 8000);
+}
+function pushUndo(label) { undoSnap = JSON.stringify(S); toast(label, true); }
+function undo() {
+    if (!undoSnap) return;
+    S = JSON.parse(undoSnap); undoSnap = null; save();
+    renderMes(); renderFijos(); if ($('pBal').classList.contains('active')) renderBal();
+    toast('Cambio deshecho', false);
+}
+
+/* ===================== Icono (por si no se ha subido el PNG) ===================== */
+(function () {
+    const link = document.querySelector('link[rel="apple-touch-icon"]'); if (!link) return;
+    const img = new Image();
+    img.onerror = function () {
+        try {
+            const c = document.createElement('canvas'); c.width = c.height = 180; const x = c.getContext('2d');
+            const g = x.createLinearGradient(0, 0, 180, 180); g.addColorStop(0, '#0a84ff'); g.addColorStop(.55, '#5e5ce6'); g.addColorStop(1, '#bf5af2'); x.fillStyle = g; x.fillRect(0, 0, 180, 180);
+            x.fillStyle = 'rgba(255,255,255,.2)'; x.beginPath(); x.arc(90, 86, 58, 0, Math.PI * 2); x.fill();
+            x.fillStyle = '#fff'; x.font = '800 84px -apple-system,Helvetica,Arial,sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('€', 90, 90);
+            [[-14, 12], [0, 22], [14, 16]].forEach(function (b) { x.fillRect(90 + b[0] - 5, 160 - b[1], 10, b[1]); });
+            link.href = c.toDataURL('image/png');
+        } catch (e) {}
+    };
+    img.src = link.href;
+})();
 
 /* ===================== Copia en la nube ===================== */
 const b64e = x => btoa(unescape(encodeURIComponent(x)));
@@ -1058,7 +1129,7 @@ initTheme(); renderMes(); if (pinCfg()) showLock();
 })();
 </script>
 <script>
-const APP_VERSION = 'v11 · 03/10/2026';
+const APP_VERSION = 'v13 · 03/10/2026';
 
 async function forceUpdate() {
     if (!confirm('Voy a recargar la app para coger la última versión. Tus datos no se borran. ¿Seguir?')) return;
