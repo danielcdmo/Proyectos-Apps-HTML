@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es" data-theme="dark">
 <head>
+<script>try{if(localStorage.getItem('economia_cdmo_pin'))document.documentElement.setAttribute('data-lock','1')}catch(e){}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
@@ -125,6 +126,34 @@ body{margin:0;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF 
 .amt.est{border-color:var(--orange)}
 .mini{width:30px;height:30px;border-radius:50%;border:1px solid var(--stroke);background:var(--glass);color:var(--sub);cursor:pointer;flex-shrink:0;font-size:.85rem;padding:0}
 .mini.del{color:var(--red)}
+.cdot{position:absolute;right:7px;top:7px;width:9px;height:9px;border-radius:50%;background:var(--faint);border:1px solid var(--stroke)}
+.round{position:relative}
+.cs-ok .cdot{background:var(--green)}.cs-syncing .cdot{background:var(--blue)}.cs-pending .cdot{background:var(--orange)}.cs-error .cdot,.cs-conflict .cdot{background:var(--red)}
+.cmp{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--stroke);font-size:.85rem}
+.cmp:last-child{border-bottom:none}
+.cmp>span{color:var(--sub);font-weight:600}
+.cmp b{white-space:nowrap}
+textarea.inp{resize:none;line-height:1.4;font-weight:600}
+.srow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--stroke);cursor:pointer}
+.srow:last-child{border-bottom:none}
+.steps{margin:0 0 12px;padding-left:20px;font-size:.8rem;color:var(--sub);line-height:1.5}
+.steps li{margin-bottom:6px}.steps b{color:var(--txt)}
+.cmsg{font-size:.8rem;font-weight:700;color:var(--orange);min-height:1.2em;margin:10px 0 0}
+#lock{display:none}
+html[data-lock="1"] #lock{display:flex}
+.lock{position:fixed;inset:0;z-index:500;align-items:center;justify-content:center;background:linear-gradient(180deg,var(--bg1),var(--bg2))}
+.lockbox{text-align:center;width:min(320px,86vw)}
+.lockbox h2{margin:6px 0 4px;font-size:1.3rem;letter-spacing:.02em}
+.lockbox p{margin:0 0 20px;font-size:.88rem;color:var(--sub);font-weight:600;min-height:1.3em}
+.dots{display:flex;justify-content:center;gap:16px;margin-bottom:26px}
+.dots i{width:15px;height:15px;border-radius:50%;border:2px solid var(--faint)}
+.dots i.on{background:var(--blue);border-color:var(--blue)}
+.dots.shake{animation:shk .35s}
+@keyframes shk{20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;justify-items:center}
+.keys button{width:74px;height:74px;border-radius:50%;border:1px solid var(--stroke);background:var(--glass2);color:var(--txt);font-size:1.6rem;font-weight:700;font-family:inherit;cursor:pointer;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:inset 0 1px 0 var(--hi)}
+.keys button.ghost{background:transparent;border-color:transparent;box-shadow:none}
+.lk-forgot{margin-top:22px;background:none;border:none;color:var(--sub);font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit}
 .hintline{font-size:.72rem;color:var(--sub);text-align:center;margin:-2px 8px 0;line-height:1.4}
 .next div{display:flex;justify-content:space-between;gap:8px;padding:6px 0;font-size:.84rem;border-bottom:1px solid var(--stroke)}
 .next div:last-child{border-bottom:none;font-weight:800}
@@ -197,7 +226,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
 <div class="wrap">
   <div class="top">
     <div><h1>ECONOMÍA CDMO</h1><p>CDMO · gastos a medias con Claudia</p><button class="ver" id="verBtn" onclick="checkUpdate()"></button></div>
-    <button class="round" onclick="toggleTheme()" id="themeBtn" aria-label="Cambiar tema">🌙</button>
+    <div style="display:flex;gap:8px"><button class="round" id="cloudBtn" onclick="openCloud()" aria-label="Copia en la nube">☁️<span class="cdot"></span></button><button class="round" onclick="toggleTheme()" id="themeBtn" aria-label="Cambiar tema">🌙</button></div>
   </div>
 
   <!-- ===== MES ===== -->
@@ -208,6 +237,14 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     <div id="mAlerts" style="display:flex;flex-direction:column;gap:10px"></div>
     <div class="hintline">Toca el nombre de un gasto para editarlo · <b>⊘</b> pone 0 € solo este mes</div>
     <div id="mLines" style="display:flex;flex-direction:column;gap:14px"></div>
+    <div class="glass pad">
+      <div class="eyebrow" style="text-align:left;margin-bottom:6px">Comparación</div>
+      <div id="mCompare"></div>
+    </div>
+    <div class="glass pad">
+      <div class="eyebrow" style="text-align:left;margin-bottom:8px">Nota del mes</div>
+      <textarea id="mNote" class="inp" rows="2" placeholder="Ej: subida del alquiler, Claudia pagó la factura del agua…" onchange="setNote(this.value)"></textarea>
+    </div>
     <div class="glass pad">
       <div class="eyebrow" style="text-align:left">Gasto puntual de este mes</div>
       <p class="legend" style="margin:6px 0 12px">Para algo de los dos que no es fijo: una compra, una moto, una reparación…</p>
@@ -243,6 +280,11 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     <div class="stats" id="fStats"></div>
     <div class="glass hero" style="padding:16px" id="fHero"></div>
     <div class="glass list" id="fList"></div>
+    <div class="glass pad">
+      <div class="eyebrow" style="text-align:left;margin-bottom:4px">Seguridad y copias</div>
+      <div class="srow" onclick="openCloud()"><div><div class="nm">☁️ Copia en la nube</div><div class="sb" id="cloudInfo">Sin configurar</div></div><span class="chev">›</span></div>
+      <div class="srow" onclick="openPin()"><div><div class="nm">🔒 Código de bloqueo</div><div class="sb" id="pinInfo">Desactivado</div></div><span class="chev">›</span></div>
+    </div>
     <button class="btn blue" style="width:100%" onclick="openEditor('')">➕ Añadir gasto fijo</button>
     <div class="actions">
       <button class="btn purple" onclick="exportPDF('fijos')">📄 PDF de fijos</button>
@@ -267,6 +309,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     <div class="actions">
       <button class="btn purple" onclick="exportPDF('anio')">📄 PDF anual</button>
       <button class="btn wa" onclick="sendYearWA()">💬 Resumen</button>
+      <button class="btn soft" style="min-width:100%" onclick="exportCSV()">📊 Exportar el año a Excel (CSV)</button>
     </div>
   </div>
 </div>
@@ -319,6 +362,65 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
   </div>
 </div>
 
+<div class="overlay" id="cloudSheet" onclick="if(event.target===this)closeCloud()">
+  <div class="sheet">
+    <div class="grab"></div>
+    <h3>☁️ Copia en la nube</h3>
+    <p class="sub">Guarda tus datos solos en un repositorio <b>privado</b> tuyo de GitHub. Si cambias de móvil, los recuperas en un minuto.</p>
+    <div id="cloudOff">
+      <ol class="steps">
+        <li>Crea en GitHub un repositorio <b>privado</b>, por ejemplo <b>economia-cdmo-datos</b>. No uses uno público: tus gastos se verían.</li>
+        <li>GitHub → Ajustes → Developer settings → Personal access tokens → <b>Fine-grained tokens</b>. Dale acceso solo a ese repositorio, con el permiso <b>Contents: Read and write</b>.</li>
+        <li>Pega aquí tu usuario, el nombre del repositorio y el token.</li>
+      </ol>
+      <div class="fg"><label class="lab">Usuario de GitHub</label><input id="cOwner" class="inp" value="danielcdmo" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
+      <div class="fg"><label class="lab">Repositorio privado</label><input id="cRepo" class="inp" placeholder="economia-cdmo-datos" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
+      <div class="fg"><label class="lab">Token</label><input id="cToken" class="inp" type="password" placeholder="github_pat_…" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
+      <div class="actions"><button class="btn blue" onclick="cloudConnect()">Conectar</button><button class="btn soft" onclick="closeCloud()">Cancelar</button></div>
+    </div>
+    <div id="cloudOn" hidden>
+      <div class="glass pad" style="margin-bottom:12px"><div class="eyebrow" style="text-align:left">Estado</div><div class="nm" style="margin-top:6px" id="cloudStatus">—</div><div class="sb">Cada cambio se guarda solo a los pocos segundos. En GitHub queda el historial de versiones.</div></div>
+      <div class="actions">
+        <button class="btn blue" onclick="cloudPushNow()">Guardar ahora</button>
+        <button class="btn" onclick="cloudRestore()">Restaurar desde la nube</button>
+        <button class="btn soft" onclick="closeCloud()">Cerrar</button>
+        <button class="btn danger" onclick="cloudOff()">Desconectar</button>
+      </div>
+    </div>
+    <p class="cmsg" id="cloudMsg"></p>
+    <p class="sub" style="margin:8px 0 0">El token se guarda solo en este móvil y nunca entra en las copias.</p>
+  </div>
+</div>
+
+<div class="overlay" id="pinSheet" onclick="if(event.target===this)closePin()">
+  <div class="sheet">
+    <div class="grab"></div>
+    <h3 id="pTitle">Código de bloqueo</h3>
+    <p class="sub">La app pedirá un código de 4 números al abrirla y al volver tras un rato fuera. Es un bloqueo para que nadie cotillee: no cifra los datos.</p>
+    <div class="fg" id="pCurG"><label class="lab">Código actual</label><input id="pCur" class="inp" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></div>
+    <div class="fr"><div class="fg"><label class="lab">Código nuevo</label><input id="pNew" class="inp" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></div>
+    <div class="fg"><label class="lab">Repetir código</label><input id="pNew2" class="inp" type="password" inputmode="numeric" maxlength="4" autocomplete="off"></div></div>
+    <div class="actions"><button class="btn blue" onclick="savePin()">Guardar</button><button class="btn soft" onclick="closePin()">Cerrar</button><button class="btn danger" id="pDel" onclick="removePin()" style="min-width:100%">Quitar el código</button></div>
+    <p class="cmsg" id="pinMsg"></p>
+  </div>
+</div>
+
+<div class="lock" id="lock">
+  <div class="lockbox">
+    <div style="font-size:2rem">🔒</div>
+    <h2>ECONOMÍA CDMO</h2>
+    <p id="lockMsg">Introduce tu código</p>
+    <div class="dots" id="lockDots"><i></i><i></i><i></i><i></i></div>
+    <div class="keys">
+      <button onclick="lockKey('1')">1</button><button onclick="lockKey('2')">2</button><button onclick="lockKey('3')">3</button>
+      <button onclick="lockKey('4')">4</button><button onclick="lockKey('5')">5</button><button onclick="lockKey('6')">6</button>
+      <button onclick="lockKey('7')">7</button><button onclick="lockKey('8')">8</button><button onclick="lockKey('9')">9</button>
+      <button class="ghost" tabindex="-1"></button><button onclick="lockKey('0')">0</button><button class="ghost" onclick="lockKey('del')" aria-label="Borrar">⌫</button>
+    </div>
+    <button class="lk-forgot" onclick="lockForgot()">¿Olvidaste el código?</button>
+  </div>
+</div>
+
 <script>
 /* ===== Mini generador de PDF (sin librerías, sin window.print) ===== */
 var MiniPDF=function(){var t=595.28,e=841.89,n=48,i=[278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584],r=[278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584];function o(t){if(9===t||10===t||13===t)return 32;if(t<32)return-1;if(t<127)return t;if(t>=160&&t<=255)return t;switch(t){case 8364:return 128;case 8230:return 133;case 8216:return 145;case 8217:return 146;case 8220:return 147;case 8221:return 148;case 8226:return 149;case 8211:return 150;case 8212:return 151;case 8722:return 45}return-1}function s(t){t=String(null==t?"":t);for(var e="",n=0;n<t.length;n++){var i=o(t.charCodeAt(n));i>=0&&(e+=String.fromCharCode(i))}return e}function a(t,e){var n=e?r:i;if(t>=32&&t<=126)return n[t-32];if(128===t)return 556;if(149===t)return 350;if(150===t||151===t)return 150===t?556:1e3;if(t>=160){var o=String.fromCharCode(t).normalize?String.fromCharCode(t).normalize("NFD").charCodeAt(0):0;if(o>=32&&o<=126)return n[o-32]}return 556}function h(t,e,n){for(var i=s(t),r=0,o=0;o<i.length;o++)r+=a(i.charCodeAt(o),n);return r*e/1e3}function u(t){return t.replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)")}function c(t){return(Math.round(100*t)/100).toFixed(2)}function f(t){return c(t[0])+" "+c(t[1])+" "+c(t[2])}var l=[.09,.1,.12],d=[.42,.44,.48],y=[.82,.83,.85],g=[.04,.38,.8],p=[.94,.95,.97];function m(t){t=t||{},this.title=t.title||"Documento",this.footer=t.footer||"",this.pages=[],this.newPage()}var v=m.prototype;function w(t,e){var n=URL.createObjectURL(t),i=document.createElement("a");i.href=n,i.download=e,i.rel="noopener",i.style.display="none",document.body.appendChild(i),i.click(),setTimeout(function(){document.body.removeChild(i),URL.revokeObjectURL(n)},6e4)}function E(){try{document.activeElement&&document.activeElement.blur&&document.activeElement.blur()}catch(t){}[120,450,900].forEach(function(t){setTimeout(function(){var t=document.documentElement,e=Math.max(0,window.pageYOffset||0);t.style.minHeight="0",t.offsetHeight,t.style.minHeight="",window.scrollTo(0,e)},t)})}return v.newPage=function(){this.cur=[],this.pages.push(this.cur),this.y=n},v.ensure=function(t){this.y+t>779.89&&this.newPage()},v.text=function(t,n,i,r,o,a){this.cur.push("BT /"+(o?"F2":"F1")+" "+c(r)+" Tf "+f(a||l)+" rg "+c(t)+" "+c(e-n)+" Td ("+u(s(i))+") Tj ET")},v.textR=function(t,e,n,i,r,o){this.text(t-h(n,i,r),e,n,i,r,o)},v.hline=function(i,r,o,s,a){this.cur.push(f(r||y)+" RG "+c(o||.6)+" w "+c(null==s?n:s)+" "+c(e-i)+" m "+c(null==a?t-n:a)+" "+c(e-i)+" l S")},v.rect=function(t,n,i,r,o){this.cur.push(f(o)+" rg "+c(t)+" "+c(e-n-r)+" "+c(i)+" "+c(r)+" re f")},v.space=function(t){return this.y+=t,this},v.fit=function(t,e,n,i){if(h(t=String(null==t?"":t),e,n)<=i)return t;for(;t.length>1&&h(t+"…",e,n)>i;)t=t.slice(0,-1);return t+"…"},v.heading=function(t,e){return this.ensure(46),this.rect(n,this.y,4,22,g),this.text(60,this.y+17,t,19,!0,l),this.y+=30,e&&(this.text(n,this.y+8,e,9.5,!1,d),this.y+=14),this.hline(this.y+4,l,1.2),this.y+=16,this},v.section=function(t){return this.ensure(34),this.y+=8,this.text(n,this.y+10,t.toUpperCase(),9.5,!0,g),this.y+=15,this.hline(this.y,y,.6),this.y+=6,this},v.kv=function(e,i,r){return r=r||{},this.ensure(19),this.text(50,this.y+13,e,10.5,!1,r.dim?d:l),this.textR(t-n-2,this.y+13,i,10.5,!!r.bold,r.color||l),this.y+=19,this.hline(this.y,y,.4),this},v.big=function(e,i){return this.ensure(54),this.y+=6,this.rect(n,this.y,t-96,44,p),this.text(60,this.y+17,e.toUpperCase(),8.5,!0,d),this.textR(535.28,this.y+33,i,20,!0,l),this.y+=52,this},v.para=function(t,e,i){e=e||9.5;var r=String(t).split(/\s+/),o="",s=this;function a(){o&&(s.ensure(1.45*e),s.text(n,s.y+e,o,e,!1,i||d),s.y+=1.45*e,o="")}return r.forEach(function(t){var n=o?o+" "+t:t;h(n,e,!1)>499.28?(a(),o=t):o=n}),a(),this},v.table=function(e,i){var r=this,o=t-96,s=[],a=n;function h(t,n,i,a,h,u){var c=e[t],f=c.w*o-8;n=r.fit(n,a,h,f),"r"===c.a?r.textR(s[t]+c.w*o-4,i,n,a,h,u):r.text(s[t]+4,i,n,a,h,u)}function u(){r.ensure(40),e.forEach(function(t,e){h(e,t.h.toUpperCase(),r.y+12,8,!0,d)}),r.y+=17,r.hline(r.y,l,.9),r.y+=2}return e.forEach(function(t){s.push(a),a+=t.w*o}),u(),i.forEach(function(t){r.y+19>779.89&&(r.newPage(),u()),t.sep&&(r.hline(r.y+1,l,.9),r.y+=2),t.c.forEach(function(e,n){h(n,e,r.y+13,9.5,!!t.bold,t.dim?d:l)}),r.y+=19,r.hline(r.y,y,.4)}),this},v.build=function(){for(var i=this.pages.length,r=this,o=new Date,a=("0"+o.getDate()).slice(-2)+"/"+("0"+(o.getMonth()+1)).slice(-2)+"/"+o.getFullYear(),h=[],f=[],l=0;l<i;l++)f.push(5+2*l+" 0 R");h[0]="<< /Type /Catalog /Pages 2 0 R >>",h[1]="<< /Type /Pages /Kids ["+f.join(" ")+"] /Count "+i+" >>",h[2]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>",h[3]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>",this.pages.forEach(function(o,s){r.cur=o,r.hline(e-34,y,.5),r.text(n,e-22,(r.footer?r.footer+" · ":"")+"Generado el "+a,7.5,!1,d),r.textR(t-n,e-22,"Página "+(s+1)+" de "+i,7.5,!1,d);var u=o.join("\n");h[4+2*s]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+c(t)+" "+c(e)+"] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents "+(6+2*s)+" 0 R >>",h[5+2*s]="<< /Length "+u.length+" >>\nstream\n"+u+"\nendstream"}),h.push("<< /Title ("+u(s(this.title))+") /Producer (CDMO) >>");var g="%PDF-1.4\n%âãÏÓ\n",p=[];h.forEach(function(t,e){p.push(g.length),g+=e+1+" 0 obj\n"+t+"\nendobj\n"});var m=g.length;g+="xref\n0 "+(h.length+1)+"\n0000000000 65535 f \n",p.forEach(function(t){g+=("0000000000"+t).slice(-10)+" 00000 n \n"}),g+="trailer\n<< /Size "+(h.length+1)+" /Root 1 0 R /Info "+h.length+" 0 R >>\nstartxref\n"+m+"\n%%EOF";for(var v=new Uint8Array(g.length),w=0;w<g.length;w++)v[w]=255&g.charCodeAt(w);return new Blob([v],{type:"application/pdf"})},"undefined"!=typeof document&&(document.addEventListener("visibilitychange",function(){document.hidden||E()}),window.addEventListener("pageshow",E)),{Doc:m,deliver:function(t,e,n,i){n=n||"application/pdf";var r=null;try{r=new File([t],e,{type:n})}catch(t){}return r&&navigator.canShare&&navigator.canShare({files:[r]})&&(!i||navigator.standalone||window.matchMedia&&matchMedia("(display-mode: standalone)").matches)?navigator.share({files:[r],title:e}).catch(function(n){if(!n||"AbortError"!==n.name)return w(t,e)}).then(function(){E()}):Promise.resolve(w(t,e)).then(function(){E()})},width:h,settle:E}}();
@@ -340,6 +442,10 @@ const keyOf = (y, m) => y + '-' + String(m).padStart(2, '0');
 const NOW = new Date();
 const TODAY_KEY = keyOf(NOW.getFullYear(), NOW.getMonth() + 1);
 const KEY = 'economia_cdmo_v2';
+/* ---- Copia en la nube (repositorio PRIVADO de GitHub). La configuración y el token NO entran en los datos ni en las copias ---- */
+const CLOUD_KEY = 'economia_cdmo_cloud';
+let cloud = null; try { cloud = JSON.parse(localStorage.getItem(CLOUD_KEY) || 'null'); } catch (e) {}
+let cloudState = cloud ? 'ok' : 'off', cloudMsg = '', cloudTimer = null;
 
 /* ===================== Datos ===================== */
 const ICONS = { alquiler: '🏠', seguro_hogar: '🛡️', comedor: '🍽️', o2: '📱', piscina: '🏊', alarma: '🚨', judo: '🥋', agua: '💧', kia: '🚗', nespresso: '☕', psn: '🎮', luz: '💡', residuos_extra: '🗑️', residuos: '🗑️' };
@@ -404,7 +510,10 @@ function load() {
     return s;
 }
 let S = load();
-function save() { lsSet(KEY, JSON.stringify(S)); }
+function save() {
+    lsSet(KEY, JSON.stringify(S));
+    if (cloud) { cloudState = 'pending'; clearTimeout(cloudTimer); cloudTimer = setTimeout(() => cloudPush(false), 3500); cloudUI(); }
+}
 let ck = { y: NOW.getFullYear(), m: NOW.getMonth() + 1 };
 let yr = NOW.getFullYear();
 const curKey = () => keyOf(ck.y, ck.m);
@@ -422,6 +531,8 @@ function claudiaPart(it, amount) {
     if (it.shareMode === 'eur') return r2(Math.min(Math.max(num(it.shareEur), 0), Math.max(amount, 0)));
     return r2(amount * (it.share == null ? 50 : it.share) / 100);
 }
+function prevKey(key, n) { const d = new Date(+key.slice(0, 4), +key.slice(5, 7) - 1 - n, 1); return keyOf(d.getFullYear(), d.getMonth() + 1); }
+const monthName = k => MES[+k.slice(5, 7) - 1];
 function lastOver(id, key) {
     let y = +key.slice(0, 4), m = +key.slice(5, 7);
     for (let i = 0; i < 12; i++) { m--; if (m < 1) { m = 12; y--; } const md = S.months[keyOf(y, m)], v = md && md.over ? md.over[id] : undefined; if (v > 0) return v; }
@@ -436,7 +547,7 @@ function linesOf(key) {
         const amount = has ? o : priceAt(it, key), cp = claudiaPart(it, amount), def = it.payer === 'D' ? cp : r2(amount - cp);
         const tv = md.tr ? md.tr[it.id] : undefined, tOver = tv != null, noC = it.payer === 'C' && !!md.skipC;
         out.push({ id: it.id, kind: 'fix', icon: it.icon || '🧾', skipped: has && o === 0, name: it.name, amount, est: !has && !!it.variable, payer: it.payer, xfer: noC ? 0 : (tOver ? tv : def), xferDef: def, noC, xferOver: tOver && !noC,
-            last: it.variable ? lastOver(it.id, key) : 0,
+            variable: !!it.variable, last: it.variable ? lastOver(it.id, key) : 0,
             shareTxt: it.shareMode === 'eur' ? 'Claudia ' + fmt(it.shareEur) : (it.share !== 50 ? 'Claudia ' + it.share + '%' : ''),
             method: it.method, paid: !!(md.paid && md.paid[it.id]), freq: freqLabel(it) });
     });
@@ -501,7 +612,8 @@ function renderMes() {
     const estNames = lines.filter(l => l.est).map(l => l.name);
     const bkDays = S.lastBackup ? Math.floor((Date.now() - S.lastBackup) / 86400000) : null;
     let al = estNames.length ? `<div class="glass alert">⚠️ Pon el importe real de: <b>${estNames.map(esc).join(', ')}</b></div>` : '';
-    if (bkDays === null || bkDays > 30) al += `<div class="glass alert">💾 ${bkDays === null ? 'Aún no has hecho copia de seguridad' : 'Hace ' + bkDays + ' días de tu última copia'}. Tus datos solo están en este móvil.<br><button class="chip" style="margin-top:8px" onclick="exportBackup()">Hacer copia ahora</button></div>`;
+    if (!cloud && (bkDays === null || bkDays > 30)) al += `<div class="glass alert">☁️ Tus datos solo están en este móvil: si lo cambias o lo pierdes, se pierden. Activa la copia en la nube (solo una vez).<br><button class="chip" style="margin-top:8px" onclick="openCloud()">Activar copia en la nube</button></div>`;
+    if (cloud && (cloudState === 'conflict' || cloudState === 'error')) al += `<div class="glass alert">☁️ ${esc(cloudMsg)}.<br><button class="chip" style="margin-top:8px" onclick="openCloud()">Ver</button></div>`;
     $('mAlerts').innerHTML = al;
     const order = ['transfer', 'cdmo', 'card', 'claudia', 'notif'];
     let html = '';
@@ -537,6 +649,8 @@ function renderMes() {
         ah += `<div><span>${MES[d2.getMonth()]}${big.length ? `<br><small class="legend">${big.join(' · ')}</small>` : ''}</span><span>${fmt(tot2)}</span></div>`;
     }
     $('mAhead').innerHTML = ah;
+    $('mNote').value = md.note || '';
+    renderCompare(key, lines);
     $('mNext').innerHTML = nl.length ? nl.map(l => `<div><span>${esc(l.icon)} ${esc(l.name)}</span><span>${l.est && !l.amount ? 'variable' : (l.est ? '≈ ' : '') + fmt(l.amount)}</span></div>`).join('') + `<div><span>Total previsto</span><span>${fmt(nl.reduce((a, l) => a + l.amount, 0))}</span></div>` : '<span class="legend">Sin cargos fijos el mes que viene.</span>';
 }
 function toggleSkipC() { const md = touch(curKey()); md.skipC = !md.skipC; save(); renderMes(); }
@@ -553,6 +667,24 @@ function resetTransfer(id, kind) {
     if (kind === 'extra') { const x = md.extras.find(e => e.id === id); if (x) delete x.tr; } else delete md.tr[id];
     save(); renderMes();
 }
+function renderCompare(key, lines) {
+    const cur = totalsOf(lines).total, pk = prevKey(key, 1), lk = prevKey(key, 12);
+    const tot = k => hasData(k) ? totalsOf(linesOf(k)).total : null, pt = tot(pk), lt = tot(lk);
+    const col = d => d > 0.004 ? 'var(--orange)' : d < -0.004 ? 'var(--green)' : 'var(--sub)';
+    const sgn2 = d => (d > 0.004 ? '+' : d < -0.004 ? '−' : '') + fmt(Math.abs(d));
+    const dl = (a, b) => { const d = r2(a - b); return `<b style="color:${col(d)}">${sgn2(d)}${b > 0 ? ' · ' + (d >= 0 ? '+' : '−') + Math.abs(d / b * 100).toFixed(1).replace('.', ',') + ' %' : ''}</b>`; };
+    let html = pt == null ? `<div class="cmp"><span>Frente a ${monthName(pk)}</span><b style="color:var(--sub)">sin datos</b></div>` : `<div class="cmp"><span>Frente a ${monthName(pk)} (${fmt(pt)})</span>${dl(cur, pt)}</div>`;
+    html += lt == null ? `<div class="cmp"><span>Frente a ${monthName(lk)} ${lk.slice(0, 4)}</span><b style="color:var(--sub)">sin datos</b></div>` : `<div class="cmp"><span>Frente a ${monthName(lk)} ${lk.slice(0, 4)} (${fmt(lt)})</span>${dl(cur, lt)}</div>`;
+    const lyLines = hasData(lk) ? linesOf(lk) : [];
+    lines.filter(l => l.kind === 'fix' && l.variable && !l.est && l.amount > 0).forEach(l => {
+        const ly = lyLines.find(x => x.id === l.id), lyA = ly && !ly.est && ly.amount > 0 ? ly.amount : 0, bits = [];
+        if (lyA) bits.push('Hace un año ' + fmt(lyA) + ' (' + sgn2(r2(l.amount - lyA)) + ')');
+        if (l.last) bits.push('Anterior ' + fmt(l.last) + ' (' + sgn2(r2(l.amount - l.last)) + ')');
+        html += `<div class="cmp"><div><div class="nm">${esc(l.icon)} ${esc(l.name)}</div><div class="sb">${bits.length ? esc(bits.join(' · ')) : 'Sin datos anteriores para comparar'}</div></div><b>${fmt(l.amount)}</b></div>`;
+    });
+    $('mCompare').innerHTML = html;
+}
+function setNote(v) { const md = touch(curKey()); md.note = String(v).trim(); save(); }
 function toggleLine(id, kind) {
     const md = touch(curKey());
     if (kind === 'fix') md.paid[id] = !md.paid[id]; else { const x = md.extras.find(e => e.id === id); if (x) x.paid = !x.paid; }
@@ -628,6 +760,18 @@ function deleteFixed() {
     if (!confirm('¿Eliminar este gasto fijo? Desaparece también de los meses anteriores. Si solo quieres dejar de pagarlo, mejor ponle «Hasta».')) return;
     S.plan = S.plan.filter(i => i.id !== editId); save(); closeEditor(); renderFijos(); renderMes();
 }
+function exportCSV() {
+    const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"', n = v => (Math.round(v * 100) / 100).toFixed(2).replace('.', ',');
+    const rows = [['Año', 'Mes', 'Concepto', 'Tipo', 'Se cobra en', 'Importe (€)', 'Claudia me da (+) / yo le doy (−) (€)', 'Pagado', 'Me ha pasado Claudia (€)', 'Nota']];
+    for (let m = 1; m <= 12; m++) {
+        const k = keyOf(yr, m); if (!hasData(k)) continue;
+        const lines = linesOf(k), t = totalsOf(lines), md = S.months[k] || {};
+        lines.forEach(l => rows.push([yr, MES[m - 1], l.name, l.kind === 'fix' ? 'Fijo' : 'Puntual', METHODS[l.method] || '', n(l.amount), n(dueOf(l)), l.paid ? 'Sí' : 'No', '', '']));
+        rows.push([yr, MES[m - 1], 'TOTAL DEL MES', '', '', n(t.total), n(t.net), '', n(num(md.recv)), md.note || '']);
+    }
+    const csv = '\ufeff' + rows.map(r => r.map(q).join(';')).join('\r\n');
+    MiniPDF.deliver(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'economia-' + yr + '.csv', 'text/csv');
+}
 function exportBackup() { S.lastBackup = Date.now(); save(); MiniPDF.deliver(new Blob([JSON.stringify(S)], { type: 'application/json' }), 'economia-cdmo-copia.json', 'application/json'); }
 function importBackup(inp) {
     const f = inp.files && inp.files[0]; if (!f) return;
@@ -672,6 +816,9 @@ function renderBal() {
         const ci = ck.y === yr ? ck.m - 1 : -1;
         if (ci > 0 && Y.tot[ci] > 0 && Y.tot[ci - 1] > 0) { const d = Y.tot[ci] - Y.tot[ci - 1], p = d / Y.tot[ci - 1] * 100; tr += `🔁 ${MES[ci]} frente a ${MES[ci - 1]}: <b>${d >= 0 ? '+' : ''}${fmt(d)}</b> (${p >= 0 ? '+' : ''}${p.toFixed(1).replace('.', ',')} %)<br>`; }
         const next = idx.filter(i => keyOf(yr, i + 1) > TODAY_KEY)[0]; if (next != null) tr += `🔮 Próximo mes con cargo previsto: <b>${MES[next]}</b> (${fmt(Y.tot[next])})`;
+        const Yp = yearInfo(yr - 1); let a1 = 0, b1 = 0, n1 = 0;
+        for (let i = 0; i < 12; i++) if (Y.has[i] && Yp.has[i] && Y.tot[i] > 0 && Yp.tot[i] > 0) { a1 += Y.tot[i]; b1 += Yp.tot[i]; n1++; }
+        if (n1) tr += `<br>📆 Mismos ${n1} meses de ${yr - 1}: <b>${a1 - b1 >= 0 ? '+' : '−'}${fmt(Math.abs(a1 - b1))}</b>`;
     } else tr = '<span class="legend">Sin datos todavía.</span>';
     $('yTrend').innerHTML = tr;
     const entries = Object.keys(Y.items).map(k => [k, Y.items[k]]).filter(e => e[1] > 0).sort((a, b) => b[1] - a[1]), top = entries.length ? entries[0][1] : 1;
@@ -689,6 +836,7 @@ function sendWA() {
     s += `➕ Este mes: ${t.net >= 0 ? 'me das ' : 'te doy '}${fmt(Math.abs(t.net))}\n`;
     if (recv > 0) s += `✅ Ya me has pasado: ${fmt(recv)}\n`;
     s += after >= 0 ? `👉 *Me debes:* ${fmt(after)}` : `👉 *Te debo:* ${fmt(-after)}`;
+    if ((S.months[key] || {}).note) s += `\n📝 ${S.months[key].note}`;
     openWA(s);
 }
 function sendYearWA() {
@@ -721,11 +869,13 @@ function pdfMes() {
     const recv = num((S.months[key] || {}).recv), after = r2(t.net - recv);
     d.kv('Ya me ha pasado este mes', fmt(recv));
     d.big(after >= 0 ? 'Claudia te debe' : 'Tú le debes a Claudia', fmt(Math.abs(after)));
+    { const pk = prevKey(key, 1), lk = prevKey(key, 12); if (hasData(pk)) d.kv('Frente a ' + monthName(pk), sgn(t.total - totalsOf(linesOf(pk)).total)); if (hasData(lk)) d.kv('Frente a ' + monthName(lk) + ' ' + lk.slice(0, 4), sgn(t.total - totalsOf(linesOf(lk)).total)); }
     d.section('Detalle');
     const rows = lines.map(l => ({ c: [l.name, METHOD_SHORT[l.method], l.paid ? 'Pagado' : (l.est ? 'Estimado' : 'Pendiente'), fmt(l.amount), sgn(dueOf(l))], dim: l.amount === 0 }));
     rows.push({ c: ['Total', '', '', fmt(t.total), sgn(t.net)], bold: true, sep: true });
     d.table([{ h: 'Concepto', w: .38 }, { h: 'Se cobra en', w: .16 }, { h: 'Estado', w: .12 }, { h: 'Importe', w: .16, a: 'r' }, { h: 'Claudia te da', w: .18, a: 'r' }], rows);
     d.space(8); d.para('Signo + : Claudia te debe su parte. Signo − : tú le debes tu parte (gasto cobrado en su cuenta). Los importes marcados como «Estimado» son aproximados.');
+    if ((S.months[key] || {}).note) { d.space(6); d.para('Nota del mes: ' + S.months[key].note, 9.5); }
     return { blob: d.build(), name: 'gastos-' + key + '.pdf' };
 }
 function pdfAnio() {
@@ -763,7 +913,140 @@ function exportPDF(kind) {
     catch (e) { alert('No se pudo generar el PDF: ' + (e && e.message ? e.message : e)); }
 }
 
-initTheme(); renderMes();
+
+/* ===================== Copia en la nube ===================== */
+const b64e = x => btoa(unescape(encodeURIComponent(x)));
+const b64d = x => decodeURIComponent(escape(atob(String(x).replace(/\s/g, ''))));
+const cUrl = () => 'https://api.github.com/repos/' + encodeURIComponent(cloud.owner) + '/' + encodeURIComponent(cloud.repo) + '/contents/' + cloud.path;
+const cSave = () => lsSet(CLOUD_KEY, JSON.stringify(cloud));
+async function gh(method, url, body) {
+    const r = await fetch(url, { method, cache: 'no-store', headers: Object.assign({ 'Authorization': 'Bearer ' + cloud.token, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }, body ? { 'Content-Type': 'application/json' } : {}), body: body ? JSON.stringify(body) : undefined });
+    let data = null; try { data = await r.json(); } catch (e) {}
+    return { status: r.status, ok: r.ok, data };
+}
+function ghErr(r) { return r.status === 401 ? 'Token no válido o caducado' : r.status === 403 ? 'El token no tiene permiso (necesita Contents: Read and write)' : r.status === 404 ? 'Repositorio no encontrado (revisa usuario, nombre y permisos del token)' : 'Error de GitHub (' + r.status + ')'; }
+function ago(t) { if (!t) return 'nunca'; const m = Math.floor((Date.now() - t) / 60000); return m < 1 ? 'ahora mismo' : m < 60 ? 'hace ' + m + ' min' : m < 1440 ? 'hace ' + Math.floor(m / 60) + ' h' : 'hace ' + Math.floor(m / 1440) + ' días'; }
+function cloudUI() {
+    const b = $('cloudBtn'); if (!b) return;
+    b.className = 'round cs-' + (cloud ? cloudState : 'off');
+    const txt = !cloud ? 'Sin configurar · toca para activarla' : cloudState === 'syncing' ? 'Guardando…' : cloudState === 'pending' ? 'Cambios pendientes de guardar' : (cloudState === 'error' || cloudState === 'conflict') ? '⚠️ ' + cloudMsg : '✓ Guardada ' + ago(cloud.last);
+    $('cloudInfo').textContent = txt; if ($('cloudStatus')) $('cloudStatus').textContent = txt;
+    $('cloudOff').hidden = !!cloud; $('cloudOn').hidden = !cloud;
+}
+function cloudSay(m) { $('cloudMsg').textContent = m || ''; }
+function openCloud() { cloudSay(''); cloudUI(); $('cloudSheet').classList.add('on'); }
+function closeCloud() { $('cloudSheet').classList.remove('on'); }
+const cloudPayload = () => JSON.stringify({ app: 'economia-cdmo', savedAt: new Date().toISOString(), data: S }, null, 1);
+function cloudAlertRefresh() { if ($('pMes') && $('pMes').classList.contains('active')) renderMes(); }
+async function cloudPush(force) {
+    if (!cloud) return; clearTimeout(cloudTimer); cloudState = 'syncing'; cloudUI();
+    try {
+        const g = await gh('GET', cUrl() + '?t=' + Date.now()); let sha = null;
+        if (g.status === 200) { sha = g.data.sha; if (cloud.sha && sha !== cloud.sha && !force) { cloudState = 'conflict'; cloudMsg = 'En la nube hay una copia más reciente (otro móvil)'; cloudUI(); cloudAlertRefresh(); return; } }
+        else if (g.status !== 404) { cloudState = 'error'; cloudMsg = ghErr(g); cloudUI(); cloudAlertRefresh(); return; }
+        const p = await gh('PUT', cUrl(), { message: 'Economía CDMO · ' + new Date().toLocaleString('es-ES'), content: b64e(cloudPayload()), sha: sha || undefined });
+        if (!p.ok) { cloudState = 'error'; cloudMsg = ghErr(p); cloudUI(); cloudAlertRefresh(); return; }
+        cloud.sha = p.data.content.sha; cloud.last = Date.now(); cSave(); cloudState = 'ok'; cloudMsg = '';
+    } catch (e) { cloudState = 'error'; cloudMsg = 'Sin conexión; se reintentará solo'; }
+    cloudUI(); if (cloudState === 'error') cloudAlertRefresh();
+}
+async function cloudPushNow() {
+    if (cloudState === 'conflict' && !confirm('En la nube hay una copia más reciente de otro móvil.\n\n¿Sobrescribirla con la de ESTE móvil?')) return;
+    cloudSay('Guardando…'); await cloudPush(true); cloudSay(cloudState === 'ok' ? '✓ Guardado' : cloudMsg);
+}
+async function doRestore(file) {
+    try {
+        const o = JSON.parse(b64d(file.content)), st = o && o.data;
+        if (!st || !Array.isArray(st.plan) || !st.months) throw 0;
+        lsSet(KEY, JSON.stringify(st)); cloud.sha = file.sha; cloud.last = Date.now(); cSave();
+        alert('Copia restaurada. Voy a recargar la app.'); location.reload();
+    } catch (e) { cloudSay('El archivo de la nube no es válido'); }
+}
+async function cloudRestore() {
+    if (!cloud) return; cloudSay('Buscando la copia…');
+    try {
+        const g = await gh('GET', cUrl() + '?t=' + Date.now());
+        if (g.status === 404) { cloudSay('Todavía no hay ninguna copia en la nube'); return; }
+        if (!g.ok) { cloudSay(ghErr(g)); return; }
+        if (!confirm('Esto REEMPLAZA los datos de este móvil por los de la nube.\n\n¿Seguir?')) { cloudSay(''); return; }
+        await doRestore(g.data);
+    } catch (e) { cloudSay('Sin conexión'); }
+}
+async function cloudConnect() {
+    const owner = $('cOwner').value.trim(), repo = $('cRepo').value.trim(), token = $('cToken').value.trim();
+    if (!owner || !repo || !token) { cloudSay('Rellena usuario, repositorio y token'); return; }
+    cloud = { owner, repo, token, path: 'economia-cdmo.json', sha: null, last: 0 }; cloudSay('Comprobando…');
+    try {
+        const r = await gh('GET', 'https://api.github.com/repos/' + encodeURIComponent(owner) + '/' + encodeURIComponent(repo));
+        if (!r.ok) { cloudSay(ghErr(r)); cloud = null; return; }
+        if (r.data.private !== true) { cloudSay('Ese repositorio es PÚBLICO: tus gastos se verían. Crea uno privado.'); cloud = null; return; }
+        const g = await gh('GET', cUrl() + '?t=' + Date.now());
+        if (g.status === 200) {
+            cloud.sha = g.data.sha; let saved = ''; try { saved = JSON.parse(b64d(g.data.content)).savedAt; } catch (e) {}
+            if (confirm('En la nube ya hay una copia' + (saved ? ' (guardada el ' + new Date(saved).toLocaleString('es-ES') + ')' : '') + '.\n\n¿Quieres RESTAURARLA en este móvil?\n\nAceptar = restaurar la de la nube\nCancelar = no restaurar')) { await doRestore(g.data); return; }
+            if (!confirm('Entonces, ¿sobrescribir la copia de la nube con lo de ESTE móvil?')) { cloud = null; cloudSay('No se ha conectado nada'); return; }
+        } else if (g.status !== 404) { cloudSay(ghErr(g)); cloud = null; return; }
+        cSave(); await cloudPush(true); cloudSay(cloudState === 'ok' ? '✓ Conectado y copia guardada' : cloudMsg);
+        $('cToken').value = ''; cloudUI();
+    } catch (e) { cloudSay('Sin conexión o bloqueado por el navegador'); cloud = null; }
+}
+function cloudOff() { if (!confirm('Se dejará de guardar en la nube en este móvil (la copia que ya está en GitHub no se borra). ¿Seguir?')) return; cloud = null; try { localStorage.removeItem(CLOUD_KEY); } catch (e) {} cloudState = 'off'; cloudMsg = ''; cloudUI(); cloudSay(''); }
+async function cloudCheck() {
+    if (!cloud) return;
+    try { const g = await gh('GET', cUrl() + '?t=' + Date.now()); if (g.status === 200 && cloud.sha && g.data.sha !== cloud.sha) { cloudState = 'conflict'; cloudMsg = 'En la nube hay una copia más reciente (otro móvil)'; } else if (!g.ok && g.status !== 404) { cloudState = 'error'; cloudMsg = ghErr(g); } } catch (e) {}
+    cloudUI(); renderMes();
+}
+window.addEventListener('online', () => { if (cloud && (cloudState === 'error' || cloudState === 'pending')) cloudPush(false); });
+
+/* ===================== Código de bloqueo ===================== */
+const PIN_KEY = 'economia_cdmo_pin';
+const pinCfg = () => { try { return JSON.parse(localStorage.getItem(PIN_KEY) || 'null'); } catch (e) { return null; } };
+async function hashPin(pin, salt) { const d = new TextEncoder().encode(salt + ':' + pin), h = await crypto.subtle.digest('SHA-256', d); return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join(''); }
+let lockBuf = '', lockFails = 0, lockUntil = 0, hiddenAt = 0;
+function drawDots() { document.querySelectorAll('#lockDots i').forEach((e, i) => e.classList.toggle('on', i < lockBuf.length)); }
+function showLock() { if (!pinCfg()) return; lockBuf = ''; drawDots(); $('lockMsg').textContent = 'Introduce tu código'; document.documentElement.setAttribute('data-lock', '1'); }
+function hideLock() { document.documentElement.removeAttribute('data-lock'); lockBuf = ''; drawDots(); }
+function lockKey(k) {
+    if (Date.now() < lockUntil) return;
+    if (k === 'del') lockBuf = lockBuf.slice(0, -1); else if (lockBuf.length < 4) lockBuf += k;
+    drawDots(); if (lockBuf.length === 4) checkPin();
+}
+async function checkPin() {
+    const c = pinCfg(); if (!c) { hideLock(); return; }
+    if (await hashPin(lockBuf, c.salt) === c.hash) { lockFails = 0; hideLock(); return; }
+    lockFails++; lockBuf = ''; const box = $('lockDots'); box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); drawDots();
+    if (lockFails >= 5) { lockUntil = Date.now() + 30000; lockFails = 0; $('lockMsg').textContent = 'Demasiados intentos. Espera 30 segundos'; } else $('lockMsg').textContent = 'Código incorrecto';
+}
+function lockForgot() { alert('Si has olvidado el código:\n\n1. Ajustes del iPhone → Apps → Safari → Avanzado → Datos de sitios web.\n2. Borra los datos de danielcdmo.github.io.\n3. Abre la app y restaura tu copia desde la nube (☁️).\n\nPor eso conviene tener la copia en la nube activada.'); }
+function pinSay(m) { $('pinMsg').textContent = m || ''; }
+function pinUI() {
+    const on = !!pinCfg();
+    $('pinInfo').textContent = on ? 'Activado · toca para cambiarlo o quitarlo' : 'Desactivado · toca para activarlo';
+    $('pCurG').hidden = !on; $('pDel').hidden = !on; $('pTitle').textContent = on ? 'Cambiar o quitar el código' : 'Activar el código';
+}
+function openPin() { ['pCur', 'pNew', 'pNew2'].forEach(i => $(i).value = ''); pinSay(''); pinUI(); $('pinSheet').classList.add('on'); }
+function closePin() { $('pinSheet').classList.remove('on'); }
+async function savePin() {
+    const c = pinCfg(), cur = $('pCur').value, n1 = $('pNew').value, n2 = $('pNew2').value;
+    if (c && await hashPin(cur, c.salt) !== c.hash) { pinSay('El código actual no es correcto'); return; }
+    if (!/^\d{4}$/.test(n1)) { pinSay('El código nuevo debe ser de 4 números'); return; }
+    if (n1 !== n2) { pinSay('Los dos códigos no coinciden'); return; }
+    const salt = Math.random().toString(36).slice(2) + Date.now();
+    lsSet(PIN_KEY, JSON.stringify({ salt, hash: await hashPin(n1, salt) })); ['pCur', 'pNew', 'pNew2'].forEach(i => $(i).value = ''); pinUI(); pinSay('✓ Código guardado');
+}
+async function removePin() {
+    const c = pinCfg(); if (!c) return;
+    if (await hashPin($('pCur').value, c.salt) !== c.hash) { pinSay('El código actual no es correcto'); return; }
+    try { localStorage.removeItem(PIN_KEY); } catch (e) {} ['pCur', 'pNew', 'pNew2'].forEach(i => $(i).value = ''); pinUI(); pinSay('Código quitado');
+}
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { hiddenAt = Date.now(); return; }
+    if (pinCfg() && hiddenAt && Date.now() - hiddenAt > 30000) showLock();
+    if (cloud && (cloudState === 'error' || cloudState === 'pending')) cloudPush(false); else cloudCheck();
+});
+cloudUI(); pinUI(); cloudCheck();
+
+initTheme(); renderMes(); if (pinCfg()) showLock();
 
 </script>
 <script>
@@ -775,7 +1058,7 @@ initTheme(); renderMes();
 })();
 </script>
 <script>
-const APP_VERSION = 'v10 · 03/10/2026';
+const APP_VERSION = 'v11 · 03/10/2026';
 
 async function forceUpdate() {
     if (!confirm('Voy a recargar la app para coger la última versión. Tus datos no se borran. ¿Seguir?')) return;

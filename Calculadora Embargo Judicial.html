@@ -1,263 +1,222 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Calculadora de embargo de salario — art. 607 LEC</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#05060a">
+<title>Embargo judicial · art. 607 LEC</title>
 <style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --paper:#F5F4F0;
-  --card:#FFFFFF;
-  --ink:#16181F;
-  --ink-2:#5A5F6B;
-  --line:#DCDAD3;
-  --safe:#1F6F5C;
-  --safe-bg:#E4EFEA;
-  --t1:#C9992E;
-  --t2:#C0742A;
-  --t3:#B25327;
-  --t4:#9C3A2C;
-  --t5:#7C2630;
-  --focus:#1F6F5C;
+  --bg1:#05060b;--bg2:#0a1022;
+  --glass:rgba(255,255,255,.075);--glass2:rgba(255,255,255,.13);--stroke:rgba(255,255,255,.17);--hi:rgba(255,255,255,.34);
+  --txt:#fff;--sub:rgba(235,235,245,.62);--faint:rgba(235,235,245,.34);
+  --blue:#0a84ff;--green:#30d158;--orange:#ff9f0a;--red:#ff453a;--purple:#bf5af2;--teal:#64d2ff;
+  --t0:#30d158;--t1:#ffd60a;--t2:#ff9f0a;--t3:#ff7a2f;--t4:#ff453a;--t5:#d6246e;
+  --shadow:0 14px 44px rgba(0,0,0,.34);
+  --o1:rgba(10,132,255,.55);--o2:rgba(191,90,242,.45);--o3:rgba(255,69,58,.26);
 }
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-html{background:var(--paper);min-height:100%}
-body{
-  background:var(--paper);
-  color:var(--ink);
-  font-family:'IBM Plex Sans',system-ui,sans-serif;
-  font-size:15px;line-height:1.5;
-  -webkit-font-smoothing:antialiased;
-  padding:max(20px, env(safe-area-inset-top)) 16px max(56px, env(safe-area-inset-bottom));
+[data-theme="light"]{
+  --bg1:#f1f3fa;--bg2:#e2e7f4;
+  --glass:rgba(255,255,255,.58);--glass2:rgba(255,255,255,.82);--stroke:rgba(255,255,255,.95);--hi:#fff;
+  --txt:#0b0b12;--sub:rgba(60,60,67,.78);--faint:rgba(60,60,67,.38);
+  --blue:#007aff;--green:#1f9d45;--orange:#d97706;--red:#d70015;--purple:#a23fe0;--teal:#0a8fc4;
+  --t0:#1f9d45;--t1:#d4a017;--t2:#d97706;--t3:#d4561a;--t4:#d70015;--t5:#9c1048;
+  --shadow:0 12px 36px rgba(60,70,120,.14);
+  --o1:rgba(10,132,255,.32);--o2:rgba(191,90,242,.26);--o3:rgba(255,69,58,.16);
 }
-.wrap{max-width:760px;margin:0 auto}
+[hidden]{display:none!important}
+html{background:linear-gradient(180deg,var(--bg1),var(--bg2));min-height:100%}
+html,body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none;touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,sans-serif;-webkit-font-smoothing:antialiased;
+  padding:max(14px,env(safe-area-inset-top)) 16px max(30px,env(safe-area-inset-bottom));min-height:100vh;min-height:100dvh;font-variant-numeric:tabular-nums}
+.bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.bg i{position:absolute;border-radius:50%}
+.bg .a{width:420px;height:420px;left:-140px;top:-80px;background:radial-gradient(circle,var(--o1),transparent 68%)}
+.bg .b{width:380px;height:380px;right:-160px;top:36%;background:radial-gradient(circle,var(--o2),transparent 68%)}
+.bg .c{width:420px;height:420px;left:-100px;bottom:-120px;background:radial-gradient(circle,var(--o3),transparent 68%)}
+.wrap{max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:14px;overflow-x:clip}
 
-header{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:22px}
-.eyebrow{
-  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-2);margin:0 0 6px
-}
-h1{
-  font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(26px,5.5vw,38px);
-  letter-spacing:-.02em;line-height:1.05;margin:0
-}
-.sub{margin:8px 0 0;color:var(--ink-2);font-size:13.5px;max-width:56ch}
+.glass{position:relative;background:var(--glass);-webkit-backdrop-filter:blur(30px) saturate(190%);backdrop-filter:blur(30px) saturate(190%);
+  border:1px solid var(--stroke);border-radius:28px;box-shadow:var(--shadow),inset 0 1px 0 var(--hi),inset 0 -1px 0 rgba(255,255,255,.05)}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(140deg,rgba(255,255,255,.16),rgba(255,255,255,0) 42%)}
+[data-theme="light"] .glass::before{background:linear-gradient(140deg,rgba(255,255,255,.7),rgba(255,255,255,0) 50%)}
+.pad{padding:16px}
 
-.card{
-  background:var(--card);border:1px solid var(--line);border-radius:3px;
-  padding:20px;margin-bottom:18px
-}
-.card h2{
-  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-2);font-weight:600;margin:0 0 16px
-}
+.top{display:flex;align-items:center;justify-content:space-between;margin:4px 2px 2px;gap:10px}
+.top h1{margin:0;font-size:1.5rem;font-weight:800;letter-spacing:.01em;line-height:1.1;white-space:nowrap}
+.top p{margin:3px 0 0;font-size:.8rem;color:var(--sub);font-weight:500}
+.ver{margin-top:7px;border:1px solid var(--stroke);background:var(--glass);color:var(--sub);border-radius:999px;padding:4px 11px;font-size:.68rem;font-weight:700;cursor:pointer;font-family:inherit;max-width:100%;text-align:left}
+.round{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.05rem;cursor:pointer;color:var(--txt);border:1px solid var(--stroke);background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:var(--shadow),inset 0 1px 0 var(--hi);flex-shrink:0}
+.lead{font-size:.86rem;color:var(--sub);line-height:1.45;margin:0 4px}
+.lead b{color:var(--txt)}
 
-.grid{display:grid;gap:14px}
-@media(min-width:620px){.grid.two{grid-template-columns:1fr 1fr}}
+.segm{display:flex;padding:5px;gap:4px;border-radius:999px}
+.segm button{flex:1;border:none;background:transparent;color:var(--sub);padding:11px 8px;border-radius:999px;font-weight:700;font-size:.84rem;cursor:pointer;font-family:inherit}
+.segm button[aria-pressed="true"]{background:var(--glass2);color:var(--blue);box-shadow:inset 0 1px 0 var(--hi),0 2px 10px rgba(0,0,0,.18)}
 
-label{display:block;font-size:13px;font-weight:500;margin-bottom:5px}
-.hint{font-size:11.5px;color:var(--ink-2);font-weight:400;margin-top:4px;line-height:1.4}
-.field{position:relative}
-input[type=number]{
-  width:100%;padding:11px 34px 11px 12px;font-family:'IBM Plex Mono',monospace;
-  font-size:16px;border:1px solid var(--line);border-radius:2px;background:#FCFCFA;
-  color:var(--ink);-moz-appearance:textfield
-}
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-input:focus-visible,select:focus-visible,button:focus-visible{
-  outline:2px solid var(--focus);outline-offset:2px
-}
-.eur{
-  position:absolute;right:11px;top:33px;font-family:'IBM Plex Mono',monospace;
-  font-size:14px;color:var(--ink-2);pointer-events:none
-}
-.eur.nolabel{top:11px}
+.eyebrow{font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--sub)}
+.fg{display:flex;flex-direction:column;gap:6px;margin-top:14px;min-width:0}
+.fg:first-of-type{margin-top:0}
+.lab{font-size:.78rem;font-weight:700;color:var(--sub)}
+.hint{font-size:.72rem;color:var(--sub);line-height:1.45;margin:0}
+.fx{position:relative}
+.inp{width:100%;min-width:0;background:var(--glass);border:1px solid var(--stroke);color:var(--txt);border-radius:16px;padding:13px 38px 13px 14px;font-size:16px;font-weight:700;font-family:inherit;-webkit-appearance:none;appearance:none}
+.inp::placeholder{color:var(--sub);opacity:.7}
+.fx .eur{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--sub);font-weight:700;pointer-events:none}
+select.inp{padding-right:32px;background-image:linear-gradient(45deg,transparent 50%,var(--sub) 50%),linear-gradient(135deg,var(--sub) 50%,transparent 50%);background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat}
+select.inp:disabled{opacity:.55}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.two .fg{margin-top:0}
 
-.toggle{display:flex;gap:0;border:1px solid var(--line);border-radius:2px;overflow:hidden;margin-bottom:16px}
-.toggle button{
-  flex:1;padding:9px 8px;border:0;background:#FCFCFA;cursor:pointer;
-  font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;font-weight:500;color:var(--ink-2)
-}
-.toggle button[aria-pressed=true]{background:var(--ink);color:#fff}
-.toggle button+button{border-left:1px solid var(--line)}
-
-.check{display:flex;align-items:flex-start;gap:9px;margin-top:16px;padding-top:16px;border-top:1px dashed var(--line)}
-.check input{margin-top:3px;width:16px;height:16px;accent-color:var(--safe);flex:none}
-.check label{margin:0;font-weight:500}
-select{
-  width:100%;margin-top:8px;padding:7px 9px;border:1px solid var(--line);border-radius:2px;
-  font-family:'IBM Plex Mono',monospace;font-size:13px;background:#FCFCFA;color:var(--ink)
-}
+.switchrow{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;padding-top:16px;border-top:1px solid var(--stroke)}
+.switchrow .lab{color:var(--txt);font-size:.9rem}
+.switch{position:relative;width:52px;height:32px;flex-shrink:0}
+.switch input{opacity:0;position:absolute;inset:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:2}
+.switch i{position:absolute;inset:0;border-radius:999px;background:var(--glass2);border:1px solid var(--stroke);transition:.2s}
+.switch i::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.35);transition:.2s}
+.switch input:checked+i{background:var(--green);border-color:var(--green)}
+.switch input:checked+i::after{transform:translateX(20px)}
 
 /* resultado */
-.result{background:var(--ink);color:#fff;border:0}
-.result h2{color:rgba(255,255,255,.55)}
-.figs{display:grid;gap:18px}
-@media(min-width:620px){.figs{grid-template-columns:1fr 1fr}}
-.fig .k{
-  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;
-  text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:5px
-}
-.fig .v{
-  font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(30px,7vw,44px);
-  letter-spacing:-.025em;line-height:1;font-variant-numeric:tabular-nums
-}
-.fig.retain .v{color:#F0B24A}
-.fig .pct{font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(255,255,255,.5);margin-top:6px}
+.hero{padding:20px 18px 18px;text-align:center}
+.hero-label{margin-top:8px;font-size:.92rem;font-weight:600;color:var(--sub)}
+.hero-num{font-size:3rem;font-weight:800;letter-spacing:-.035em;line-height:1.05;margin:2px 0 4px;background:linear-gradient(135deg,var(--orange),var(--red));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.pct{font-size:.78rem;color:var(--sub);font-weight:600}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;text-align:left}
+.tile{padding:12px 14px;border-radius:20px;background:var(--glass);border:1px solid var(--stroke)}
+.tile .k{font-size:.62rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--sub)}
+.tile .v{font-size:1.2rem;font-weight:800;margin-top:4px;letter-spacing:-.01em;white-space:nowrap}
+.tile .s{font-size:.68rem;color:var(--sub);margin-top:2px}
 
-/* escalera */
-.ladder{margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,.16)}
-.bar{display:flex;height:46px;border-radius:2px;overflow:hidden;background:rgba(255,255,255,.08)}
+.bar{display:flex;height:44px;border-radius:14px;overflow:hidden;background:var(--glass2);margin-top:12px;border:1px solid var(--stroke)}
 .seg{position:relative;transition:width .45s cubic-bezier(.4,0,.2,1);min-width:0}
-.seg span{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#fff;
-  text-shadow:0 1px 2px rgba(0,0,0,.35)
-}
-.scaleline{
-  display:flex;justify-content:space-between;margin-top:7px;
-  font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(255,255,255,.45)
-}
-.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;font-size:11.5px;color:rgba(255,255,255,.65)}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.seg span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.scaleline{display:flex;justify-content:space-between;margin-top:7px;font-size:.7rem;color:var(--sub);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:12px;font-size:.72rem;color:var(--sub);font-weight:600}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 
-/* tabla */
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-th,td{padding:9px 6px;text-align:right;border-bottom:1px solid var(--line)}
-th:first-child,td:first-child{text-align:left}
-thead th{
-  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--ink-2);font-weight:600;border-bottom:1.5px solid var(--ink)
-}
-td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
-tr.off td{color:#A9A6A0}
-tr.tot td{font-weight:600;border-bottom:0;border-top:1.5px solid var(--ink)}
-.swatch{display:inline-block;width:8px;height:8px;border-radius:1px;margin-right:7px;vertical-align:1px}
+/* tramos */
+.list{padding:2px 14px}
+.trow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--stroke)}
+.trow:last-child{border-bottom:none}
+.sw{width:12px;align-self:stretch;border-radius:6px;flex-shrink:0;min-height:36px}
+.tl{flex:1;min-width:0}
+.nm{font-weight:700;font-size:.9rem;line-height:1.25}
+.sb{font-size:.7rem;color:var(--sub);margin-top:2px;line-height:1.35}
+.tr{text-align:right;flex-shrink:0}
+.tr b{display:block;font-size:.98rem;font-weight:800;white-space:nowrap}
+.tr small{display:block;font-size:.68rem;color:var(--sub);margin-top:2px;white-space:nowrap}
+.trow.tot{padding:14px 0}
+.trow.tot .nm{font-size:.95rem}
 
-.note{
-  background:var(--safe-bg);border-left:3px solid var(--safe);padding:13px 15px;
-  font-size:13px;border-radius:0 2px 2px 0;margin-bottom:18px
-}
-.note strong{color:var(--safe)}
-.note p{margin:0 0 8px}
-.note p:last-child{margin:0}
-
-button.copy{
-  width:100%;padding:12px;background:var(--ink);color:#fff;border:0;border-radius:2px;
-  font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer
-}
-button.copy:hover{background:#2A2D36}
-button.pdf{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
-button.pdf:hover{background:#F1F0EB}
-.btnrow{display:grid;gap:10px}
-@media(min-width:620px){.btnrow{grid-template-columns:1fr 1fr}}
-.errmsg{font-size:12px;color:#9C3A2C;margin-top:8px;display:none}
-select{font-size:16px}
-button.copy.done{background:var(--safe)}
-
-.ver{margin:0 0 10px;border:1px solid var(--line);background:#fff;color:var(--ink-2);border-radius:999px;padding:3px 11px;font-size:11px;font-weight:600;cursor:pointer;font-family:'IBM Plex Mono',monospace}
-footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid var(--line);padding-top:14px}
+.note{border-radius:22px;padding:14px 16px;background:rgba(48,209,88,.12);border:1px solid rgba(48,209,88,.4);font-size:.8rem;line-height:1.5;color:var(--txt)}
+.note b{color:var(--green)}
+.actions{display:grid;gap:10px}
+.btn{border:1px solid var(--stroke);border-radius:18px;padding:15px;font-weight:800;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--txt);background:var(--glass2);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:inset 0 1px 0 var(--hi);font-family:inherit;width:100%}
+.btn.purple{background:linear-gradient(135deg,var(--purple),#7d5cff);color:#fff;border-color:transparent}
+.btn.done{background:var(--green);color:#fff;border-color:transparent}
+.errmsg{font-size:.78rem;color:var(--red);margin:0;display:none}
+footer{font-size:.7rem;color:var(--sub);line-height:1.55;text-align:center;padding:4px 6px 10px}
 @media(prefers-reduced-motion:reduce){.seg{transition:none}}
 </style>
 </head>
 <body>
+<div class="bg"><i class="a"></i><i class="b"></i><i class="c"></i></div>
 <div class="wrap">
 
-<header>
-  <p class="eyebrow">Ley de Enjuiciamiento Civil · Artículo 607</p>
-  <button class="ver" id="verBtn" onclick="checkUpdate()"></button>
-  <h1>¿Cuánto pueden retenerte<br>de la nómina?</h1>
-  <p class="sub">La escala se aplica sobre el <strong>líquido percibido</strong>, no sobre el bruto ni sobre la base de cotización. Es el error más común de las empresas.</p>
-</header>
-
-<div class="card">
-  <h2>Datos</h2>
-
-  <div class="toggle" role="group" aria-label="Modo de cálculo">
-    <button id="mLiq" aria-pressed="true">Sé el líquido</button>
-    <button id="mBrut" aria-pressed="false">Calcular desde el bruto</button>
-  </div>
-
-  <div id="paneLiq">
-    <div class="field">
-      <label for="liq">Líquido percibido al mes</label>
-      <input type="number" id="liq" value="1644.79" min="0" step="0.01" inputmode="decimal">
-      <span class="eur">€</span>
-      <p class="hint">Lo que realmente cobras, después de IRPF y Seguridad Social (art. 607.5 LEC).</p>
-    </div>
-  </div>
-
-  <div id="paneBrut" hidden>
-    <div class="grid two">
-      <div class="field">
-        <label for="bruto">Total devengado</label>
-        <input type="number" id="bruto" value="2142.86" min="0" step="0.01" inputmode="decimal">
-        <span class="eur">€</span>
-      </div>
-      <div class="field">
-        <label for="ded">Deducciones (IRPF + SS)</label>
-        <input type="number" id="ded" value="498.07" min="0" step="0.01" inputmode="decimal">
-        <span class="eur">€</span>
-      </div>
-    </div>
-    <p class="hint">No uses la base de cotización: incluye la prorrata de pagas extra e infla el cálculo.</p>
-  </div>
-
-  <div class="field" style="margin-top:14px">
-    <label for="smi">SMI mensual (14 pagas)</label>
-    <input type="number" id="smi" value="1221" min="1" step="0.01" inputmode="decimal">
-    <span class="eur">€</span>
-    <p class="hint">SMI 2026: 1.221,00 € al mes en 14 pagas (RD 126/2026).</p>
-  </div>
-
-  <div style="margin-top:14px">
-    <label for="pagas">¿Cómo cobras las pagas extra?</label>
-    <select id="pagas">
-      <option value="14">En 14 pagas (extras aparte, no prorrateadas)</option>
-      <option value="12">Prorrateadas en 12 pagas</option>
-    </select>
-    <p class="hint">Si tu nómina incluye la parte proporcional de las extras, el mínimo inembargable es el SMI anual entre 12 (1.221 × 14 / 12 = 1.424,50 €), no 1.221 €. Es el criterio que aplica la Agencia Tributaria (TEAC). El mes en que cobras una paga extra aparte no está cubierto: manda el oficio.</p>
-  </div>
-
-  <div class="check">
-    <input type="checkbox" id="cargas">
+  <div class="top">
     <div>
-      <label for="cargas">Rebaja por cargas familiares (art. 607.4)</label>
-      <p class="hint">La concede el Letrado de la Administración de Justicia, entre un 10 y un 15 %. No se aplica sola: hay que pedirla y acreditarla.</p>
-      <select id="rebaja" disabled>
+      <h1>EMBARGO JUDICIAL</h1>
+      <p>Calculadora · art. 607 LEC</p>
+      <button class="ver" id="verBtn" onclick="checkUpdate()"></button>
+    </div>
+    <button class="round" onclick="toggleTheme()" id="themeBtn" aria-label="Cambiar tema">🌙</button>
+  </div>
+
+  <p class="lead">La escala se aplica sobre el <b>líquido percibido</b>, no sobre el bruto ni sobre la base de cotización. Es el error más común de las empresas.</p>
+
+  <div class="glass segm" role="group" aria-label="Modo de cálculo">
+    <button id="mLiq" aria-pressed="true">Sé el líquido</button>
+    <button id="mBrut" aria-pressed="false">Desde el bruto</button>
+  </div>
+
+  <div class="glass pad">
+    <div class="eyebrow" style="margin-bottom:14px">Datos</div>
+
+    <div id="paneLiq">
+      <div class="fg">
+        <label class="lab" for="liq">Líquido percibido al mes</label>
+        <div class="fx"><input type="number" class="inp" id="liq" value="1644.79" min="0" step="0.01" inputmode="decimal"><span class="eur">€</span></div>
+        <p class="hint">Lo que realmente cobras, después de IRPF y Seguridad Social (art. 607.5 LEC).</p>
+      </div>
+    </div>
+
+    <div id="paneBrut" hidden>
+      <div class="two">
+        <div class="fg">
+          <label class="lab" for="bruto">Total devengado</label>
+          <div class="fx"><input type="number" class="inp" id="bruto" value="2142.86" min="0" step="0.01" inputmode="decimal"><span class="eur">€</span></div>
+        </div>
+        <div class="fg">
+          <label class="lab" for="ded">IRPF + SS</label>
+          <div class="fx"><input type="number" class="inp" id="ded" value="498.07" min="0" step="0.01" inputmode="decimal"><span class="eur">€</span></div>
+        </div>
+      </div>
+      <p class="hint" style="margin-top:8px">No uses la base de cotización: incluye la prorrata de pagas extra e infla el cálculo.</p>
+    </div>
+
+    <div class="fg">
+      <label class="lab" for="smi">SMI mensual (14 pagas)</label>
+      <div class="fx"><input type="number" class="inp" id="smi" value="1221" min="1" step="0.01" inputmode="decimal"><span class="eur">€</span></div>
+      <p class="hint">SMI 2026: 1.221,00 € al mes en 14 pagas (RD 126/2026).</p>
+    </div>
+
+    <div class="fg">
+      <label class="lab" for="pagas">¿Cómo cobras las pagas extra?</label>
+      <select class="inp" id="pagas">
+        <option value="14">En 14 pagas (extras aparte)</option>
+        <option value="12">Prorrateadas en 12 pagas</option>
+      </select>
+      <p class="hint">Si tu nómina incluye la parte proporcional de las extras, el mínimo inembargable es el SMI anual entre 12 (1.221 × 14 / 12 = 1.424,50 €), no 1.221 €. Es el criterio que aplica la Agencia Tributaria (TEAC). El mes en que cobras una paga extra aparte no está cubierto: manda el oficio.</p>
+    </div>
+
+    <div class="switchrow">
+      <div style="min-width:0">
+        <div class="lab">Rebaja por cargas familiares</div>
+        <p class="hint" style="margin-top:3px">Art. 607.4. La concede el Letrado de la Administración de Justicia, entre un 10 y un 15 %. No se aplica sola: hay que pedirla y acreditarla.</p>
+      </div>
+      <label class="switch"><input type="checkbox" id="cargas" aria-label="Rebaja por cargas familiares"><i></i></label>
+    </div>
+    <div class="fg" style="margin-top:12px">
+      <select class="inp" id="rebaja" disabled aria-label="Porcentaje de rebaja">
         <option value="0.10">Rebaja del 10 %</option>
         <option value="0.125">Rebaja del 12,5 %</option>
         <option value="0.15">Rebaja del 15 %</option>
       </select>
     </div>
   </div>
-</div>
 
-<div class="card result">
-  <h2>Resultado</h2>
-  <div class="figs">
-    <div class="fig retain">
-      <div class="k">Pueden retenerte</div>
-      <div class="v" id="outRet">—</div>
-      <div class="pct" id="outPct"></div>
-    </div>
-    <div class="fig">
-      <div class="k">Te queda</div>
-      <div class="v" id="outNeto">—</div>
-      <div class="pct" id="outNetoPct"></div>
+  <div class="glass hero">
+    <div class="eyebrow">Resultado</div>
+    <div class="hero-label">Pueden retenerte al mes</div>
+    <div class="hero-num" id="outRet">—</div>
+    <div class="pct" id="outPct"></div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Te queda</div><div class="v" style="color:var(--green)" id="outNeto">—</div><div class="s" id="outNetoPct"></div></div>
+      <div class="tile"><div class="k">Inembargable</div><div class="v" id="outSmi">—</div><div class="s" id="outSmiTxt"></div></div>
     </div>
   </div>
 
-  <div class="ladder">
+  <div class="glass pad">
+    <div class="eyebrow">Cómo se reparte tu líquido</div>
     <div class="bar" id="bar"></div>
     <div class="scaleline"><span>0 €</span><span id="scaleEnd"></span></div>
     <div class="legend">
-      <span><i style="background:var(--safe)"></i>Inembargable</span>
+      <span><i style="background:var(--t0)"></i>Inembargable</span>
       <span><i style="background:var(--t1)"></i>30%</span>
       <span><i style="background:var(--t2)"></i>50%</span>
       <span><i style="background:var(--t3)"></i>60%</span>
@@ -265,34 +224,25 @@ footer{font-size:11.5px;color:var(--ink-2);line-height:1.6;border-top:1px solid 
       <span><i style="background:var(--t5)"></i>90%</span>
     </div>
   </div>
-</div>
 
-<div class="card">
-  <h2>Desglose por tramos</h2>
-  <table>
-    <thead>
-      <tr><th>Tramo</th><th>Importe en el tramo</th><th>%</th><th>Retención</th></tr>
-    </thead>
-    <tbody id="tbody"></tbody>
-  </table>
-</div>
-
-<div class="note">
-  <p><strong>Si tienes más de un embargo sobre la misma nómina</strong> (art. 607.3): el mínimo inembargable se descuenta <strong>una sola vez</strong>. Sobre el exceso se aplica la escala completa y lo retenido se reparte entre los juzgados por orden de antigüedad. Si dos pagadores o dos ejecuciones descuentan el SMI cada uno, están reteniendo de menos y el juzgado acabará reclamándolo.</p>
-</div>
-
-<div class="card" style="padding:14px">
-  <div class="btnrow">
-    <button class="copy" id="copy">Copiar el desglose</button>
-    <button class="copy pdf" id="pdf">Descargar / compartir PDF</button>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="eyebrow" style="margin:6px 6px 0">Desglose por tramos</div>
+    <div class="glass list" id="tlist"></div>
   </div>
-  <p class="errmsg" id="pdfErr"></p>
-</div>
 
-<footer>
-  Cálculo orientativo conforme a la escala del art. 607 LEC. No sustituye a la resolución judicial: si el oficio del juzgado fija una cantidad concreta, manda el oficio. Los porcentajes se aplican por tramos, nunca sobre el total. La rebaja por cargas se aplica aquí como reducción relativa del porcentaje (30 % con rebaja del 10 % = 27 %); si el decreto la expresa en puntos, manda el decreto. Las deudas por alimentos (art. 608 LEC) no siguen esta escala.
-</footer>
+  <div class="note">
+    <b>Si tienes más de un embargo sobre la misma nómina</b> (art. 607.3): el mínimo inembargable se descuenta <b>una sola vez</b>. Sobre el exceso se aplica la escala completa y lo retenido se reparte entre los juzgados por orden de antigüedad. Si dos pagadores o dos ejecuciones descuentan el SMI cada uno, están reteniendo de menos y el juzgado acabará reclamándolo.
+  </div>
 
+  <div class="actions">
+    <button class="btn" id="copy">Copiar el desglose</button>
+    <button class="btn purple" id="pdf">📄 PDF para compartir</button>
+    <p class="errmsg" id="pdfErr"></p>
+  </div>
+
+  <footer>
+    Cálculo orientativo conforme a la escala del art. 607 LEC. No sustituye a la resolución judicial: si el oficio del juzgado fija una cantidad concreta, manda el oficio. Los porcentajes se aplican por tramos, nunca sobre el total. La rebaja por cargas se aplica aquí como reducción relativa del porcentaje (30 % con rebaja del 10 % = 27 %); si el decreto la expresa en puntos, manda el decreto. Las deudas por alimentos (art. 608 LEC) no siguen esta escala.
+  </footer>
 </div>
 
 <script>
@@ -302,8 +252,6 @@ var MiniPDF=function(){var t=595.28,e=841.89,n=48,i=[278,278,355,556,556,889,667
 <script>
 (function(){
   var PCT = [0, .30, .50, .60, .75, .90];
-  var COL = ['var(--safe)','var(--t1)','var(--t2)','var(--t3)','var(--t4)','var(--t5)'];
-  var HEX = ['#1F6F5C','#C9992E','#C0742A','#B25327','#9C3A2C','#7C2630'];
   var $ = function(id){ return document.getElementById(id); };
   var modo = 'liq';
   var last = null;
@@ -316,6 +264,7 @@ var MiniPDF=function(){var t=595.28,e=841.89,n=48,i=[278,278,355,556,556,889,667
     var v = parseFloat(el.value);
     return isFinite(v) && v > 0 ? v : 0;
   }
+  function pctTxt(p){ return (p * 100).toFixed(p * 100 % 1 ? 1 : 0).replace('.', ',') + ' %'; }
 
   function liquido(){
     if (modo === 'liq') return num($('liq'));
@@ -346,17 +295,19 @@ var MiniPDF=function(){var t=595.28,e=841.89,n=48,i=[278,278,355,556,556,889,667
 
     $('outRet').textContent   = eur(total);
     $('outNeto').textContent  = eur(queda);
-    $('outPct').textContent   = L > 0 ? (total / L * 100).toFixed(1).replace('.', ',') + '% del líquido' : '';
-    $('outNetoPct').textContent = L > 0 ? (queda / L * 100).toFixed(1).replace('.', ',') + '% del líquido' : '';
+    $('outPct').textContent   = L > 0 ? pctTxt(total / L) + ' de tu líquido' : '';
+    $('outNetoPct').textContent = L > 0 ? pctTxt(queda / L) + ' de tu líquido' : '';
+    $('outSmi').textContent = eur(Math.min(L, smi));
+    $('outSmiTxt').textContent = prorr ? 'SMI en 12 pagas' : 'SMI en 14 pagas';
 
     // barra
     var bar = $('bar'); bar.innerHTML = '';
     tramos.forEach(function(t){
-      if (t.base <= 0) return;
+      if (t.base <= 0 || L <= 0) return;
       var d = document.createElement('div');
       d.className = 'seg';
       d.style.width = (t.base / L * 100) + '%';
-      d.style.background = COL[t.i];
+      d.style.background = 'var(--t' + t.i + ')';
       var s = document.createElement('span');
       s.textContent = (t.base / L > 0.13) ? Math.round(t.pct * 100) + '%' : '';
       d.appendChild(s);
@@ -365,28 +316,23 @@ var MiniPDF=function(){var t=595.28,e=841.89,n=48,i=[278,278,355,556,556,889,667
     });
     $('scaleEnd').textContent = eur(L);
 
-    // tabla
-    var tb = $('tbody'); tb.innerHTML = '';
+    // tramos
+    var html = '';
     tramos.forEach(function(t){
-      var tr = document.createElement('tr');
-      if (t.base <= 0) tr.className = 'off';
       var rango = t.i === 0
         ? 'Hasta ' + eur(smi)
         : (t.i === 5 ? 'Más de ' + eur(5 * smi)
                      : eur(t.desde) + ' – ' + eur(t.hasta));
       var etiqueta = t.i === 0 ? 'Inembargable' : 'Tramo ' + t.i;
-      tr.innerHTML =
-        '<td><span class="swatch" style="background:' + HEX[t.i] + '"></span>' + etiqueta +
-        '<br><span style="font-size:11px;color:#8A867F">' + rango + '</span></td>' +
-        '<td class="num">' + eur(t.base) + '</td>' +
-        '<td class="num">' + (t.pct * 100).toFixed(t.pct * 100 % 1 ? 1 : 0).replace('.', ',') + '%</td>' +
-        '<td class="num">' + eur(t.ret) + '</td>';
-      tb.appendChild(tr);
+      var sub = rango + (t.i === 0 ? '' : ' · ' + pctTxt(t.pct));
+      html += '<div class="trow"><i class="sw" style="background:var(--t' + t.i + ')"></i>' +
+        '<div class="tl"><div class="nm">' + etiqueta + '</div><div class="sb">' + sub + '</div></div>' +
+        '<div class="tr"><b>' + eur(t.ret) + '</b><small>sobre ' + eur(t.base) + '</small></div></div>';
     });
-    var tr = document.createElement('tr');
-    tr.className = 'tot';
-    tr.innerHTML = '<td>Total a retener</td><td class="num">' + eur(L) + '</td><td></td><td class="num">' + eur(total) + '</td>';
-    tb.appendChild(tr);
+    html += '<div class="trow tot"><i class="sw" style="background:var(--blue)"></i>' +
+      '<div class="tl"><div class="nm">Total a retener</div><div class="sb">Líquido ' + eur(L) + '</div></div>' +
+      '<div class="tr"><b>' + eur(total) + '</b><small>' + (L > 0 ? pctTxt(total / L) : '') + '</small></div></div>';
+    $('tlist').innerHTML = html;
 
     last = { L:L, smi:smi, smi14:smi14, prorr:prorr, total:total, queda:queda, tramos:tramos, reb:reb };
   }
@@ -455,8 +401,6 @@ var MiniPDF=function(){var t=595.28,e=841.89,n=48,i=[278,278,355,556,556,889,667
     } catch(e){ fallback(t, ok); }
   });
 
-
-  function pdfEur(n){ return eur(n); }
   function pdf(){
     if (!last) return;
     var err = $('pdfErr'); err.style.display = 'none';
@@ -475,7 +419,7 @@ var MiniPDF=function(){var t=595.28,e=841.89,n=48,i=[278,278,355,556,556,889,667
       last.tramos.forEach(function(t){
         if (t.base <= 0) return;
         var rango = t.i === 0 ? 'hasta ' + eur(last.smi) : (t.i === 5 ? 'más de ' + eur(5 * last.smi) : eur(t.desde) + ' a ' + eur(t.hasta));
-        rows.push({ c: [(t.i === 0 ? 'Inembargable' : 'Tramo ' + t.i) + ' (' + rango + ')', eur(t.base), (t.pct * 100).toFixed(t.pct * 100 % 1 ? 1 : 0).replace('.', ',') + ' %', eur(t.ret)] });
+        rows.push({ c: [(t.i === 0 ? 'Inembargable' : 'Tramo ' + t.i) + ' (' + rango + ')', eur(t.base), pctTxt(t.pct), eur(t.ret)] });
       });
       rows.push({ c: ['Total', eur(last.L), '', eur(last.total)], bold: true, sep: true });
       d.table([{ h: 'Tramo', w: .46 }, { h: 'Importe', w: .20, a: 'r' }, { h: '%', w: .10, a: 'r' }, { h: 'Retención', w: .24, a: 'r' }], rows);
@@ -506,9 +450,23 @@ var MiniPDF=function(){var t=595.28,e=841.89,n=48,i=[278,278,355,556,556,889,667
 
   calc();
 })();
+
+/* tema (mismo ajuste que el resto de apps) */
+(function(){
+  var t = 'dark'; try { t = localStorage.getItem('theme_preference') || 'dark'; } catch(e){}
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('themeBtn').textContent = t === 'dark' ? '🌙' : '☀️';
+})();
+function toggleTheme(){
+  var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  try { localStorage.setItem('theme_preference', t); } catch(e){}
+  document.getElementById('themeBtn').textContent = t === 'dark' ? '🌙' : '☀️';
+}
+
 </script>
 <script>
-const APP_VERSION = 'v4 · 03/10/2026';
+const APP_VERSION = 'v6 · 03/10/2026';
 
 async function forceUpdate() {
     if (!confirm('Voy a recargar la app para coger la última versión. Tus datos no se borran. ¿Seguir?')) return;
@@ -529,6 +487,14 @@ async function checkUpdate() {
 }
 
 document.getElementById('verBtn').textContent = APP_VERSION + ' · toca para comprobar actualización';
+</script>
+<script>
+/* Sin zoom: ni pellizco ni doble toque */
+(function () {
+  var d = document;
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (e) { d.addEventListener(e, function (ev) { ev.preventDefault(); }, { passive: false }); });
+  d.addEventListener('touchmove', function (ev) { if (ev.touches && ev.touches.length > 1) ev.preventDefault(); }, { passive: false });
+})();
 </script>
 </body>
 </html>
