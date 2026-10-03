@@ -21,7 +21,7 @@
 [data-theme="light"]{
   --bg1:#f1f3fa;--bg2:#e2e7f4;
   --glass:rgba(255,255,255,.58);--glass2:rgba(255,255,255,.82);--stroke:rgba(255,255,255,.95);--hi:#fff;
-  --txt:#0b0b12;--sub:rgba(60,60,67,.66);--faint:rgba(60,60,67,.35);
+  --txt:#0b0b12;--sub:rgba(60,60,67,.78);--faint:rgba(60,60,67,.38);
   --blue:#007aff;--green:#1f9d45;--orange:#d97706;--red:#d70015;--purple:#a23fe0;--teal:#0a8fc4;
   --shadow:0 12px 36px rgba(60,70,120,.14);--sheet:rgba(247,248,252,.92);
   --o1:rgba(10,132,255,.32);--o2:rgba(191,90,242,.26);--o3:rgba(48,209,88,.2);
@@ -62,6 +62,22 @@ body{margin:0;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF 
 .hero-label{margin-top:8px;font-size:.92rem;font-weight:600;color:var(--sub)}
 .hero-num{font-size:3rem;font-weight:800;letter-spacing:-.035em;line-height:1.05;margin:2px 0 14px;background:linear-gradient(135deg,var(--green),var(--teal));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .hero-num.neg{background:linear-gradient(135deg,var(--orange),var(--red));-webkit-background-clip:text;background-clip:text}
+.calc{margin-top:4px;text-align:left;border:1px solid var(--stroke);border-radius:18px;background:var(--glass);padding:4px 12px}
+.crow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--stroke);font-size:.78rem;color:var(--sub);line-height:1.35}
+.crow b{color:var(--txt);font-size:.98rem;white-space:nowrap}
+.crow.tot{border-bottom:none;color:var(--txt);font-weight:800;font-size:.86rem}
+.crow.tot b{font-size:1.08rem}
+.now{margin-top:12px;font-size:.8rem;color:var(--sub);line-height:1.4}
+.now b{color:var(--txt)}
+.sharebar{flex-basis:100%;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 0 0 38px;margin-top:-4px}
+.pillx{border:1px solid rgba(48,209,88,.45);background:rgba(48,209,88,.16);color:var(--green);border-radius:999px;padding:5px 10px;font-size:.72rem;font-weight:800;cursor:pointer}
+.pillx.down{border-color:rgba(255,159,10,.5);background:rgba(255,159,10,.16);color:var(--orange)}
+.xl{font-size:.74rem;color:var(--sub);font-weight:600}
+.xl.up{color:var(--green);font-weight:800}
+.xl.dn{color:var(--orange);font-weight:800}
+.xin{width:84px;background:var(--glass);border:1px solid var(--stroke);border-radius:10px;color:var(--txt);font-size:16px;font-weight:800;padding:5px 7px;text-align:right}
+.chip{border:1px solid var(--stroke);background:var(--glass2);color:var(--txt);border-radius:999px;padding:5px 10px;font-size:.72rem;font-weight:700;cursor:pointer}
+.row{flex-wrap:wrap}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left}
 .split>div{background:var(--glass);border:1px solid var(--stroke);border-radius:18px;padding:10px 12px}
 .split b{display:block;font-size:1.05rem;margin:4px 0 2px}
@@ -74,6 +90,7 @@ body{margin:0;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF 
 .prog-row{display:flex;justify-content:space-between;font-size:.72rem;color:var(--sub);margin-top:6px;font-weight:600}
 .pill{margin-top:14px;width:100%;border:1px solid var(--stroke);background:var(--glass2);color:var(--txt);font-weight:700;font-size:.86rem;border-radius:16px;padding:12px;cursor:pointer}
 .pill.ok{background:rgba(48,209,88,.22);color:var(--green);border-color:rgba(48,209,88,.5)}
+.pill.warn{background:rgba(255,159,10,.2);color:var(--orange);border-color:rgba(255,159,10,.5)}
 
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .tile{padding:12px 10px;text-align:center;border-radius:22px}
@@ -185,12 +202,17 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     <div id="mLines" style="display:flex;flex-direction:column;gap:14px"></div>
     <div class="glass pad">
       <div class="eyebrow" style="text-align:left">Gasto puntual de este mes</div>
-      <div class="add">
-        <input type="text" id="xName" class="inp" placeholder="Ej: Farmacia, regalo…">
-        <input type="number" id="xAmount" class="inp" style="max-width:96px" inputmode="decimal" placeholder="0,00" step="0.01">
-        <button class="btn blue go" onclick="addExtra()">OK</button>
+      <p class="legend" style="margin:6px 0 12px">Para algo de los dos que no es fijo: una compra, una moto, una reparación…</p>
+      <div class="fg"><input type="text" id="xName" class="inp" placeholder="¿Qué es? Ej: Moto, reparación…"></div>
+      <div class="fr">
+        <div class="fg"><label class="lab">Importe (€)</label><input type="number" id="xAmount" class="inp" inputmode="decimal" step="0.01" placeholder="0,00"></div>
+        <div class="fg"><label class="lab">Parte de la otra persona (€)</label><input type="number" id="xOther" class="inp" inputmode="decimal" step="0.01" placeholder="la mitad"></div>
       </div>
-      <div class="legend" style="margin-top:8px">Se reparte a medias y lo pagas tú. Para repetirlo cada mes créalo en «Fijos».</div>
+      <div class="fr">
+        <div class="fg"><label class="lab">Lo paga</label><select id="xPayer" class="inp"><option value="D">Yo</option><option value="C">Claudia</option></select></div>
+        <button class="btn blue" style="align-self:flex-end;margin-bottom:12px;min-width:0" onclick="addExtra()">Añadir</button>
+      </div>
+      <div class="legend">Si dejas la parte vacía cuenta la mitad. Después la cambias en la propia fila.</div>
     </div>
     <div class="glass pad">
       <div class="eyebrow" style="text-align:left;margin-bottom:6px">Próximo mes · <span id="nxName"></span></div>
@@ -255,8 +277,10 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     </div>
     <div class="fr">
       <div class="fg"><label class="lab">Importe (€)</label><input type="number" id="eAmount" class="inp" inputmode="decimal" step="0.01"></div>
-      <div class="fg"><label class="lab">Claudia paga (%)</label><input type="number" id="eShare" class="inp" inputmode="numeric" min="0" max="100" value="50"></div>
+      <div class="fg"><label class="lab" id="eShareLab">Claudia paga (%)</label><input type="number" id="eShare" class="inp" inputmode="decimal" step="0.01" min="0" value="50"></div>
     </div>
+    <div class="fg"><label class="lab">Cómo se reparte</label>
+      <select id="eMode" class="inp" onchange="modeChange()"><option value="pct">Un porcentaje del importe (50 % = a medias)</option><option value="eur">Un importe fijo que paga Claudia</option></select></div>
     <label class="chk-row"><input type="checkbox" id="eVar"> Importe variable (pongo el real cada mes)</label>
     <div class="fr">
       <div class="fg"><label class="lab">Se cobra</label>
@@ -266,7 +290,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     <div class="fg"><label class="lab">Meses de cobro (toca para cambiar)</label><div class="mgrid" id="eChips"></div></div>
     <div class="fr">
       <div class="fg"><label class="lab">Dónde se cobra</label>
-        <select id="eMethod" class="inp"><option value="cdmo">Cuenta CDMO Gastos (Openbank)</option><option value="card">Tarjeta CDMO Gastos (Openbank)</option><option value="claudia">Cuenta de Claudia</option><option value="notif">Notificación (pago manual)</option></select></div>
+        <select id="eMethod" class="inp"><option value="transfer">Transferencia manual (cuenta alquiler)</option><option value="cdmo">Cuenta CDMO Gastos (Openbank)</option><option value="card">Tarjeta CDMO Gastos (Openbank)</option><option value="claudia">Cuenta de Claudia</option><option value="notif">Notificación (pago manual)</option></select></div>
       <div class="fg"><label class="lab">Lo adelanta</label><select id="ePayer" class="inp"><option value="D">Yo</option><option value="C">Claudia</option></select></div>
     </div>
     <div class="fr">
@@ -296,29 +320,30 @@ const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
 const num = v => { const n = parseFloat(String(v).replace(',', '.')); return isFinite(n) ? n : 0; };
 const MES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 const MS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-const METHODS = { cdmo: 'Cuenta CDMO Gastos (Openbank)', card: 'Tarjeta CDMO Gastos (Openbank)', claudia: 'Cuenta de Claudia', notif: 'Notificación (pago manual)' };
-const METHOD_SHORT = { cdmo: 'Cuenta CDMO', card: 'Tarjeta CDMO', claudia: 'Cta. Claudia', notif: 'Notificación' };
+const METHODS = { transfer: 'Transferencia manual (cuenta alquiler)', cdmo: 'Cuenta CDMO Gastos (Openbank)', card: 'Tarjeta CDMO Gastos (Openbank)', claudia: 'Cuenta de Claudia', notif: 'Notificación (pago manual)' };
+const METHOD_SHORT = { transfer: 'Transf. manual', cdmo: 'Cuenta CDMO', card: 'Tarjeta CDMO', claudia: 'Cta. Claudia', notif: 'Notificación' };
 const keyOf = (y, m) => y + '-' + String(m).padStart(2, '0');
 const NOW = new Date();
 const TODAY_KEY = keyOf(NOW.getFullYear(), NOW.getMonth() + 1);
 const KEY = 'economia_cdmo_v2';
 
 /* ===================== Datos ===================== */
-const ICONS = { seguro_hogar: '🛡️', comedor: '🍽️', o2: '📱', piscina: '🏊', alarma: '🚨', judo: '🥋', agua: '💧', kia: '🚗', nespresso: '☕', psn: '🎮', luz: '💡', residuos_extra: '🗑️', residuos: '🗑️' };
+const ICONS = { alquiler: '🏠', seguro_hogar: '🛡️', comedor: '🍽️', o2: '📱', piscina: '🏊', alarma: '🚨', judo: '🥋', agua: '💧', kia: '🚗', nespresso: '☕', psn: '🎮', luz: '💡', residuos_extra: '🗑️', residuos: '🗑️' };
 function mk(id, name, amount, months, method, payer, o) {
     return Object.assign({ icon: ICONS[id] || '🧾', id, name, prices: [{ from: '0000-00', amount }], months, method, payer, share: 50, variable: false, pending: false, from: '', to: '', note: '' }, o || {});
 }
 function defaultPlan() {
     const all = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     return [
+        mk('alquiler', 'Alquiler vivienda (casa CDMO)', 781.66, all, 'transfer', 'D', { note: 'Transferencia manual desde la cuenta CDMO Gastos a la cuenta del alquiler.' }),
         mk('seguro_hogar', 'Seguro hogar (Santalucía)', 170, [5, 11], 'cdmo', 'D', { from: '2026-11', note: 'Semestral. Empieza en noviembre.' }),
         mk('comedor', 'Comedor colegio Olivia (NSDP)', 130, all, 'cdmo', 'D', { note: 'Si algún mes no va al comedor, pon 0 € ese mes (botón ⊘).' }),
-        mk('o2', 'Móvil + fibra + terminales (O2)', 155, all, 'cdmo', 'D', {}),
+        mk('o2', 'Móvil + fibra + terminales (O2)', 155, all, 'cdmo', 'D', { shareMode: 'eur', shareEur: 30, note: 'Claudia solo paga su parte (≈30 €); se puede cambiar cada mes.' }),
         mk('piscina', 'Piscina colegio Olivia (NSDP)', 17, all, 'cdmo', 'D', {}),
         mk('alarma', 'Alarma (Verisure)', 67, all, 'cdmo', 'D', {}),
-        mk('judo', 'Judo Olivia', 22, all, 'claudia', 'C', { note: 'Sale de la cuenta de Claudia; tú pagas la mitad.' }),
+        mk('judo', 'Judo Olivia', 22, all, 'claudia', 'C', { to: '2026-09', note: 'Sale de la cuenta de Claudia; tú pagas la mitad.' }),
         mk('agua', 'Agua (Veolia)', 100, [2, 5, 8, 11], 'cdmo', 'D', { variable: true, note: 'Trimestral, importe aproximado.' }),
-        mk('kia', 'Renting KIA Stonic (Ayvens)', 296, all, 'claudia', 'C', { note: 'Sale de la cuenta de Claudia; tú pagas la mitad.' }),
+        mk('kia', 'Renting KIA Stonic (Ayvens)', 296, all, 'claudia', 'C', { to: '2026-09', note: 'Sale de la cuenta de Claudia; tú pagas la mitad.' }),
         mk('nespresso', 'Nespresso (suscripción)', 29, all, 'card', 'D', {}),
         mk('psn', 'PSN Plus Premium (Claudia)', 18.99, all, 'card', 'D', {}),
         mk('luz', 'Luz (Visalia)', 0, [2, 4, 6, 8, 10, 12], 'cdmo', 'D', { variable: true, note: 'Bimensual, importe variable.' }),
@@ -332,13 +357,23 @@ function load() {
         if (r) {
             const o = JSON.parse(r);
             if (o && Array.isArray(o.plan) && o.months) {
+                if (!o.p5) {
+                    o.plan.forEach(i => { if ((i.id === 'kia' || i.id === 'judo') && !i.to) { i.to = '2026-09'; i.note = 'Fuera de la cuenta con Claudia. Para volver a incluirlo, borra «Hasta».'; } });
+                    o.p5 = 1; lsSet(KEY, JSON.stringify(o));
+                }
+                if (!o.p4) {
+                    const all = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+                    if (!o.plan.some(i => i.id === 'alquiler')) o.plan.unshift(mk('alquiler', 'Alquiler vivienda (casa CDMO)', 781.66, all, 'transfer', 'D', { note: 'Transferencia manual desde la cuenta CDMO Gastos a la cuenta del alquiler.' }));
+                    const o2 = o.plan.find(i => i.id === 'o2'); if (o2 && !o2.shareMode) { o2.shareMode = 'eur'; o2.shareEur = 30; o2.note = 'Claudia solo paga su parte (≈30 €); se puede cambiar cada mes.'; }
+                    o.p4 = 1; lsSet(KEY, JSON.stringify(o));
+                }
                 if (!o.p3) { o.plan.forEach(i => { i.pending = false; if (!i.icon) i.icon = ICONS[i.id] || '🧾'; if (i.id === 'comedor') i.note = 'Si algún mes no va al comedor, pon 0 € ese mes (botón ⊘).'; }); o.p3 = 1; lsSet(KEY, JSON.stringify(o)); }
                 if (!o.p2) { const ag = o.plan.find(i => i.id === 'agua'); if (ag) ag.months = [2, 5, 8, 11]; o.p2 = 1; lsSet(KEY, JSON.stringify(o)); }   // agua: feb, may, ago, nov
                 return o;
             }
         }
     } catch (e) {}
-    const s = { v: 2, p2: 1, p3: 1, plan: defaultPlan(), months: {} };
+    const s = { v: 2, p2: 1, p3: 1, p4: 1, p5: 1, plan: defaultPlan(), months: {} };
     try { // migración de la versión anterior: sus gastos pasan a "puntuales"
         const old = JSON.parse(lsGet('economia_cdmo_db', 'null'));
         if (old && typeof old === 'object') Object.keys(old).forEach(k => {
@@ -354,7 +389,7 @@ function save() { lsSet(KEY, JSON.stringify(S)); }
 let ck = { y: NOW.getFullYear(), m: NOW.getMonth() + 1 };
 let yr = NOW.getFullYear();
 const curKey = () => keyOf(ck.y, ck.m);
-function touch(key) { const md = S.months[key] = S.months[key] || {}; md.touched = true; md.over = md.over || {}; md.paid = md.paid || {}; md.extras = md.extras || []; return md; }
+function touch(key) { const md = S.months[key] = S.months[key] || {}; md.touched = true; md.over = md.over || {}; md.paid = md.paid || {}; md.extras = md.extras || []; md.tr = md.tr || {}; return md; }
 
 /* ===================== Cálculo ===================== */
 function priceAt(it, key) { let a = 0, f = ''; (it.prices || []).forEach(p => { if (p.from <= key && p.from >= f) { f = p.from; a = p.amount; } }); return a; }
@@ -364,21 +399,29 @@ function setPrice(it, key, amount) {
     if (p) p.amount = amount; else it.prices.push({ from: key, amount });
 }
 function freqLabel(it) { const n = it.months.length; return ({ 12: 'Mensual', 6: 'Bimensual', 4: 'Trimestral', 2: 'Semestral', 1: 'Anual' })[n] || (n + ' veces al año'); }
+function claudiaPart(it, amount) {
+    if (it.shareMode === 'eur') return Math.min(Math.max(num(it.shareEur), 0), Math.max(amount, 0));
+    return amount * (it.share == null ? 50 : it.share) / 100;
+}
 function linesOf(key) {
     const md = S.months[key] || {}, out = [], m = +key.slice(5, 7);
     S.plan.forEach(it => {
         if (!it.months.includes(m)) return;
         if (it.from && key < it.from) return; if (it.to && key > it.to) return;
         const o = md.over ? md.over[it.id] : undefined, has = o != null;
-        out.push({ id: it.id, kind: 'fix', icon: it.icon || '🧾', skipped: has && o === 0, name: it.name, amount: has ? o : priceAt(it, key), est: !has && !!it.variable, payer: it.payer, share: it.share, method: it.method, paid: !!(md.paid && md.paid[it.id]), freq: freqLabel(it) });
+        const amount = has ? o : priceAt(it, key), cp = claudiaPart(it, amount), def = it.payer === 'D' ? cp : amount - cp;
+        const tv = md.tr ? md.tr[it.id] : undefined, tOver = tv != null, noC = it.payer === 'C' && !!md.skipC;
+        out.push({ id: it.id, kind: 'fix', icon: it.icon || '🧾', skipped: has && o === 0, name: it.name, amount, est: !has && !!it.variable, payer: it.payer, xfer: noC ? 0 : (tOver ? tv : def), xferDef: def, noC, xferOver: tOver && !noC,
+            shareTxt: it.shareMode === 'eur' ? 'Claudia ' + fmt(it.shareEur) : (it.share !== 50 ? 'Claudia ' + it.share + '%' : ''),
+            method: it.method, paid: !!(md.paid && md.paid[it.id]), freq: freqLabel(it) });
     });
-    (md.extras || []).forEach(x => out.push({ id: x.id, kind: 'extra', icon: '🧾', skipped: false, name: x.label, amount: x.amount, est: false, payer: x.payer || 'D', share: x.share == null ? 50 : x.share, method: 'cdmo', paid: !!x.paid, freq: 'Puntual' }));
+    (md.extras || []).forEach(x => out.push({ id: x.id, kind: 'extra', icon: '🧾', skipped: false, name: x.label, amount: x.amount, est: false, payer: x.payer || 'D', xfer: x.tr != null ? x.tr : x.amount * (x.share == null ? 50 : x.share) / 100, xferDef: x.amount * (x.share == null ? 50 : x.share) / 100, noC: false, xferOver: x.tr != null, shareTxt: '', method: 'cdmo', paid: !!x.paid, freq: 'Puntual' }));
     return out;
 }
-const dueOf = l => l.payer === 'D' ? l.amount * l.share / 100 : -l.amount * (100 - l.share) / 100;   // + Claudia me da · − yo le doy
+const dueOf = l => l.payer === 'D' ? l.xfer : -l.xfer;   // + Claudia te da · − tú le das
 function totalsOf(lines) {
-    const t = { total: 0, paid: 0, est: 0, fromD: 0, fromC: 0 };
-    lines.forEach(l => { t.total += l.amount; if (l.paid) t.paid += l.amount; if (l.est) t.est++; const d = dueOf(l); if (d >= 0) t.fromD += d; else t.fromC += -d; });
+    const t = { total: 0, paid: 0, est: 0, fromD: 0, fromC: 0, netPaid: 0 };
+    lines.forEach(l => { t.total += l.amount; const d = dueOf(l); if (l.paid) { t.paid += l.amount; t.netPaid += d; } if (l.est) t.est++; if (d >= 0) t.fromD += d; else t.fromC += -d; });
     t.net = t.fromD - t.fromC; return t;
 }
 const hasData = key => key >= TODAY_KEY || !!(S.months[key] && S.months[key].touched);
@@ -405,18 +448,25 @@ function toggleTheme() { const t = document.documentElement.getAttribute('data-t
 
 /* ===================== MES ===================== */
 function changeMonth(o) { const d = new Date(ck.y, ck.m - 1 + o, 1); ck = { y: d.getFullYear(), m: d.getMonth() + 1 }; renderMes(); }
+let openShare = '';
 function renderMes() {
     const key = curKey(), md = S.months[key] || {}, lines = linesOf(key), t = totalsOf(lines), settled = !!md.settled, net = t.net, mName = MES[ck.m - 1];
     $('mTitle').textContent = mName + ' ' + ck.y;
     const owe = net >= 0, pct = t.total > 0 ? Math.min(100, t.paid / t.total * 100) : 0;
+    const cLines = lines.filter(l => l.payer === 'C'), hasC = cLines.length > 0, skippedC = cLines.reduce((a, l) => a + l.xferDef, 0);
+    const cNames = cLines.map(l => l.name.replace(/^Renting /, '').split(' ')[0]).join(' y ');
+    const sg = v => (v < 0 ? '−' : '') + fmt(Math.abs(v));
     $('mHero').innerHTML =
-        `<div class="eyebrow">Resultado de ${esc(mName.toLowerCase())}</div>
+        `<div class="eyebrow">Cuenta de ${esc(mName.toLowerCase())} · mes completo</div>
          <div class="hero-label">${owe ? 'Claudia te tiene que dar' : 'Tú le tienes que dar a Claudia'}</div>
          <div class="hero-num ${owe ? '' : 'neg'}">${fmt(Math.abs(net))}</div>
-         <div class="split">
-           <div><span class="tag up">Ella te debe</span><b>${fmt(t.fromD)}</b><small>Su parte de lo que sale de tu cuenta</small></div>
-           <div><span class="tag down">Tú le debes</span><b>${fmt(t.fromC)}</b><small>Tu parte de lo que sale de la suya</small></div>
+         <div class="calc">
+           <div class="crow"><span><span class="tag up">Ella te da</span> la suma de lo que pones en cada gasto</span><b>+${fmt(t.fromD)}</b></div>
+           ${hasC ? `<div class="crow"><span><span class="tag down">Tú le das</span> lo de su cuenta</span><b>−${fmt(t.fromC)}</b></div><div class="crow tot"><span>Resultado del mes</span><b>${sg(net)}</b></div>` : ''}
          </div>
+         ${hasC ? `<button class="pill ${md.skipC ? 'warn' : ''}" style="margin-top:10px" onclick="toggleSkipC()">${md.skipC ? '⏸ Este mes NO le doy lo de ' + cNames + ' · tocar para incluirlo' : 'Este mes le doy lo de ' + cNames + ' · tocar si no se lo doy'}</button>` : ''}
+         ${md.skipC && skippedC > 0 ? `<div class="now">Queda sin darle a Claudia este mes: <b>${fmt(skippedC)}</b></div>` : ''}
+         <div class="now">De momento, con lo que has marcado como <b>pagado</b>: ${t.netPaid >= 0 ? 'Claudia te debe' : 'tú le debes'} <b>${fmt(Math.abs(t.netPaid))}</b></div>
          <div class="progress"><i style="width:${pct.toFixed(1)}%"></i></div>
          <div class="prog-row"><span>Pagado ${fmt(t.paid)}</span><span>de ${fmt(t.total)}</span></div>
          <button class="pill ${settled ? 'ok' : ''}" onclick="toggleSettled()">${settled ? '✓ Liquidado con Claudia · deshacer' : 'Marcar como liquidado con Claudia'}</button>`;
@@ -426,7 +476,7 @@ function renderMes() {
          <div class="glass tile"><div class="k">Pendiente</div><div class="v" style="color:var(--orange)">${fmt(t.total - t.paid)}</div></div>`;
     const estNames = lines.filter(l => l.est).map(l => l.name);
     $('mAlerts').innerHTML = estNames.length ? `<div class="glass alert">⚠️ Pon el importe real de: <b>${estNames.map(esc).join(', ')}</b></div>` : '';
-    const order = ['cdmo', 'card', 'claudia', 'notif'];
+    const order = ['transfer', 'cdmo', 'card', 'claudia', 'notif'];
     let html = '';
     order.forEach(mt => {
         const g = lines.filter(l => l.method === mt); if (!g.length) return;
@@ -435,13 +485,17 @@ function renderMes() {
         g.forEach(l => {
             const bits = [];
             if (l.skipped) bits.push('Sin cargo este mes'); else { bits.push(l.freq); if (l.est) bits.push('importe estimado'); }
-            if (l.payer === 'C') bits.push('te toca ' + (100 - l.share) + '%'); else if (l.share !== 50) bits.push('Claudia ' + l.share + '%');
+            if (l.shareTxt) bits.push(l.shareTxt);
+            const badge = l.payer === 'C' ? '<span class="badge p">Sale de la cuenta de Claudia</span>' : '';
+            const isOpen = openShare === l.id;
+            const pillTxt = l.noC ? 'Este mes no se lo das' : (l.payer === 'D' ? 'Claudia te da ' : 'Tú le das ') + fmt(l.xfer) + (l.xferOver ? ' ✎' : '');
             html += `<div class="row ${l.skipped ? 'off' : ''}">
               <button class="chk ${l.paid ? 'on' : ''}" onclick="toggleLine('${l.id}','${l.kind}')" aria-label="Marcar como pagado">${l.paid ? '✓' : ''}</button>
               <div class="ico">${esc(l.icon)}</div>
-              <div class="txt" ${l.kind === 'fix' ? `onclick="openEditor('${l.id}')"` : ''}><div class="nm">${esc(l.name)}</div><div class="sb">${esc(bits.join(' · '))}</div></div>
+              <div class="txt" ${l.kind === 'fix' ? `onclick="openEditor('${l.id}')"` : ''}><div class="nm">${esc(l.name)}</div><div class="sb">${esc(bits.join(' · '))}</div>${badge}</div>
               <input type="number" inputmode="decimal" step="0.01" class="amt ${l.est ? 'est' : ''}" value="${l.amount || ''}" placeholder="0,00" onchange="setAmount('${l.id}','${l.kind}',this.value)">
               ${l.kind === 'fix' ? `<button class="mini" onclick="skipLine('${l.id}')" aria-label="${l.skipped ? 'Restaurar' : 'Este mes no se cobra'}">${l.skipped ? '↺' : '⊘'}</button>` : `<button class="mini del" onclick="delExtra('${l.id}')" aria-label="Borrar">✕</button>`}
+              ${!l.skipped ? `<div class="sharebar"><span class="xl ${l.payer === 'C' ? 'dn' : 'up'}">${l.payer === 'D' ? '👩 Claudia me da' : '↗ Yo le doy a Claudia'}</span><input type="number" inputmode="decimal" step="0.01" class="xin" value="${l.xfer ? l.xfer.toFixed(2) : ''}" placeholder="0,00" onchange="setTransfer('${l.id}','${l.kind}',this.value)"><span class="xl">€</span>${l.xferOver ? `<button class="chip" onclick="resetTransfer('${l.id}','${l.kind}')">Auto</button>` : ''}</div>` : ''}
             </div>`;
         });
         html += '</div></div>';
@@ -452,6 +506,20 @@ function renderMes() {
     $('nxName').textContent = MES[nd.getMonth()];
     $('mNext').innerHTML = nl.length ? nl.map(l => `<div><span>${esc(l.icon)} ${esc(l.name)}</span><span>${l.est && !l.amount ? 'variable' : (l.est ? '≈ ' : '') + fmt(l.amount)}</span></div>`).join('') + `<div><span>Total previsto</span><span>${fmt(nl.reduce((a, l) => a + l.amount, 0))}</span></div>` : '<span class="legend">Sin cargos fijos el mes que viene.</span>';
 }
+function toggleSkipC() { const md = touch(curKey()); md.skipC = !md.skipC; save(); renderMes(); }
+function toggleShare(id) { openShare = openShare === id ? '' : id; renderMes(); }
+function setTransfer(id, kind, val) {
+    const md = touch(curKey());
+    if (String(val).trim() === '') return resetTransfer(id, kind);
+    const v = Math.max(0, num(val));
+    if (kind === 'extra') { const x = md.extras.find(e => e.id === id); if (x) x.tr = v; } else md.tr[id] = v;
+    save(); renderMes();
+}
+function resetTransfer(id, kind) {
+    const md = touch(curKey());
+    if (kind === 'extra') { const x = md.extras.find(e => e.id === id); if (x) delete x.tr; } else delete md.tr[id];
+    save(); renderMes();
+}
 function toggleLine(id, kind) {
     const md = touch(curKey());
     if (kind === 'fix') md.paid[id] = !md.paid[id]; else { const x = md.extras.find(e => e.id === id); if (x) x.paid = !x.paid; }
@@ -459,16 +527,17 @@ function toggleLine(id, kind) {
 }
 function setAmount(id, kind, val) {
     const md = touch(curKey());
-    if (kind === 'fix') { if (String(val).trim() === '') delete md.over[id]; else md.over[id] = num(val); }
-    else { const x = md.extras.find(e => e.id === id); if (x) x.amount = num(val); }
+    if (kind === 'fix') { if (String(val).trim() === '') delete md.over[id]; else md.over[id] = num(val); delete md.tr[id]; }
+    else { const x = md.extras.find(e => e.id === id); if (x) { x.amount = num(val); delete x.tr; } }
     save(); renderMes();
 }
 function addExtra() {
     const n = $('xName').value.trim(), a = num($('xAmount').value); if (!n) return;
-    const md = touch(curKey()); md.extras.push({ id: 'x' + Date.now(), label: n, amount: a, payer: 'D', share: 50, paid: false });
-    $('xName').value = ''; $('xAmount').value = ''; save(); renderMes();
+    const other = String($('xOther').value).trim(), md = touch(curKey());
+    md.extras.push({ id: 'x' + Date.now(), label: n, amount: a, payer: $('xPayer').value, share: 50, paid: false, tr: other === '' ? undefined : Math.max(0, num(other)) });
+    $('xName').value = ''; $('xAmount').value = ''; $('xOther').value = ''; save(); renderMes();
 }
-function skipLine(id) { const md = touch(curKey()); if (md.over[id] === 0) delete md.over[id]; else md.over[id] = 0; save(); renderMes(); }
+function skipLine(id) { const md = touch(curKey()); if (md.over[id] === 0) delete md.over[id]; else { md.over[id] = 0; delete md.tr[id]; } save(); renderMes(); }
 function delExtra(id) { const md = touch(curKey()); md.extras = md.extras.filter(e => e.id !== id); save(); renderMes(); }
 function toggleSettled() { const md = touch(curKey()); md.settled = !md.settled; save(); renderMes(); }
 function resetMonth() { if (confirm('¿Borrar importes, marcas y gastos puntuales de este mes?')) { delete S.months[curKey()]; save(); renderMes(); } }
@@ -476,13 +545,13 @@ function resetMonth() { if (confirm('¿Borrar importes, marcas y gastos puntuale
 /* ===================== FIJOS ===================== */
 function renderFijos() {
     let annual = 0, netAnnual = 0;
-    S.plan.forEach(it => { const a = priceAt(it, TODAY_KEY) * it.months.length; annual += a; netAnnual += it.payer === 'D' ? a * it.share / 100 : -a * (100 - it.share) / 100; });
+    S.plan.forEach(it => { const p = priceAt(it, TODAY_KEY), cp = claudiaPart(it, p), x = it.payer === 'D' ? cp : p - cp, n = it.months.length; annual += p * n; netAnnual += (it.payer === 'D' ? x : -x) * n; });
     $('fStats').innerHTML = `<div class="glass tile"><div class="k">Al año</div><div class="v">${fmt(annual)}</div></div><div class="glass tile"><div class="k">Media al mes</div><div class="v" style="color:var(--blue)">${fmt(annual / 12)}</div></div><div class="glass tile"><div class="k">Gastos</div><div class="v">${S.plan.length}</div></div>`;
     $('fHero').innerHTML = `<div class="eyebrow">En un mes normal</div><div class="hero-label">${netAnnual >= 0 ? 'Claudia te da de media' : 'Tú le das de media'}</div><div class="hero-num ${netAnnual >= 0 ? '' : 'neg'}" style="font-size:2.3rem;margin-bottom:6px">${fmt(Math.abs(netAnnual / 12))}</div><div class="legend" style="margin:0">Con los importes actuales. Los variables cuentan por su aproximado y los que están a 0 aún no suman.</div>`;
     $('fList').innerHTML = S.plan.map(it => {
         const p = priceAt(it, TODAY_KEY);
         const chips = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => `<span class="${it.months.includes(m) ? 'on' : ''}">${MS[m - 1][0]}</span>`).join('');
-        const badges = (it.variable ? '<span class="badge w">Variable</span>' : '') + (it.payer === 'C' ? '<span class="badge p">Lo adelanta Claudia</span>' : '') + (it.share !== 50 ? `<span class="badge p">Claudia ${it.share}%</span>` : '') + (it.from ? `<span class="badge">desde ${esc(it.from)}</span>` : '') + (it.to ? `<span class="badge">hasta ${esc(it.to)}</span>` : '');
+        const badges = (it.variable ? '<span class="badge w">Variable</span>' : '') + (it.payer === 'C' ? '<span class="badge p">Lo adelanta Claudia</span>' : '') + (it.shareMode === 'eur' ? `<span class="badge p">Claudia ${fmt(it.shareEur)}</span>` : (it.share !== 50 ? `<span class="badge p">Claudia ${it.share}%</span>` : '')) + (it.from ? `<span class="badge">desde ${esc(it.from)}</span>` : '') + (it.to ? `<span class="badge">hasta ${esc(it.to)}</span>` : '');
         return `<div class="row fx" onclick="openEditor('${it.id}')"><div class="ico">${esc(it.icon || '🧾')}</div><div class="txt"><div class="nm">${esc(it.name)}</div><div class="sb">${esc(freqLabel(it))} · ${esc(METHOD_SHORT[it.method] || '')}</div><div>${badges}</div><div class="chips">${chips}</div></div><div class="fxr">${p ? fmt(p) : 'variable'}<small>${it.variable && p ? 'aprox.' : ''}</small></div><span class="chev">›</span></div>`;
     }).join('') || '<div class="legend" style="padding:12px">Aún no hay gastos fijos.</div>';
 }
@@ -492,7 +561,7 @@ function openEditor(id) {
     $('eTitle').textContent = it ? 'Editar ' + it.name : 'Nuevo gasto fijo';
     $('eStart').innerHTML = MES.map((n, i) => `<option value="${i + 1}">${n}</option>`).join('');
     $('eName').value = it ? it.name : ''; $('eAmount').value = it ? (priceAt(it, TODAY_KEY) || '') : '';
-    $('eShare').value = it ? it.share : 50; $('eVar').checked = it ? !!it.variable : false;
+    $('eMode').value = it && it.shareMode === 'eur' ? 'eur' : 'pct'; $('eShare').value = it ? (it.shareMode === 'eur' ? it.shareEur : it.share) : 50; modeLabel(); $('eVar').checked = it ? !!it.variable : false;
     edMonths = it ? it.months.slice() : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const step = { 12: 1, 6: 2, 4: 3, 2: 6, 1: 12 }[edMonths.length];
     $('eFreq').value = step ? String(step) : '0'; $('eStart').value = String(Math.min.apply(null, edMonths) || ck.m);
@@ -500,6 +569,8 @@ function openEditor(id) {
     $('eFrom').value = it ? it.from : ''; $('eTo').value = it ? it.to : ''; $('eIcon').value = it ? (it.icon || '🧾') : '🧾'; $('eNote').value = it ? (it.note || '') : '';
     $('eDel').style.display = it ? '' : 'none'; drawChips(); $('editor').classList.add('on');
 }
+function modeLabel() { $('eShareLab').textContent = $('eMode').value === 'eur' ? 'Claudia paga (€ fijos)' : 'Claudia paga (%)'; }
+function modeChange() { const it = editId ? S.plan.find(i => i.id === editId) : null; $('eShare').value = $('eMode').value === 'eur' ? (it && it.shareEur ? it.shareEur : 0) : (it && it.share != null ? it.share : 50); modeLabel(); }
 function closeEditor() { $('editor').classList.remove('on'); }
 function drawChips() {
     $('eChips').innerHTML = MS.map((n, i) => `<button type="button" class="${edMonths.includes(i + 1) ? 'on' : ''}" onclick="toggleChip(${i + 1})">${n}</button>`).join('');
@@ -513,7 +584,7 @@ function saveEditor() {
     const name = $('eName').value.trim(); if (!name) { alert('Ponle un nombre'); return; }
     if (!edMonths.length) { alert('Elige al menos un mes de cobro'); return; }
     const amount = num($('eAmount').value);
-    const f = { name, months: edMonths.slice(), method: $('eMethod').value, payer: $('ePayer').value, share: Math.max(0, Math.min(100, num($('eShare').value))), variable: $('eVar').checked, pending: false, icon: ($('eIcon').value.trim() || '🧾'), from: $('eFrom').value || '', to: $('eTo').value || '', note: $('eNote').value.trim() };
+    const f = { name, months: edMonths.slice(), method: $('eMethod').value, payer: $('ePayer').value, shareMode: $('eMode').value, share: $('eMode').value === 'pct' ? Math.max(0, Math.min(100, num($('eShare').value))) : 50, shareEur: $('eMode').value === 'eur' ? Math.max(0, num($('eShare').value)) : 0, variable: $('eVar').checked, pending: false, icon: ($('eIcon').value.trim() || '🧾'), from: $('eFrom').value || '', to: $('eTo').value || '', note: $('eNote').value.trim() };
     if (editId) { const it = S.plan.find(i => i.id === editId); Object.assign(it, f); setPrice(it, TODAY_KEY, amount); }
     else S.plan.push(Object.assign({ id: 'f' + Date.now(), prices: [{ from: '0000-00', amount }] }, f));
     save(); closeEditor(); renderFijos(); renderMes();
@@ -606,7 +677,8 @@ function pdfMes() {
     const d = new MiniPDF.Doc({ title: 'Gastos CDMO - ' + lab, footer: 'Economía CDMO · ' + lab });
     d.heading('Gastos fijos y compartidos', lab);
     d.kv('Total gastos del mes', fmt(t.total), { bold: true }); d.kv('Pagados', fmt(t.paid)); d.kv('Pendientes de pagar', fmt(t.total - t.paid));
-    d.kv('Claudia te debe (gastos de tu cuenta)', fmt(t.fromD)); d.kv('Tú le debes (gastos de su cuenta)', fmt(t.fromC));
+    d.kv('Ella te da (su parte de lo que sale de tu cuenta)', '+' + fmt(t.fromD)); d.kv('Tú le das (tu parte de lo que sale de la suya)', '-' + fmt(t.fromC)); if (S.months[key] && S.months[key].skipC) d.kv('Este mes NO le das lo de su cuenta (queda sin dar)', fmt(lines.filter(l => l.payer === 'C').reduce((a, l) => a + l.xferDef, 0)));
+    d.kv('Con lo ya pagado, de momento', (t.netPaid >= 0 ? 'Claudia te debe ' : 'Tú le debes ') + fmt(Math.abs(t.netPaid)));
     d.big(t.net >= 0 ? 'Claudia te tiene que dar' : 'Tú le tienes que dar a Claudia', fmt(Math.abs(t.net)));
     if (S.months[key] && S.months[key].settled) d.kv('Estado', 'Liquidado', { bold: true });
     d.section('Detalle');
@@ -637,7 +709,7 @@ function pdfFijos() {
     d.heading('Gastos fijos', 'Leyenda con importes actuales y meses de cobro');
     let annual = 0, net = 0;
     const rows = S.plan.map(it => {
-        const p = priceAt(it, TODAY_KEY), a = p * it.months.length; annual += a; net += it.payer === 'D' ? a * it.share / 100 : -a * (100 - it.share) / 100;
+        const p = priceAt(it, TODAY_KEY), a = p * it.months.length, cp = claudiaPart(it, p), x = it.payer === 'D' ? cp : p - cp; annual += a; net += (it.payer === 'D' ? x : -x) * it.months.length;
         return { c: [it.name, freqLabel(it), (p ? fmt(p) : 'variable') + (it.variable && p ? '*' : ''), (it.months.length === 12 ? 'Todos los meses' : it.months.map(m => MS[m - 1]).join(' ')), METHOD_SHORT[it.method]] };
     });
     d.table([{ h: 'Concepto', w: .31 }, { h: 'Frecuencia', w: .13 }, { h: 'Importe', w: .14, a: 'r' }, { h: 'Meses', w: .24 }, { h: 'Se cobra en', w: .18 }], rows);
