@@ -1,232 +1,285 @@
 <!DOCTYPE html>
 <html lang="es" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>Economía CDMO</title>
-    <style>
-        * { box-sizing: border-box; }
-        :root { --bg-grad: linear-gradient(180deg, #000000 0%, #121212 100%); --card-bg: rgba(28, 28, 30, 0.7); --card-border: rgba(255, 255, 255, 0.12); --card-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.5); --text-main: #ffffff; --text-sub: #8e8e93; --accent-green: #30d158; --accent-green-glow: rgba(48, 209, 88, 0.2); --accent-blue: #0a84ff; --accent-purple: #bf5af2; --accent-orange: #ff9f0a; --accent-red: #ff453a; --neutral-bg: rgba(255, 255, 255, 0.08); --input-bg: rgba(44, 44, 46, 0.8); }
-        [data-theme="light"] { --bg-grad: linear-gradient(180deg, #f2f2f7 0%, #e5e5ea 100%); --card-bg: rgba(255, 255, 255, 0.8); --card-border: rgba(0, 0, 0, 0.08); --card-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.06); --text-main: #000000; --text-sub: #6e6e73; --accent-green: #1f9d45; --accent-green-glow: rgba(52, 199, 89, 0.18); --accent-blue: #007aff; --accent-purple: #af52de; --accent-orange: #d97706; --accent-red: #d70015; --neutral-bg: rgba(0, 0, 0, 0.04); --input-bg: rgba(255, 255, 255, 0.9); }
-        html { background: var(--bg-grad); background-attachment: fixed; min-height: 100%; }
-        body { background: transparent; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; color: var(--text-main); margin: 0; padding: max(16px, env(safe-area-inset-top)) 16px max(30px, env(safe-area-inset-bottom)); min-height: 100vh; min-height: 100dvh; display: flex; justify-content: center; }
-        .container { max-width: 440px; width: 100%; display: flex; flex-direction: column; gap: 14px; padding-bottom: 30px; }
-        .top-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .header-title { font-size: 1.25rem; font-weight: 800; margin: 0; background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
-        .theme-toggle { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 50px; padding: 6px 12px; cursor: pointer; backdrop-filter: blur(20px); box-shadow: var(--card-shadow); font-size: 0.9rem; color: var(--text-main); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#05060a">
+<title>Economía CDMO</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg1:#05060b;--bg2:#0a1022;
+  --glass:rgba(255,255,255,.075);--glass2:rgba(255,255,255,.13);--stroke:rgba(255,255,255,.17);--hi:rgba(255,255,255,.34);
+  --txt:#fff;--sub:rgba(235,235,245,.62);--faint:rgba(235,235,245,.34);
+  --blue:#0a84ff;--green:#30d158;--orange:#ff9f0a;--red:#ff453a;--purple:#bf5af2;--teal:#64d2ff;
+  --shadow:0 14px 44px rgba(0,0,0,.34);--sheet:rgba(28,28,32,.86);
+  --o1:rgba(10,132,255,.55);--o2:rgba(191,90,242,.45);--o3:rgba(48,209,88,.28);
+}
+[data-theme="light"]{
+  --bg1:#f1f3fa;--bg2:#e2e7f4;
+  --glass:rgba(255,255,255,.58);--glass2:rgba(255,255,255,.82);--stroke:rgba(255,255,255,.95);--hi:#fff;
+  --txt:#0b0b12;--sub:rgba(60,60,67,.66);--faint:rgba(60,60,67,.35);
+  --blue:#007aff;--green:#1f9d45;--orange:#d97706;--red:#d70015;--purple:#a23fe0;--teal:#0a8fc4;
+  --shadow:0 12px 36px rgba(60,70,120,.14);--sheet:rgba(247,248,252,.92);
+  --o1:rgba(10,132,255,.32);--o2:rgba(191,90,242,.26);--o3:rgba(48,209,88,.2);
+}
+html{background:linear-gradient(180deg,var(--bg1),var(--bg2));min-height:100%}
+body{margin:0;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,sans-serif;-webkit-font-smoothing:antialiased;
+  padding:max(14px,env(safe-area-inset-top)) 16px 0;min-height:100vh;min-height:100dvh;font-variant-numeric:tabular-nums}
+.bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.bg i{position:absolute;border-radius:50%}
+.bg .a{width:420px;height:420px;left:-140px;top:-80px;background:radial-gradient(circle,var(--o1),transparent 68%)}
+.bg .b{width:380px;height:380px;right:-160px;top:34%;background:radial-gradient(circle,var(--o2),transparent 68%)}
+.bg .c{width:420px;height:420px;left:-100px;bottom:-120px;background:radial-gradient(circle,var(--o3),transparent 68%)}
+.wrap{max-width:440px;margin:0 auto;padding-bottom:120px}
 
-        .tab-nav { display: flex; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 4px; gap: 4px; backdrop-filter: blur(20px); }
-        .tab-btn { flex: 1; padding: 10px 4px; border: none; background: transparent; color: var(--text-sub); font-weight: 700; font-size: 0.8rem; border-radius: 14px; cursor: pointer; text-align: center; }
-        .tab-btn.active { background: var(--accent-blue); color: #fff; box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3); }
-        .panel { display: none; flex-direction: column; gap: 14px; }
-        .panel.active { display: flex; }
+/* ---- cristal ---- */
+.glass{position:relative;background:var(--glass);-webkit-backdrop-filter:blur(30px) saturate(190%);backdrop-filter:blur(30px) saturate(190%);
+  border:1px solid var(--stroke);border-radius:28px;box-shadow:var(--shadow),inset 0 1px 0 var(--hi),inset 0 -1px 0 rgba(255,255,255,.05)}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(140deg,rgba(255,255,255,.16),rgba(255,255,255,0) 42%)}
+[data-theme="light"] .glass::before{background:linear-gradient(140deg,rgba(255,255,255,.7),rgba(255,255,255,0) 50%)}
+.pad{padding:16px}
 
-        .glass-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 16px; backdrop-filter: blur(25px); box-shadow: var(--card-shadow); width: 100%; }
-        .month-selector { display: flex; align-items: center; justify-content: space-between; }
-        .month-btn { background: var(--neutral-bg); border: 1px solid var(--card-border); color: var(--text-main); font-size: 1.2rem; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; }
-        .month-title { font-weight: 800; font-size: 1.1rem; }
-        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-bubble { background: var(--neutral-bg); border-radius: 18px; padding: 12px; text-align: center; border: 1px solid var(--card-border); }
-        .stat-bubble.highlight { grid-column: span 2; background: var(--accent-green-glow); border-color: var(--accent-green); }
-        .stat-bubble.highlight.done { opacity: 0.75; }
-        .stat-label { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .stat-value { font-size: 1.3rem; font-weight: 800; }
-        .stat-value.total-green { color: var(--accent-green); font-size: 1.9rem; }
-        .stat-sub { font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; line-height: 1.35; }
-        .btn-settle { margin-top: 10px; background: var(--card-bg); border: 1px solid var(--accent-green); color: var(--accent-green); font-weight: 800; font-size: 0.8rem; border-radius: 12px; padding: 8px 12px; cursor: pointer; }
+/* ---- cabecera ---- */
+.top{display:flex;align-items:center;justify-content:space-between;margin:4px 2px 14px}
+.top h1{margin:0;font-size:1.9rem;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.top p{margin:3px 0 0;font-size:.8rem;color:var(--sub);font-weight:500}
+.round{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.05rem;cursor:pointer;color:var(--txt);border:1px solid var(--stroke);background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:var(--shadow),inset 0 1px 0 var(--hi)}
+.panel{display:none;flex-direction:column;gap:14px}
+.panel.active{display:flex}
 
-        .section-title { font-size: 0.82rem; font-weight: 800; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .section-title small { color: var(--text-sub); font-weight: 700; text-transform: none; letter-spacing: 0; }
-        .item-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--card-border); gap: 8px; }
-        .item-row:last-child { border-bottom: none; }
-        .item-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-        .checkbox-custom { width: 24px; height: 24px; border-radius: 8px; border: 2px solid var(--card-border); background: var(--neutral-bg); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 800; }
-        .checkbox-custom.checked { background: var(--accent-green); border-color: var(--accent-green); color: #fff; }
-        .item-txt { display: flex; flex-direction: column; min-width: 0; }
-        .item-label { font-weight: 700; font-size: 0.9rem; line-height: 1.25; }
-        .item-sub { font-size: 0.7rem; color: var(--text-sub); line-height: 1.3; margin-top: 1px; }
-        .item-amount-input { width: 92px; background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 10px; padding: 7px 6px; text-align: right; font-weight: 700; font-size: 16px; flex-shrink: 0; }
-        .item-amount-input.est { border-color: var(--accent-orange); }
-        .x-btn { background: none; border: none; color: var(--accent-red); font-size: 1rem; cursor: pointer; padding: 4px; }
-        .group-head { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 800; color: var(--text-sub); margin: 0 0 4px; }
+/* ---- selector de mes ---- */
+.pick{display:flex;align-items:center;justify-content:space-between;padding:6px}
+.pick button{width:42px;height:42px;border-radius:50%;border:1px solid var(--stroke);background:var(--glass2);color:var(--txt);font-size:1.25rem;font-weight:700;cursor:pointer}
+.pick div{font-weight:800;font-size:1.08rem;letter-spacing:-.01em}
 
-        .reminder { background: rgba(255, 159, 10, 0.14); border: 1px solid var(--accent-orange); border-radius: 16px; padding: 10px 12px; font-size: 0.8rem; line-height: 1.4; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .reminder button { background: var(--accent-orange); color: #000; border: none; border-radius: 10px; padding: 7px 12px; font-weight: 800; cursor: pointer; flex-shrink: 0; }
-        .next-list { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; }
-        .next-list div { display: flex; justify-content: space-between; gap: 8px; }
+/* ---- héroe ---- */
+.hero{padding:20px 18px 16px;text-align:center}
+.eyebrow{font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--sub)}
+.hero-label{margin-top:8px;font-size:.92rem;font-weight:600;color:var(--sub)}
+.hero-num{font-size:3rem;font-weight:800;letter-spacing:-.035em;line-height:1.05;margin:2px 0 14px;background:linear-gradient(135deg,var(--green),var(--teal));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero-num.neg{background:linear-gradient(135deg,var(--orange),var(--red));-webkit-background-clip:text;background-clip:text}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left}
+.split>div{background:var(--glass);border:1px solid var(--stroke);border-radius:18px;padding:10px 12px}
+.split b{display:block;font-size:1.05rem;margin:4px 0 2px}
+.split small{display:block;font-size:.66rem;color:var(--sub);line-height:1.3}
+.tag{font-size:.62rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:8px}
+.tag.up{background:rgba(48,209,88,.2);color:var(--green)}
+.tag.down{background:rgba(255,159,10,.2);color:var(--orange)}
+.progress{height:8px;border-radius:8px;background:var(--glass2);margin-top:14px;overflow:hidden}
+.progress i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--blue),var(--teal))}
+.prog-row{display:flex;justify-content:space-between;font-size:.72rem;color:var(--sub);margin-top:6px;font-weight:600}
+.pill{margin-top:14px;width:100%;border:1px solid var(--stroke);background:var(--glass2);color:var(--txt);font-weight:700;font-size:.86rem;border-radius:16px;padding:12px;cursor:pointer}
+.pill.ok{background:rgba(48,209,88,.22);color:var(--green);border-color:rgba(48,209,88,.5)}
 
-        .input-extra { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 12px; padding: 9px 8px; font-size: 16px; font-weight: 600; min-width: 0; width: 100%; }
-        .add-extra-form { display: flex; gap: 6px; }
-        .btn-add { background: var(--accent-blue); color: #fff; border: none; border-radius: 12px; padding: 0 14px; font-weight: 800; cursor: pointer; flex-shrink: 0; }
-        .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-        .btn-action { flex: 1; padding: 13px; border-radius: 18px; border: 1px solid var(--card-border); font-weight: 800; font-size: 0.86rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: var(--card-shadow); min-width: 44%; }
-        .btn-whatsapp { background: #25D366; color: #000; }
-        .btn-pdf { background: var(--accent-purple); color: #fff; }
-        .btn-blue { background: var(--accent-blue); color: #fff; }
-        .btn-reset { background: var(--neutral-bg); color: var(--text-sub); width: 100%; }
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{padding:12px 10px;text-align:center;border-radius:22px}
+.tile .k{font-size:.62rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--sub)}
+.tile .v{font-size:1.08rem;font-weight:800;margin-top:4px;letter-spacing:-.01em}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpis .tile .v{font-size:1.2rem}
 
-        .fx-row { display: flex; justify-content: space-between; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--card-border); cursor: pointer; }
-        .fx-row:last-child { border-bottom: none; }
-        .fx-amt { font-weight: 800; font-size: 0.95rem; text-align: right; white-space: nowrap; }
-        .fx-amt small { display: block; font-weight: 600; font-size: 0.68rem; color: var(--text-sub); }
-        .mchips { display: flex; gap: 2px; margin-top: 6px; }
-        .mchip { width: 17px; height: 17px; border-radius: 5px; background: var(--neutral-bg); font-size: 0.58rem; font-weight: 800; display: flex; align-items: center; justify-content: center; color: var(--text-sub); }
-        .mchip.on { background: var(--accent-blue); color: #fff; }
-        .badge { display: inline-block; font-size: 0.64rem; font-weight: 800; border-radius: 8px; padding: 2px 6px; background: var(--neutral-bg); color: var(--text-sub); margin-right: 4px; }
-        .badge.warn { background: rgba(255,159,10,0.2); color: var(--accent-orange); }
-        .badge.cl { background: rgba(191,90,242,0.18); color: var(--accent-purple); }
+.alert{padding:12px 14px;border-radius:20px;font-size:.82rem;line-height:1.4;border-color:rgba(255,159,10,.5);background:rgba(255,159,10,.14)}
 
-        .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .hbar { margin: 8px 0; }
-        .hbar-top { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; gap: 8px; }
-        .hbar-track { height: 8px; background: var(--neutral-bg); border-radius: 6px; margin-top: 4px; overflow: hidden; }
-        .hbar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); border-radius: 6px; }
-        .trend { font-size: 0.82rem; line-height: 1.55; }
-        .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
-        .hint { font-size: 0.72rem; color: var(--text-sub); line-height: 1.4; }
+/* ---- listas ---- */
+.sec{display:flex;justify-content:space-between;align-items:baseline;margin:6px 6px -4px;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--sub)}
+.sec b{font-weight:800;color:var(--txt);letter-spacing:0;text-transform:none;font-size:.82rem}
+.list{padding:4px 14px}
+.row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--stroke)}
+.row:last-child{border-bottom:none}
+.row.off{opacity:.5}
+.chk{width:28px;height:28px;border-radius:50%;border:2px solid var(--faint);background:transparent;flex-shrink:0;cursor:pointer;color:#fff;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center;padding:0}
+.chk.on{background:var(--green);border-color:var(--green)}
+.ico{width:34px;height:34px;border-radius:11px;background:var(--glass2);border:1px solid var(--stroke);display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0}
+.txt{flex:1;min-width:0;cursor:pointer}
+.nm{font-weight:700;font-size:.9rem;line-height:1.2}
+.sb{font-size:.68rem;color:var(--sub);margin-top:2px;line-height:1.3}
+.amt{width:86px;flex-shrink:0;text-align:right;font-weight:800;font-size:16px;color:var(--txt);background:var(--glass);border:1px solid var(--stroke);border-radius:12px;padding:8px 8px}
+.amt.est{border-color:var(--orange)}
+.mini{width:30px;height:30px;border-radius:50%;border:1px solid var(--stroke);background:var(--glass);color:var(--sub);cursor:pointer;flex-shrink:0;font-size:.85rem;padding:0}
+.mini.del{color:var(--red)}
+.hintline{font-size:.72rem;color:var(--sub);text-align:center;margin:-2px 8px 0;line-height:1.4}
+.next div{display:flex;justify-content:space-between;gap:8px;padding:6px 0;font-size:.84rem;border-bottom:1px solid var(--stroke)}
+.next div:last-child{border-bottom:none;font-weight:800}
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: flex-end; justify-content: center; z-index: 100; }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: var(--bg-grad); background-color: #1c1c1e; border: 1px solid var(--card-border); border-radius: 24px 24px 0 0; padding: 18px 16px max(22px, env(safe-area-inset-bottom)); width: 100%; max-width: 480px; max-height: 92dvh; overflow-y: auto; }
-        [data-theme="light"] .modal-content { background-color: #f2f2f7; }
-        .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 11px; }
-        .form-row { display: flex; gap: 10px; }
-        .form-row .form-group { flex: 1; min-width: 0; }
-        .form-label { font-size: 0.76rem; font-weight: 700; color: var(--text-sub); }
-        .check-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; }
-        .check-row input { width: 20px; height: 20px; }
-        .chips-edit { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-        .chips-edit button { padding: 9px 0; border-radius: 10px; border: 1px solid var(--card-border); background: var(--neutral-bg); color: var(--text-main); font-weight: 700; font-size: 0.78rem; cursor: pointer; }
-        .chips-edit button.on { background: var(--accent-blue); border-color: var(--accent-blue); color: #fff; }
-        .btn-danger { background: rgba(255,69,58,0.15); color: var(--accent-red); }
-        h2.print-title { display: none; }
-    </style>
+.add{display:flex;gap:8px;margin-top:10px}
+.inp{background:var(--glass);border:1px solid var(--stroke);color:var(--txt);border-radius:14px;padding:11px 12px;font-size:16px;font-weight:600;width:100%;min-width:0;font-family:inherit}
+.inp::placeholder{color:var(--faint)}
+select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--sub) 50%),linear-gradient(135deg,var(--sub) 50%,transparent 50%);background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:28px}
+.btn{border:1px solid var(--stroke);border-radius:18px;padding:14px;font-weight:800;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;flex:1;min-width:44%;color:var(--txt);background:var(--glass2);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:inset 0 1px 0 var(--hi)}
+.btn.blue{background:linear-gradient(135deg,var(--blue),#5e5ce6);color:#fff;border-color:transparent}
+.btn.purple{background:linear-gradient(135deg,var(--purple),#7d5cff);color:#fff;border-color:transparent}
+.btn.wa{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border-color:transparent}
+.btn.soft{color:var(--sub);font-weight:700}
+.btn.danger{color:var(--red)}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn.go{flex:0 0 auto;min-width:0;padding:0 18px}
+
+/* ---- fijos ---- */
+.fx{cursor:pointer;align-items:flex-start}
+.fx .txt{cursor:pointer}
+.fxr{text-align:right;font-weight:800;font-size:.95rem;white-space:nowrap}
+.fxr small{display:block;font-size:.64rem;font-weight:600;color:var(--sub)}
+.chev{color:var(--faint);font-size:1.4rem;line-height:1;align-self:center}
+.chips{display:flex;gap:2px;margin-top:7px}
+.chips span{width:17px;height:17px;border-radius:6px;background:var(--glass);border:1px solid var(--stroke);font-size:.55rem;font-weight:800;display:flex;align-items:center;justify-content:center;color:var(--faint)}
+.chips span.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.badge{display:inline-block;font-size:.6rem;font-weight:800;border-radius:8px;padding:2px 6px;background:var(--glass2);color:var(--sub);margin:4px 4px 0 0}
+.badge.w{background:rgba(255,159,10,.2);color:var(--orange)}
+.badge.p{background:rgba(191,90,242,.2);color:var(--purple)}
+.howto{font-size:.8rem;color:var(--sub);line-height:1.45}
+
+/* ---- balance ---- */
+.hbar{margin:11px 0}
+.hbar-top{display:flex;justify-content:space-between;gap:8px;font-size:.8rem;font-weight:700}
+.hbar-track{height:8px;background:var(--glass2);border-radius:8px;margin-top:5px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--blue),var(--purple))}
+.trend{font-size:.86rem;line-height:1.7}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.legend{font-size:.7rem;color:var(--sub);margin-top:8px}
+
+/* ---- barra inferior ---- */
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:max(14px,env(safe-area-inset-bottom));width:min(400px,calc(100% - 28px));display:flex;gap:4px;padding:6px;border-radius:999px;z-index:50;
+  background:var(--glass);-webkit-backdrop-filter:blur(34px) saturate(200%);backdrop-filter:blur(34px) saturate(200%);border:1px solid var(--stroke);box-shadow:0 16px 50px rgba(0,0,0,.4),inset 0 1px 0 var(--hi)}
+.dock button{flex:1;border:none;background:transparent;color:var(--sub);border-radius:999px;padding:8px 0 7px;font-size:.66rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.dock button.on{background:var(--glass2);color:var(--blue);box-shadow:inset 0 1px 0 var(--hi),0 2px 10px rgba(0,0,0,.18)}
+.dock svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---- editor ---- */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center;z-index:100}
+.overlay.on{display:flex}
+.sheet{width:100%;max-width:480px;max-height:93dvh;overflow-y:auto;background:var(--sheet);-webkit-backdrop-filter:blur(40px) saturate(190%);backdrop-filter:blur(40px) saturate(190%);border:1px solid var(--stroke);border-bottom:none;border-radius:30px 30px 0 0;padding:10px 16px max(22px,env(safe-area-inset-bottom));box-shadow:0 -10px 50px rgba(0,0,0,.4),inset 0 1px 0 var(--hi)}
+.grab{width:40px;height:5px;border-radius:5px;background:var(--faint);margin:0 auto 12px}
+.sheet h3{margin:0 0 4px;font-size:1.2rem;font-weight:800}
+.sheet .sub{font-size:.76rem;color:var(--sub);margin:0 0 14px;line-height:1.4}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;min-width:0}
+.fr{display:flex;gap:10px}
+.fr .fg{flex:1}
+.lab{font-size:.72rem;font-weight:700;color:var(--sub)}
+.chk-row{display:flex;align-items:center;gap:9px;font-size:.86rem;font-weight:600;margin-bottom:12px}
+.chk-row input{width:20px;height:20px}
+.mgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.mgrid button{padding:10px 0;border-radius:12px;border:1px solid var(--stroke);background:var(--glass);color:var(--txt);font-weight:700;font-size:.78rem;cursor:pointer}
+.mgrid button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.icon-in{width:62px;text-align:center;font-size:1.5rem;padding:6px}
+</style>
 </head>
 <body>
-<div class="container">
-    <div class="top-bar">
-        <h1 class="header-title">📊 Economía CDMO</h1>
-        <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
-    </div>
+<div class="bg"><i class="a"></i><i class="b"></i><i class="c"></i></div>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Economía</h1><p>CDMO · gastos a medias con Claudia</p></div>
+    <button class="round" onclick="toggleTheme()" id="themeBtn" aria-label="Cambiar tema">🌙</button>
+  </div>
 
-    <div class="tab-nav">
-        <button class="tab-btn active" id="t_pMes" onclick="goTab('pMes')">📅 Mes</button>
-        <button class="tab-btn" id="t_pFijos" onclick="goTab('pFijos')">📌 Fijos</button>
-        <button class="tab-btn" id="t_pBal" onclick="goTab('pBal')">📈 Balance</button>
+  <!-- ===== MES ===== -->
+  <div class="panel active" id="pMes">
+    <div class="glass pick"><button onclick="changeMonth(-1)" aria-label="Mes anterior">‹</button><div id="mTitle">--</div><button onclick="changeMonth(1)" aria-label="Mes siguiente">›</button></div>
+    <div class="glass hero" id="mHero"></div>
+    <div class="stats" id="mStats"></div>
+    <div id="mAlerts" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div class="hintline">Toca el nombre de un gasto para editarlo · <b>⊘</b> pone 0 € solo este mes</div>
+    <div id="mLines" style="display:flex;flex-direction:column;gap:14px"></div>
+    <div class="glass pad">
+      <div class="eyebrow" style="text-align:left">Gasto puntual de este mes</div>
+      <div class="add">
+        <input type="text" id="xName" class="inp" placeholder="Ej: Farmacia, regalo…">
+        <input type="number" id="xAmount" class="inp" style="max-width:96px" inputmode="decimal" placeholder="0,00" step="0.01">
+        <button class="btn blue go" onclick="addExtra()">OK</button>
+      </div>
+      <div class="legend" style="margin-top:8px">Se reparte a medias y lo pagas tú. Para repetirlo cada mes créalo en «Fijos».</div>
     </div>
+    <div class="glass pad">
+      <div class="eyebrow" style="text-align:left;margin-bottom:6px">Próximo mes · <span id="nxName"></span></div>
+      <div class="next" id="mNext"></div>
+    </div>
+    <div class="actions">
+      <button class="btn purple" onclick="exportPDF('mes')">📄 PDF</button>
+      <button class="btn wa" onclick="sendWA()">💬 Enviar a Claudia</button>
+      <button class="btn soft" style="min-width:100%" onclick="resetMonth()">Limpiar este mes</button>
+    </div>
+  </div>
 
-    <!-- ===== MES ===== -->
-    <div class="panel active" id="pMes">
-        <div class="glass-card month-selector">
-            <button class="month-btn" onclick="changeMonth(-1)">‹</button>
-            <div class="month-title" id="mTitle">--</div>
-            <button class="month-btn" onclick="changeMonth(1)">›</button>
-        </div>
-        <div class="glass-card summary-grid" id="mSummary"></div>
-        <div id="mReminders" style="display:flex;flex-direction:column;gap:10px;"></div>
-        <div id="mLines" style="display:flex;flex-direction:column;gap:14px;"></div>
-        <div class="glass-card">
-            <div class="section-title">➕ Gasto puntual de este mes</div>
-            <div class="add-extra-form">
-                <input type="text" id="xName" class="input-extra" placeholder="Ej: Farmacia, regalo…">
-                <input type="number" id="xAmount" class="input-extra" style="max-width:96px" inputmode="decimal" placeholder="0.00" step="0.01">
-                <button class="btn-add" onclick="addExtra()">OK</button>
-            </div>
-            <p class="hint" style="margin:8px 0 0;">Se reparte a medias y lo pagas tú. Para cambiar el reparto o repetirlo cada mes, créalo en «Fijos».</p>
-        </div>
-        <div class="glass-card">
-            <div class="section-title">📆 Próximo mes <small id="nxName"></small></div>
-            <div class="next-list" id="mNext"></div>
-        </div>
-        <div class="actions">
-            <button class="btn-action btn-pdf" onclick="exportPDF('mes')">📄 PDF</button>
-            <button class="btn-action btn-whatsapp" onclick="sendWA()">💬 Enviar a Claudia</button>
-            <button class="btn-action btn-reset" onclick="resetMonth()">🔄 Limpiar este mes</button>
-        </div>
+  <!-- ===== FIJOS ===== -->
+  <div class="panel" id="pFijos">
+    <div class="glass pad howto"><b style="color:var(--txt)">Tus gastos fijos.</b> Toca cualquiera para cambiar su importe, los meses en que se cobra, quién lo adelanta o el reparto. Puedes añadir los que quieras.</div>
+    <div class="stats" id="fStats"></div>
+    <div class="glass hero" style="padding:16px" id="fHero"></div>
+    <div class="glass list" id="fList"></div>
+    <button class="btn blue" style="width:100%" onclick="openEditor('')">➕ Añadir gasto fijo</button>
+    <div class="actions">
+      <button class="btn purple" onclick="exportPDF('fijos')">📄 PDF de fijos</button>
+      <button class="btn soft" onclick="exportBackup()">💾 Copia de seguridad</button>
+      <button class="btn soft" onclick="$('impFile').click()">📥 Restaurar copia</button>
     </div>
+    <input type="file" id="impFile" accept=".json,application/json" style="display:none" onchange="importBackup(this)">
+  </div>
 
-    <!-- ===== FIJOS ===== -->
-    <div class="panel" id="pFijos">
-        <div class="glass-card summary-grid" id="fSummary"></div>
-        <div class="glass-card">
-            <div class="section-title">📌 Gastos fijos (leyenda) <small>toca uno para editarlo</small></div>
-            <div id="fList"></div>
-            <div class="actions" style="margin-top:12px;">
-                <button class="btn-action btn-blue" onclick="openEditor('')">➕ Añadir gasto fijo</button>
-            </div>
-        </div>
-        <div class="actions">
-            <button class="btn-action btn-pdf" onclick="exportPDF('fijos')">📄 PDF de fijos</button>
-            <button class="btn-action btn-reset" style="min-width:44%;width:auto;" onclick="exportBackup()">💾 Copia de seguridad</button>
-            <button class="btn-action btn-reset" style="min-width:44%;width:auto;" onclick="$('impFile').click()">📥 Restaurar copia</button>
-        </div>
-        <input type="file" id="impFile" accept=".json,application/json" style="display:none" onchange="importBackup(this)">
+  <!-- ===== BALANCE ===== -->
+  <div class="panel" id="pBal">
+    <div class="glass pick"><button onclick="changeYear(-1)" aria-label="Año anterior">‹</button><div id="yTitle">----</div><button onclick="changeYear(1)" aria-label="Año siguiente">›</button></div>
+    <div class="kpis" id="yKpis"></div>
+    <div class="glass pad">
+      <div class="eyebrow" style="text-align:left;margin-bottom:8px">Gasto por mes</div>
+      <div id="yChart"></div>
+      <div class="legend"><span class="dot" style="background:var(--blue)"></span>Con datos &nbsp; <span class="dot" style="background:var(--blue);opacity:.35"></span>Previsión &nbsp; <span class="dot" style="background:var(--purple)"></span>Media</div>
     </div>
-
-    <!-- ===== BALANCE ===== -->
-    <div class="panel" id="pBal">
-        <div class="glass-card month-selector">
-            <button class="month-btn" onclick="changeYear(-1)">‹</button>
-            <div class="month-title" id="yTitle">----</div>
-            <button class="month-btn" onclick="changeYear(1)">›</button>
-        </div>
-        <div class="glass-card kpi-grid" id="yKpis"></div>
-        <div class="glass-card">
-            <div class="section-title">Gasto por mes</div>
-            <div id="yChart"></div>
-            <p class="hint" style="margin:6px 0 0;"><span class="legend-dot" style="background:var(--accent-blue)"></span>Con datos &nbsp; <span class="legend-dot" style="background:var(--accent-blue);opacity:.35"></span>Previsión &nbsp; <span class="legend-dot" style="background:var(--accent-purple)"></span>Media</p>
-        </div>
-        <div class="glass-card"><div class="section-title">Tendencia</div><div class="trend" id="yTrend"></div></div>
-        <div class="glass-card"><div class="section-title">Cuánto cuesta cada gasto <small>en el año</small></div><div id="yItems"></div></div>
-        <div class="actions">
-            <button class="btn-action btn-pdf" onclick="exportPDF('anio')">📄 PDF anual</button>
-            <button class="btn-action btn-whatsapp" onclick="sendYearWA()">💬 Resumen</button>
-        </div>
+    <div class="glass pad"><div class="eyebrow" style="text-align:left;margin-bottom:6px">Tendencia</div><div class="trend" id="yTrend"></div></div>
+    <div class="glass pad"><div class="eyebrow" style="text-align:left">Cuánto cuesta cada gasto en el año</div><div id="yItems"></div></div>
+    <div class="actions">
+      <button class="btn purple" onclick="exportPDF('anio')">📄 PDF anual</button>
+      <button class="btn wa" onclick="sendYearWA()">💬 Resumen</button>
     </div>
+  </div>
 </div>
 
-<!-- ===== EDITOR ===== -->
-<div class="modal-overlay" id="editor" onclick="if(event.target===this)closeEditor()">
-    <div class="modal-content">
-        <div class="section-title" id="eTitle">Gasto fijo</div>
-        <div class="form-group"><label class="form-label">Nombre</label><input type="text" id="eName" class="input-extra" placeholder="Ej: Seguro hogar (Santalucía)"></div>
-        <div class="form-row">
-            <div class="form-group"><label class="form-label">Importe (€)</label><input type="number" id="eAmount" class="input-extra" inputmode="decimal" step="0.01"></div>
-            <div class="form-group"><label class="form-label">Claudia paga el (%)</label><input type="number" id="eShare" class="input-extra" inputmode="numeric" min="0" max="100" value="50"></div>
-        </div>
-        <label class="check-row"><input type="checkbox" id="eVar"> Importe variable (el real se pone cada mes)</label>
-        <div class="form-row">
-            <div class="form-group"><label class="form-label">Frecuencia</label>
-                <select id="eFreq" class="input-extra" onchange="applyFreq()">
-                    <option value="1">Mensual</option><option value="2">Bimensual</option><option value="3">Trimestral</option><option value="6">Semestral</option><option value="12">Anual</option><option value="0">Personalizada</option>
-                </select></div>
-            <div class="form-group"><label class="form-label">Primer mes</label><select id="eStart" class="input-extra" onchange="applyFreq()"></select></div>
-        </div>
-        <div class="form-group"><label class="form-label">Meses en que se cobra (toca para cambiar)</label><div class="chips-edit" id="eChips"></div></div>
-        <div class="form-row">
-            <div class="form-group"><label class="form-label">Se cobra en</label>
-                <select id="eMethod" class="input-extra">
-                    <option value="cdmo">Cuenta CDMO Gastos (Openbank)</option><option value="card">Tarjeta CDMO Gastos (Openbank)</option><option value="claudia">Cuenta de Claudia</option><option value="notif">Notificación (pago manual)</option>
-                </select></div>
-            <div class="form-group"><label class="form-label">Lo adelanta</label>
-                <select id="ePayer" class="input-extra"><option value="D">Yo</option><option value="C">Claudia</option></select></div>
-        </div>
-        <div class="form-row">
-            <div class="form-group"><label class="form-label">Desde (opcional)</label><input type="month" id="eFrom" class="input-extra"></div>
-            <div class="form-group"><label class="form-label">Hasta (opcional)</label><input type="month" id="eTo" class="input-extra"></div>
-        </div>
-        <label class="check-row"><input type="checkbox" id="ePending"> Aún no activo: recuérdamelo (no suma hasta activarlo)</label>
-        <div class="form-group"><label class="form-label">Nota</label><input type="text" id="eNote" class="input-extra" placeholder="Opcional"></div>
-        <div class="actions">
-            <button class="btn-action btn-blue" onclick="saveEditor()">Guardar</button>
-            <button class="btn-action btn-reset" style="min-width:44%;width:auto;" onclick="closeEditor()">Cancelar</button>
-            <button class="btn-action btn-danger" id="eDel" onclick="deleteFixed()">Eliminar</button>
-        </div>
-        <p class="hint" style="margin-top:10px;">Si cambias el importe, el cambio vale desde el mes actual: los meses anteriores no se tocan. Para dejar de pagar algo usa «Hasta».</p>
+<!-- ===== barra inferior ===== -->
+<nav class="dock" aria-label="Secciones">
+  <button class="on" id="t_pMes" onclick="goTab('pMes')"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="4"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Mes</button>
+  <button id="t_pFijos" onclick="goTab('pFijos')"><svg viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>Fijos</button>
+  <button id="t_pBal" onclick="goTab('pBal')"><svg viewBox="0 0 24 24"><path d="M5 20v-6M12 20V5M19 20V10"/></svg>Balance</button>
+</nav>
+
+<!-- ===== editor ===== -->
+<div class="overlay" id="editor" onclick="if(event.target===this)closeEditor()">
+  <div class="sheet">
+    <div class="grab"></div>
+    <h3 id="eTitle">Gasto fijo</h3>
+    <p class="sub">Los cambios de importe valen desde este mes; los meses anteriores no se tocan.</p>
+    <div class="fr">
+      <div class="fg" style="flex:0 0 62px"><label class="lab">Icono</label><input type="text" id="eIcon" class="inp icon-in" maxlength="4" value="🧾"></div>
+      <div class="fg"><label class="lab">Nombre</label><input type="text" id="eName" class="inp" placeholder="Ej: Seguro hogar"></div>
     </div>
+    <div class="fr">
+      <div class="fg"><label class="lab">Importe (€)</label><input type="number" id="eAmount" class="inp" inputmode="decimal" step="0.01"></div>
+      <div class="fg"><label class="lab">Claudia paga (%)</label><input type="number" id="eShare" class="inp" inputmode="numeric" min="0" max="100" value="50"></div>
+    </div>
+    <label class="chk-row"><input type="checkbox" id="eVar"> Importe variable (pongo el real cada mes)</label>
+    <div class="fr">
+      <div class="fg"><label class="lab">Se cobra</label>
+        <select id="eFreq" class="inp" onchange="applyFreq()"><option value="1">Cada mes</option><option value="2">Cada 2 meses</option><option value="3">Cada 3 meses</option><option value="6">Cada 6 meses</option><option value="12">Una vez al año</option><option value="0">Personalizado</option></select></div>
+      <div class="fg"><label class="lab">Empezando en</label><select id="eStart" class="inp" onchange="applyFreq()"></select></div>
+    </div>
+    <div class="fg"><label class="lab">Meses de cobro (toca para cambiar)</label><div class="mgrid" id="eChips"></div></div>
+    <div class="fr">
+      <div class="fg"><label class="lab">Dónde se cobra</label>
+        <select id="eMethod" class="inp"><option value="cdmo">Cuenta CDMO Gastos (Openbank)</option><option value="card">Tarjeta CDMO Gastos (Openbank)</option><option value="claudia">Cuenta de Claudia</option><option value="notif">Notificación (pago manual)</option></select></div>
+      <div class="fg"><label class="lab">Lo adelanta</label><select id="ePayer" class="inp"><option value="D">Yo</option><option value="C">Claudia</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="lab">Desde (opcional)</label><input type="month" id="eFrom" class="inp"></div>
+      <div class="fg"><label class="lab">Hasta (opcional)</label><input type="month" id="eTo" class="inp"></div>
+    </div>
+    <div class="fg"><label class="lab">Nota</label><input type="text" id="eNote" class="inp" placeholder="Opcional"></div>
+    <div class="actions">
+      <button class="btn blue" onclick="saveEditor()">Guardar</button>
+      <button class="btn soft" onclick="closeEditor()">Cancelar</button>
+      <button class="btn danger" id="eDel" style="min-width:100%" onclick="deleteFixed()">Eliminar este gasto</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -251,19 +304,20 @@ const TODAY_KEY = keyOf(NOW.getFullYear(), NOW.getMonth() + 1);
 const KEY = 'economia_cdmo_v2';
 
 /* ===================== Datos ===================== */
+const ICONS = { seguro_hogar: '🛡️', comedor: '🍽️', o2: '📱', piscina: '🏊', alarma: '🚨', judo: '🥋', agua: '💧', kia: '🚗', nespresso: '☕', psn: '🎮', luz: '💡', residuos_extra: '🗑️', residuos: '🗑️' };
 function mk(id, name, amount, months, method, payer, o) {
-    return Object.assign({ id, name, prices: [{ from: '0000-00', amount }], months, method, payer, share: 50, variable: false, pending: false, from: '', to: '', note: '' }, o || {});
+    return Object.assign({ icon: ICONS[id] || '🧾', id, name, prices: [{ from: '0000-00', amount }], months, method, payer, share: 50, variable: false, pending: false, from: '', to: '', note: '' }, o || {});
 }
 function defaultPlan() {
     const all = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     return [
         mk('seguro_hogar', 'Seguro hogar (Santalucía)', 170, [5, 11], 'cdmo', 'D', { from: '2026-11', note: 'Semestral. Empieza en noviembre.' }),
-        mk('comedor', 'Comedor colegio Olivia (NSDP)', 130, all, 'cdmo', 'D', { pending: true, note: 'Aún no la llevamos. Actívalo cuando empiece.' }),
+        mk('comedor', 'Comedor colegio Olivia (NSDP)', 130, all, 'cdmo', 'D', { note: 'Si algún mes no va al comedor, pon 0 € ese mes (botón ⊘).' }),
         mk('o2', 'Móvil + fibra + terminales (O2)', 155, all, 'cdmo', 'D', {}),
         mk('piscina', 'Piscina colegio Olivia (NSDP)', 17, all, 'cdmo', 'D', {}),
         mk('alarma', 'Alarma (Verisure)', 67, all, 'cdmo', 'D', {}),
         mk('judo', 'Judo Olivia', 22, all, 'claudia', 'C', { note: 'Sale de la cuenta de Claudia; tú pagas la mitad.' }),
-        mk('agua', 'Agua (Veolia)', 100, [1, 4, 7, 10], 'cdmo', 'D', { variable: true, note: 'Trimestral, importe aproximado.' }),
+        mk('agua', 'Agua (Veolia)', 100, [2, 5, 8, 11], 'cdmo', 'D', { variable: true, note: 'Trimestral, importe aproximado.' }),
         mk('kia', 'Renting KIA Stonic (Ayvens)', 296, all, 'claudia', 'C', { note: 'Sale de la cuenta de Claudia; tú pagas la mitad.' }),
         mk('nespresso', 'Nespresso (suscripción)', 29, all, 'card', 'D', {}),
         mk('psn', 'PSN Plus Premium (Claudia)', 18.99, all, 'card', 'D', {}),
@@ -273,8 +327,18 @@ function defaultPlan() {
     ];
 }
 function load() {
-    try { const r = localStorage.getItem(KEY); if (r) { const o = JSON.parse(r); if (o && Array.isArray(o.plan) && o.months) return o; } } catch (e) {}
-    const s = { v: 2, plan: defaultPlan(), months: {} };
+    try {
+        const r = localStorage.getItem(KEY);
+        if (r) {
+            const o = JSON.parse(r);
+            if (o && Array.isArray(o.plan) && o.months) {
+                if (!o.p3) { o.plan.forEach(i => { i.pending = false; if (!i.icon) i.icon = ICONS[i.id] || '🧾'; if (i.id === 'comedor') i.note = 'Si algún mes no va al comedor, pon 0 € ese mes (botón ⊘).'; }); o.p3 = 1; lsSet(KEY, JSON.stringify(o)); }
+                if (!o.p2) { const ag = o.plan.find(i => i.id === 'agua'); if (ag) ag.months = [2, 5, 8, 11]; o.p2 = 1; lsSet(KEY, JSON.stringify(o)); }   // agua: feb, may, ago, nov
+                return o;
+            }
+        }
+    } catch (e) {}
+    const s = { v: 2, p2: 1, p3: 1, plan: defaultPlan(), months: {} };
     try { // migración de la versión anterior: sus gastos pasan a "puntuales"
         const old = JSON.parse(lsGet('economia_cdmo_db', 'null'));
         if (old && typeof old === 'object') Object.keys(old).forEach(k => {
@@ -303,12 +367,12 @@ function freqLabel(it) { const n = it.months.length; return ({ 12: 'Mensual', 6:
 function linesOf(key) {
     const md = S.months[key] || {}, out = [], m = +key.slice(5, 7);
     S.plan.forEach(it => {
-        if (it.pending || !it.months.includes(m)) return;
+        if (!it.months.includes(m)) return;
         if (it.from && key < it.from) return; if (it.to && key > it.to) return;
         const o = md.over ? md.over[it.id] : undefined, has = o != null;
-        out.push({ id: it.id, kind: 'fix', name: it.name, amount: has ? o : priceAt(it, key), est: !has && !!it.variable, payer: it.payer, share: it.share, method: it.method, paid: !!(md.paid && md.paid[it.id]), freq: freqLabel(it) });
+        out.push({ id: it.id, kind: 'fix', icon: it.icon || '🧾', skipped: has && o === 0, name: it.name, amount: has ? o : priceAt(it, key), est: !has && !!it.variable, payer: it.payer, share: it.share, method: it.method, paid: !!(md.paid && md.paid[it.id]), freq: freqLabel(it) });
     });
-    (md.extras || []).forEach(x => out.push({ id: x.id, kind: 'extra', name: x.label, amount: x.amount, est: false, payer: x.payer || 'D', share: x.share == null ? 50 : x.share, method: 'cdmo', paid: !!x.paid, freq: 'Puntual' }));
+    (md.extras || []).forEach(x => out.push({ id: x.id, kind: 'extra', icon: '🧾', skipped: false, name: x.label, amount: x.amount, est: false, payer: x.payer || 'D', share: x.share == null ? 50 : x.share, method: 'cdmo', paid: !!x.paid, freq: 'Puntual' }));
     return out;
 }
 const dueOf = l => l.payer === 'D' ? l.amount * l.share / 100 : -l.amount * (100 - l.share) / 100;   // + Claudia me da · − yo le doy
@@ -331,8 +395,8 @@ function yearInfo(y) {
 /* ===================== Navegación / tema ===================== */
 function goTab(id) {
     document.querySelectorAll('.panel').forEach(e => e.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(e => e.classList.remove('active'));
-    $(id).classList.add('active'); $('t_' + id).classList.add('active');
+    document.querySelectorAll('.dock button').forEach(e => e.classList.remove('on'));
+    $(id).classList.add('active'); $('t_' + id).classList.add('on');
     if (id === 'pMes') renderMes(); if (id === 'pFijos') renderFijos(); if (id === 'pBal') renderBal();
     window.scrollTo(0, 0);
 }
@@ -342,45 +406,51 @@ function toggleTheme() { const t = document.documentElement.getAttribute('data-t
 /* ===================== MES ===================== */
 function changeMonth(o) { const d = new Date(ck.y, ck.m - 1 + o, 1); ck = { y: d.getFullYear(), m: d.getMonth() + 1 }; renderMes(); }
 function renderMes() {
-    const key = curKey(), md = S.months[key] || {}, lines = linesOf(key), t = totalsOf(lines), settled = !!md.settled, net = t.net;
-    $('mTitle').textContent = MES[ck.m - 1] + ' ' + ck.y;
-    $('mSummary').innerHTML =
-        `<div class="stat-bubble"><div class="stat-label">Total gastos</div><div class="stat-value">${fmt(t.total)}</div></div>
-         <div class="stat-bubble"><div class="stat-label">Pagados</div><div class="stat-value" style="color:var(--accent-blue)">${fmt(t.paid)}</div></div>
-         <div class="stat-bubble highlight ${settled ? 'done' : ''}">
-           <div class="stat-label">${net >= 0 ? 'Claudia te tiene que dar' : 'Tú le tienes que dar a Claudia'}</div>
-           <div class="stat-value total-green">${fmt(Math.abs(net))}</div>
-           <div class="stat-sub">Ella te debe ${fmt(t.fromD)} (gastos de tu cuenta)<br>Tú le debes ${fmt(t.fromC)} (gastos de la suya)</div>
-           <button class="btn-settle" onclick="toggleSettled()">${settled ? '✅ Liquidado · deshacer' : 'Marcar como liquidado'}</button>
-         </div>`;
-    // recordatorios
-    let rem = '';
-    S.plan.filter(i => i.pending).forEach(i => { rem += `<div class="reminder"><span>⏰ <b>${esc(i.name)}</b> (${fmt(priceAt(i, key))}) sigue sin activar. ¿Ya empieza?</span><button onclick="activate('${i.id}')">Activar</button></div>`; });
+    const key = curKey(), md = S.months[key] || {}, lines = linesOf(key), t = totalsOf(lines), settled = !!md.settled, net = t.net, mName = MES[ck.m - 1];
+    $('mTitle').textContent = mName + ' ' + ck.y;
+    const owe = net >= 0, pct = t.total > 0 ? Math.min(100, t.paid / t.total * 100) : 0;
+    $('mHero').innerHTML =
+        `<div class="eyebrow">Resultado de ${esc(mName.toLowerCase())}</div>
+         <div class="hero-label">${owe ? 'Claudia te tiene que dar' : 'Tú le tienes que dar a Claudia'}</div>
+         <div class="hero-num ${owe ? '' : 'neg'}">${fmt(Math.abs(net))}</div>
+         <div class="split">
+           <div><span class="tag up">Ella te debe</span><b>${fmt(t.fromD)}</b><small>Su parte de lo que sale de tu cuenta</small></div>
+           <div><span class="tag down">Tú le debes</span><b>${fmt(t.fromC)}</b><small>Tu parte de lo que sale de la suya</small></div>
+         </div>
+         <div class="progress"><i style="width:${pct.toFixed(1)}%"></i></div>
+         <div class="prog-row"><span>Pagado ${fmt(t.paid)}</span><span>de ${fmt(t.total)}</span></div>
+         <button class="pill ${settled ? 'ok' : ''}" onclick="toggleSettled()">${settled ? '✓ Liquidado con Claudia · deshacer' : 'Marcar como liquidado con Claudia'}</button>`;
+    $('mStats').innerHTML =
+        `<div class="glass tile"><div class="k">Total</div><div class="v">${fmt(t.total)}</div></div>
+         <div class="glass tile"><div class="k">Pagado</div><div class="v" style="color:var(--green)">${fmt(t.paid)}</div></div>
+         <div class="glass tile"><div class="k">Pendiente</div><div class="v" style="color:var(--orange)">${fmt(t.total - t.paid)}</div></div>`;
     const estNames = lines.filter(l => l.est).map(l => l.name);
-    if (estNames.length) rem += `<div class="reminder"><span>⚠️ Pon el importe real de: <b>${estNames.map(esc).join(', ')}</b></span></div>`;
-    $('mReminders').innerHTML = rem;
-    // líneas agrupadas por dónde se cobran
+    $('mAlerts').innerHTML = estNames.length ? `<div class="glass alert">⚠️ Pon el importe real de: <b>${estNames.map(esc).join(', ')}</b></div>` : '';
     const order = ['cdmo', 'card', 'claudia', 'notif'];
     let html = '';
     order.forEach(mt => {
         const g = lines.filter(l => l.method === mt); if (!g.length) return;
         const sub = g.reduce((a, l) => a + l.amount, 0);
-        html += `<div class="glass-card"><div class="group-head"><span>${esc(METHODS[mt])}</span><span>${fmt(sub)}</span></div>`;
+        html += `<div style="display:flex;flex-direction:column;gap:8px"><div class="sec"><span>${esc(METHODS[mt])}</span><b>${fmt(sub)}</b></div><div class="glass list">`;
         g.forEach(l => {
-            const bits = [l.freq]; if (l.est) bits.push('importe estimado'); if (l.payer === 'C') bits.push('te toca ' + (100 - l.share) + '%'); else if (l.share !== 50) bits.push('Claudia ' + l.share + '%');
-            html += `<div class="item-row"><div class="item-left"><div class="checkbox-custom ${l.paid ? 'checked' : ''}" onclick="toggleLine('${l.id}','${l.kind}')">${l.paid ? '✓' : ''}</div>
-              <div class="item-txt"><span class="item-label">${esc(l.name)}</span><span class="item-sub">${esc(bits.join(' · '))}</span></div></div>
-              <input type="number" inputmode="decimal" step="0.01" class="item-amount-input ${l.est ? 'est' : ''}" value="${l.amount || ''}" placeholder="0.00" onchange="setAmount('${l.id}','${l.kind}',this.value)">
-              ${l.kind === 'extra' ? `<button class="x-btn" onclick="delExtra('${l.id}')">✕</button>` : ''}</div>`;
+            const bits = [];
+            if (l.skipped) bits.push('Sin cargo este mes'); else { bits.push(l.freq); if (l.est) bits.push('importe estimado'); }
+            if (l.payer === 'C') bits.push('te toca ' + (100 - l.share) + '%'); else if (l.share !== 50) bits.push('Claudia ' + l.share + '%');
+            html += `<div class="row ${l.skipped ? 'off' : ''}">
+              <button class="chk ${l.paid ? 'on' : ''}" onclick="toggleLine('${l.id}','${l.kind}')" aria-label="Marcar como pagado">${l.paid ? '✓' : ''}</button>
+              <div class="ico">${esc(l.icon)}</div>
+              <div class="txt" ${l.kind === 'fix' ? `onclick="openEditor('${l.id}')"` : ''}><div class="nm">${esc(l.name)}</div><div class="sb">${esc(bits.join(' · '))}</div></div>
+              <input type="number" inputmode="decimal" step="0.01" class="amt ${l.est ? 'est' : ''}" value="${l.amount || ''}" placeholder="0,00" onchange="setAmount('${l.id}','${l.kind}',this.value)">
+              ${l.kind === 'fix' ? `<button class="mini" onclick="skipLine('${l.id}')" aria-label="${l.skipped ? 'Restaurar' : 'Este mes no se cobra'}">${l.skipped ? '↺' : '⊘'}</button>` : `<button class="mini del" onclick="delExtra('${l.id}')" aria-label="Borrar">✕</button>`}
+            </div>`;
         });
-        html += '</div>';
+        html += '</div></div>';
     });
-    if (!lines.length) html = '<div class="glass-card hint" style="text-align:center">No hay cargos este mes.</div>';
+    if (!lines.length) html = '<div class="glass pad hintline">No hay cargos este mes.</div>';
     $('mLines').innerHTML = html;
-    // próximo mes
     const nd = new Date(ck.y, ck.m, 1), nk = keyOf(nd.getFullYear(), nd.getMonth() + 1), nl = linesOf(nk).filter(l => l.kind === 'fix');
     $('nxName').textContent = MES[nd.getMonth()];
-    $('mNext').innerHTML = nl.length ? nl.map(l => `<div><span>${esc(l.name)}</span><b>${l.est && !l.amount ? 'variable' : (l.est ? '≈ ' : '') + fmt(l.amount)}</b></div>`).join('') + `<div style="border-top:1px solid var(--card-border);padding-top:6px;margin-top:2px"><span><b>Total previsto</b></span><b>${fmt(nl.reduce((a, l) => a + l.amount, 0))}</b></div>` : '<span class="hint">Sin cargos fijos el mes que viene.</span>';
+    $('mNext').innerHTML = nl.length ? nl.map(l => `<div><span>${esc(l.icon)} ${esc(l.name)}</span><span>${l.est && !l.amount ? 'variable' : (l.est ? '≈ ' : '') + fmt(l.amount)}</span></div>`).join('') + `<div><span>Total previsto</span><span>${fmt(nl.reduce((a, l) => a + l.amount, 0))}</span></div>` : '<span class="legend">Sin cargos fijos el mes que viene.</span>';
 }
 function toggleLine(id, kind) {
     const md = touch(curKey());
@@ -398,32 +468,28 @@ function addExtra() {
     const md = touch(curKey()); md.extras.push({ id: 'x' + Date.now(), label: n, amount: a, payer: 'D', share: 50, paid: false });
     $('xName').value = ''; $('xAmount').value = ''; save(); renderMes();
 }
+function skipLine(id) { const md = touch(curKey()); if (md.over[id] === 0) delete md.over[id]; else md.over[id] = 0; save(); renderMes(); }
 function delExtra(id) { const md = touch(curKey()); md.extras = md.extras.filter(e => e.id !== id); save(); renderMes(); }
 function toggleSettled() { const md = touch(curKey()); md.settled = !md.settled; save(); renderMes(); }
 function resetMonth() { if (confirm('¿Borrar importes, marcas y gastos puntuales de este mes?')) { delete S.months[curKey()]; save(); renderMes(); } }
-function activate(id) { const it = S.plan.find(i => i.id === id); if (!it) return; it.pending = false; it.from = curKey(); save(); renderMes(); }
 
 /* ===================== FIJOS ===================== */
 function renderFijos() {
     let annual = 0, netAnnual = 0;
-    S.plan.forEach(it => { if (it.pending) return; const a = priceAt(it, TODAY_KEY) * it.months.length; annual += a; netAnnual += it.payer === 'D' ? a * it.share / 100 : -a * (100 - it.share) / 100; });
-    $('fSummary').innerHTML =
-        `<div class="stat-bubble"><div class="stat-label">Fijos al año</div><div class="stat-value">${fmt(annual)}</div></div>
-         <div class="stat-bubble"><div class="stat-label">Media al mes</div><div class="stat-value" style="color:var(--accent-blue)">${fmt(annual / 12)}</div></div>
-         <div class="stat-bubble highlight"><div class="stat-label">Claudia te da de media al mes</div><div class="stat-value total-green">${fmt(netAnnual / 12)}</div><div class="stat-sub">Con los importes actuales. Los variables cuentan por su importe aproximado (los que están a 0 aún no suman).</div></div>`;
+    S.plan.forEach(it => { const a = priceAt(it, TODAY_KEY) * it.months.length; annual += a; netAnnual += it.payer === 'D' ? a * it.share / 100 : -a * (100 - it.share) / 100; });
+    $('fStats').innerHTML = `<div class="glass tile"><div class="k">Al año</div><div class="v">${fmt(annual)}</div></div><div class="glass tile"><div class="k">Media al mes</div><div class="v" style="color:var(--blue)">${fmt(annual / 12)}</div></div><div class="glass tile"><div class="k">Gastos</div><div class="v">${S.plan.length}</div></div>`;
+    $('fHero').innerHTML = `<div class="eyebrow">En un mes normal</div><div class="hero-label">${netAnnual >= 0 ? 'Claudia te da de media' : 'Tú le das de media'}</div><div class="hero-num ${netAnnual >= 0 ? '' : 'neg'}" style="font-size:2.3rem;margin-bottom:6px">${fmt(Math.abs(netAnnual / 12))}</div><div class="legend" style="margin:0">Con los importes actuales. Los variables cuentan por su aproximado y los que están a 0 aún no suman.</div>`;
     $('fList').innerHTML = S.plan.map(it => {
         const p = priceAt(it, TODAY_KEY);
-        const chips = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => `<span class="mchip ${it.months.includes(m) ? 'on' : ''}">${MS[m - 1][0]}</span>`).join('');
-        const badges = (it.pending ? '<span class="badge warn">⏰ Pendiente de activar</span>' : '') + (it.variable ? '<span class="badge warn">Variable</span>' : '') + (it.payer === 'C' ? '<span class="badge cl">Lo adelanta Claudia</span>' : '') + (it.share !== 50 ? `<span class="badge cl">Claudia ${it.share}%</span>` : '') + (it.from ? `<span class="badge">desde ${esc(it.from)}</span>` : '') + (it.to ? `<span class="badge">hasta ${esc(it.to)}</span>` : '');
-        return `<div class="fx-row" onclick="openEditor('${it.id}')"><div style="min-width:0"><div class="item-label">${esc(it.name)}</div>
-          <div class="item-sub">${esc(freqLabel(it))} · ${esc(METHOD_SHORT[it.method] || '')}</div><div style="margin-top:4px">${badges}</div><div class="mchips">${chips}</div></div>
-          <div class="fx-amt">${p ? fmt(p) : 'variable'}<small>${it.variable && p ? 'aprox.' : ''}</small></div></div>`;
-    }).join('') || '<div class="hint">Aún no hay gastos fijos.</div>';
+        const chips = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => `<span class="${it.months.includes(m) ? 'on' : ''}">${MS[m - 1][0]}</span>`).join('');
+        const badges = (it.variable ? '<span class="badge w">Variable</span>' : '') + (it.payer === 'C' ? '<span class="badge p">Lo adelanta Claudia</span>' : '') + (it.share !== 50 ? `<span class="badge p">Claudia ${it.share}%</span>` : '') + (it.from ? `<span class="badge">desde ${esc(it.from)}</span>` : '') + (it.to ? `<span class="badge">hasta ${esc(it.to)}</span>` : '');
+        return `<div class="row fx" onclick="openEditor('${it.id}')"><div class="ico">${esc(it.icon || '🧾')}</div><div class="txt"><div class="nm">${esc(it.name)}</div><div class="sb">${esc(freqLabel(it))} · ${esc(METHOD_SHORT[it.method] || '')}</div><div>${badges}</div><div class="chips">${chips}</div></div><div class="fxr">${p ? fmt(p) : 'variable'}<small>${it.variable && p ? 'aprox.' : ''}</small></div><span class="chev">›</span></div>`;
+    }).join('') || '<div class="legend" style="padding:12px">Aún no hay gastos fijos.</div>';
 }
 let editId = '', edMonths = [];
 function openEditor(id) {
     editId = id; const it = id ? S.plan.find(i => i.id === id) : null;
-    $('eTitle').textContent = it ? 'Editar gasto fijo' : 'Nuevo gasto fijo';
+    $('eTitle').textContent = it ? 'Editar ' + it.name : 'Nuevo gasto fijo';
     $('eStart').innerHTML = MES.map((n, i) => `<option value="${i + 1}">${n}</option>`).join('');
     $('eName').value = it ? it.name : ''; $('eAmount').value = it ? (priceAt(it, TODAY_KEY) || '') : '';
     $('eShare').value = it ? it.share : 50; $('eVar').checked = it ? !!it.variable : false;
@@ -431,10 +497,10 @@ function openEditor(id) {
     const step = { 12: 1, 6: 2, 4: 3, 2: 6, 1: 12 }[edMonths.length];
     $('eFreq').value = step ? String(step) : '0'; $('eStart').value = String(Math.min.apply(null, edMonths) || ck.m);
     $('eMethod').value = it ? it.method : 'cdmo'; $('ePayer').value = it ? it.payer : 'D';
-    $('eFrom').value = it ? it.from : ''; $('eTo').value = it ? it.to : ''; $('ePending').checked = it ? !!it.pending : false; $('eNote').value = it ? (it.note || '') : '';
-    $('eDel').style.display = it ? '' : 'none'; drawChips(); $('editor').classList.add('active');
+    $('eFrom').value = it ? it.from : ''; $('eTo').value = it ? it.to : ''; $('eIcon').value = it ? (it.icon || '🧾') : '🧾'; $('eNote').value = it ? (it.note || '') : '';
+    $('eDel').style.display = it ? '' : 'none'; drawChips(); $('editor').classList.add('on');
 }
-function closeEditor() { $('editor').classList.remove('active'); }
+function closeEditor() { $('editor').classList.remove('on'); }
 function drawChips() {
     $('eChips').innerHTML = MS.map((n, i) => `<button type="button" class="${edMonths.includes(i + 1) ? 'on' : ''}" onclick="toggleChip(${i + 1})">${n}</button>`).join('');
 }
@@ -447,7 +513,7 @@ function saveEditor() {
     const name = $('eName').value.trim(); if (!name) { alert('Ponle un nombre'); return; }
     if (!edMonths.length) { alert('Elige al menos un mes de cobro'); return; }
     const amount = num($('eAmount').value);
-    const f = { name, months: edMonths.slice(), method: $('eMethod').value, payer: $('ePayer').value, share: Math.max(0, Math.min(100, num($('eShare').value))), variable: $('eVar').checked, pending: $('ePending').checked, from: $('eFrom').value || '', to: $('eTo').value || '', note: $('eNote').value.trim() };
+    const f = { name, months: edMonths.slice(), method: $('eMethod').value, payer: $('ePayer').value, share: Math.max(0, Math.min(100, num($('eShare').value))), variable: $('eVar').checked, pending: false, icon: ($('eIcon').value.trim() || '🧾'), from: $('eFrom').value || '', to: $('eTo').value || '', note: $('eNote').value.trim() };
     if (editId) { const it = S.plan.find(i => i.id === editId); Object.assign(it, f); setPrice(it, TODAY_KEY, amount); }
     else S.plan.push(Object.assign({ id: 'f' + Date.now(), prices: [{ from: '0000-00', amount }] }, f));
     save(); closeEditor(); renderFijos(); renderMes();
@@ -467,16 +533,17 @@ function importBackup(inp) {
 /* ===================== BALANCE ===================== */
 function changeYear(o) { yr += o; renderBal(); }
 function barSvg(vals, solid) {
-    const W = 340, H = 150, pt = 16, pb = 18, pl = 4, pr = 4, bw = (W - pl - pr) / 12, max = Math.max(1, Math.max.apply(null, vals));
+    const W = 340, H = 160, pt = 18, pb = 20, pl = 4, pr = 4, bw = (W - pl - pr) / 12, max = Math.max(1, Math.max.apply(null, vals));
     const act = vals.filter(v => v > 0), avg = act.length ? act.reduce((a, b) => a + b, 0) / act.length : 0;
-    let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Gasto por mes">`;
+    let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Gasto por mes"><defs><linearGradient id="gb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--teal)"/><stop offset="1" style="stop-color:var(--blue)"/></linearGradient></defs>`;
+    [1 / 3, 2 / 3, 1].forEach(f => { const y = (H - pb - (H - pt - pb) * f).toFixed(1); s += `<line x1="0" x2="${W}" y1="${y}" y2="${y}" stroke="var(--stroke)" stroke-width="0.6"/>`; });
     vals.forEach((v, i) => {
-        const h = (H - pt - pb) * v / max, x = pl + i * bw + bw * 0.18, w = bw * 0.64, y = H - pb - h;
-        s += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${Math.max(h, 0).toFixed(1)}" rx="3" fill="var(--accent-blue)" opacity="${solid[i] ? 1 : 0.35}"/>`;
-        if (v > 0) s += `<text x="${(x + w / 2).toFixed(1)}" y="${(y - 3).toFixed(1)}" font-size="8" text-anchor="middle" fill="var(--text-sub)">${Math.round(v)}</text>`;
-        s += `<text x="${(x + w / 2).toFixed(1)}" y="${H - 5}" font-size="9" text-anchor="middle" fill="var(--text-sub)">${MS[i][0]}</text>`;
+        const h = (H - pt - pb) * v / max, x = pl + i * bw + bw * 0.16, w = bw * 0.68, y = H - pb - h;
+        if (h > 0) s += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="5" fill="url(#gb)" opacity="${solid[i] ? 1 : 0.38}"/>`;
+        if (v > 0) s += `<text x="${(x + w / 2).toFixed(1)}" y="${(y - 4).toFixed(1)}" font-size="8" font-weight="700" text-anchor="middle" fill="var(--sub)">${Math.round(v)}</text>`;
+        s += `<text x="${(x + w / 2).toFixed(1)}" y="${H - 5}" font-size="9" font-weight="600" text-anchor="middle" fill="var(--sub)">${MS[i][0]}</text>`;
     });
-    if (avg > 0) { const ya = H - pb - (H - pt - pb) * avg / max; s += `<line x1="0" x2="${W}" y1="${ya.toFixed(1)}" y2="${ya.toFixed(1)}" stroke="var(--accent-purple)" stroke-dasharray="4 3" stroke-width="1"/>`; }
+    if (avg > 0) { const ya = H - pb - (H - pt - pb) * avg / max; s += `<line x1="0" x2="${W}" y1="${ya.toFixed(1)}" y2="${ya.toFixed(1)}" stroke="var(--purple)" stroke-dasharray="4 3" stroke-width="1.2"/>`; }
     return s + '</svg>';
 }
 function renderBal() {
@@ -484,12 +551,12 @@ function renderBal() {
     const act = Y.tot.filter(v => v > 0), avg = act.length ? Y.sum / act.length : 0;
     let pend = 0; for (let m = 1; m <= 12; m++) { const k = keyOf(yr, m); if (Y.has[m - 1] && k <= TODAY_KEY && !Y.settled[m - 1]) pend += Y.net[m - 1]; }
     $('yKpis').innerHTML =
-        `<div class="stat-bubble"><div class="stat-label">Total del año</div><div class="stat-value">${fmt(Y.sum)}</div></div>
-         <div class="stat-bubble"><div class="stat-label">Media al mes</div><div class="stat-value" style="color:var(--accent-blue)">${fmt(avg)}</div></div>
-         <div class="stat-bubble"><div class="stat-label">Claudia en el año</div><div class="stat-value" style="color:var(--accent-purple)">${fmt(Y.netSum)}</div></div>
-         <div class="stat-bubble"><div class="stat-label">Pendiente de liquidar</div><div class="stat-value" style="color:var(--accent-orange)">${fmt(pend)}</div></div>`;
+        `<div class="glass tile"><div class="k">Total del año</div><div class="v">${fmt(Y.sum)}</div></div>
+         <div class="glass tile"><div class="k">Media al mes</div><div class="v" style="color:var(--blue)">${fmt(avg)}</div></div>
+         <div class="glass tile"><div class="k">Claudia en el año</div><div class="v" style="color:var(--purple)">${fmt(Y.netSum)}</div></div>
+         <div class="glass tile"><div class="k">Pendiente de liquidar</div><div class="v" style="color:var(--orange)">${fmt(pend)}</div></div>`;
     const solid = Y.has.map((h, i) => h && keyOf(yr, i + 1) <= TODAY_KEY);
-    $('yChart').innerHTML = act.length ? barSvg(Y.tot, solid) : '<div class="hint" style="text-align:center">Aún no hay datos de este año.</div>';
+    $('yChart').innerHTML = act.length ? barSvg(Y.tot, solid) : '<div class="legend" style="text-align:center">Aún no hay datos de este año.</div>';
     // tendencia
     let tr = '';
     const idx = Y.tot.map((v, i) => i).filter(i => Y.tot[i] > 0);
@@ -499,10 +566,10 @@ function renderBal() {
         const ci = ck.y === yr ? ck.m - 1 : -1;
         if (ci > 0 && Y.tot[ci] > 0 && Y.tot[ci - 1] > 0) { const d = Y.tot[ci] - Y.tot[ci - 1], p = d / Y.tot[ci - 1] * 100; tr += `🔁 ${MES[ci]} frente a ${MES[ci - 1]}: <b>${d >= 0 ? '+' : ''}${fmt(d)}</b> (${p >= 0 ? '+' : ''}${p.toFixed(1).replace('.', ',')} %)<br>`; }
         const next = idx.filter(i => keyOf(yr, i + 1) > TODAY_KEY)[0]; if (next != null) tr += `🔮 Próximo mes con cargo previsto: <b>${MES[next]}</b> (${fmt(Y.tot[next])})`;
-    } else tr = '<span class="hint">Sin datos todavía.</span>';
+    } else tr = '<span class="legend">Sin datos todavía.</span>';
     $('yTrend').innerHTML = tr;
     const entries = Object.keys(Y.items).map(k => [k, Y.items[k]]).filter(e => e[1] > 0).sort((a, b) => b[1] - a[1]), top = entries.length ? entries[0][1] : 1;
-    $('yItems').innerHTML = entries.map(e => `<div class="hbar"><div class="hbar-top"><span>${esc(e[0])}</span><span>${fmt(e[1])}</span></div><div class="hbar-track"><div class="hbar-fill" style="width:${(e[1] / top * 100).toFixed(1)}%"></div></div></div>`).join('') || '<span class="hint">Sin datos todavía.</span>';
+    $('yItems').innerHTML = entries.map(e => `<div class="hbar"><div class="hbar-top"><span>${esc(e[0])}</span><span>${fmt(e[1])}</span></div><div class="hbar-track"><div class="hbar-fill" style="width:${(e[1] / top * 100).toFixed(1)}%"></div></div></div>`).join('') || '<span class="legend">Sin datos todavía.</span>';
 }
 
 /* ===================== WhatsApp ===================== */
@@ -570,8 +637,8 @@ function pdfFijos() {
     d.heading('Gastos fijos', 'Leyenda con importes actuales y meses de cobro');
     let annual = 0, net = 0;
     const rows = S.plan.map(it => {
-        const p = priceAt(it, TODAY_KEY), a = it.pending ? 0 : p * it.months.length; annual += a; net += it.payer === 'D' ? a * it.share / 100 : -a * (100 - it.share) / 100;
-        return { c: [it.name + (it.pending ? ' (pendiente)' : ''), freqLabel(it), (p ? fmt(p) : 'variable') + (it.variable && p ? '*' : ''), (it.months.length === 12 ? 'Todos los meses' : it.months.map(m => MS[m - 1]).join(' ')), METHOD_SHORT[it.method]], dim: it.pending };
+        const p = priceAt(it, TODAY_KEY), a = p * it.months.length; annual += a; net += it.payer === 'D' ? a * it.share / 100 : -a * (100 - it.share) / 100;
+        return { c: [it.name, freqLabel(it), (p ? fmt(p) : 'variable') + (it.variable && p ? '*' : ''), (it.months.length === 12 ? 'Todos los meses' : it.months.map(m => MS[m - 1]).join(' ')), METHOD_SHORT[it.method]] };
     });
     d.table([{ h: 'Concepto', w: .31 }, { h: 'Frecuencia', w: .13 }, { h: 'Importe', w: .14, a: 'r' }, { h: 'Meses', w: .24 }, { h: 'Se cobra en', w: .18 }], rows);
     d.space(10); d.kv('Total fijos al año', fmt(annual), { bold: true }); d.kv('Media al mes', fmt(annual / 12));
