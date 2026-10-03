@@ -2,7 +2,7 @@
 <html lang="es" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -27,6 +27,11 @@
   --o1:rgba(10,132,255,.32);--o2:rgba(191,90,242,.26);--o3:rgba(48,209,88,.2);
 }
 html{background:linear-gradient(180deg,var(--bg1),var(--bg2));min-height:100%}
+html,body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none;touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+input[type=month].inp{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;max-width:100%;height:46px;text-align:left;line-height:1.2}
+input[type=month].inp::-webkit-date-and-time-value{text-align:left;min-height:1.2em}
+.inp::placeholder,.xin::placeholder,.amt::placeholder{color:var(--sub);opacity:.7}
+.nm,.sb,.txt{-webkit-text-size-adjust:100%}
 body{margin:0;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",system-ui,sans-serif;-webkit-font-smoothing:antialiased;
   padding:max(14px,env(safe-area-inset-top)) 16px 0;min-height:100vh;min-height:100dvh;font-variant-numeric:tabular-nums}
 .bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
@@ -45,7 +50,7 @@ body{margin:0;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF 
 
 /* ---- cabecera ---- */
 .top{display:flex;align-items:center;justify-content:space-between;margin:4px 2px 14px}
-.top h1{margin:0;font-size:1.9rem;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.top h1{margin:0;font-size:1.5rem;font-weight:800;letter-spacing:.01em;line-height:1.1;white-space:nowrap}
 .top p{margin:3px 0 0;font-size:.8rem;color:var(--sub);font-weight:500}
 .ver{margin-top:7px;border:1px solid var(--stroke);background:var(--glass);color:var(--sub);border-radius:999px;padding:4px 11px;font-size:.68rem;font-weight:700;cursor:pointer;font-family:inherit}
 .round{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.05rem;cursor:pointer;color:var(--txt);border:1px solid var(--stroke);background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:var(--shadow),inset 0 1px 0 var(--hi)}
@@ -97,7 +102,7 @@ body{margin:0;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF 
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .tile{padding:12px 10px;text-align:center;border-radius:22px}
 .tile .k{font-size:.62rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--sub)}
-.tile .v{font-size:1.08rem;font-weight:800;margin-top:4px;letter-spacing:-.01em}
+.tile .v{font-size:1rem;font-weight:800;margin-top:4px;letter-spacing:-.01em;white-space:nowrap}
 .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .kpis .tile .v{font-size:1.2rem}
 
@@ -109,7 +114,7 @@ body{margin:0;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF 
 .list{padding:4px 14px}
 .row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--stroke)}
 .row:last-child{border-bottom:none}
-.row.off{opacity:.5}
+.row.off .sb{color:var(--orange);font-weight:700}
 .chk{width:28px;height:28px;border-radius:50%;border:2px solid var(--faint);background:transparent;flex-shrink:0;cursor:pointer;color:#fff;font-weight:800;font-size:.85rem;display:flex;align-items:center;justify-content:center;padding:0}
 .chk.on{background:var(--green);border-color:var(--green)}
 .ico{width:34px;height:34px;border-radius:11px;background:var(--glass2);border:1px solid var(--stroke);display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0}
@@ -170,13 +175,14 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
 /* ---- editor ---- */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center;z-index:100}
 .overlay.on{display:flex}
-.sheet{width:100%;max-width:480px;max-height:93dvh;overflow-y:auto;background:var(--sheet);-webkit-backdrop-filter:blur(40px) saturate(190%);backdrop-filter:blur(40px) saturate(190%);border:1px solid var(--stroke);border-bottom:none;border-radius:30px 30px 0 0;padding:10px 16px max(22px,env(safe-area-inset-bottom));box-shadow:0 -10px 50px rgba(0,0,0,.4),inset 0 1px 0 var(--hi)}
+.sheet{width:100%;max-width:480px;max-height:93dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;background:var(--sheet);-webkit-backdrop-filter:blur(40px) saturate(190%);backdrop-filter:blur(40px) saturate(190%);border:1px solid var(--stroke);border-bottom:none;border-radius:30px 30px 0 0;padding:10px 16px max(22px,env(safe-area-inset-bottom));box-shadow:0 -10px 50px rgba(0,0,0,.4),inset 0 1px 0 var(--hi)}
 .grab{width:40px;height:5px;border-radius:5px;background:var(--faint);margin:0 auto 12px}
 .sheet h3{margin:0 0 4px;font-size:1.2rem;font-weight:800}
 .sheet .sub{font-size:.76rem;color:var(--sub);margin:0 0 14px;line-height:1.4}
 .fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;min-width:0}
-.fr{display:flex;gap:10px}
-.fr .fg{flex:1}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr.ic{grid-template-columns:62px 1fr}
+.fr .fg{min-width:0}
 .lab{font-size:.72rem;font-weight:700;color:var(--sub)}
 .chk-row{display:flex;align-items:center;gap:9px;font-size:.86rem;font-weight:600;margin-bottom:12px}
 .chk-row input{width:20px;height:20px}
@@ -190,7 +196,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
 <div class="bg"><i class="a"></i><i class="b"></i><i class="c"></i></div>
 <div class="wrap">
   <div class="top">
-    <div><h1>Economía</h1><p>CDMO · gastos a medias con Claudia</p><button class="ver" id="verBtn" onclick="checkUpdate()"></button></div>
+    <div><h1>ECONOMÍA CDMO</h1><p>CDMO · gastos a medias con Claudia</p><button class="ver" id="verBtn" onclick="checkUpdate()"></button></div>
     <button class="round" onclick="toggleTheme()" id="themeBtn" aria-label="Cambiar tema">🌙</button>
   </div>
 
@@ -220,6 +226,10 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
       <div class="eyebrow" style="text-align:left;margin-bottom:6px">Próximo mes · <span id="nxName"></span></div>
       <div class="next" id="mNext"></div>
     </div>
+    <div class="glass pad">
+      <div class="eyebrow" style="text-align:left;margin-bottom:6px">Más adelante</div>
+      <div class="next" id="mAhead"></div>
+    </div>
     <div class="actions">
       <button class="btn purple" onclick="exportPDF('mes')">📄 PDF</button>
       <button class="btn wa" onclick="sendWA()">💬 Enviar a Claudia</button>
@@ -233,21 +243,13 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     <div class="stats" id="fStats"></div>
     <div class="glass hero" style="padding:16px" id="fHero"></div>
     <div class="glass list" id="fList"></div>
-    <div class="glass pad">
-      <div class="eyebrow" style="text-align:left">Punto de partida del saldo</div>
-      <p class="legend" style="margin:6px 0 10px">Desde qué mes llevas la cuenta con Claudia y cuánto os debíais ese día. Después el saldo se arrastra solo de un mes a otro.</p>
-      <div class="fr">
-        <div class="fg"><label class="lab">Empezar a contar en</label><input type="month" id="sStart" class="inp" onchange="setStart()"></div>
-        <div class="fg"><label class="lab">Saldo inicial (€)</label><input type="number" id="sOpen" class="inp" inputmode="decimal" step="0.01" placeholder="0,00" onchange="setStart()"></div>
-      </div>
-      <div class="legend">Positivo: Claudia te debía ese día. Negativo: le debías tú.</div>
-    </div>
     <button class="btn blue" style="width:100%" onclick="openEditor('')">➕ Añadir gasto fijo</button>
     <div class="actions">
       <button class="btn purple" onclick="exportPDF('fijos')">📄 PDF de fijos</button>
       <button class="btn soft" onclick="exportBackup()">💾 Copia de seguridad</button>
       <button class="btn soft" onclick="$('impFile').click()">📥 Restaurar copia</button>
     </div>
+    <div class="legend" id="bkInfo" style="text-align:center;margin-top:-4px"></div>
     <input type="file" id="impFile" accept=".json,application/json" style="display:none" onchange="importBackup(this)">
   </div>
 
@@ -282,8 +284,8 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
     <div class="grab"></div>
     <h3 id="eTitle">Gasto fijo</h3>
     <p class="sub">Los cambios de importe valen desde este mes; los meses anteriores no se tocan.</p>
-    <div class="fr">
-      <div class="fg" style="flex:0 0 62px"><label class="lab">Icono</label><input type="text" id="eIcon" class="inp icon-in" maxlength="4" value="🧾"></div>
+    <div class="fr ic">
+      <div class="fg"><label class="lab">Icono</label><input type="text" id="eIcon" class="inp icon-in" maxlength="4" value="🧾"></div>
       <div class="fg"><label class="lab">Nombre</label><input type="text" id="eName" class="inp" placeholder="Ej: Seguro hogar"></div>
     </div>
     <div class="fr">
@@ -328,6 +330,7 @@ const fmt = n => { n = isFinite(n) ? n : 0; const p = Math.abs(n).toFixed(2).spl
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const r2 = v => Math.round(v * 100 + 1e-7) / 100;
 const num = v => { const n = parseFloat(String(v).replace(',', '.')); return isFinite(n) ? n : 0; };
 const MES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 const MS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -416,8 +419,13 @@ function setPrice(it, key, amount) {
 }
 function freqLabel(it) { const n = it.months.length; return ({ 12: 'Mensual', 6: 'Bimensual', 4: 'Trimestral', 2: 'Semestral', 1: 'Anual' })[n] || (n + ' veces al año'); }
 function claudiaPart(it, amount) {
-    if (it.shareMode === 'eur') return Math.min(Math.max(num(it.shareEur), 0), Math.max(amount, 0));
-    return amount * (it.share == null ? 50 : it.share) / 100;
+    if (it.shareMode === 'eur') return r2(Math.min(Math.max(num(it.shareEur), 0), Math.max(amount, 0)));
+    return r2(amount * (it.share == null ? 50 : it.share) / 100);
+}
+function lastOver(id, key) {
+    let y = +key.slice(0, 4), m = +key.slice(5, 7);
+    for (let i = 0; i < 12; i++) { m--; if (m < 1) { m = 12; y--; } const md = S.months[keyOf(y, m)], v = md && md.over ? md.over[id] : undefined; if (v > 0) return v; }
+    return 0;
 }
 function linesOf(key) {
     const md = S.months[key] || {}, out = [], m = +key.slice(5, 7);
@@ -425,33 +433,23 @@ function linesOf(key) {
         if (!it.months.includes(m)) return;
         if (it.from && key < it.from) return; if (it.to && key > it.to) return;
         const o = md.over ? md.over[it.id] : undefined, has = o != null;
-        const amount = has ? o : priceAt(it, key), cp = claudiaPart(it, amount), def = it.payer === 'D' ? cp : amount - cp;
+        const amount = has ? o : priceAt(it, key), cp = claudiaPart(it, amount), def = it.payer === 'D' ? cp : r2(amount - cp);
         const tv = md.tr ? md.tr[it.id] : undefined, tOver = tv != null, noC = it.payer === 'C' && !!md.skipC;
         out.push({ id: it.id, kind: 'fix', icon: it.icon || '🧾', skipped: has && o === 0, name: it.name, amount, est: !has && !!it.variable, payer: it.payer, xfer: noC ? 0 : (tOver ? tv : def), xferDef: def, noC, xferOver: tOver && !noC,
+            last: it.variable ? lastOver(it.id, key) : 0,
             shareTxt: it.shareMode === 'eur' ? 'Claudia ' + fmt(it.shareEur) : (it.share !== 50 ? 'Claudia ' + it.share + '%' : ''),
             method: it.method, paid: !!(md.paid && md.paid[it.id]), freq: freqLabel(it) });
     });
-    (md.extras || []).forEach(x => out.push({ id: x.id, kind: 'extra', icon: '🧾', skipped: false, name: x.label, amount: x.amount, est: false, payer: x.payer || 'D', xfer: x.tr != null ? x.tr : x.amount * (x.share == null ? 50 : x.share) / 100, xferDef: x.amount * (x.share == null ? 50 : x.share) / 100, noC: false, xferOver: x.tr != null, shareTxt: '', method: 'cdmo', paid: !!x.paid, freq: 'Puntual' }));
+    (md.extras || []).forEach(x => out.push({ id: x.id, kind: 'extra', icon: '🧾', skipped: false, name: x.label, amount: x.amount, est: false, payer: x.payer || 'D', xfer: x.tr != null ? x.tr : r2(x.amount * (x.share == null ? 50 : x.share) / 100), xferDef: r2(x.amount * (x.share == null ? 50 : x.share) / 100), noC: false, xferOver: x.tr != null, shareTxt: '', method: 'cdmo', paid: !!x.paid, freq: 'Puntual' }));
     return out;
 }
 const dueOf = l => l.payer === 'D' ? l.xfer : -l.xfer;   // + Claudia te da · − tú le das
 function totalsOf(lines) {
     const t = { total: 0, paid: 0, est: 0, fromD: 0, fromC: 0, netPaid: 0 };
     lines.forEach(l => { t.total += l.amount; const d = dueOf(l); if (l.paid) { t.paid += l.amount; t.netPaid += d; } if (l.est) t.est++; if (d >= 0) t.fromD += d; else t.fromC += -d; });
-    t.net = t.fromD - t.fromC; return t;
+    t.total = r2(t.total); t.paid = r2(t.paid); t.fromD = r2(t.fromD); t.fromC = r2(t.fromC); t.netPaid = r2(t.netPaid); t.net = r2(t.fromD - t.fromC); return t;
 }
 const hasData = key => key >= TODAY_KEY || !!(S.months[key] && S.months[key].touched);
-function balanceBefore(key) {
-    const start = S.start || TODAY_KEY; if (key < start) return 0;
-    let b = num(S.opening), y = +start.slice(0, 4), m = +start.slice(5, 7), guard = 0;
-    while (keyOf(y, m) < key && guard++ < 600) {
-        const k = keyOf(y, m), md = S.months[k];
-        if (k <= TODAY_KEY || (md && md.touched)) b += totalsOf(linesOf(k)).net - num(md && md.recv);
-        m++; if (m > 12) { m = 1; y++; }
-    }
-    return b;
-}
-function balanceAfter(key) { const md = S.months[key]; return balanceBefore(key) + totalsOf(linesOf(key)).net - num(md && md.recv); }
 function yearInfo(y) {
     const tot = [], net = [], has = [], settled = [], recv = [], items = {};
     for (let m = 1; m <= 12; m++) {
@@ -483,25 +481,28 @@ function renderMes() {
     const cLines = lines.filter(l => l.payer === 'C'), hasC = cLines.length > 0, skippedC = cLines.reduce((a, l) => a + l.xferDef, 0);
     const cNames = cLines.map(l => l.name.replace(/^Renting /, '').split(' ')[0]).join(' y ');
     const sg = v => (v < 0 ? '−' : '') + fmt(Math.abs(v));
-    const before = balanceBefore(key), recv = num(md.recv), after = before + net - recv, sg2 = v => (v < 0 ? '−' : '+') + fmt(Math.abs(v));
+    const recv = num(md.recv), after = r2(net - recv), sg2 = v => (v < 0 ? '−' : '+') + fmt(Math.abs(v));
     $('mHero').innerHTML =
         `<div class="eyebrow">Cuenta con Claudia · ${esc(mName.toLowerCase())}</div>
-         <div class="hero-label">${after >= 0 ? 'Claudia te debe ahora' : 'Tú le debes ahora a Claudia'}</div>
+         <div class="hero-label">${after >= 0 ? 'Claudia te debe' : 'Tú le debes a Claudia'}</div>
          <div class="hero-num ${after >= 0 ? '' : 'neg'}">${fmt(Math.abs(after))}</div>
          <div class="calc">
            <div class="crow"><span><span class="tag up">Ella te da</span> por los gastos de tu cuenta</span><b>+${fmt(t.fromD)}</b></div>
            ${hasC ? `<div class="crow"><span><span class="tag down">Tú le das</span> por lo de su cuenta</span><b>−${fmt(t.fromC)}</b></div>` : ''}
            <div class="crow tot"><span>Resultado de este mes</span><b>${sg2(net)}</b></div>
-           <div class="crow"><span>Saldo de meses anteriores</span><b>${sg2(before)}</b></div>
            <div class="crow"><span>Ya me ha pasado este mes</span><span class="recv"><input type="number" inputmode="decimal" step="0.01" class="xin" value="${recv || ''}" placeholder="0,00" onchange="setRecv(this.value)"><span>€</span></span></div>
+           ${net > 0.004 && Math.abs(recv - net) > 0.004 ? `<div class="crow" style="justify-content:flex-end;border-bottom:none"><button class="chip" onclick="setRecv(${net.toFixed(2)})">Me ha pasado justo lo que tocaba</button></div>` : ''}
          </div>
-         <div class="legend" style="margin-top:10px">Saldo = anterior + este mes − lo que ya te ha pasado. Si ella te pasa de menos, la diferencia sigue en el mes siguiente.</div>`;
+         <div class="legend" style="margin-top:10px">Cada mes se calcula por separado: lo que quede sin pasar no se suma al mes siguiente.</div>`;
     $('mStats').innerHTML =
         `<div class="glass tile"><div class="k">Total</div><div class="v">${fmt(t.total)}</div></div>
          <div class="glass tile"><div class="k">Pagado</div><div class="v" style="color:var(--green)">${fmt(t.paid)}</div></div>
          <div class="glass tile"><div class="k">Pendiente</div><div class="v" style="color:var(--orange)">${fmt(t.total - t.paid)}</div></div>`;
     const estNames = lines.filter(l => l.est).map(l => l.name);
-    $('mAlerts').innerHTML = estNames.length ? `<div class="glass alert">⚠️ Pon el importe real de: <b>${estNames.map(esc).join(', ')}</b></div>` : '';
+    const bkDays = S.lastBackup ? Math.floor((Date.now() - S.lastBackup) / 86400000) : null;
+    let al = estNames.length ? `<div class="glass alert">⚠️ Pon el importe real de: <b>${estNames.map(esc).join(', ')}</b></div>` : '';
+    if (bkDays === null || bkDays > 30) al += `<div class="glass alert">💾 ${bkDays === null ? 'Aún no has hecho copia de seguridad' : 'Hace ' + bkDays + ' días de tu última copia'}. Tus datos solo están en este móvil.<br><button class="chip" style="margin-top:8px" onclick="exportBackup()">Hacer copia ahora</button></div>`;
+    $('mAlerts').innerHTML = al;
     const order = ['transfer', 'cdmo', 'card', 'claudia', 'notif'];
     let html = '';
     order.forEach(mt => {
@@ -510,7 +511,7 @@ function renderMes() {
         html += `<div style="display:flex;flex-direction:column;gap:8px"><div class="sec"><span>${esc(METHODS[mt])}</span><b>${fmt(sub)}</b></div><div class="glass list">`;
         g.forEach(l => {
             const bits = [];
-            if (l.skipped) bits.push('Sin cargo este mes'); else { bits.push(l.freq); if (l.est) bits.push('importe estimado'); }
+            if (l.skipped) bits.push('Sin cargo este mes'); else { bits.push(l.freq); if (l.est) { bits.push('importe estimado'); if (l.last) bits.push('última vez ' + fmt(l.last)); } }
             if (l.shareTxt) bits.push(l.shareTxt);
             const badge = l.payer === 'C' ? '<span class="badge p">Sale de la cuenta de Claudia</span>' : '';
             const isOpen = openShare === l.id;
@@ -519,7 +520,7 @@ function renderMes() {
               <button class="chk ${l.paid ? 'on' : ''}" onclick="toggleLine('${l.id}','${l.kind}')" aria-label="Marcar como pagado">${l.paid ? '✓' : ''}</button>
               <div class="ico">${esc(l.icon)}</div>
               <div class="txt" ${l.kind === 'fix' ? `onclick="openEditor('${l.id}')"` : ''}><div class="nm">${esc(l.name)}</div><div class="sb">${esc(bits.join(' · '))}</div>${badge}</div>
-              <input type="number" inputmode="decimal" step="0.01" class="amt ${l.est ? 'est' : ''}" value="${l.amount || ''}" placeholder="0,00" onchange="setAmount('${l.id}','${l.kind}',this.value)">
+              <input type="number" inputmode="decimal" step="0.01" class="amt ${l.est ? 'est' : ''}" value="${l.amount || (l.skipped ? '0' : '')}" placeholder="0,00" onchange="setAmount('${l.id}','${l.kind}',this.value)">
               ${l.kind === 'fix' ? `<button class="mini" onclick="skipLine('${l.id}')" aria-label="${l.skipped ? 'Restaurar' : 'Este mes no se cobra'}">${l.skipped ? '↺' : '⊘'}</button>` : `<button class="mini del" onclick="delExtra('${l.id}')" aria-label="Borrar">✕</button>`}
               ${!l.skipped ? `<div class="sharebar"><span class="xl ${l.payer === 'C' ? 'dn' : 'up'}">${l.payer === 'D' ? '👩 Claudia me da' : '↗ Yo le doy a Claudia'}</span><input type="number" inputmode="decimal" step="0.01" class="xin" value="${(l.xfer || l.xferOver) ? l.xfer.toFixed(2) : ''}" placeholder="0,00" onchange="setTransfer('${l.id}','${l.kind}',this.value)"><span class="xl">€</span>${l.xferOver ? `<button class="chip" onclick="resetTransfer('${l.id}','${l.kind}')">Auto</button>` : ''}</div>` : ''}
             </div>`;
@@ -530,6 +531,12 @@ function renderMes() {
     $('mLines').innerHTML = html;
     const nd = new Date(ck.y, ck.m, 1), nk = keyOf(nd.getFullYear(), nd.getMonth() + 1), nl = linesOf(nk).filter(l => l.kind === 'fix');
     $('nxName').textContent = MES[nd.getMonth()];
+    let ah = '';
+    for (let i = 2; i <= 4; i++) {
+        const d2 = new Date(ck.y, ck.m - 1 + i, 1), k2 = keyOf(d2.getFullYear(), d2.getMonth() + 1), l2 = linesOf(k2).filter(l => l.kind === 'fix'), tot2 = l2.reduce((a, l) => a + l.amount, 0), big = l2.filter(l => l.freq !== 'Mensual' && l.amount > 0).map(l => esc(l.name.split(' (')[0]) + ' ' + fmt(l.amount));
+        ah += `<div><span>${MES[d2.getMonth()]}${big.length ? `<br><small class="legend">${big.join(' · ')}</small>` : ''}</span><span>${fmt(tot2)}</span></div>`;
+    }
+    $('mAhead').innerHTML = ah;
     $('mNext').innerHTML = nl.length ? nl.map(l => `<div><span>${esc(l.icon)} ${esc(l.name)}</span><span>${l.est && !l.amount ? 'variable' : (l.est ? '≈ ' : '') + fmt(l.amount)}</span></div>`).join('') + `<div><span>Total previsto</span><span>${fmt(nl.reduce((a, l) => a + l.amount, 0))}</span></div>` : '<span class="legend">Sin cargos fijos el mes que viene.</span>';
 }
 function toggleSkipC() { const md = touch(curKey()); md.skipC = !md.skipC; save(); renderMes(); }
@@ -571,7 +578,7 @@ function resetMonth() { if (confirm('¿Borrar importes, marcas y gastos puntuale
 
 /* ===================== FIJOS ===================== */
 function renderFijos() {
-    $('sStart').value = S.start || TODAY_KEY; $('sOpen').value = S.opening || '';
+    $('bkInfo').textContent = S.lastBackup ? 'Última copia de seguridad: hace ' + Math.floor((Date.now() - S.lastBackup) / 86400000) + ' días' : 'Aún no has hecho ninguna copia de seguridad';
     let annual = 0, netAnnual = 0;
     S.plan.forEach(it => { const p = priceAt(it, TODAY_KEY), cp = claudiaPart(it, p), x = it.payer === 'D' ? cp : p - cp, n = it.months.length; annual += p * n; netAnnual += (it.payer === 'D' ? x : -x) * n; });
     $('fStats').innerHTML = `<div class="glass tile"><div class="k">Al año</div><div class="v">${fmt(annual)}</div></div><div class="glass tile"><div class="k">Media al mes</div><div class="v" style="color:var(--blue)">${fmt(annual / 12)}</div></div><div class="glass tile"><div class="k">Gastos</div><div class="v">${S.plan.length}</div></div>`;
@@ -621,8 +628,7 @@ function deleteFixed() {
     if (!confirm('¿Eliminar este gasto fijo? Desaparece también de los meses anteriores. Si solo quieres dejar de pagarlo, mejor ponle «Hasta».')) return;
     S.plan = S.plan.filter(i => i.id !== editId); save(); closeEditor(); renderFijos(); renderMes();
 }
-function setStart() { S.start = $('sStart').value || TODAY_KEY; S.opening = num($('sOpen').value); save(); renderFijos(); }
-function exportBackup() { MiniPDF.deliver(new Blob([JSON.stringify(S)], { type: 'application/json' }), 'economia-cdmo-copia.json', 'application/json'); }
+function exportBackup() { S.lastBackup = Date.now(); save(); MiniPDF.deliver(new Blob([JSON.stringify(S)], { type: 'application/json' }), 'economia-cdmo-copia.json', 'application/json'); }
 function importBackup(inp) {
     const f = inp.files && inp.files[0]; if (!f) return;
     const r = new FileReader();
@@ -649,12 +655,12 @@ function barSvg(vals, solid) {
 function renderBal() {
     const Y = yearInfo(yr); $('yTitle').textContent = 'Año ' + yr;
     const act = Y.tot.filter(v => v > 0), avg = act.length ? Y.sum / act.length : 0;
-    const pend = balanceAfter(TODAY_KEY);
+    const recvYear = r2(Y.recv.reduce((a, b) => a + b, 0));
     $('yKpis').innerHTML =
         `<div class="glass tile"><div class="k">Total del año</div><div class="v">${fmt(Y.sum)}</div></div>
          <div class="glass tile"><div class="k">Media al mes</div><div class="v" style="color:var(--blue)">${fmt(avg)}</div></div>
          <div class="glass tile"><div class="k">Claudia en el año</div><div class="v" style="color:var(--purple)">${fmt(Y.netSum)}</div></div>
-         <div class="glass tile"><div class="k">${pend >= 0 ? 'Claudia te debe ahora' : 'Le debes ahora'}</div><div class="v" style="color:var(--orange)">${fmt(Math.abs(pend))}</div></div>`;
+         <div class="glass tile"><div class="k">Me ha pasado en el año</div><div class="v" style="color:var(--green)">${fmt(recvYear)}</div></div>`;
     const solid = Y.has.map((h, i) => h && keyOf(yr, i + 1) <= TODAY_KEY);
     $('yChart').innerHTML = act.length ? barSvg(Y.tot, solid) : '<div class="legend" style="text-align:center">Aún no hay datos de este año.</div>';
     // tendencia
@@ -678,12 +684,11 @@ function sendWA() {
     const key = curKey(), lines = linesOf(key), t = totalsOf(lines);
     let s = `📊 *Gastos CDMO · ${MES[ck.m - 1]} ${ck.y}*\n\n`;
     lines.forEach(l => { if (l.amount > 0) s += `${l.paid ? '✅' : '⏳'} ${l.name}: ${fmt(l.amount)}${l.est ? ' (aprox.)' : ''}\n`; });
-    const before = balanceBefore(key), recv = num((S.months[key] || {}).recv), after = before + t.net - recv;
+    const recv = num((S.months[key] || {}).recv), after = r2(t.net - recv);
     s += `\n💰 *Total gastos:* ${fmt(t.total)}\n`;
     s += `➕ Este mes: ${t.net >= 0 ? 'me das ' : 'te doy '}${fmt(Math.abs(t.net))}\n`;
-    if (Math.abs(before) > 0.004) s += `↩️ Saldo anterior: ${before >= 0 ? 'me debes ' : 'te debo '}${fmt(Math.abs(before))}\n`;
     if (recv > 0) s += `✅ Ya me has pasado: ${fmt(recv)}\n`;
-    s += after >= 0 ? `👉 *Me debes ahora:* ${fmt(after)}` : `👉 *Te debo ahora:* ${fmt(-after)}`;
+    s += after >= 0 ? `👉 *Me debes:* ${fmt(after)}` : `👉 *Te debo:* ${fmt(-after)}`;
     openWA(s);
 }
 function sendYearWA() {
@@ -713,9 +718,9 @@ function pdfMes() {
     d.kv('Ella te da (por los gastos de tu cuenta)', '+' + fmt(t.fromD));
     if (lines.some(l => l.payer === 'C')) d.kv('Tú le das (por lo de su cuenta)', '-' + fmt(t.fromC));
     d.kv('Resultado de este mes', sgn(t.net), { bold: true });
-    const before = balanceBefore(key), recv = num((S.months[key] || {}).recv), after = before + t.net - recv;
-    d.kv('Saldo de meses anteriores', sgn(before)); d.kv('Ya me ha pasado este mes', fmt(recv));
-    d.big(after >= 0 ? 'Claudia te debe ahora' : 'Tú le debes ahora a Claudia', fmt(Math.abs(after)));
+    const recv = num((S.months[key] || {}).recv), after = r2(t.net - recv);
+    d.kv('Ya me ha pasado este mes', fmt(recv));
+    d.big(after >= 0 ? 'Claudia te debe' : 'Tú le debes a Claudia', fmt(Math.abs(after)));
     d.section('Detalle');
     const rows = lines.map(l => ({ c: [l.name, METHOD_SHORT[l.method], l.paid ? 'Pagado' : (l.est ? 'Estimado' : 'Pendiente'), fmt(l.amount), sgn(dueOf(l))], dim: l.amount === 0 }));
     rows.push({ c: ['Total', '', '', fmt(t.total), sgn(t.net)], bold: true, sep: true });
@@ -762,7 +767,15 @@ initTheme(); renderMes();
 
 </script>
 <script>
-const APP_VERSION = 'v9 · 03/10/2026';
+/* Sin zoom: ni pellizco ni doble toque */
+(function () {
+  var d = document;
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (e) { d.addEventListener(e, function (ev) { ev.preventDefault(); }, { passive: false }); });
+  d.addEventListener('touchmove', function (ev) { if (ev.touches && ev.touches.length > 1) ev.preventDefault(); }, { passive: false });
+})();
+</script>
+<script>
+const APP_VERSION = 'v10 · 03/10/2026';
 
 async function forceUpdate() {
     if (!confirm('Voy a recargar la app para coger la última versión. Tus datos no se borran. ¿Seguir?')) return;
