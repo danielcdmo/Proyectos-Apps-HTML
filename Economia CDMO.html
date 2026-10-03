@@ -246,9 +246,13 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
 .sfoot{text-align:center;font-size:.66rem;color:var(--faint);margin:6px 0 4px}
 
 /* ---- editor ---- */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center;z-index:100}
-.overlay.on{display:flex}
-.sheet{width:100%;max-width:480px;max-height:93dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;background:var(--sheet);-webkit-backdrop-filter:blur(40px) saturate(190%);backdrop-filter:blur(40px) saturate(190%);border:1px solid var(--stroke);border-bottom:none;border-radius:30px 30px 0 0;padding:10px 16px max(22px,env(safe-area-inset-bottom));box-shadow:0 -10px 50px rgba(0,0,0,.4),inset 0 1px 0 var(--hi)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);display:flex;align-items:flex-end;justify-content:center;z-index:100;
+  visibility:hidden;opacity:0;pointer-events:none;transition:opacity .4s ease,visibility 0s linear .55s}
+.overlay.on{visibility:visible;opacity:1;pointer-events:auto;transition:opacity .4s ease,visibility 0s}
+.sheet{width:calc(100% - 20px);max-width:440px;max-height:84dvh;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;margin:0 0 max(10px,env(safe-area-inset-bottom));
+  background:var(--sheet);-webkit-backdrop-filter:blur(40px) saturate(190%);backdrop-filter:blur(40px) saturate(190%);border:1px solid var(--stroke);border-radius:30px;padding:10px 16px 18px;
+  box-shadow:0 20px 60px rgba(0,0,0,.45),inset 0 1px 0 var(--hi);transform:translateY(112%) scale(.97);transition:transform .55s cubic-bezier(.32,.72,0,1)}
+.overlay.on .sheet{transform:none}
 .grab{width:40px;height:5px;border-radius:5px;background:var(--faint);margin:0 auto 12px}
 .sheet h3{margin:0 0 4px;font-size:1.2rem;font-weight:800}
 .sheet .sub{font-size:.76rem;color:var(--sub);margin:0 0 14px;line-height:1.4}
@@ -263,6 +267,51 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
 .mgrid button{padding:10px 0;border-radius:12px;border:1px solid var(--stroke);background:var(--glass);color:var(--txt);font-weight:700;font-size:.78rem;cursor:pointer}
 .mgrid button.on{background:var(--blue);border-color:var(--blue);color:#fff}
 .icon-in{width:62px;text-align:center;font-size:1.5rem;padding:6px}
+
+/* ---- editor de gasto fijo ---- */
+.sheet.ed{display:flex;flex-direction:column;overflow:hidden;padding:10px 0 0;max-height:78dvh}
+.ed .grab{margin-bottom:8px}
+.shd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 16px 8px}
+.shd h3{margin:0;font-size:1.12rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xbtn{flex:0 0 auto;width:32px;height:32px;border-radius:50%;border:none;background:rgba(120,135,160,.2);color:var(--sub);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.xbtn svg{width:15px;height:15px;stroke:currentColor;stroke-width:2.4;fill:none;stroke-linecap:round}
+.ebody{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:2px 16px 6px;-webkit-overflow-scrolling:touch}
+.esec{background:rgba(120,135,160,.11);border:1px solid var(--stroke);border-radius:18px;padding:10px 11px;margin-bottom:8px}
+.esec .fg{margin-bottom:0}.esec .fg:last-child,.esec .fr:last-child .fg{margin-bottom:0}
+.esec .fr{margin-bottom:0}.esec .fr+.fr,.esec .fr+.fg,.esec .fg+.fr,.esec>.fg+.fg,.esec .seg+.fr{margin-top:9px}
+.esec .fr .fg{margin-top:0}
+.esec .inp{background:var(--glass2);padding:8px 10px;border-radius:12px;font-size:16px}
+.eh{font-size:.64rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);margin:0 0 7px 2px}
+.esec .lab{font-size:.68rem}
+.esec .icon-in{font-size:1.35rem;padding:6px}
+.esec .seg{margin:9px 0 0;padding:3px}.esec .seg button{padding:7px 0}
+.tgl{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.84rem;font-weight:600;margin-top:10px;cursor:pointer}
+.tgl small{display:block;font-size:.7rem;color:var(--sub);font-weight:500;margin-top:1px}
+.tgl input{-webkit-appearance:none;appearance:none;flex:0 0 auto;width:48px;height:29px;border-radius:99px;background:rgba(120,135,160,.38);position:relative;transition:background .3s;cursor:pointer;margin:0}
+.tgl input::after{content:"";position:absolute;top:2px;left:2px;width:25px;height:25px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.28);transition:transform .32s cubic-bezier(.34,1.4,.5,1)}
+.tgl input:checked{background:var(--green)}.tgl input:checked::after{transform:translateX(19px)}
+.more{border:1px solid var(--stroke);border-radius:20px;background:rgba(120,135,160,.11);margin-bottom:10px;overflow:hidden}
+.more summary{list-style:none;cursor:pointer;padding:13px 14px;font-size:.84rem;font-weight:700;color:var(--sub);display:flex;justify-content:space-between;align-items:center}
+.more summary::-webkit-details-marker{display:none}
+.more summary::after{content:"›";font-size:1.3rem;line-height:1;transition:transform .3s;color:var(--faint)}
+.more[open] summary::after{transform:rotate(90deg)}
+.more .mb{padding:0 12px 12px}
+.more .inp{background:var(--glass2);padding:10px 11px;border-radius:12px}
+.efoot{display:flex;flex-direction:column;gap:6px;padding:10px 16px max(14px,env(safe-area-inset-bottom));border-top:1px solid var(--stroke)}
+.efoot .btn{flex:none;width:100%;min-width:0;padding:13px}
+.efoot .lnk{background:none;border:none;color:var(--red);font-weight:700;font-size:.82rem;font-family:inherit;padding:6px;cursor:pointer}
+
+/* ---- suavidad tipo iOS ---- */
+.panel.active{animation:pIn .5s cubic-bezier(.32,.72,0,1) both}
+@keyframes pIn{from{opacity:0;transform:translate3d(var(--dx,24px),0,0)}to{opacity:1;transform:none}}
+html[data-lock="1"] #lock{animation:fIn .35s ease both}
+@keyframes fIn{from{opacity:0}to{opacity:1}}
+.btn,.round,.chip,.pick button,.mgrid button{transition:transform .25s cubic-bezier(.3,1.4,.4,1),opacity .2s,background .25s,color .25s}
+.btn:active,.round:active,.chip:active,.pick button:active,.mgrid button:active{transform:scale(.95)}
+.srow,.srow2,.list [onclick]{transition:opacity .25s ease,background .25s}
+.srow:active,.list [onclick]:active{opacity:.55;transition-duration:.08s}
+@media (prefers-reduced-motion:reduce){.panel.active,.sheet,.overlay{animation:none;transition-duration:.01ms}}
+.esec .mgrid{gap:5px}.esec .mgrid button{padding:8px 0;border-radius:11px}.esec .mgrid{margin-top:2px}
 </style>
 </head>
 <body>
@@ -402,41 +451,58 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradi
 
 <!-- ===== editor ===== -->
 <div class="overlay" id="editor" onclick="if(event.target===this)closeEditor()">
-  <div class="sheet">
+  <div class="sheet ed">
     <div class="grab"></div>
-    <h3 id="eTitle">Gasto fijo</h3>
-    <p class="sub">Los cambios de importe valen desde este mes; los meses anteriores no se tocan.</p>
-    <div class="fr ic">
-      <div class="fg"><label class="lab">Icono</label><input type="text" id="eIcon" class="inp icon-in" maxlength="4" value="🧾"></div>
-      <div class="fg"><label class="lab">Nombre</label><input type="text" id="eName" class="inp" placeholder="Ej: Seguro hogar"></div>
+    <div class="shd"><h3 id="eTitle">Gasto fijo</h3><button class="xbtn" type="button" onclick="closeEditor()" aria-label="Cerrar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="ebody">
+      <div class="esec">
+        <div class="fr ic">
+          <div class="fg"><label class="lab">Icono</label><input type="text" id="eIcon" class="inp icon-in" maxlength="4" value="🧾"></div>
+          <div class="fg"><label class="lab">Nombre</label><input type="text" id="eName" class="inp" placeholder="Ej: Seguro hogar"></div>
+        </div>
+      </div>
+
+      <div class="esec">
+        <div class="eh">Importe y reparto</div>
+        <div class="fr">
+          <div class="fg"><label class="lab">Importe (€)</label><input type="number" id="eAmount" class="inp" inputmode="decimal" step="0.01" placeholder="0,00"></div>
+          <div class="fg"><label class="lab" id="eShareLab">Claudia paga (%)</label><input type="number" id="eShare" class="inp" inputmode="decimal" step="0.01" min="0" value="50"></div>
+        </div>
+        <select id="eMode" hidden onchange="modeChange()"><option value="pct">pct</option><option value="eur">eur</option></select>
+        <div class="seg" id="eModeSeg"><button type="button" id="em_pct" onclick="setMode('pct')">Porcentaje</button><button type="button" id="em_eur" onclick="setMode('eur')">Importe fijo</button></div>
+        <label class="tgl"><span>Importe variable<small>Pongo el real cada mes</small></span><input type="checkbox" id="eVar"></label>
+      </div>
+
+      <div class="esec">
+        <div class="eh">Cuándo se cobra</div>
+        <div class="fr">
+          <div class="fg"><label class="lab">Frecuencia</label>
+            <select id="eFreq" class="inp" onchange="applyFreq()"><option value="1">Cada mes</option><option value="2">Cada 2 meses</option><option value="3">Cada 3 meses</option><option value="6">Cada 6 meses</option><option value="12">Una vez al año</option><option value="0">Personalizado</option></select></div>
+          <div class="fg"><label class="lab">Empezando en</label><select id="eStart" class="inp" onchange="applyFreq()"></select></div>
+        </div>
+        <div class="fg"><label class="lab">Meses (toca para cambiar)</label><div class="mgrid" id="eChips"></div></div>
+      </div>
+
+      <div class="esec">
+        <div class="eh">Cobro</div>
+        <div class="fg"><label class="lab">Dónde se cobra</label>
+          <select id="eMethod" class="inp"><option value="transfer">Transferencia manual (cuenta alquiler)</option><option value="cdmo">Cuenta CDMO Gastos (Openbank)</option><option value="card">Tarjeta CDMO Gastos (Openbank)</option><option value="claudia">Cuenta de Claudia</option><option value="notif">Notificación (pago manual)</option></select></div>
+        <div class="fg"><label class="lab">Lo adelanta</label><select id="ePayer" class="inp"><option value="D">Yo</option><option value="C">Claudia</option></select></div>
+      </div>
+
+      <details class="more" id="eMore"><summary>Más opciones</summary>
+        <div class="mb">
+          <div class="fr">
+            <div class="fg"><label class="lab">Desde</label><input type="month" id="eFrom" class="inp"></div>
+            <div class="fg"><label class="lab">Hasta</label><input type="month" id="eTo" class="inp"></div>
+          </div>
+          <div class="fg" style="margin-top:10px;margin-bottom:0"><label class="lab">Nota</label><input type="text" id="eNote" class="inp" placeholder="Opcional"></div>
+        </div>
+      </details>
     </div>
-    <div class="fr">
-      <div class="fg"><label class="lab">Importe (€)</label><input type="number" id="eAmount" class="inp" inputmode="decimal" step="0.01"></div>
-      <div class="fg"><label class="lab" id="eShareLab">Claudia paga (%)</label><input type="number" id="eShare" class="inp" inputmode="decimal" step="0.01" min="0" value="50"></div>
-    </div>
-    <div class="fg"><label class="lab">Cómo se reparte</label>
-      <select id="eMode" class="inp" onchange="modeChange()"><option value="pct">Un porcentaje del importe (50 % = a medias)</option><option value="eur">Un importe fijo que paga Claudia</option></select></div>
-    <label class="chk-row"><input type="checkbox" id="eVar"> Importe variable (pongo el real cada mes)</label>
-    <div class="fr">
-      <div class="fg"><label class="lab">Se cobra</label>
-        <select id="eFreq" class="inp" onchange="applyFreq()"><option value="1">Cada mes</option><option value="2">Cada 2 meses</option><option value="3">Cada 3 meses</option><option value="6">Cada 6 meses</option><option value="12">Una vez al año</option><option value="0">Personalizado</option></select></div>
-      <div class="fg"><label class="lab">Empezando en</label><select id="eStart" class="inp" onchange="applyFreq()"></select></div>
-    </div>
-    <div class="fg"><label class="lab">Meses de cobro (toca para cambiar)</label><div class="mgrid" id="eChips"></div></div>
-    <div class="fr">
-      <div class="fg"><label class="lab">Dónde se cobra</label>
-        <select id="eMethod" class="inp"><option value="transfer">Transferencia manual (cuenta alquiler)</option><option value="cdmo">Cuenta CDMO Gastos (Openbank)</option><option value="card">Tarjeta CDMO Gastos (Openbank)</option><option value="claudia">Cuenta de Claudia</option><option value="notif">Notificación (pago manual)</option></select></div>
-      <div class="fg"><label class="lab">Lo adelanta</label><select id="ePayer" class="inp"><option value="D">Yo</option><option value="C">Claudia</option></select></div>
-    </div>
-    <div class="fr">
-      <div class="fg"><label class="lab">Desde (opcional)</label><input type="month" id="eFrom" class="inp"></div>
-      <div class="fg"><label class="lab">Hasta (opcional)</label><input type="month" id="eTo" class="inp"></div>
-    </div>
-    <div class="fg"><label class="lab">Nota</label><input type="text" id="eNote" class="inp" placeholder="Opcional"></div>
-    <div class="actions">
+    <div class="efoot">
       <button class="btn blue" onclick="saveEditor()">Guardar</button>
-      <button class="btn soft" onclick="closeEditor()">Cancelar</button>
-      <button class="btn danger" id="eDel" style="min-width:100%" onclick="deleteFixed()">Eliminar este gasto</button>
+      <button class="lnk" id="eDel" type="button" onclick="deleteFixed()">Eliminar este gasto</button>
     </div>
   </div>
 </div>
@@ -654,7 +720,9 @@ function yearInfo(y) {
 }
 
 /* ===================== Navegación / tema ===================== */
+let curTab = 'pMes';
 function goTab(id) {
+    const ord = ['pMes', 'pFijos', 'pBal', 'pAjustes']; $(id).style.setProperty('--dx', (ord.indexOf(id) >= ord.indexOf(curTab) ? 26 : -26) + 'px'); curTab = id;
     document.querySelectorAll('.panel').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.dock button').forEach(e => e.classList.remove('on'));
     $(id).classList.add('active'); $('t_' + id).classList.add('on');
@@ -854,9 +922,10 @@ function openEditor(id) {
     $('eFreq').value = step ? String(step) : '0'; $('eStart').value = String(Math.min.apply(null, edMonths) || ck.m);
     $('eMethod').value = it ? it.method : 'cdmo'; $('ePayer').value = it ? it.payer : 'D';
     $('eFrom').value = it ? it.from : ''; $('eTo').value = it ? it.to : ''; $('eIcon').value = it ? (it.icon || '🧾') : '🧾'; $('eNote').value = it ? (it.note || '') : '';
-    $('eDel').style.display = it ? '' : 'none'; drawChips(); $('editor').classList.add('on');
+    $('eDel').style.display = it ? '' : 'none'; $('eMore').open = !!(it && (it.from || it.to || it.note)); $('editor').querySelector('.ebody').scrollTop = 0; drawChips(); $('editor').classList.add('on');
 }
-function modeLabel() { $('eShareLab').textContent = $('eMode').value === 'eur' ? 'Claudia paga (€ fijos)' : 'Claudia paga (%)'; }
+function modeLabel() { const e = $('eMode').value === 'eur'; $('eShareLab').textContent = e ? 'Claudia paga (€ fijos)' : 'Claudia paga (%)'; $('em_pct').classList.toggle('on', !e); $('em_eur').classList.toggle('on', e); }
+function setMode(m) { if ($('eMode').value === m) return; $('eMode').value = m; modeChange(); }
 function modeChange() { const it = editId ? S.plan.find(i => i.id === editId) : null; $('eShare').value = $('eMode').value === 'eur' ? (it && it.shareEur ? it.shareEur : 0) : (it && it.share != null ? it.share : 50); modeLabel(); }
 function closeEditor() { $('editor').classList.remove('on'); }
 function drawChips() {
@@ -1211,7 +1280,7 @@ initTheme(); renderMes(); if (pinCfg()) showLock();
 })();
 </script>
 <script>
-const APP_VERSION = 'v14 · 03/10/2026';
+const APP_VERSION = 'v15 · 03/10/2026';
 
 async function forceUpdate() {
     if (!confirm('Voy a recargar la app para coger la última versión. Tus datos no se borran. ¿Seguir?')) return;
